@@ -1,4 +1,110 @@
 {
+  "myPlots": {
+    "overview": "Resumen",
+    "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",
+    "yourPlots": "Tus parcelas",
+    "plotsRegistered": "{{count}} parcelas registradas",
+    "importCoordinates": "Importar coordenadas",
+    "addPlot": "Agregar parcela",
+    "viewDetails": "Ver detalles",
+    "empty": "Aún no hay parcelas registradas. Agrega tu primera parcela para empezar a monitorear.",
+    "ndvi": "NDVI",
+    "chill": "Frío",
+    "activeAlerts": "{{count}} alertas activas",
+    "devicesOnline": "{{count}} dispositivos en línea",
+    "kpi": {
+      "registeredPlots": "Parcelas registradas",
+      "registeredPlotsCaption": "Áreas productivas vinculadas a monitoreo climático y satelital.",
+      "monitoredArea": "Área monitoreada",
+      "monitoredAreaCaption": "Área total registrada de cultivo de olivo.",
+      "climateLinked": "Vinculadas al clima",
+      "climateLinkedCaption": "Todas las parcelas reciben datos climáticos zonales.",
+      "allLinked": "Todas vinculadas",
+      "iotDevices": "Dispositivos IoT",
+      "iotDevicesCaption": "Parcelas con dispositivos de telemetría vinculados.",
+      "online": "en línea",
+      "iot": "IoT"
+    }
+  },
+  "plotCreate": {
+    "title": "Crear parcela",
+    "subtitle": "Define el límite geográfico de tu parcela para habilitar el monitoreo satelital y climático.",
+    "reset": "Reiniciar formulario",
+    "steps": {
+      "basicInfo": "Datos básicos",
+      "boundary": "Límite",
+      "confirm": "Confirmar"
+    },
+    "info": {
+      "title": "Información de la parcela",
+      "subtitle": "Datos básicos para identificar y clasificar tu área productiva.",
+      "areaNote": "El área se calculará automáticamente al cerrar el límite en el mapa."
+    },
+    "fields": {
+      "name": "Nombre de la parcela",
+      "cropType": "Tipo de cultivo",
+      "campaign": "Campaña",
+      "location": "Ubicación",
+      "area": "Área productiva",
+      "notes": "Notas (opcional)"
+    },
+    "placeholders": {
+      "name": "Santa Rosa",
+      "cropType": "Parcela completa",
+      "campaign": "Campaña 2026",
+      "location": "Tacna, Perú",
+      "area": "Se calcula al cerrar el polígono",
+      "notes": "Olivos en etapa productiva, riego regular."
+    },
+    "errors": {
+      "name": "Ingresa un nombre de parcela (3-80 caracteres)."
+    },
+    "links": {
+      "title": "Vínculos automáticos — se activan al registrar",
+      "climate": "Monitoreo climático",
+      "ndvi": "NDVI satelital",
+      "iot": "Dispositivos IoT",
+      "willActivate": "Se activará",
+      "linkFromDetail": "Vincular desde detalle"
+    },
+    "linkStatus": {
+      "active": "Activo",
+      "initializing": "Inicializando…",
+      "notLinked": "Sin vincular aún",
+      "pending": "Pendiente"
+    },
+    "boundary": {
+      "title": "Dibujar límite de la parcela",
+      "subtitle": "Haz clic en el mapa para añadir puntos del límite. Cierra el polígono para registrar la parcela.",
+      "polygonClosed": "Polígono cerrado",
+      "polygonOpen": "Polígono abierto",
+      "addPoint": "Añadir punto",
+      "undoPoint": "Deshacer punto",
+      "clear": "Limpiar límite",
+      "close": "Cerrar polígono",
+      "pointsSelected": "Puntos seleccionados",
+      "estimatedArea": "Área estimada",
+      "boundaryStatus": "Estado del límite",
+      "closed": "Cerrado",
+      "open": "Abierto",
+      "incompleteTitle": "Límite incompleto",
+      "incompleteBody": "La parcela no puede registrarse hasta que el polígono geográfico esté correctamente cerrado. Haz clic en Cerrar polígono o añade el punto faltante para completar el límite.",
+      "continueDrawing": "Continuar dibujando",
+      "autoLinkNote": "Una vez registrada, el monitoreo climático y satelital se vinculará automáticamente a este límite.",
+      "register": "Registrar parcela",
+      "registerLocked": "Registrar parcela — cierra el límite primero",
+      "registering": "Registrando parcela…"
+    },
+    "confirm": {
+      "title": "Parcela registrada con éxito",
+      "subtitle": "{{name}} se registró y vinculó al monitoreo climático para el área geográfica seleccionada.",
+      "plot": "Parcela",
+      "area": "Área",
+      "note": "El primer análisis NDVI puede tardar hasta 24 horas mientras se procesa la imagen satelital de tu límite.",
+      "viewDetail": "Ver detalle de la parcela",
+      "back": "Volver a Mis parcelas"
+    }
+  },
   "common": {
     "updated": "Actualizado",
     "loading": "Cargando",

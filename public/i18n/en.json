@@ -1,4 +1,110 @@
 {
+  "myPlots": {
+    "overview": "Overview",
+    "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",
+    "yourPlots": "Your Plots",
+    "plotsRegistered": "{{count}} plots registered",
+    "importCoordinates": "Import coordinates",
+    "addPlot": "Add plot",
+    "viewDetails": "View details",
+    "empty": "No plots registered yet. Add your first plot to start monitoring.",
+    "ndvi": "NDVI",
+    "chill": "Chill",
+    "activeAlerts": "{{count}} active alerts",
+    "devicesOnline": "{{count}} devices online",
+    "kpi": {
+      "registeredPlots": "Registered plots",
+      "registeredPlotsCaption": "Productive areas linked to climate and satellite monitoring.",
+      "monitoredArea": "Monitored area",
+      "monitoredAreaCaption": "Total registered olive crop area.",
+      "climateLinked": "Climate linked",
+      "climateLinkedCaption": "All plots are receiving zonal weather data.",
+      "allLinked": "All linked",
+      "iotDevices": "IoT devices",
+      "iotDevicesCaption": "Plots with linked telemetry devices.",
+      "online": "online",
+      "iot": "IoT"
+    }
+  },
+  "plotCreate": {
+    "title": "Create plot",
+    "subtitle": "Define the geographic boundary of your plot to enable satellite and climate monitoring.",
+    "reset": "Reset form",
+    "steps": {
+      "basicInfo": "Basic info",
+      "boundary": "Boundary",
+      "confirm": "Confirm"
+    },
+    "info": {
+      "title": "Plot information",
+      "subtitle": "Basic data used to identify and classify your productive area.",
+      "areaNote": "Area will be computed automatically once you close the boundary on the map."
+    },
+    "fields": {
+      "name": "Plot name",
+      "cropType": "Crop type",
+      "campaign": "Campaign",
+      "location": "Location",
+      "area": "Productive area",
+      "notes": "Notes (optional)"
+    },
+    "placeholders": {
+      "name": "Santa Rosa",
+      "cropType": "Full plot",
+      "campaign": "2026 campaign",
+      "location": "Tacna, Perú",
+      "area": "Calculated after polygon closure",
+      "notes": "Olive trees under productive stage, regular irrigation schedule."
+    },
+    "errors": {
+      "name": "Enter a plot name (3-80 characters)."
+    },
+    "links": {
+      "title": "Automatic links — enabled on registration",
+      "climate": "Climate monitoring",
+      "ndvi": "Satellite NDVI",
+      "iot": "IoT devices",
+      "willActivate": "Will activate",
+      "linkFromDetail": "Link from detail"
+    },
+    "linkStatus": {
+      "active": "Active",
+      "initializing": "Initializing…",
+      "notLinked": "Not linked yet",
+      "pending": "Pending"
+    },
+    "boundary": {
+      "title": "Draw plot boundary",
+      "subtitle": "Click on the map to add boundary points. Close the polygon to register the plot.",
+      "polygonClosed": "Polygon closed",
+      "polygonOpen": "Polygon open",
+      "addPoint": "Add point",
+      "undoPoint": "Undo point",
+      "clear": "Clear boundary",
+      "close": "Close polygon",
+      "pointsSelected": "Points selected",
+      "estimatedArea": "Estimated area",
+      "boundaryStatus": "Boundary status",
+      "closed": "Closed",
+      "open": "Open",
+      "incompleteTitle": "Incomplete boundary",
+      "incompleteBody": "The plot cannot be registered until the geographic polygon is closed correctly. Click Close polygon or add the missing point to complete the boundary.",
+      "continueDrawing": "Continue drawing",
+      "autoLinkNote": "Once registered, climate and satellite monitoring will be automatically linked to this boundary.",
+      "register": "Register plot",
+      "registerLocked": "Register plot — close boundary first",
+      "registering": "Registering plot…"
+    },
+    "confirm": {
+      "title": "Plot registered successfully",
+      "subtitle": "{{name}} has been registered and linked to climate monitoring for the selected geographic area.",
+      "plot": "Plot",
+      "area": "Area",
+      "note": "First NDVI analysis may take up to 24 hours while satellite imagery is processed for your boundary.",
+      "viewDetail": "View plot detail",
+      "back": "Back to My plots"
+    }
+  },
   "common": {
     "updated": "Updated",
     "loading": "Loading",

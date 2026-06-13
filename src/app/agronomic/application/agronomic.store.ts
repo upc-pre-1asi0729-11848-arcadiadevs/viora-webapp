@@ -26,8 +26,13 @@ import { MonitoringSummary } from '../domain/model/monitoring-summary.entity';
 import { OverallPlotHealth } from '../domain/model/overall-plot-health.entity';
 import { AgronomicStatistics } from '../domain/model/agronomic-statistics.entity';
 import { MyPlotsOverview } from '../domain/model/my-plots-overview.entity';
+import { PlotRegistration } from '../domain/model/plot-registration.entity';
 import { IotDevice } from '../domain/model/iot-device.entity';
 import { IotRiskLevel, IotSensorCard } from '../domain/model/iot-device-summary.entity';
+import { CreatePlotResource } from '../infrastructure/plot-registration-response';
+
+/** Create Plot wizard payload (userId is injected by the API service). */
+export type CreatePlotRequest = Omit<CreatePlotResource, 'userId'>;
 
 export type DashboardScope = number | string;
 export type DashboardTimeRange = 'current' | '7days' | '30days';
@@ -67,6 +72,7 @@ export class AgronomicStore {
   readonly plotMonitoringSummary = signal<MonitoringSummary | null>(null);
   readonly weatherSummary = signal<WeatherSummary | null>(null);
   readonly myPlotsOverview = signal<MyPlotsOverview | null>(null);
+  readonly lastPlotRegistration = signal<PlotRegistration | null>(null);
 
   readonly summaryLoaded = signal<boolean>(false);
 
@@ -460,6 +466,38 @@ export class AgronomicStore {
           });
         },
         error: (error) => this.registerError(error),
+      });
+  }
+
+  /**
+   * Registers a new plot against the real backend. On success it stores the
+   * registration result (for the wizard's confirmation step) and refreshes the
+   * overview so the new plot appears on My Plots.
+   */
+  createPlot(
+    request: CreatePlotRequest,
+    onSuccess?: (registration: PlotRegistration) => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('saving', true);
+
+    this.agronomicApi
+      .createPlot(request)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('saving', false)),
+      )
+      .subscribe({
+        next: (registration) => {
+          this.lastPlotRegistration.set(registration);
+          this.plotsLoaded.set(false);
+          this.fetchMyPlotsOverview();
+          onSuccess?.(registration);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
       });
   }
 

@@ -8,6 +8,9 @@ const iotDeviceList = () =>
   import('./views/iot-device-list/iot-device-list').then((m) => m.IotDeviceList);
 const iotDeviceForm = () =>
   import('./views/iot-device-form/iot-device-form').then((m) => m.IotDeviceForm);
+const myPlotsOverview = () =>
+  import('./views/my-plots-overview/my-plots-overview').then((m) => m.MyPlotsOverviewView);
+const plotCreate = () => import('./views/plot-create/plot-create').then((m) => m.PlotCreate);
 
 /**
  * Route tree for agronomic bounded-context views.
@@ -21,11 +24,41 @@ export const agronomicRoutes: Routes = [
   {
     path: 'plots',
     title: 'My Plots',
-    loadComponent: comingSoonPage,
+    loadComponent: myPlotsOverview,
     data: {
       pageTitle: 'My Plots',
       sectionLabel: 'My Plots',
       subtitle: 'Manage your registered production plots and field boundaries.',
+    },
+  },
+  {
+    path: 'plots/new',
+    title: 'My Plots / Create plot',
+    loadComponent: plotCreate,
+    data: {
+      pageTitle: 'My Plots / Create plot',
+      sectionLabel: 'My Plots',
+      subtitle: 'Register a new production plot and draw its field boundary.',
+    },
+  },
+  {
+    path: 'plots/import',
+    title: 'My Plots / Import coordinates',
+    loadComponent: comingSoonPage,
+    data: {
+      pageTitle: 'My Plots / Import coordinates',
+      sectionLabel: 'My Plots',
+      subtitle: 'Import plot boundaries from coordinate files.',
+    },
+  },
+  {
+    path: 'plots/:id',
+    title: 'My Plots / Plot detail',
+    loadComponent: comingSoonPage,
+    data: {
+      pageTitle: 'My Plots / Plot detail',
+      sectionLabel: 'My Plots',
+      subtitle: 'Review plot boundaries, monitoring status, and linked devices.',
     },
   },
   {

@@ -1,0 +1,166 @@
+<section class="my-plots-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    [subtitle]="'myPlots.subtitle' | translate"
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="refresh()" />
+
+  <!-- View tabs -->
+  <nav class="plot-tabs" aria-label="My Plots views">
+    @for (tab of tabs; track tab.id) {
+      @if (tab.route) {
+        <a
+          mat-stroked-button
+          class="plot-tab"
+          [class.is-active]="tab.active"
+          [routerLink]="tab.route">
+          <mat-icon>{{ tab.icon }}</mat-icon>
+          {{ tab.labelKey | translate }}
+        </a>
+      } @else {
+        <button
+          mat-stroked-button
+          type="button"
+          class="plot-tab"
+          [class.is-active]="tab.active">
+          <mat-icon>{{ tab.icon }}</mat-icon>
+          {{ tab.labelKey | translate }}
+        </button>
+      }
+    }
+  </nav>
+
+  <!-- KPI summary cards -->
+  <section class="kpi-grid">
+    <mat-card class="kpi-card">
+      <h2>{{ 'myPlots.kpi.registeredPlots' | translate }}</h2>
+      <span class="kpi-number kpi-number--lg">{{ overview()?.registeredPlotCount ?? 0 }}</span>
+      <p class="kpi-caption">{{ 'myPlots.kpi.registeredPlotsCaption' | translate }}</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <h2>{{ 'myPlots.kpi.monitoredArea' | translate }}</h2>
+      <span class="kpi-number">{{ monitoredAreaLabel() }}</span>
+      <p class="kpi-caption">{{ 'myPlots.kpi.monitoredAreaCaption' | translate }}</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <h2>{{ 'myPlots.kpi.climateLinked' | translate }}</h2>
+      <span class="kpi-number">{{ climateLinkedLabel() }}</span>
+      <p class="kpi-caption">{{ 'myPlots.kpi.climateLinkedCaption' | translate }}</p>
+      @if (allClimateLinked()) {
+        <span class="kpi-tag kpi-tag--green">
+          <mat-icon>check_circle</mat-icon>
+          {{ 'myPlots.kpi.allLinked' | translate }}
+        </span>
+      }
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <h2>{{ 'myPlots.kpi.iotDevices' | translate }}</h2>
+      <span class="kpi-number">
+        {{ overview()?.onlineDeviceCount ?? 0 }} {{ 'myPlots.kpi.online' | translate }}
+      </span>
+      <p class="kpi-caption">{{ 'myPlots.kpi.iotDevicesCaption' | translate }}</p>
+      @if ((overview()?.plotsWithIotCount ?? 0) > 0) {
+        <span class="kpi-tag kpi-tag--green">
+          <mat-icon>wifi</mat-icon>
+          {{ 'myPlots.kpi.iot' | translate }}
+        </span>
+      }
+    </mat-card>
+  </section>
+
+  <!-- Your Plots header -->
+  <section class="plots-header">
+    <div class="plots-header-title">
+      <h2>{{ 'myPlots.yourPlots' | translate }}</h2>
+      <span class="plots-count">
+        {{ 'myPlots.plotsRegistered' | translate: { count: overview()?.registeredPlotCount ?? 0 } }}
+      </span>
+    </div>
+
+    <div class="plots-header-actions">
+      <a mat-stroked-button class="ghost-button" routerLink="/agronomic/plots/import">
+        {{ 'myPlots.importCoordinates' | translate }}
+        <mat-icon>file_upload</mat-icon>
+      </a>
+      <a mat-stroked-button class="ghost-button" routerLink="/agronomic/plots/new">
+        {{ 'myPlots.addPlot' | translate }}
+        <mat-icon>add</mat-icon>
+      </a>
+    </div>
+  </section>
+
+  <!-- Plot cards -->
+  @if (isLoading() && plots().length === 0) {
+    <mat-card class="state-card">{{ 'common.loading' | translate }}…</mat-card>
+  } @else if (plots().length === 0) {
+    <mat-card class="state-card">{{ 'myPlots.empty' | translate }}</mat-card>
+  } @else {
+    <section class="plot-list">
+      @for (plot of plots(); track plot.id) {
+        <mat-card class="plot-card">
+          <div class="plot-thumb">
+            <app-plot-thumbnail [polygonCoordinates]="plot.polygonCoordinates" />
+          </div>
+
+          <div class="plot-body">
+            <div class="plot-title-row">
+              <h3 class="plot-name">{{ plot.name }}</h3>
+              <span class="status-pill" [class]="statusModifier(plot.healthStatus)">
+                {{ plot.healthStatus }}
+              </span>
+            </div>
+
+            <p class="plot-meta">{{ plot.metaLabel }}</p>
+
+            <div class="plot-indicators">
+              <span class="indicator">
+                <mat-icon>eco</mat-icon>
+                {{ 'myPlots.ndvi' | translate }} ·
+                <strong>{{ plot.ndviLabel }}</strong>
+              </span>
+              <span class="indicator">
+                <mat-icon>ac_unit</mat-icon>
+                {{ 'myPlots.chill' | translate }} ·
+                <strong>{{ plot.chillLabel }}</strong>
+              </span>
+            </div>
+
+            <div class="plot-tags">
+              @if (plot.hasAlerts) {
+                <span class="tag tag--alert">
+                  <mat-icon>warning</mat-icon>
+                  {{ 'myPlots.activeAlerts' | translate: { count: plot.activeAlertCount } }}
+                </span>
+              }
+              @if (plot.hasIot) {
+                <span class="tag tag--devices">
+                  <mat-icon>wifi</mat-icon>
+                  {{ 'myPlots.devicesOnline' | translate: { count: plot.onlineDeviceCount } }}
+                </span>
+              }
+              <span class="tag tag--time">
+                <mat-icon>schedule</mat-icon>
+                {{ relativeTime(plot.lastUpdatedAt) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="plot-action">
+            <a mat-stroked-button class="ghost-button" [routerLink]="['/agronomic/plots', plot.id]">
+              {{ 'myPlots.viewDetails' | translate }}
+            </a>
+          </div>
+        </mat-card>
+      }
+    </section>
+  }
+
+  @if (store.errors().length > 0) {
+    <section class="error-box">
+      <strong>{{ 'common.somethingWrong' | translate }}</strong>
+    </section>
+  }
+</section>

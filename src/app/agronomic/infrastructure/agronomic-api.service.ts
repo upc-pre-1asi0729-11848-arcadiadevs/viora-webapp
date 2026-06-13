@@ -23,6 +23,12 @@ import { PlotWeatherForecastResource } from './plot-weather-forecast-response';
 import { PlotWeatherForecastAssembler } from './plot-weather-forecast.assembler';
 import { MyPlotsOverviewResource } from './my-plots-overview-response';
 import { MyPlotsOverviewAssembler } from './my-plots-overview.assembler';
+import { PlotRegistration } from '../domain/model/plot-registration.entity';
+import {
+  CreatePlotResource,
+  PlotRegistrationResource,
+} from './plot-registration-response';
+import { PlotRegistrationAssembler } from './plot-registration.assembler';
 
 import {
   IotDeviceCollectionResponse,
@@ -89,6 +95,23 @@ export class AgronomicApiService extends BaseApi {
         map((resource) => MyPlotsOverviewAssembler.toEntityFromResource(resource)),
         catchError(() => of(null)),
       );
+  }
+
+  /**
+   * Registers a new plot. The backend computes the area, persists the boundary,
+   * and links climate/satellite monitoring (AgronoMonitoring) automatically.
+   * Errors are intentionally not swallowed so the wizard can surface them.
+   * @returns {Observable<PlotRegistration>}
+   */
+  createPlot(request: Omit<CreatePlotResource, 'userId'>): Observable<PlotRegistration> {
+    const body: CreatePlotResource = {
+      userId: Number(this.defaultUserId),
+      ...request,
+    };
+
+    return this.http
+      .post<PlotRegistrationResource>(this.plotsEndpoint.collectionUrl, body)
+      .pipe(map((resource) => PlotRegistrationAssembler.toEntityFromResource(resource)));
   }
 
   /**

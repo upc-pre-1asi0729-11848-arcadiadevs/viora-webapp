@@ -3,11 +3,14 @@
  * @description Domain entity for the aggregated My Plots overview, used on the
  * dashboard to source real IoT device and plot-health counts.
  */
-import { PlotHealthStatus } from './plot.entity';
+import { PlotCoordinate, PlotHealthStatus } from './plot.entity';
 
 export interface MyPlotOverviewItemProperties {
   id?: number | string | null;
   name?: string;
+  location?: string;
+  areaSizeHectares?: number;
+  polygonCoordinates?: PlotCoordinate[];
   healthStatus?: PlotHealthStatus;
   currentNdvi?: number;
   chillPortions?: number;
@@ -19,6 +22,9 @@ export interface MyPlotOverviewItemProperties {
 export class MyPlotOverviewItem {
   readonly id: number | string | null;
   readonly name: string;
+  readonly location: string;
+  readonly areaSizeHectares: number;
+  readonly polygonCoordinates: PlotCoordinate[];
   readonly healthStatus: PlotHealthStatus;
   readonly currentNdvi: number;
   readonly chillPortions: number;
@@ -29,6 +35,9 @@ export class MyPlotOverviewItem {
   constructor({
     id = null,
     name = '',
+    location = '',
+    areaSizeHectares = 0,
+    polygonCoordinates = [],
     healthStatus = 'Healthy',
     currentNdvi = 0,
     chillPortions = 0,
@@ -38,6 +47,9 @@ export class MyPlotOverviewItem {
   }: MyPlotOverviewItemProperties = {}) {
     this.id = id;
     this.name = name;
+    this.location = location;
+    this.areaSizeHectares = areaSizeHectares;
+    this.polygonCoordinates = polygonCoordinates;
     this.healthStatus = healthStatus;
     this.currentNdvi = currentNdvi;
     this.chillPortions = chillPortions;
@@ -48,6 +60,27 @@ export class MyPlotOverviewItem {
 
   get hasIot(): boolean {
     return this.onlineDeviceCount > 0;
+  }
+
+  get hasAlerts(): boolean {
+    return this.activeAlertCount > 0;
+  }
+
+  /** "Tacna · 4.2 ha" style line shown under the plot name. */
+  get metaLabel(): string {
+    const area = `${this.areaSizeHectares.toFixed(1)} ha`;
+
+    return this.location ? `${this.location} · ${area}` : area;
+  }
+
+  /** NDVI rounded to two decimals for the indicator pill. */
+  get ndviLabel(): string {
+    return this.currentNdvi.toFixed(2);
+  }
+
+  /** Chill accumulation in chill portions, e.g. "72 CP". */
+  get chillLabel(): string {
+    return `${Math.round(this.chillPortions)} CP`;
   }
 }
 

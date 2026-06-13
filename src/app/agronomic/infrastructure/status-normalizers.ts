@@ -8,6 +8,7 @@ import { PhenologicalRiskLevel, PlotHealthStatus } from '../domain/model/plot.en
 import { OverallPlotHealthStatus } from '../domain/model/overall-plot-health.entity';
 import { NdviTrend } from '../domain/model/agronomic-record.entity';
 import { YieldRiskLevel } from '../domain/model/yield-forecast.entity';
+import { MonitoringLinkStatus } from '../domain/model/plot-registration.entity';
 
 /**
  * Normalizes a plot/general health status.
@@ -101,6 +102,34 @@ export function normalizeNdviTrend(value: string | null | undefined): NdviTrend 
       return 'down';
     default:
       return 'stable';
+  }
+}
+
+/**
+ * Normalizes an automatic monitoring-link state reported after registration.
+ * Backend values are enum names such as ACTIVE | INITIALIZING | NOT_LINKED.
+ */
+export function normalizeMonitoringLink(
+  value: string | null | undefined,
+): MonitoringLinkStatus {
+  switch ((value ?? '').trim().toUpperCase()) {
+    case 'ACTIVE':
+    case 'LINKED':
+    case 'ENABLED':
+    case 'READY':
+      return 'active';
+    case 'INITIALIZING':
+    case 'PENDING':
+    case 'PROCESSING':
+    case 'IN_PROGRESS':
+      return 'initializing';
+    case 'NOT_LINKED':
+    case 'UNLINKED':
+    case 'DISABLED':
+    case 'NONE':
+      return 'not-linked';
+    default:
+      return 'unknown';
   }
 }
 

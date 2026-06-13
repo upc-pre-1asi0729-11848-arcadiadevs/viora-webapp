@@ -30,6 +30,9 @@ export class MyPlotsOverviewAssembler {
     return new MyPlotOverviewItem({
       id: resource.id ?? null,
       name: resource.name ?? '',
+      location: resource.location ?? '',
+      areaSizeHectares: resource.areaSizeHectares ?? 0,
+      polygonCoordinates: resource.polygonCoordinates ?? [],
       healthStatus: normalizePlotHealthStatus(resource.healthStatus),
       currentNdvi: resource.currentNdvi ?? 0,
       chillPortions: resource.chillPortions ?? 0,
