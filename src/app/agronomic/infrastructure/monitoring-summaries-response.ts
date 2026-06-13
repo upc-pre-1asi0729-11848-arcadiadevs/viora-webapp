@@ -1,32 +1,32 @@
 /**
  * @file monitoring-summaries-response.ts
- * @description API resource payload definition for Monitoring Summaries data.
+ * @description API resource payload for GET /monitoring-summaries/current
+ * (All Plots aggregate from the real backend).
  */
-import {
-  BaseResource,
-  BaseResponse,
-  CollectionResponse
-} from '../../shared/infrastructure/base-response';
 
-import { AgronomicRecordResource } from './agronomic-record-response';
-import { ChillHourRecordResource } from './chill-hour-records-response';
-import { OverallPlotHealthResource } from './overall-plot-health-response';
-import { YieldForecastResource } from './yield-forecasts-response';
-
-export interface MonitoringSummaryResource extends BaseResource {
-  period?: string;
-  updatedAt?: string;
-  ndvi?: AgronomicRecordResource | null;
-  chillAccumulation?: ChillHourRecordResource | null;
-  yieldForecast?: YieldForecastResource | null;
-  overallHealth?: OverallPlotHealthResource | null;
+export interface WeatherSnapshotResource {
+  weatherStatus?: string;
+  measurementDate?: string;
+  climateRiskLevel?: string;
+  temperature?: number;
 }
 
-export interface MonitoringSummariesResponse extends BaseResponse {
-  summaries: MonitoringSummaryResource[];
+export interface MitigationRecommendationResource {
+  actionType?: string;
+  nutritionInputRecommendation?: string;
+  applicationWindowStart?: string;
+  applicationWindowEnd?: string;
 }
 
-export type MonitoringSummaryCollectionResponse = CollectionResponse<
-  MonitoringSummaryResource,
-  'summaries'
->;
+export interface MonitoringSummaryResource {
+  monitoringSummaryId?: number | string | null;
+  userId?: number | string | null;
+  generalHealthStatus?: string;
+  ndviValue?: number;
+  accumulatedChillHours?: number;
+  yieldForecast?: number;
+  measurementDate?: string;
+  weatherSnapshot?: WeatherSnapshotResource | null;
+  climateRiskLevel?: string;
+  mitigationRecommendations?: MitigationRecommendationResource[];
+}

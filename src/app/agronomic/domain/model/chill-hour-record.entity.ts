@@ -7,12 +7,19 @@ export type ChillHourRecordId = number | string | null;
 
 export type ChillHourRecordPlotId = number | string | null;
 
+/**
+ * Accumulation unit: Chill Portions (per plot) or chill Hours (All Plots
+ * aggregate, where the backend only exposes accumulated chill hours).
+ */
+export type ChillUnit = 'CP' | 'h';
+
 export interface ChillHourRecordProperties {
   id?: ChillHourRecordId;
   plotId?: ChillHourRecordPlotId;
   accumulatedChillPortions?: number;
   weeklyDiff?: number;
   threshold?: number;
+  unit?: ChillUnit;
   generatedAt?: string;
 }
 
@@ -22,6 +29,7 @@ export class ChillHourRecord {
   readonly accumulatedChillPortions: number;
   readonly weeklyDiff: number;
   readonly threshold: number;
+  readonly unit: ChillUnit;
   readonly generatedAt: string;
 
   /**
@@ -39,6 +47,7 @@ export class ChillHourRecord {
                 accumulatedChillPortions = 0,
                 weeklyDiff = 0,
                 threshold = 600,
+                unit = 'CP',
                 generatedAt = ''
               }: ChillHourRecordProperties = {}) {
     this.id = id;
@@ -46,11 +55,21 @@ export class ChillHourRecord {
     this.accumulatedChillPortions = accumulatedChillPortions;
     this.weeklyDiff = weeklyDiff;
     this.threshold = threshold;
+    this.unit = unit;
     this.generatedAt = generatedAt;
   }
 
   get chillPortionsLabel(): string {
     return `${this.accumulatedChillPortions} CP`;
+  }
+
+  /**
+   * Accumulation value with its actual unit (CP for plots, h for All Plots).
+   */
+  get valueLabel(): string {
+    const rounded = Math.round(this.accumulatedChillPortions);
+
+    return this.unit === 'h' ? `${rounded} h` : `${rounded} CP`;
   }
 
   get weeklyDiffLabel(): string {
