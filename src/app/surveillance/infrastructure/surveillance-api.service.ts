@@ -21,7 +21,8 @@ type SurveillanceQueryParams = ApiQueryParams;
  * @extends BaseApi
  */
 export class SurveillanceApiService extends BaseApi {
-  private readonly alertsEndpoint = this.endpoint(environment.endpoints.alerts);
+  // Alerts belong to a bounded context still served by the mock API.
+  private readonly alertsEndpoint = this.mockEndpoint(environment.endpoints.alerts);
 
   /**
    * Fetches Alerts resources.
