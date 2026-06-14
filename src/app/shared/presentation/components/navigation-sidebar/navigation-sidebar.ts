@@ -8,8 +8,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-navigation-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule, TranslateModule],
-  templateUrl: './navigation-sidebar.component.html',
-  styleUrls: ['./navigation-sidebar.component.scss'],
+  templateUrl: './navigation-sidebar.html',
+  styleUrl: './navigation-sidebar.css',
 })
 export class NavigationSidebarComponent {
   @Input() collapsed: boolean = false;

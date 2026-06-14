@@ -1,0 +1,270 @@
+<section class="create-page">
+  <!-- Header -->
+  <header class="create-header">
+    <div class="header-left">
+      <a mat-icon-button class="back-button" routerLink="/agronomic/plots"
+         [attr.aria-label]="'common.backToDashboard' | translate">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div>
+        <h1 class="header-title">
+          {{ 'sidebar.myPlots' | translate }}
+          <span class="title-sep">/</span>
+          {{ 'plotCreate.title' | translate }}
+        </h1>
+        <p class="header-subtitle">{{ 'plotCreate.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <app-language-switcher />
+      <button mat-icon-button class="reset-button" type="button" (click)="resetWizard()"
+              [attr.aria-label]="'plotCreate.reset' | translate">
+        <mat-icon>restart_alt</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Stepper -->
+  <nav class="stepper" aria-label="Create plot steps">
+    @for (step of steps(); track step.id; let last = $last) {
+      <div
+        class="step"
+        [class.is-done]="step.state === 'done'"
+        [class.is-active]="step.state === 'active'">
+        <span class="step-marker">
+          @if (step.state === 'done') {
+            <mat-icon>check</mat-icon>
+          } @else {
+            {{ step.index }}
+          }
+        </span>
+        <span class="step-label">{{ step.labelKey | translate }}</span>
+      </div>
+
+      @if (!last) {
+        <span class="step-line"></span>
+      }
+    }
+  </nav>
+
+  @if (registration(); as result) {
+    <!-- Step 3: Confirmation -->
+    <mat-card class="confirm-card">
+      <div class="confirm-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <h2 class="confirm-title">{{ 'plotCreate.confirm.title' | translate }}</h2>
+      <p class="confirm-sub">
+        {{ 'plotCreate.confirm.subtitle' | translate: { name: result.name } }}
+      </p>
+
+      <div class="confirm-summary">
+        <div class="summary-line">
+          <span>{{ 'plotCreate.confirm.plot' | translate }}</span>
+          <strong>{{ result.name }}</strong>
+        </div>
+        <div class="summary-line">
+          <span>{{ 'plotCreate.fields.location' | translate }}</span>
+          <strong>{{ result.location || '—' }}</strong>
+        </div>
+        <div class="summary-line">
+          <span>{{ 'plotCreate.confirm.area' | translate }}</span>
+          <strong>{{ result.areaLabel }}</strong>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="link-line">
+          <span class="link-name"><mat-icon>cloud</mat-icon> {{ 'plotCreate.links.climate' | translate }}</span>
+          <span class="link-tag" [class]="linkClass(result.climateMonitoring)">
+            {{ linkLabelKey(result.climateMonitoring) | translate }}
+          </span>
+        </div>
+        <div class="link-line">
+          <span class="link-name"><mat-icon>eco</mat-icon> {{ 'plotCreate.links.ndvi' | translate }}</span>
+          <span class="link-tag" [class]="linkClass(result.satelliteNdvi)">
+            {{ linkLabelKey(result.satelliteNdvi) | translate }}
+          </span>
+        </div>
+        <div class="link-line">
+          <span class="link-name"><mat-icon>wifi</mat-icon> {{ 'plotCreate.links.iot' | translate }}</span>
+          <span class="link-tag" [class]="linkClass(result.iotDevices)">
+            {{ linkLabelKey(result.iotDevices) | translate }}
+          </span>
+        </div>
+      </div>
+
+      <p class="field-info">
+        <mat-icon>info</mat-icon> {{ 'plotCreate.confirm.note' | translate }}
+      </p>
+
+      <button mat-flat-button class="primary-button" type="button" (click)="viewPlotDetail()">
+        <mat-icon>visibility</mat-icon> {{ 'plotCreate.confirm.viewDetail' | translate }}
+      </button>
+      <a mat-stroked-button class="ghost-button wide" routerLink="/agronomic/plots">
+        <mat-icon>arrow_back</mat-icon> {{ 'plotCreate.confirm.back' | translate }}
+      </a>
+    </mat-card>
+  } @else {
+    <div class="wizard-grid">
+      <!-- Left: Basic info -->
+      <mat-card class="info-card">
+        <h2 class="card-title">{{ 'plotCreate.info.title' | translate }}</h2>
+        <p class="card-subtitle">{{ 'plotCreate.info.subtitle' | translate }}</p>
+        <div class="card-divider"></div>
+
+        <form [formGroup]="form" class="plot-form">
+          <label class="field-label">{{ 'plotCreate.fields.name' | translate }}</label>
+          <mat-form-field appearance="outline" class="field">
+            <input matInput formControlName="name"
+                   [placeholder]="'plotCreate.placeholders.name' | translate" />
+            @if (hasFieldError('name')) {
+              <mat-error>{{ 'plotCreate.errors.name' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="field-row">
+            <div class="field-col">
+              <label class="field-label">{{ 'plotCreate.fields.cropType' | translate }}</label>
+              <mat-form-field appearance="outline" class="field">
+                <input matInput formControlName="cropType"
+                       [placeholder]="'plotCreate.placeholders.cropType' | translate" />
+              </mat-form-field>
+            </div>
+            <div class="field-col">
+              <label class="field-label">{{ 'plotCreate.fields.campaign' | translate }}</label>
+              <mat-form-field appearance="outline" class="field">
+                <input matInput formControlName="campaign"
+                       [placeholder]="'plotCreate.placeholders.campaign' | translate" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <label class="field-label">{{ 'plotCreate.fields.location' | translate }}</label>
+          <mat-form-field appearance="outline" class="field">
+            <input matInput formControlName="location"
+                   [placeholder]="'plotCreate.placeholders.location' | translate" />
+          </mat-form-field>
+
+          <label class="field-label">{{ 'plotCreate.fields.area' | translate }}</label>
+          <mat-form-field appearance="outline" class="field">
+            <input matInput readonly
+                   [value]="boundaryClosed() ? estimatedAreaLabel() : ''"
+                   [placeholder]="'plotCreate.placeholders.area' | translate" />
+          </mat-form-field>
+          <p class="field-info">
+            <mat-icon>info</mat-icon> {{ 'plotCreate.info.areaNote' | translate }}
+          </p>
+
+          <label class="field-label">{{ 'plotCreate.fields.notes' | translate }}</label>
+          <mat-form-field appearance="outline" class="field">
+            <textarea matInput rows="2" formControlName="notes"
+                      [placeholder]="'plotCreate.placeholders.notes' | translate"></textarea>
+          </mat-form-field>
+
+          <div class="card-divider"></div>
+
+          <h3 class="links-title">{{ 'plotCreate.links.title' | translate }}</h3>
+          <div class="link-line">
+            <span class="link-name"><mat-icon>cloud</mat-icon> {{ 'plotCreate.links.climate' | translate }}</span>
+            <span class="link-tag tag-will">{{ 'plotCreate.links.willActivate' | translate }}</span>
+          </div>
+          <div class="link-line">
+            <span class="link-name"><mat-icon>eco</mat-icon> {{ 'plotCreate.links.ndvi' | translate }}</span>
+            <span class="link-tag tag-will">{{ 'plotCreate.links.willActivate' | translate }}</span>
+          </div>
+          <div class="link-line">
+            <span class="link-name"><mat-icon>wifi</mat-icon> {{ 'plotCreate.links.iot' | translate }}</span>
+            <span class="link-tag tag-dark">{{ 'plotCreate.links.linkFromDetail' | translate }}</span>
+          </div>
+        </form>
+      </mat-card>
+
+      <!-- Right: Boundary -->
+      <mat-card class="boundary-card">
+        <h2 class="card-title">{{ 'plotCreate.boundary.title' | translate }}</h2>
+        <p class="card-subtitle">{{ 'plotCreate.boundary.subtitle' | translate }}</p>
+
+        <div class="map-wrap">
+          <app-plot-boundary-map (boundaryChange)="onBoundaryChange($event)" />
+          <span class="map-status" [class.is-open]="!boundaryClosed()">
+            <span class="status-dot"></span>
+            {{ (boundaryClosed() ? 'plotCreate.boundary.polygonClosed' : 'plotCreate.boundary.polygonOpen') | translate }}
+          </span>
+        </div>
+
+        <div class="map-actions">
+          <button mat-stroked-button type="button" class="ghost-button"
+                  [class.is-active]="addMode()" (click)="toggleAddPoint()">
+            <mat-icon>place</mat-icon> {{ 'plotCreate.boundary.addPoint' | translate }}
+          </button>
+          <button mat-stroked-button type="button" class="ghost-button" (click)="undoPoint()">
+            <mat-icon>turn_right</mat-icon> {{ 'plotCreate.boundary.undoPoint' | translate }}
+          </button>
+          <button mat-stroked-button type="button" class="ghost-button" (click)="clearBoundary()">
+            <mat-icon>delete</mat-icon> {{ 'plotCreate.boundary.clear' | translate }}
+          </button>
+          <button mat-stroked-button type="button" class="ghost-button" (click)="closePolygon()">
+            <mat-icon>hub</mat-icon> {{ 'plotCreate.boundary.close' | translate }}
+          </button>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="summary-title">{{ 'plotCreate.boundary.pointsSelected' | translate }}</span>
+            <span class="summary-number">{{ pointCount() }}</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-title">{{ 'plotCreate.boundary.estimatedArea' | translate }}</span>
+            <span class="summary-number">{{ estimatedAreaLabel() }}</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-title">{{ 'plotCreate.boundary.boundaryStatus' | translate }}</span>
+            <span class="summary-tag"
+                  [class.is-closed]="boundaryClosed()"
+                  [class.is-open]="!boundaryClosed()">
+              {{ (boundaryClosed() ? 'plotCreate.boundary.closed' : 'plotCreate.boundary.open') | translate }}
+            </span>
+          </div>
+        </div>
+
+        @if (showBoundaryError()) {
+          <div class="boundary-error">
+            <div class="error-head">
+              <mat-icon>warning</mat-icon> {{ 'plotCreate.boundary.incompleteTitle' | translate }}
+            </div>
+            <p>{{ 'plotCreate.boundary.incompleteBody' | translate }}</p>
+            <button mat-stroked-button type="button" class="ghost-button" (click)="continueDrawing()">
+              <mat-icon>edit</mat-icon> {{ 'plotCreate.boundary.continueDrawing' | translate }}
+            </button>
+          </div>
+        } @else if (areaTooSmall()) {
+          <div class="boundary-error">
+            <div class="error-head">
+              <mat-icon>warning</mat-icon> {{ 'plotCreate.boundary.tooSmallTitle' | translate }}
+            </div>
+            <p>{{ 'plotCreate.boundary.tooSmallBody' | translate: { area: boundaryArea().toFixed(2) } }}</p>
+          </div>
+        } @else {
+          <p class="field-info">
+            <mat-icon>info</mat-icon> {{ 'plotCreate.boundary.autoLinkNote' | translate }}
+          </p>
+        }
+
+        <button mat-flat-button class="register-button" type="button"
+                [disabled]="!boundaryClosed() || areaTooSmall() || store.loading().saving"
+                (click)="registerPlot()">
+          <mat-icon>{{ registerIcon() }}</mat-icon> {{ registerLabelKey() | translate }}
+        </button>
+      </mat-card>
+    </div>
+  }
+
+  @if (store.errors().length > 0 && !registration()) {
+    <section class="error-box">
+      <strong>{{ 'common.somethingWrong' | translate }}</strong>
+    </section>
+  }
+</section>

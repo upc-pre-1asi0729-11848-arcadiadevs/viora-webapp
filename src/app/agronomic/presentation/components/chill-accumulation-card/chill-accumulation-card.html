@@ -2,9 +2,11 @@
   <h2>{{ 'cards.chill.title' | translate }}</h2>
 
   @if (store.selectedChillHourRecord(); as chill) {
-    <strong class="main-value">{{ chill.chillPortionsLabel }}</strong>
+    <strong class="main-value">{{ chill.valueLabel }}</strong>
 
-    <span class="blue-pill">{{ chill.weeklyDiffLabel }}</span>
+    @if (chill.weeklyDiff !== 0) {
+      <span class="blue-pill">{{ chill.weeklyDiffLabel }}</span>
+    }
 
     <mat-progress-bar
       mode="determinate"

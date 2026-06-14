@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.plot-thumbnail {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: #d4e3c4;
+}
+
+.plot-shape {
+  fill: #a7c994;
+  stroke: #8fbb78;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.plot-marker {
+  fill: #3e6b4c;
+}

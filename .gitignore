@@ -39,6 +39,10 @@ testem.log
 /typings
 __screenshots__/
 
+# Local development environment (contains developer-specific credentials)
+/src/environments/environment.development.ts
+environment.development.ts.viora-local
+
 # System files
 .DS_Store
 Thumbs.db

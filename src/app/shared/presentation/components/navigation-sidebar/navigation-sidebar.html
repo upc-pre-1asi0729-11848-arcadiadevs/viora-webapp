@@ -1,42 +1,48 @@
-<aside class="dashboard-sidebar" :class="{ 'is-collapsed': collapsed }">
+<aside class="dashboard-sidebar" [class.is-collapsed]="collapsed">
   <!-- Collapse Trigger -->
-  <button class="collapse-button" @click="toggleSidebar">
-    <span class="pi" :class="collapsed ? 'pi-chevron-right' : 'pi-chevron-left'"></span>
+  <button class="collapse-button" type="button" (click)="toggleSidebar()">
+    <span class="pi" [class]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"></span>
   </button>
 
   <!-- Brand Section -->
   <div class="sidebar-brand">
     <img src="/assets/icons/dashboard/viora-isotipo-green.png" alt="Viora Logo" class="brand-logo" />
-    <strong v-if="!collapsed">VIORA</strong>
+    @if (!collapsed) {
+      <strong>VIORA</strong>
+    }
   </div>
 
   <!-- Main Navigation -->
   <nav class="sidebar-nav">
     <div class="nav-group">
-      <router-link
-        v-for="item in mainItems"
-        :key="item.route"
-        :to="item.route"
-        class="nav-item"
-        :class="{ 'is-active': isRouteActive(item.route) }"
-      >
-        <div class="nav-icon" :style="getIconStyle(item.iconPath)"></div>
-        <span v-if="!collapsed" class="nav-label">{{ item.label }}</span>
-      </router-link>
+      @for (item of mainItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          class="nav-item"
+          [class.is-active]="isRouteActive(item.route)"
+        >
+          <div class="nav-icon" [ngStyle]="getIconStyle(item.iconPath)"></div>
+          @if (!collapsed) {
+            <span class="nav-label">{{ item.label | translate }}</span>
+          }
+        </a>
+      }
     </div>
 
     <!-- Secondary Items (Settings, etc.) -->
     <div class="nav-group secondary">
-      <router-link
-        v-for="item in secondaryItems"
-        :key="item.route"
-        :to="item.route"
-        class="nav-item"
-        :class="{ 'is-active': isRouteActive(item.route) }"
-      >
-        <div class="nav-icon" :style="getIconStyle(item.iconPath)"></div>
-        <span v-if="!collapsed" class="nav-label">{{ item.label }}</span>
-      </router-link>
+      @for (item of secondaryItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          class="nav-item"
+          [class.is-active]="isRouteActive(item.route)"
+        >
+          <div class="nav-icon" [ngStyle]="getIconStyle(item.iconPath)"></div>
+          @if (!collapsed) {
+            <span class="nav-label">{{ item.label | translate }}</span>
+          }
+        </a>
+      }
     </div>
   </nav>
 
@@ -45,12 +51,14 @@
     <div class="user-avatar-placeholder">
       <i class="pi pi-user"></i>
     </div>
-    <div v-if="!collapsed" class="user-info">
-      <strong>Jane Doe</strong>
-      <span>Producer</span>
-    </div>
-    <router-link v-if="!collapsed" to="/profile" class="user-action">
-      <i class="pi pi-ellipsis-v"></i>
-    </router-link>
+    @if (!collapsed) {
+      <div class="user-info">
+        <strong>Jane Doe</strong>
+        <span>Producer</span>
+      </div>
+      <a routerLink="/profile" class="user-action">
+        <i class="pi pi-ellipsis-v"></i>
+      </a>
+    }
   </div>
 </aside>

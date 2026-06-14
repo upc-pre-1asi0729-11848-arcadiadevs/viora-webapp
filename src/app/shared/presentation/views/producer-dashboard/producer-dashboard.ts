@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { AgronomicStore, DashboardTimeRange } from '../../../../agronomic/application/agronomic.store';
+import { AgronomicStore } from '../../../../agronomic/application/agronomic.store';
 
 import { OverallPlotHealthCard } from '../../../../agronomic/presentation/components/overall-plot-health-card/overall-plot-health-card';
 import { NdviStatusCard } from '../../../../agronomic/presentation/components/ndvi-status-card/ndvi-status-card';
@@ -26,7 +26,6 @@ import {
 } from '../../components/dashboard-header/dashboard-header';
 import {
   DashboardScopeOption,
-  DashboardTimeRange as DashboardToolbarTimeRange,
   DashboardToolbar,
   DashboardToolbarViewOption
 } from '../../components/dashboard-toolbar/dashboard-toolbar';
@@ -64,7 +63,7 @@ export class ProducerDashboard implements OnInit {
   }
 
   protected refreshDashboardData(): void {
-    this.store.refreshDashboardData('Tacna');
+    this.store.refreshDashboardData();
   }
 
   protected updatedAgoLabel(): string {
@@ -167,12 +166,6 @@ export class ProducerDashboard implements OnInit {
     this.store.selectDashboardScope(scope);
   }
 
-  protected onDashboardTimeRangeChange(timeRange: DashboardToolbarTimeRange): void {
-    if (this.isDashboardTimeRange(timeRange)) {
-      this.store.selectDashboardTimeRange(timeRange);
-    }
-  }
-
   protected onDashboardViewChange(viewId: string): void {
     const sectionIds: Record<string, string> = {
       'plot-overview': 'plot-overview-section',
@@ -191,25 +184,6 @@ export class ProducerDashboard implements OnInit {
         behavior: 'smooth',
         block: 'start'
       });
-  }
-
-  protected refreshDashboard(): void {
-    this.store.fetchPlots();
-    this.store.fetchMonitoringSummary('current');
-    this.store.fetchWeather('Tacna');
-    this.store.fetchDevices();
-    this.store.fetchAgronomicStatistics(
-      this.store.selectedDashboardScope(),
-      this.store.selectedDashboardTimeRange()
-    );
-    this.store.fetchTrendStatistics(
-      this.store.selectedTrendPlotId(),
-      this.store.selectedTrendTimeRange()
-    );
-  }
-
-  private isDashboardTimeRange(timeRange: DashboardToolbarTimeRange): timeRange is DashboardTimeRange {
-    return timeRange === 'current' || timeRange === '7days' || timeRange === '30days';
   }
 
 }

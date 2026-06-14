@@ -1,4 +1,199 @@
 {
+  "myPlots": {
+    "overview": "Overview",
+    "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",
+    "yourPlots": "Your Plots",
+    "plotsRegistered": "{{count}} plots registered",
+    "importCoordinates": "Import coordinates",
+    "addPlot": "Add plot",
+    "viewDetails": "View details",
+    "empty": "No plots registered yet. Add your first plot to start monitoring.",
+    "ndvi": "NDVI",
+    "chill": "Chill",
+    "activeAlerts": "{{count}} active alerts",
+    "devicesOnline": "{{count}} devices online",
+    "kpi": {
+      "registeredPlots": "Registered plots",
+      "registeredPlotsCaption": "Productive areas linked to climate and satellite monitoring.",
+      "monitoredArea": "Monitored area",
+      "monitoredAreaCaption": "Total registered olive crop area.",
+      "climateLinked": "Climate linked",
+      "climateLinkedCaption": "All plots are receiving zonal weather data.",
+      "allLinked": "All linked",
+      "iotDevices": "IoT devices",
+      "iotDevicesCaption": "Plots with linked telemetry devices.",
+      "online": "online",
+      "iot": "IoT"
+    }
+  },
+  "plotCreate": {
+    "title": "Create plot",
+    "subtitle": "Define the geographic boundary of your plot to enable satellite and climate monitoring.",
+    "reset": "Reset form",
+    "steps": {
+      "basicInfo": "Basic info",
+      "boundary": "Boundary",
+      "confirm": "Confirm"
+    },
+    "info": {
+      "title": "Plot information",
+      "subtitle": "Basic data used to identify and classify your productive area.",
+      "areaNote": "Area will be computed automatically once you close the boundary on the map."
+    },
+    "fields": {
+      "name": "Plot name",
+      "cropType": "Crop type",
+      "campaign": "Campaign",
+      "location": "Location",
+      "area": "Productive area",
+      "notes": "Notes (optional)"
+    },
+    "placeholders": {
+      "name": "Santa Rosa",
+      "cropType": "Full plot",
+      "campaign": "2026 campaign",
+      "location": "Tacna, Perú",
+      "area": "Calculated after polygon closure",
+      "notes": "Olive trees under productive stage, regular irrigation schedule."
+    },
+    "errors": {
+      "name": "Enter a plot name (3-80 characters)."
+    },
+    "links": {
+      "title": "Automatic links — enabled on registration",
+      "climate": "Climate monitoring",
+      "ndvi": "Satellite NDVI",
+      "iot": "IoT devices",
+      "willActivate": "Will activate",
+      "linkFromDetail": "Link from detail"
+    },
+    "linkStatus": {
+      "active": "Active",
+      "initializing": "Initializing…",
+      "notLinked": "Not linked yet",
+      "pending": "Pending"
+    },
+    "boundary": {
+      "title": "Draw plot boundary",
+      "subtitle": "Click on the map to add boundary points. Close the polygon to register the plot.",
+      "searchPlace": "Search a place…",
+      "polygonClosed": "Polygon closed",
+      "polygonOpen": "Polygon open",
+      "addPoint": "Add point",
+      "undoPoint": "Undo point",
+      "clear": "Clear boundary",
+      "close": "Close polygon",
+      "pointsSelected": "Points selected",
+      "estimatedArea": "Estimated area",
+      "boundaryStatus": "Boundary status",
+      "closed": "Closed",
+      "open": "Open",
+      "incompleteTitle": "Incomplete boundary",
+      "incompleteBody": "The plot cannot be registered until the geographic polygon is closed correctly. Click Close polygon or add the missing point to complete the boundary.",
+      "continueDrawing": "Continue drawing",
+      "autoLinkNote": "Once registered, climate and satellite monitoring will be automatically linked to this boundary.",
+      "register": "Register plot",
+      "registerLocked": "Register plot — close boundary first",
+      "registerTooSmall": "Register plot — area must be at least 1 ha",
+      "registering": "Registering plot…",
+      "tooSmallTitle": "Area too small",
+      "tooSmallBody": "This boundary is {{area}} ha. Satellite monitoring requires a plot of at least 1 hectare, so draw a larger area before registering."
+    },
+    "confirm": {
+      "title": "Plot registered successfully",
+      "subtitle": "{{name}} has been registered and linked to climate monitoring for the selected geographic area.",
+      "plot": "Plot",
+      "area": "Area",
+      "note": "First NDVI analysis may take up to 24 hours while satellite imagery is processed for your boundary.",
+      "viewDetail": "View plot detail",
+      "back": "Back to My plots"
+    }
+  },
+  "plotDetail": {
+    "back": "Back to My plots",
+    "title": "Plot Detail",
+    "subtitle": "Review plot configuration, registered boundary, monitoring links, and connected devices.",
+    "notFound": "Plot not found.",
+    "status": {
+      "active": "Active",
+      "initializing": "Initializing…",
+      "notLinked": "Not linked",
+      "pending": "Pending"
+    },
+    "productiveArea": {
+      "title": "Productive area",
+      "area": "Area",
+      "points": "Polygon points",
+      "pointsUnit": "points",
+      "boundary": "Boundary",
+      "validated": "Validated",
+      "registered": "Registered"
+    },
+    "monitoring": {
+      "title": "Monitoring links",
+      "climate": "Climate link",
+      "satellite": "Satellite (NDVI)",
+      "alerts": "Alerts",
+      "enabled": "Enabled",
+      "lastSync": "Last sync"
+    },
+    "iot": {
+      "title": "IoT devices",
+      "status": "Status",
+      "telemetry": "Telemetry",
+      "available": "Available",
+      "none": "—",
+      "lastReading": "Last reading",
+      "manage": "Manage devices"
+    },
+    "actions": {
+      "edit": "Edit plot",
+      "openDashboard": "Open dashboard view",
+      "addIot": "Add IoT device",
+      "delete": "Delete plot"
+    },
+    "boundary": {
+      "title": "Registered boundary",
+      "expand": "Expand",
+      "subtitle": "This boundary is used to retrieve satellite indicators and local climate data.",
+      "closed": "Boundary closed · {{count}} points",
+      "note": "No NDVI overlay — open dashboard view for analysis.",
+      "openDashboard": "Open in Dashboard"
+    },
+    "info": {
+      "title": "Plot information",
+      "edit": "Edit"
+    },
+    "config": {
+      "title": "Configuration summary",
+      "subtitle": "Active integrations and setup status for this plot.",
+      "boundary": "Boundary registered",
+      "done": "Done",
+      "climate": "Climate data linked",
+      "satellite": "Satellite monitoring",
+      "iot": "IoT telemetry linked",
+      "alerts": "Alerts enabled",
+      "on": "On"
+    },
+    "activity": {
+      "title": "Recent configuration activity",
+      "subtitle": "Setup changes and integration updates.",
+      "empty": "No configuration activity yet."
+    },
+    "devices": {
+      "title": "Linked IoT devices",
+      "subtitle": "Sensors connected to {{name}} for real-time telemetry.",
+      "add": "Add device",
+      "empty": "No IoT devices linked to this plot yet.",
+      "lastRead": "Last read"
+    },
+    "delete": {
+      "title": "Delete plot",
+      "body": "This permanently deletes \"{{name}}\" and unlinks its satellite and climate monitoring. This action cannot be undone.",
+      "confirmLabel": "Type the plot name to confirm",
+      "confirm": "Delete plot"
+    }
+  },
   "common": {
     "updated": "Updated",
     "loading": "Loading",

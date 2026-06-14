@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.boundary-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.boundary-map {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #d4e3c4;
+}
+
+/* Google-Maps-style place search overlaid on the map. */
+.boundary-search {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(62%, 360px);
+}
+
+.search-field {
+  width: 100%;
+}
+
+.search-field ::ng-deep .mat-mdc-text-field-wrapper {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.search-field ::ng-deep .mdc-notched-outline__leading,
+.search-field ::ng-deep .mdc-notched-outline__notch,
+.search-field ::ng-deep .mdc-notched-outline__trailing {
+  border: none;
+}
+
+.search-field ::ng-deep input.mat-mdc-input-element {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: #4f4f4f;
+}
+
+.search-field ::ng-deep .mat-mdc-form-field-icon-prefix {
+  color: #8c877f;
+  padding: 0 6px 0 4px;
+}

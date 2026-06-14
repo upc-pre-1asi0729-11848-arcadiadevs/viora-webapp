@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
-const producerDashboard = () => import('./pages/producer-dashboard/producer-dashboard').then(m => m.ProducerDashboard);
-const comingSoonPage = () => import('./pages/coming-soon-page/coming-soon-page').then(m => m.ComingSoonPage);
+const producerDashboard = () => import('./views/producer-dashboard/producer-dashboard').then(m => m.ProducerDashboard);
+const comingSoonPage = () => import('./views/coming-soon-page/coming-soon-page').then(m => m.ComingSoonPage);
 const agronomicRoutes = () => import('../../agronomic/presentation/agronomic.routes').then(m => m.agronomicRoutes);
 
 const producerPlaceholderRoutes: Routes = [

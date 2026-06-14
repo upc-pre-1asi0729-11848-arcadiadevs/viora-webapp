@@ -1,54 +1,80 @@
 /**
  * @file monitoring-summary.assembler.ts
- * @description specialized assembler for mapping Monitoring Summary resources to domain entities.
+ * @description Maps the real flat GET /monitoring-summaries/current resource
+ * into the nested MonitoringSummary domain entity consumed by the dashboard.
  */
 import { MonitoringSummary } from '../domain/model/monitoring-summary.entity';
-import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
+import { AgronomicRecord } from '../domain/model/agronomic-record.entity';
+import { ChillHourRecord } from '../domain/model/chill-hour-record.entity';
+import { YieldForecast } from '../domain/model/yield-forecast.entity';
+import { OverallPlotHealth } from '../domain/model/overall-plot-health.entity';
+import { WeatherSummary } from '../domain/model/weather-summary.entity';
 
-import { MonitoringSummaryResource } from './monitoring-summaries-response';
+import { MonitoringSummaryResource, WeatherSnapshotResource } from './monitoring-summaries-response';
+import {
+  normalizeClimateRisk,
+  normalizeOverallHealthStatus,
+  normalizePlotHealthStatus,
+  normalizeWeatherCondition,
+  normalizeYieldRisk,
+} from './status-normalizers';
 
-import { AgronomicRecordAssembler } from './agronomic-record.assembler';
-import { ChillHourRecordAssembler } from './chill-hour-record.assembler';
-import { YieldForecastAssembler } from './yield-forecast.assembler';
-import { OverallPlotHealthAssembler } from './overall-plot-health-assembler';
-
-export class MonitoringSummaryAssembler extends BaseAssembler {
+export class MonitoringSummaryAssembler {
   /**
-   * Transforms a single resource into an entity.
-   * @param {Object} resource - Raw data point.
-   * @returns {any}
+   * Transforms the single current-summary resource into the domain entity.
    */
   static toEntityFromResource(
     resource: MonitoringSummaryResource | null | undefined,
   ): MonitoringSummary {
+    const measurementDate = resource?.measurementDate ?? '';
+    const climateRiskLevel =
+      resource?.climateRiskLevel ?? resource?.weatherSnapshot?.climateRiskLevel;
+
     return new MonitoringSummary({
-      id: resource?.id ?? null,
-      period: resource?.period ?? 'current',
-      latestNdvi: AgronomicRecordAssembler.toEntityFromResource(resource?.ndvi),
-      chillHourRecord: ChillHourRecordAssembler.toEntityFromResource(resource?.chillAccumulation),
-      yieldForecast: YieldForecastAssembler.toEntityFromResource(resource?.yieldForecast),
-      overallPlotHealth: OverallPlotHealthAssembler.toEntityFromResource(resource?.overallHealth),
-      updatedAt: resource?.updatedAt ?? '',
+      id: resource?.monitoringSummaryId ?? null,
+      period: 'current',
+      generalHealthStatus: normalizePlotHealthStatus(resource?.generalHealthStatus),
+      latestNdvi: new AgronomicRecord({
+        date: measurementDate,
+        ndviIndex: resource?.ndviValue ?? 0,
+        ndviTrend: 'stable',
+        ndviStatusLabel: normalizePlotHealthStatus(resource?.generalHealthStatus),
+      }),
+      chillHourRecord: new ChillHourRecord({
+        accumulatedChillPortions: resource?.accumulatedChillHours ?? 0,
+        unit: 'h',
+        weeklyDiff: 0,
+        generatedAt: measurementDate,
+      }),
+      yieldForecast: new YieldForecast({
+        tonnes: resource?.yieldForecast ?? 0,
+        riskLevel: normalizeYieldRisk(climateRiskLevel),
+      }),
+      overallPlotHealth: new OverallPlotHealth({
+        status: normalizeOverallHealthStatus(resource?.generalHealthStatus),
+      }),
+      weather: this.toWeatherSummary(resource?.weatherSnapshot, measurementDate),
+      updatedAt: measurementDate,
     });
   }
 
   /**
-   * Transforms a collection of resources into entities.
-   * @param {Object[]} resources - Array of raw data points.
-   * @returns {any[]}
+   * Builds a current-only weather summary from the snapshot embedded in the
+   * monitoring summary (no 3-day forecast or anomaly at the All Plots scope).
    */
-  static toEntitiesFromResources(resources: MonitoringSummaryResource[] = []): MonitoringSummary[] {
-    return this.toEntities(resources, (resource) => this.toEntityFromResource(resource));
-  }
+  private static toWeatherSummary(
+    snapshot: WeatherSnapshotResource | null | undefined,
+    fallbackDate: string,
+  ): WeatherSummary | null {
+    if (!snapshot) {
+      return null;
+    }
 
-  /**
-   * Transforms the first resource of a collection into an entity.
-   * @param {Object[]} resources - Array of raw data points.
-   * @returns {any | null}
-   */
-  static toFirstEntityFromResources(
-    resources: MonitoringSummaryResource[] = [],
-  ): MonitoringSummary | null {
-    return this.toFirstEntity(resources, (resource) => this.toEntityFromResource(resource));
+    return new WeatherSummary({
+      currentTemp: snapshot.temperature ?? 0,
+      condition: normalizeWeatherCondition(snapshot.weatherStatus),
+      climateRisk: normalizeClimateRisk(snapshot.climateRiskLevel),
+      lastUpdate: snapshot.measurementDate ?? fallbackDate,
+    });
   }
 }

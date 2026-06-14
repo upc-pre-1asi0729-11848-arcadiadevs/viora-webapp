@@ -3,12 +3,14 @@
   <p>{{ 'cards.overallHealth.status' | translate }}</p>
 
   @if (store.selectedDashboardPlot(); as plot) {
-    <span class="status-pill">{{ plot.healthStatus }}</span>
+    <span [class]="'status-pill ' + statusClass(store.selectedHealthStatusLabel() || plot.healthStatus)">
+      {{ store.selectedHealthStatusLabel() || plot.healthStatus }}
+    </span>
     <div class="card-footer">
       {{ plot.name }} / {{ plot.areaSizeLabel }}
     </div>
-  } @else if (store.monitoringSummary()?.overallPlotHealth; as health) {
-    <span class="status-pill">{{ health.status }}</span>
+  } @else if (store.overallPlotHealth(); as health) {
+    <span [class]="'status-pill ' + statusClass(health.status)">{{ health.status }}</span>
     <div class="card-footer">
       {{ health.summaryLabel }}
     </div>
