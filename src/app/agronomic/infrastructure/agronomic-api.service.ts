@@ -29,6 +29,9 @@ import {
   PlotRegistrationResource,
 } from './plot-registration-response';
 import { PlotRegistrationAssembler } from './plot-registration.assembler';
+import { PlotDetail } from '../domain/model/plot-detail.entity';
+import { PlotDetailResource } from './plot-detail-response';
+import { PlotDetailAssembler } from './plot-detail.assembler';
 
 import {
   IotDeviceCollectionResponse,
@@ -62,6 +65,9 @@ export class AgronomicApiService extends BaseApi {
   );
   private readonly statisticsSeriesEndpoint = this.endpoint(
     environment.endpoints.agronomicStatisticsSeries,
+  );
+  private readonly statisticsEndpoint = this.endpoint(
+    environment.endpoints.agronomicStatistics,
   );
 
   // IoT device management remains on the mock API for now.
@@ -126,6 +132,49 @@ export class AgronomicApiService extends BaseApi {
       .pipe(
         map((resource) => MonitoringSummaryAssembler.toEntityFromResource(resource)),
         catchError(() => of(null)),
+      );
+  }
+
+  /**
+   * Fetches the configuration + monitoring detail for a single plot.
+   * @returns {Observable<PlotDetail | null>}
+   */
+  getPlotDetail(plotId: number | string): Observable<PlotDetail | null> {
+    const url = `${this.plotsEndpoint.resourceUrl(plotId)}/detail`;
+
+    return this.http
+      .get<PlotDetailResource>(url, {
+        params: this.queryParams(this.withUserId()),
+      })
+      .pipe(
+        map((resource) => PlotDetailAssembler.toEntityFromResource(resource)),
+        catchError(() => of(null)),
+      );
+  }
+
+  /**
+   * Deletes a plot. The backend endpoint takes only the plot id in the path.
+   * @returns {Observable<void>}
+   */
+  deletePlot(plotId: number | string): Observable<void> {
+    return this.http.delete<void>(this.plotsEndpoint.resourceUrl(plotId));
+  }
+
+  /**
+   * Triggers an on-demand agronomic-statistic ingestion for the active user, so
+   * the dashboard summary and trend reflect the latest AgroMonitoring NDVI
+   * without waiting for the daily scheduled job. Errors are swallowed since this
+   * is a best-effort background sync.
+   * @returns {Observable<void>}
+   */
+  ingestStatistics(): Observable<void> {
+    const url = `${this.statisticsEndpoint.collectionUrl}/ingest`;
+
+    return this.http
+      .post<unknown>(url, null, { params: this.queryParams(this.withUserId()) })
+      .pipe(
+        map(() => undefined),
+        catchError(() => of(undefined)),
       );
   }
 

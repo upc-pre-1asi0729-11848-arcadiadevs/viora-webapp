@@ -250,6 +250,28 @@ export class AgronomicStore {
     this.fetchDevices();
     this.loadScopeData(this.selectedDashboardScope());
     this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
+
+    // Pull the latest AgroMonitoring snapshot on demand, then reload the
+    // statistic-derived views (monitoring summary + trend) so NDVI/chill/yield
+    // populate without waiting for the daily scheduled ingestion.
+    this.syncStatistics(() => {
+      this.loadScopeData(this.selectedDashboardScope());
+      this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
+    });
+  }
+
+  /**
+   * Triggers an on-demand agronomic-statistic ingestion (best-effort). Used to
+   * keep the dashboard fresh between scheduled ingestion runs.
+   */
+  syncStatistics(onComplete?: () => void): void {
+    this.agronomicApi
+      .ingestStatistics()
+      .pipe(take(1))
+      .subscribe({
+        next: () => onComplete?.(),
+        error: (error) => this.registerError(error),
+      });
   }
 
   /** Loads the current monitoring summary + weather for the given scope. */
