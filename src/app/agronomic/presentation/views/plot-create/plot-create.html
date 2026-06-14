@@ -240,6 +240,13 @@
               <mat-icon>edit</mat-icon> {{ 'plotCreate.boundary.continueDrawing' | translate }}
             </button>
           </div>
+        } @else if (areaTooSmall()) {
+          <div class="boundary-error">
+            <div class="error-head">
+              <mat-icon>warning</mat-icon> {{ 'plotCreate.boundary.tooSmallTitle' | translate }}
+            </div>
+            <p>{{ 'plotCreate.boundary.tooSmallBody' | translate: { area: boundaryArea().toFixed(2) } }}</p>
+          </div>
         } @else {
           <p class="field-info">
             <mat-icon>info</mat-icon> {{ 'plotCreate.boundary.autoLinkNote' | translate }}
@@ -247,7 +254,7 @@
         }
 
         <button mat-flat-button class="register-button" type="button"
-                [disabled]="!boundaryClosed() || store.loading().saving"
+                [disabled]="!boundaryClosed() || areaTooSmall() || store.loading().saving"
                 (click)="registerPlot()">
           <mat-icon>{{ registerIcon() }}</mat-icon> {{ registerLabelKey() | translate }}
         </button>

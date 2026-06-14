@@ -7,10 +7,23 @@ import {
   Output,
   ViewChild,
   inject,
+  signal,
 } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { TranslatePipe } from '@ngx-translate/core';
+import { catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 import mapboxgl from 'mapbox-gl';
 import type { Map as MapboxMap, Marker } from 'mapbox-gl';
 
+import { environment } from '../../../../../environments/environment';
 import { MapboxService } from '../../../../shared/infrastructure/mapbox.service';
 import { PlotCoordinate } from '../../../domain/model/plot.entity';
 import { polygonAreaHectares } from '../../../infrastructure/geo-area';
@@ -20,6 +33,21 @@ export interface BoundaryState {
   closed: boolean;
   areaHectares: number;
   addMode: boolean;
+}
+
+/** Geocoding suggestion shown in the place search dropdown. */
+export interface PlaceSuggestion {
+  label: string;
+  center: PlotCoordinate;
+}
+
+interface MapboxGeocodingFeature {
+  place_name: string;
+  center: [number, number];
+}
+
+interface MapboxGeocodingResponse {
+  features: MapboxGeocodingFeature[];
 }
 
 const LINE_SOURCE = 'plot-boundary-line';
@@ -39,7 +67,14 @@ const DEFAULT_CENTER: PlotCoordinate = [-70.2536, -18.0146];
 @Component({
   selector: 'app-plot-boundary-map',
   standalone: true,
-  imports: [],
+  imports: [
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    TranslatePipe,
+  ],
   templateUrl: './plot-boundary-map.html',
   styleUrl: './plot-boundary-map.css',
 })
@@ -50,6 +85,7 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
   @Output() readonly boundaryChange = new EventEmitter<BoundaryState>();
 
   private readonly mapboxService = inject(MapboxService);
+  private readonly http = inject(HttpClient);
 
   private map: MapboxMap | null = null;
   private ready = false;
@@ -57,6 +93,53 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
   private closed = false;
   private addMode = true;
   private markers: Marker[] = [];
+
+  // ----- Place search (Mapbox geocoding) -----
+  protected readonly searchControl = new FormControl('');
+  protected readonly suggestions = signal<PlaceSuggestion[]>([]);
+
+  constructor() {
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((query) => this.geocode(query)),
+      )
+      .subscribe((results) => this.suggestions.set(results));
+  }
+
+  protected displayPlace(place: PlaceSuggestion | string | null): string {
+    return typeof place === 'string' ? place : (place?.label ?? '');
+  }
+
+  protected onPlaceSelected(event: MatAutocompleteSelectedEvent): void {
+    const place = event.option.value as PlaceSuggestion;
+    this.map?.flyTo({ center: place.center, zoom: 15, duration: 1500 });
+  }
+
+  private geocode(query: string | null) {
+    const term = (query ?? '').trim();
+
+    if (term.length < 3 || !environment.mapbox.accessToken) {
+      return of<PlaceSuggestion[]>([]);
+    }
+
+    const url =
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(term)}.json` +
+      `?limit=5&access_token=${environment.mapbox.accessToken}`;
+
+    return this.http.get<MapboxGeocodingResponse>(url).pipe(
+      switchMap((response) =>
+        of(
+          (response.features ?? []).map((feature) => ({
+            label: feature.place_name,
+            center: [feature.center[0], feature.center[1]] as PlotCoordinate,
+          })),
+        ),
+      ),
+      catchError(() => of<PlaceSuggestion[]>([])),
+    );
+  }
 
   ngAfterViewInit(): void {
     const container = this.mapContainer?.nativeElement;

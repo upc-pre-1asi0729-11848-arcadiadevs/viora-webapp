@@ -84,8 +84,23 @@ export class PlotCreate {
 
   protected readonly basicInfoValid = computed<boolean>(() => this.formStatus());
 
+  /**
+   * AgroMonitoring rejects polygons smaller than 1 hectare, so a plot below that
+   * area can never receive satellite/NDVI data. We block registration client-side.
+   */
+  protected readonly minAreaHectares = 1;
+
+  /** Closed boundary whose area is below the AgroMonitoring 1 ha minimum. */
+  protected readonly areaTooSmall = computed<boolean>(
+    () => this.boundaryClosed() && this.boundaryArea() < this.minAreaHectares,
+  );
+
   protected readonly canRegister = computed<boolean>(
-    () => this.basicInfoValid() && this.boundaryClosed() && !this.store.loading().saving,
+    () =>
+      this.basicInfoValid() &&
+      this.boundaryClosed() &&
+      !this.areaTooSmall() &&
+      !this.store.loading().saving,
   );
 
   protected readonly showBoundaryError = computed<boolean>(
@@ -101,7 +116,11 @@ export class PlotCreate {
       return 'hourglass_empty';
     }
 
-    return this.boundaryClosed() ? 'check' : 'lock';
+    if (!this.boundaryClosed() || this.areaTooSmall()) {
+      return 'lock';
+    }
+
+    return 'check';
   });
 
   protected readonly registerLabelKey = computed<string>(() => {
@@ -109,9 +128,15 @@ export class PlotCreate {
       return 'plotCreate.boundary.registering';
     }
 
-    return this.boundaryClosed()
-      ? 'plotCreate.boundary.register'
-      : 'plotCreate.boundary.registerLocked';
+    if (!this.boundaryClosed()) {
+      return 'plotCreate.boundary.registerLocked';
+    }
+
+    if (this.areaTooSmall()) {
+      return 'plotCreate.boundary.registerTooSmall';
+    }
+
+    return 'plotCreate.boundary.register';
   });
 
   protected readonly steps = computed<WizardStep[]>(() => {
@@ -179,7 +204,7 @@ export class PlotCreate {
       return;
     }
 
-    if (!this.boundaryClosed()) {
+    if (!this.boundaryClosed() || this.areaTooSmall()) {
       this.registerAttempted.set(true);
       return;
     }
