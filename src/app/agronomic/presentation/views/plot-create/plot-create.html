@@ -148,16 +148,6 @@
                    [placeholder]="'plotCreate.placeholders.location' | translate" />
           </mat-form-field>
 
-          <label class="field-label">{{ 'plotCreate.fields.area' | translate }}</label>
-          <mat-form-field appearance="outline" class="field">
-            <input matInput readonly
-                   [value]="boundaryClosed() ? estimatedAreaLabel() : ''"
-                   [placeholder]="'plotCreate.placeholders.area' | translate" />
-          </mat-form-field>
-          <p class="field-info">
-            <mat-icon>info</mat-icon> {{ 'plotCreate.info.areaNote' | translate }}
-          </p>
-
           <label class="field-label">{{ 'plotCreate.fields.notes' | translate }}</label>
           <mat-form-field appearance="outline" class="field">
             <textarea matInput rows="2" formControlName="notes"
@@ -189,10 +179,6 @@
 
         <div class="map-wrap">
           <app-plot-boundary-map (boundaryChange)="onBoundaryChange($event)" />
-          <span class="map-status" [class.is-open]="!boundaryClosed()">
-            <span class="status-dot"></span>
-            {{ (boundaryClosed() ? 'plotCreate.boundary.polygonClosed' : 'plotCreate.boundary.polygonOpen') | translate }}
-          </span>
         </div>
 
         <div class="map-actions">
