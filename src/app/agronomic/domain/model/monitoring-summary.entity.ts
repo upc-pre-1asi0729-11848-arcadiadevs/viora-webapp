@@ -6,26 +6,31 @@ import { AgronomicRecord } from './agronomic-record.entity';
 import { ChillHourRecord } from './chill-hour-record.entity';
 import { YieldForecast } from './yield-forecast.entity';
 import { OverallPlotHealth } from './overall-plot-health.entity';
+import { WeatherSummary } from './weather-summary.entity';
 
 export type MonitoringSummaryId = number | string | null;
 
 export interface MonitoringSummaryProperties {
   id?: MonitoringSummaryId;
   period?: string;
+  generalHealthStatus?: string;
   latestNdvi?: AgronomicRecord;
   chillHourRecord?: ChillHourRecord;
   yieldForecast?: YieldForecast;
   overallPlotHealth?: OverallPlotHealth;
+  weather?: WeatherSummary | null;
   updatedAt?: string;
 }
 
 export class MonitoringSummary {
   readonly id: MonitoringSummaryId;
   readonly period: string;
+  readonly generalHealthStatus: string;
   readonly latestNdvi: AgronomicRecord;
   readonly chillHourRecord: ChillHourRecord;
   readonly yieldForecast: YieldForecast;
   readonly overallPlotHealth: OverallPlotHealth;
+  readonly weather: WeatherSummary | null;
   readonly updatedAt: string;
 
   /**
@@ -41,18 +46,22 @@ export class MonitoringSummary {
   constructor({
                 id = null,
                 period = 'current',
+                generalHealthStatus = '',
                 latestNdvi = new AgronomicRecord(),
                 chillHourRecord = new ChillHourRecord(),
                 yieldForecast = new YieldForecast(),
                 overallPlotHealth = new OverallPlotHealth(),
+                weather = null,
                 updatedAt = ''
               }: MonitoringSummaryProperties = {}) {
     this.id = id;
     this.period = period;
+    this.generalHealthStatus = generalHealthStatus;
     this.latestNdvi = latestNdvi;
     this.chillHourRecord = chillHourRecord;
     this.yieldForecast = yieldForecast;
     this.overallPlotHealth = overallPlotHealth;
+    this.weather = weather;
     this.updatedAt = updatedAt;
   }
 

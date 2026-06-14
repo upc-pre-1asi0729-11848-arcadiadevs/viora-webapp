@@ -1,6 +1,14 @@
 /**
  * Application service store for the `Agronomic` bounded context.
- * It coordinates plots, telemetry, weather, and yield forecast use cases and keeps a UI-facing state.
+ *
+ * Coordinates the Dashboard / Overview use cases against the real Viora Platform
+ * backend. The main KPI cards always show *current* figures:
+ *  - All Plots scope  -> GET /monitoring-summaries/current
+ *  - Single plot scope -> GET /plots/{plotId}/monitoring-summary
+ *
+ * Historical analysis lives in the Trend Analysis card (statistics series).
+ * IoT/plot-health counts come from GET /plots/overview, while the Water Stress
+ * sensor cards still use mock telemetry until the backend exposes sensor data.
  *
  * @module AgronomicStore
  */
@@ -15,9 +23,17 @@ import { WeatherSummary } from '../domain/model/weather-summary.entity';
 import { YieldForecast } from '../domain/model/yield-forecast.entity';
 import { ChillHourRecord } from '../domain/model/chill-hour-record.entity';
 import { MonitoringSummary } from '../domain/model/monitoring-summary.entity';
+import { OverallPlotHealth } from '../domain/model/overall-plot-health.entity';
 import { AgronomicStatistics } from '../domain/model/agronomic-statistics.entity';
+import { MyPlotsOverview } from '../domain/model/my-plots-overview.entity';
+import { PlotRegistration } from '../domain/model/plot-registration.entity';
+import { PlotDetail } from '../domain/model/plot-detail.entity';
 import { IotDevice } from '../domain/model/iot-device.entity';
 import { IotRiskLevel, IotSensorCard } from '../domain/model/iot-device-summary.entity';
+import { CreatePlotResource } from '../infrastructure/plot-registration-response';
+
+/** Create Plot wizard payload (userId is injected by the API service). */
+export type CreatePlotRequest = Omit<CreatePlotResource, 'userId'>;
 
 export type DashboardScope = number | string;
 export type DashboardTimeRange = 'current' | '7days' | '30days';
@@ -25,21 +41,18 @@ export type TrendAnalysisTimeRange = '7days' | '30days' | 'campaign';
 
 export interface AgronomicLoadingState {
   plots: boolean;
-  records: boolean;
-  mapRecords: boolean;
+  overview: boolean;
   weather: boolean;
-  yieldForecast: boolean;
   summary: boolean;
   statistics: boolean;
   devices: boolean;
+  detail: boolean;
   saving: boolean;
   deleting: boolean;
 }
 
 /**
  * Reactive store that exposes Agronomic commands and queries.
- *
- * @returns {AgronomicStore} Store state and actions.
  */
 @Injectable({
   providedIn: 'root',
@@ -47,147 +60,57 @@ export interface AgronomicLoadingState {
 export class AgronomicStore {
   private readonly agronomicApi = inject(AgronomicApiService);
 
-  /**
-   * List of plot entities.
-   * @type {import('@angular/core').WritableSignal<Plot[]>}
-   */
-  readonly plots = signal<Plot[]>([]);
 
-  /**
-   * Selected scope for dashboard.
-   * @type {import('@angular/core').WritableSignal<DashboardScope>}
-   */
+  readonly plots = signal<Plot[]>([]);
+  readonly plotsLoaded = signal<boolean>(false);
+
   readonly selectedDashboardScope = signal<DashboardScope>('all');
-  /**
-   * Selected time range for dashboard.
-   * @type {import('@angular/core').WritableSignal<DashboardTimeRange>}
-   */
   readonly selectedDashboardTimeRange = signal<DashboardTimeRange>('current');
-  /**
-   * Selected plot identifier for map.
-   * @type {import('@angular/core').WritableSignal<number | string | null>}
-   */
   readonly selectedMapPlotId = signal<number | string | null>(null);
-  /**
-   * Selected plot identifier for trend analysis.
-   * @type {import('@angular/core').WritableSignal<DashboardScope>}
-   */
   readonly selectedTrendPlotId = signal<DashboardScope>('all');
-  /**
-   * Selected time range for trend analysis.
-   * @type {import('@angular/core').WritableSignal<TrendAnalysisTimeRange>}
-   */
   readonly selectedTrendTimeRange = signal<TrendAnalysisTimeRange>('7days');
 
-  /**
-   * List of telemetry record entities.
-   * @type {import('@angular/core').WritableSignal<AgronomicRecord[]>}
-   */
-  readonly agronomicRecords = signal<AgronomicRecord[]>([]);
-  /**
-   * List of telemetry record entities for map.
-   * @type {import('@angular/core').WritableSignal<AgronomicRecord[]>}
-   */
-  readonly mapAgronomicRecords = signal<AgronomicRecord[]>([]);
-  /**
-   * Current weather summary entity.
-   * @type {import('@angular/core').WritableSignal<WeatherSummary | null>}
-   */
-  readonly weatherSummary = signal<WeatherSummary | null>(null);
-  /**
-   * Current yield forecast entity.
-   * @type {import('@angular/core').WritableSignal<YieldForecast | null>}
-   */
-  readonly yieldForecast = signal<YieldForecast | null>(null);
-  /**
-   * Current chill hour accumulation entity.
-   * @type {import('@angular/core').WritableSignal<ChillHourRecord | null>}
-   */
-  readonly chillHourRecord = signal<ChillHourRecord | null>(null);
-  /**
-   * Global monitoring summary for the dashboard.
-   * @type {import('@angular/core').WritableSignal<MonitoringSummary | null>}
-   */
   readonly monitoringSummary = signal<MonitoringSummary | null>(null);
+  readonly plotMonitoringSummary = signal<MonitoringSummary | null>(null);
+  readonly weatherSummary = signal<WeatherSummary | null>(null);
+  readonly myPlotsOverview = signal<MyPlotsOverview | null>(null);
+  readonly lastPlotRegistration = signal<PlotRegistration | null>(null);
+  readonly plotDetail = signal<PlotDetail | null>(null);
 
-  /**
-   * List of IoT devices from the agronomic bounded context.
-   * @type {import('@angular/core').WritableSignal<IotDevice[]>}
-   */
-  readonly devices = signal<IotDevice[]>([]);
-  /**
-   * Whether IoT devices have been loaded.
-   * @type {import('@angular/core').WritableSignal<boolean>}
-   */
-  readonly devicesLoaded = signal<boolean>(false);
-  /**
-   * Currently selected IoT device identifier.
-   * @type {import('@angular/core').WritableSignal<number|string|null>}
-   */
-  readonly selectedDeviceId = signal<number | string | null>(null);
-
-  /**
-   * List of errors encountered during API operations.
-   * @type {import('@angular/core').WritableSignal<unknown[]>}
-   */
-  readonly errors = signal<unknown[]>([]);
-
-  /**
-   * Whether plots have been loaded from the API.
-   * @type {import('@angular/core').WritableSignal<boolean>}
-   */
-  readonly plotsLoaded = signal<boolean>(false);
-  /**
-   * Whether the monitoring summary has been loaded.
-   * @type {import('@angular/core').WritableSignal<boolean>}
-   */
   readonly summaryLoaded = signal<boolean>(false);
 
-  /**
-   * Pre-calculated analysis data fetched from the backend.
-   * @type {import('@angular/core').WritableSignal<AgronomicStatistics | null>}
-   */
-  readonly agronomicStatistics = signal<AgronomicStatistics | null>(null);
-  /**
-   * Pre-calculated trend analysis data fetched from the backend.
-   * @type {import('@angular/core').WritableSignal<AgronomicStatistics | null>}
-   */
   readonly trendAgronomicStatistics = signal<AgronomicStatistics | null>(null);
 
-  readonly selectedPlotId = this.selectedDashboardScope;
-  readonly selectedStatisticsRange = this.selectedDashboardTimeRange;
+
+  readonly devices = signal<IotDevice[]>([]);
+  readonly devicesLoaded = signal<boolean>(false);
+  readonly selectedDeviceId = signal<number | string | null>(null);
+
+  readonly errors = signal<unknown[]>([]);
 
   readonly loading = signal<AgronomicLoadingState>({
     plots: false,
-    records: false,
-    mapRecords: false,
+    overview: false,
     weather: false,
-    yieldForecast: false,
     summary: false,
     statistics: false,
     devices: false,
+    detail: false,
     saving: false,
     deleting: false,
   });
 
-  /**
-   * Returns the full Plot entity based on the current selected ID.
-   * @type {import('@angular/core').Signal<Plot | null>}
-   */
-  readonly selectedDashboardPlot = computed<Plot | null>(() => {
-    const selectedScope = this.selectedDashboardScope();
 
-    if (selectedScope === 'all') {
+  readonly selectedDashboardPlot = computed<Plot | null>(() => {
+    const scope = this.selectedDashboardScope();
+
+    if (scope === 'all') {
       return null;
     }
 
-    return this.plots().find((plot) => String(plot.id) === String(selectedScope)) ?? null;
+    return this.plots().find((plot) => String(plot.id) === String(scope)) ?? null;
   });
 
-  /**
-   * Returns the full Plot entity based on the current selected map ID.
-   * @type {import('@angular/core').Signal<Plot | null>}
-   */
   readonly selectedMapPlot = computed<Plot | null>(() => {
     const selectedId = this.selectedMapPlotId();
 
@@ -200,10 +123,102 @@ export class AgronomicStore {
 
   readonly selectedPlot = this.selectedMapPlot;
 
-  /**
-   * Returns the full IoT Device entity based on the current selected ID.
-   * @type {import('@angular/core').Signal<IotDevice|null>}
-   */
+  readonly activeSummary = computed<MonitoringSummary | null>(() => {
+    return this.selectedDashboardScope() === 'all'
+      ? this.monitoringSummary()
+      : this.plotMonitoringSummary();
+  });
+
+
+  readonly latestAgronomicRecord = computed<AgronomicRecord | null>(() => {
+    return this.activeSummary()?.latestNdvi ?? null;
+  });
+
+  readonly selectedChillHourRecord = computed<ChillHourRecord | null>(() => {
+    return this.activeSummary()?.chillHourRecord ?? null;
+  });
+
+  readonly selectedYieldForecast = computed<YieldForecast | null>(() => {
+    return this.activeSummary()?.yieldForecast ?? null;
+  });
+
+  readonly overallPlotHealth = computed<OverallPlotHealth | null>(() => {
+    const summary = this.monitoringSummary();
+    const overview = this.myPlotsOverview();
+
+    if (!summary && !overview) {
+      return null;
+    }
+
+    const overviewPlots = overview?.plots ?? [];
+    const healthyPlotsCount = overviewPlots.filter(
+      (plot) => plot.healthStatus === 'Healthy',
+    ).length;
+    const reviewPlotsCount = overviewPlots.length - healthyPlotsCount;
+
+    return new OverallPlotHealth({
+      status: summary?.overallPlotHealth.status ?? 'Healthy',
+      healthyPlotsCount,
+      reviewPlotsCount,
+    });
+  });
+
+  /** Health label for the selected plot (cards source it from the summary). */
+  readonly selectedHealthStatusLabel = computed<string>(() => {
+    if (this.selectedDashboardScope() === 'all') {
+      return '';
+    }
+
+    return (
+      this.plotMonitoringSummary()?.generalHealthStatus ||
+      this.selectedDashboardPlot()?.healthStatus ||
+      ''
+    );
+  });
+
+
+  readonly selectedMapPlotLatestRecord = computed<AgronomicRecord | null>(() => null);
+  readonly selectedPlotLatestRecord = this.selectedMapPlotLatestRecord;
+
+  readonly selectedPlotNdviLabel = computed<string>(() => {
+    const plot = this.selectedMapPlot();
+    const ndviValue = plot?.currentImagery?.ndviMean ?? 0;
+
+    return ndviValue.toFixed(2);
+  });
+
+  readonly selectedPlotLastUpdateLabel = computed<string>(() => {
+    const plot = this.selectedMapPlot();
+    const timestamp = plot?.lastUpdate ? Date.parse(plot.lastUpdate) : Number.NaN;
+
+    if (!Number.isFinite(timestamp)) {
+      return 'Pending';
+    }
+
+    return this.formatRelativeTime(timestamp);
+  });
+
+
+  readonly onlineDevicesCount = computed<number>(() => {
+    return this.myPlotsOverview()?.onlineDeviceCountForScope(this.selectedDashboardScope()) ?? 0;
+  });
+
+  readonly plotsWithIotCount = computed<number>(() => {
+    return this.myPlotsOverview()?.plotsWithIotCount ?? 0;
+  });
+
+  readonly lastSyncLabel = computed<string>(() => {
+    const lastUpdatedAt = this.myPlotsOverview()?.lastUpdatedAt ?? '';
+    const timestamp = lastUpdatedAt ? Date.parse(lastUpdatedAt) : Number.NaN;
+
+    if (!Number.isFinite(timestamp)) {
+      return 'No sync yet';
+    }
+
+    return this.formatRelativeSync(timestamp);
+  });
+
+
   readonly selectedDevice = computed<IotDevice | null>(() => {
     const selectedId = this.selectedDeviceId();
 
@@ -212,40 +227,10 @@ export class AgronomicStore {
     return this.devices().find((device) => String(device.id) === String(selectedId)) ?? null;
   });
 
-  /**
-   * Whether any IoT devices are available.
-   * @type {import('@angular/core').Signal<boolean>}
-   */
   readonly hasDevices = computed<boolean>(() => this.devices().length > 0);
 
   readonly dashboardScopeDevices = computed<IotDevice[]>(() => {
     return this.getDevicesForScope(this.selectedDashboardScope());
-  });
-
-  readonly onlineDevicesCount = computed<number>(() => {
-    return this.dashboardScopeDevices().filter((device) => device.status !== 'inactive').length;
-  });
-
-  readonly plotsWithIotCount = computed<number>(() => {
-    const plotIds = this.dashboardScopeDevices()
-      .map((device) => device.plotId)
-      .filter((plotId): plotId is number | string => plotId !== null && plotId !== undefined);
-
-    return new Set(plotIds.map((plotId) => String(plotId))).size;
-  });
-
-  readonly lastSyncLabel = computed<string>(() => {
-    const latestTimestamp = this.dashboardScopeDevices()
-      .map((device) => Date.parse(device.lastUpdate))
-      .filter((timestamp) => Number.isFinite(timestamp))
-      .sort((first, second) => second - first)
-      .at(0);
-
-    if (latestTimestamp === undefined) {
-      return 'No sync yet';
-    }
-
-    return this.formatRelativeSync(latestTimestamp);
   });
 
   readonly dashboardInsightCards = computed<IotSensorCard[]>(() => {
@@ -258,196 +243,220 @@ export class AgronomicStore {
     return [this.createSoilMoistureCard(devices), this.createSoilTemperatureCard(devices)];
   });
 
-  readonly dashboardTitle = computed<string>(() => {
-    const selectedPlot = this.selectedDashboardPlot();
+  readonly plotsCount = computed<number>(() => (this.plotsLoaded() ? this.plots().length : 0));
 
-    return selectedPlot
-      ? `Dashboard / Overview / ${selectedPlot.name}`
-      : 'Dashboard / Overview / All plots';
-  });
+  readonly hasErrors = computed<boolean>(() => this.errors().length > 0);
 
-  readonly selectedDashboardLatestRecord = computed<AgronomicRecord | null>(() => {
-    const statisticsRecord = this.createDashboardRecordFromStatistics();
+  /** Loads (or reloads) every Dashboard / Overview data source. */
+  refreshDashboardData(): void {
+    this.fetchPlots();
+    this.fetchMyPlotsOverview();
+    this.fetchDevices();
+    this.loadScopeData(this.selectedDashboardScope());
+    this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
 
-    if (statisticsRecord) {
-      return statisticsRecord;
-    }
-
-    const selectedScope = this.selectedDashboardScope();
-
-    if (selectedScope === 'all') {
-      return this.monitoringSummary()?.latestNdvi ?? null;
-    }
-
-    const records = this.agronomicRecords().filter(
-      (record) => String(record.plotId) === String(selectedScope),
-    );
-
-    return this.getLatestRecord(records);
-  });
-
-  readonly selectedMapPlotLatestRecord = computed<AgronomicRecord | null>(() => {
-    const selectedId = this.selectedMapPlotId();
-
-    if (selectedId === null) {
-      return null;
-    }
-
-    const records = this.mapAgronomicRecords().filter(
-      (record) => String(record.plotId) === String(selectedId),
-    );
-
-    return this.getLatestRecord(records);
-  });
-
-  readonly selectedPlotLatestRecord = this.selectedMapPlotLatestRecord;
-
-  readonly latestAgronomicRecord = computed<AgronomicRecord | null>(() => {
-    return this.selectedDashboardLatestRecord();
-  });
-
-  readonly selectedPlotNdviLabel = computed<string>(() => {
-    const record = this.selectedMapPlotLatestRecord();
-    const plot = this.selectedMapPlot();
-
-    const ndviValue = record?.ndviIndex ?? plot?.currentImagery?.ndviMean ?? 0;
-
-    return ndviValue.toFixed(2);
-  });
-
-  readonly selectedPlotNdviTrend = computed<string>(() => {
-    const trend = this.selectedMapPlotLatestRecord()?.ndviTrend ?? 'stable';
-
-    if (trend === 'up') {
-      return '↑';
-    }
-
-    if (trend === 'down') {
-      return '↓';
-    }
-
-    return '→';
-  });
-
-  readonly selectedPlotLastUpdateLabel = computed<string>(() => {
-    const plot = this.selectedMapPlot();
-    const record = this.selectedMapPlotLatestRecord();
-
-    const candidateDates = [
-      plot?.lastUpdate ? Date.parse(plot.lastUpdate) : Number.NaN,
-      record?.recordedAt?.getTime() ?? Number.NaN,
-    ].filter((timestamp) => Number.isFinite(timestamp));
-
-    if (candidateDates.length === 0) {
-      return 'Pending';
-    }
-
-    return this.formatRelativeTime(Math.max(...candidateDates));
-  });
-
-  readonly selectedYieldForecast = computed<YieldForecast | null>(() => {
-    if (this.selectedDashboardScope() === 'all') {
-      return this.monitoringSummary()?.yieldForecast ?? this.yieldForecast();
-    }
-
-    return this.yieldForecast() ?? this.monitoringSummary()?.yieldForecast ?? null;
-  });
-
-  readonly selectedChillHourRecord = computed<ChillHourRecord | null>(() => {
-    const statisticsChillRecord = this.createChillRecordFromStatistics();
-
-    if (statisticsChillRecord) {
-      return statisticsChillRecord;
-    }
-
-    return this.chillHourRecord() ?? this.monitoringSummary()?.chillHourRecord ?? null;
-  });
+    // Pull the latest AgroMonitoring snapshot on demand, then reload the
+    // statistic-derived views (monitoring summary + trend) so NDVI/chill/yield
+    // populate without waiting for the daily scheduled ingestion.
+    this.syncStatistics(() => {
+      this.loadScopeData(this.selectedDashboardScope());
+      this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
+    });
+  }
 
   /**
-   * Number of loaded plots.
-   * @type {import('@angular/core').Signal<number>}
+   * Triggers an on-demand agronomic-statistic ingestion (best-effort). Used to
+   * keep the dashboard fresh between scheduled ingestion runs.
    */
-  readonly plotsCount = computed<number>(() => {
-    return this.plotsLoaded() ? this.plots().length : 0;
-  });
+  syncStatistics(onComplete?: () => void): void {
+    this.agronomicApi
+      .ingestStatistics()
+      .pipe(take(1))
+      .subscribe({
+        next: () => onComplete?.(),
+        error: (error) => this.registerError(error),
+      });
+  }
 
-  /**
-   * Number of loaded telemetry records.
-   * @type {import('@angular/core').Signal<number>}
-   */
-  readonly recordsCount = computed<number>(() => {
-    return this.agronomicRecords().length;
-  });
+  /** Loads the current monitoring summary + weather for the given scope. */
+  private loadScopeData(scope: DashboardScope): void {
+    if (scope === 'all') {
+      this.plotMonitoringSummary.set(null);
+      this.fetchCurrentMonitoringSummary();
+      return;
+    }
 
-  readonly hasErrors = computed<boolean>(() => {
-    return this.errors().length > 0;
-  });
+    this.fetchPlotMonitoringSummary(scope);
+    this.fetchPlotWeatherForecast(scope);
+  }
 
-  /**
-   * Fetches pre-calculated agronomic statistics from the infrastructure layer.
-   * @param {number|string} plotId - Plot identifier.
-   * @param {DashboardTimeRange} timeRange - Time range.
-   * @returns {void}
-   */
-  fetchAgronomicStatistics(
-    plotId: number | string = this.selectedDashboardScope(),
-    timeRange: DashboardTimeRange = this.selectedDashboardTimeRange(),
-  ): void {
-    this.setLoading('statistics', true);
+  /** Loads the producer's plots together with current imagery. */
+  fetchPlots(): void {
+    this.setLoading('plots', true);
 
     this.agronomicApi
-      .getAgronomicStatistics({
-        plotId,
-        timeRange: this.toStatisticsTimeRange(timeRange),
-      })
+      .getPlots()
       .pipe(
         take(1),
-        finalize(() => this.setLoading('statistics', false)),
+        finalize(() => this.setLoading('plots', false)),
       )
       .subscribe({
-        next: (statistics) => {
-          if (!statistics) {
-            this.fetchFallbackAgronomicStatistics(plotId, timeRange);
-            return;
-          }
+        next: (plots) => {
+          this.plots.set(this.mergePlotHealth(plots, this.myPlotsOverview()));
+          this.plotsLoaded.set(true);
 
-          this.agronomicStatistics.set(this.toDashboardStatistics(statistics, timeRange));
+          if (plots.length > 0 && this.selectedMapPlotId() === null) {
+            this.selectMapPlot(plots[0].id);
+          }
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Loads the aggregated overview (real IoT + plot-health counts). */
+  fetchMyPlotsOverview(): void {
+    this.setLoading('overview', true);
+
+    this.agronomicApi
+      .getMyPlotsOverview()
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('overview', false)),
+      )
+      .subscribe({
+        next: (overview) => {
+          this.myPlotsOverview.set(overview);
+          this.devicesLoaded.set(true);
+          this.plots.update((plots) => this.mergePlotHealth(plots, overview));
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Loads the All Plots current monitoring summary (and its weather snapshot). */
+  fetchCurrentMonitoringSummary(): void {
+    this.setLoading('summary', true);
+
+    this.agronomicApi
+      .getCurrentMonitoringSummary()
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('summary', false)),
+      )
+      .subscribe({
+        next: (summary) => {
+          this.monitoringSummary.set(summary);
+          this.summaryLoaded.set(Boolean(summary));
+
+          if (this.selectedDashboardScope() === 'all') {
+            this.weatherSummary.set(summary?.weather ?? null);
+          }
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Loads the current monitoring summary for a single plot. */
+  fetchPlotMonitoringSummary(plotId: DashboardScope): void {
+    this.setLoading('summary', true);
+
+    this.agronomicApi
+      .getPlotMonitoringSummary(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('summary', false)),
+      )
+      .subscribe({
+        next: (summary) => {
+          this.plotMonitoringSummary.set(summary);
+
+          if (
+            String(this.selectedDashboardScope()) === String(plotId) &&
+            summary?.weather &&
+            !this.weatherSummary()
+          ) {
+            this.weatherSummary.set(summary.weather);
+          }
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  fetchPlotWeatherForecast(plotId: DashboardScope): void {
+    this.setLoading('weather', true);
+
+    this.agronomicApi
+      .getPlotWeatherForecast(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('weather', false)),
+      )
+      .subscribe({
+        next: (weather) => {
+          if (weather && String(this.selectedDashboardScope()) === String(plotId)) {
+            this.weatherSummary.set(weather);
+          }
         },
         error: (error) => this.registerError(error),
       });
   }
 
   fetchTrendStatistics(
-    plotId: number | string = this.selectedTrendPlotId(),
+    plotId: DashboardScope = this.selectedTrendPlotId(),
     timeRange: TrendAnalysisTimeRange = this.selectedTrendTimeRange(),
   ): void {
     this.setLoading('statistics', true);
 
     this.agronomicApi
-      .getAgronomicStatistics({
-        plotId,
-        timeRange,
-      })
+      .getAgronomicStatisticsSeries(plotId, timeRange)
       .pipe(
         take(1),
         finalize(() => this.setLoading('statistics', false)),
       )
       .subscribe({
-        next: (statistics) => {
-          if (statistics) {
-            this.trendAgronomicStatistics.set(statistics);
-            return;
-          }
-
-          this.fetchFallbackTrendStatistics(plotId, timeRange);
-        },
+        next: (statistics) => this.trendAgronomicStatistics.set(statistics),
         error: (error) => this.registerError(error),
       });
   }
 
-  /**
-   * Fetches all IoT devices.
-   */
+  selectDashboardScope(scope: DashboardScope): void {
+    this.selectedDashboardScope.set(scope);
+    this.plotMonitoringSummary.set(null);
+    this.weatherSummary.set(null);
+
+    if (scope === 'all') {
+      this.weatherSummary.set(this.monitoringSummary()?.weather ?? null);
+    }
+
+    this.loadScopeData(scope);
+  }
+
+  selectMapPlot(id: number | string | null): void {
+    this.selectedMapPlotId.set(id);
+  }
+
+  selectPlot(id: number | string | null): void {
+    this.selectMapPlot(id);
+  }
+
+  selectTrendPlot(id: DashboardScope): void {
+    this.selectedTrendPlotId.set(id);
+    this.trendAgronomicStatistics.set(null);
+    this.fetchTrendStatistics(id, this.selectedTrendTimeRange());
+  }
+
+  selectTrendTimeRange(timeRange: TrendAnalysisTimeRange): void {
+    this.selectedTrendTimeRange.set(timeRange);
+    this.trendAgronomicStatistics.set(null);
+    this.fetchTrendStatistics(this.selectedTrendPlotId(), timeRange);
+  }
+
+  /** Retained for compatibility; the main cards no longer filter by time. */
+  selectDashboardTimeRange(timeRange: DashboardTimeRange): void {
+    this.selectedDashboardTimeRange.set(timeRange);
+  }
+
+
   fetchDevices(): void {
     this.setLoading('devices', true);
 
@@ -487,10 +496,81 @@ export class AgronomicStore {
   }
 
   /**
-   * Adds a new IoT device.
-   * @param {IotDevice} device
-   * @param {()=>void} [onSuccess]
+   * Registers a new plot against the real backend. On success it stores the
+   * registration result (for the wizard's confirmation step) and refreshes the
+   * overview so the new plot appears on My Plots.
    */
+  createPlot(
+    request: CreatePlotRequest,
+    onSuccess?: (registration: PlotRegistration) => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('saving', true);
+
+    this.agronomicApi
+      .createPlot(request)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('saving', false)),
+      )
+      .subscribe({
+        next: (registration) => {
+          this.lastPlotRegistration.set(registration);
+          this.plotsLoaded.set(false);
+          this.fetchMyPlotsOverview();
+          onSuccess?.(registration);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
+      });
+  }
+
+  /** Loads the configuration + monitoring detail for one plot. */
+  fetchPlotDetail(plotId: number | string): void {
+    this.setLoading('detail', true);
+    this.plotDetail.set(null);
+
+    this.agronomicApi
+      .getPlotDetail(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('detail', false)),
+      )
+      .subscribe({
+        next: (detail) => this.plotDetail.set(detail),
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Deletes a plot, then refreshes the overview so it disappears from My Plots. */
+  deletePlot(
+    plotId: number | string,
+    onSuccess?: () => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('deleting', true);
+
+    this.agronomicApi
+      .deletePlot(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('deleting', false)),
+      )
+      .subscribe({
+        next: () => {
+          this.plotsLoaded.set(false);
+          this.fetchMyPlotsOverview();
+          onSuccess?.();
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
+      });
+  }
+
   addDevice(device: IotDevice, onSuccess?: () => void): void {
     this.setLoading('saving', true);
 
@@ -509,11 +589,6 @@ export class AgronomicStore {
       });
   }
 
-  /**
-   * Updates an existing IoT device.
-   * @param {IotDevice} device
-   * @param {()=>void} [onSuccess]
-   */
   updateDevice(device: IotDevice, onSuccess?: () => void): void {
     this.setLoading('saving', true);
 
@@ -537,10 +612,6 @@ export class AgronomicStore {
       });
   }
 
-  /**
-   * Deletes an IoT device.
-   * @param {number|string} id
-   */
   deleteDevice(id: number | string): void {
     this.setLoading('deleting', true);
 
@@ -560,332 +631,6 @@ export class AgronomicStore {
       });
   }
 
-  /**
-   * Loads plots from infrastructure and updates the application state.
-   * @returns {void}
-   */
-  fetchPlots(): void {
-    this.setLoading('plots', true);
-
-    this.agronomicApi
-      .getPlots()
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('plots', false)),
-      )
-      .subscribe({
-        next: (plots) => {
-          this.plots.set(plots);
-          this.plotsLoaded.set(true);
-
-          if (plots.length > 0 && this.selectedMapPlotId() === null) {
-            this.selectMapPlot(plots[0].id);
-          }
-        },
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  /**
-   * Loads the global farm summary from infrastructure.
-   * @param {string} [period='current'] - Filter period.
-   * @param {boolean} [fallbackToCurrent=false] - Whether to fallback.
-   * @returns {void}
-   */
-  fetchMonitoringSummary(period: string = 'current', fallbackToCurrent = false): void {
-    this.setLoading('summary', true);
-
-    this.agronomicApi
-      .getCurrentSummary(period)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('summary', false)),
-      )
-      .subscribe({
-        next: (summary) => {
-          if (!summary && fallbackToCurrent && period !== 'current') {
-            this.fetchMonitoringSummary('current');
-            return;
-          }
-
-          this.monitoringSummary.set(summary);
-          this.summaryLoaded.set(Boolean(summary));
-
-          this.chillHourRecord.set(summary?.chillHourRecord ?? null);
-        },
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  /**
-   * Loads telemetry records for a plot and calculates yield based on area.
-   * @param {number|string|null} plotId - Target plot identifier.
-   * @param {string} [period] - Time span.
-   * @returns {void}
-   */
-  fetchRecords(plotId: number | string | null, period?: string): void {
-    if (plotId === null || plotId === 'all') {
-      this.agronomicRecords.set([]);
-      return;
-    }
-
-    this.setLoading('records', true);
-
-    const params = period ? { plotId, period } : { plotId };
-
-    this.agronomicApi
-      .getRecords(params)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('records', false)),
-      )
-      .subscribe({
-        next: (records) => this.agronomicRecords.set(records),
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  fetchMapRecords(plotId: number | string | null, period?: string): void {
-    if (plotId === null) {
-      this.mapAgronomicRecords.set([]);
-      return;
-    }
-
-    this.setLoading('mapRecords', true);
-
-    const params = period ? { plotId, period } : { plotId };
-
-    this.agronomicApi
-      .getRecords(params)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('mapRecords', false)),
-      )
-      .subscribe({
-        next: (records) => this.mapAgronomicRecords.set(records),
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  /**
-   * Loads current weather information for the specified city.
-   * @param {string} [city='Tacna'] - Target city.
-   * @returns {void}
-   */
-  fetchWeather(city: string = 'Tacna'): void {
-    this.setLoading('weather', true);
-
-    this.agronomicApi
-      .getCurrentWeather({ city })
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('weather', false)),
-      )
-      .subscribe({
-        next: (weatherSummary) => this.weatherSummary.set(weatherSummary),
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  fetchDashboardWeather(city: string = 'Tacna'): void {
-    const selectedScope = this.selectedDashboardScope();
-
-    if (selectedScope === 'all') {
-      this.fetchWeather(city);
-      return;
-    }
-
-    this.setLoading('weather', true);
-
-    this.agronomicApi
-      .getCurrentWeather({ plotId: selectedScope })
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('weather', false)),
-      )
-      .subscribe({
-        next: (weatherSummary) => {
-          if (weatherSummary) {
-            this.weatherSummary.set(weatherSummary);
-            return;
-          }
-
-          this.fetchWeather(city);
-        },
-        error: (error) => {
-          this.registerError(error);
-          this.fetchWeather(city);
-        },
-      });
-  }
-
-  refreshDashboardData(city: string = 'Tacna'): void {
-    this.fetchPlots();
-    this.fetchMonitoringSummary(this.toSummaryPeriod(this.selectedDashboardTimeRange()), true);
-    this.fetchDashboardWeather(city);
-    this.fetchAgronomicStatistics(this.selectedDashboardScope(), this.selectedDashboardTimeRange());
-    this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
-    this.fetchDevices();
-
-    const selectedScope = this.selectedDashboardScope();
-
-    if (selectedScope !== 'all') {
-      this.fetchRecords(selectedScope, this.toRecordsPeriod(this.selectedDashboardTimeRange()));
-      this.fetchYieldForecast(selectedScope);
-      return;
-    }
-
-    this.agronomicRecords.set([]);
-    this.yieldForecast.set(null);
-  }
-
-  /**
-   * Loads yield predictions for a specific plot.
-   * @param {number|string|null} plotId - Plot identifier.
-   * @returns {void}
-   */
-  fetchYieldForecast(plotId: number | string | null): void {
-    if (plotId === null || plotId === 'all') {
-      this.yieldForecast.set(null);
-      return;
-    }
-
-    this.setLoading('yieldForecast', true);
-
-    this.agronomicApi
-      .getYieldForecastsByPlot(plotId)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('yieldForecast', false)),
-      )
-      .subscribe({
-        next: (yieldForecasts) => {
-          this.yieldForecast.set(yieldForecasts.at(0) ?? null);
-        },
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  /**
-   * Loads thermal accumulation summary for the dashboard.
-   * @param {string} [period='current'] - Filter period.
-   * @returns {void}
-   */
-  fetchChillHourSummary(period: string = 'current'): void {
-    this.setLoading('summary', true);
-
-    this.agronomicApi
-      .getCurrentSummary(period)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('summary', false)),
-      )
-      .subscribe({
-        next: (summary) => {
-          this.monitoringSummary.set(summary);
-          this.chillHourRecord.set(summary?.chillHourRecord ?? null);
-          this.summaryLoaded.set(Boolean(summary));
-        },
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  /**
-   * Updates the selected dashboard scope.
-   * @param {DashboardScope} scope - Plot identifier or all.
-   */
-  selectDashboardScope(scope: DashboardScope): void {
-    this.selectedDashboardScope.set(scope);
-    this.agronomicRecords.set([]);
-    this.yieldForecast.set(null);
-    this.agronomicStatistics.set(null);
-
-    this.fetchMonitoringSummary(this.toSummaryPeriod(this.selectedDashboardTimeRange()), true);
-    this.fetchDashboardWeather();
-    this.fetchAgronomicStatistics(scope, this.selectedDashboardTimeRange());
-
-    if (scope !== 'all') {
-      this.fetchRecords(scope, this.toRecordsPeriod(this.selectedDashboardTimeRange()));
-      this.fetchYieldForecast(scope);
-    }
-  }
-
-  /**
-   * Updates the selected map plot identifier.
-   * @param {number|string|null} id - Plot identifier.
-   */
-  selectMapPlot(id: number | string | null): void {
-    this.selectedMapPlotId.set(id);
-    this.mapAgronomicRecords.set([]);
-    this.fetchMapRecords(id);
-  }
-
-  selectTrendPlot(id: DashboardScope): void {
-    this.selectedTrendPlotId.set(id);
-    this.trendAgronomicStatistics.set(null);
-    this.fetchTrendStatistics(id, this.selectedTrendTimeRange());
-  }
-
-  selectTrendTimeRange(timeRange: TrendAnalysisTimeRange): void {
-    this.selectedTrendTimeRange.set(timeRange);
-    this.trendAgronomicStatistics.set(null);
-    this.fetchTrendStatistics(this.selectedTrendPlotId(), timeRange);
-  }
-
-  selectPlot(id: number | string | null): void {
-    this.selectMapPlot(id);
-  }
-
-  selectDashboardTimeRange(timeRange: DashboardTimeRange): void {
-    this.selectedDashboardTimeRange.set(timeRange);
-    this.agronomicStatistics.set(null);
-
-    this.fetchMonitoringSummary(this.toSummaryPeriod(timeRange), true);
-    this.fetchAgronomicStatistics(this.selectedDashboardScope(), timeRange);
-
-    const selectedScope = this.selectedDashboardScope();
-
-    if (selectedScope !== 'all') {
-      this.fetchRecords(selectedScope, this.toRecordsPeriod(timeRange));
-      this.fetchYieldForecast(selectedScope);
-    }
-  }
-
-  selectStatisticsRange(timeRange: string): void {
-    this.selectDashboardTimeRange(this.toDashboardTimeRange(timeRange));
-  }
-
-  refreshSelectedPlotData(period: string = '30d'): void {
-    const selectedScope = this.selectedDashboardScope();
-
-    if (selectedScope !== 'all') {
-      this.fetchRecords(selectedScope, period);
-      this.fetchYieldForecast(selectedScope);
-    }
-  }
-
-  /**
-   * Resets temporary telemetry and summary states.
-   * @returns {void}
-   */
-  clearTelemetry(): void {
-    this.agronomicRecords.set([]);
-    this.mapAgronomicRecords.set([]);
-    this.chillHourRecord.set(null);
-    this.yieldForecast.set(null);
-    this.monitoringSummary.set(null);
-    this.summaryLoaded.set(false);
-  }
-
-  clearErrors(): void {
-    this.errors.set([]);
-  }
-
-  /**
-   * Gets an IoT device by ID from the local state.
-   * @param {number|string} id
-   * @returns {IotDevice|null}
-   */
   getDeviceById(id: number | string): IotDevice | null {
     return this.devices().find((device) => String(device.id) === String(id)) ?? null;
   }
@@ -898,17 +643,41 @@ export class AgronomicStore {
     return this.devices().filter((device) => String(device.plotId) === String(scope));
   }
 
-  private getLatestRecord(records: AgronomicRecord[]): AgronomicRecord | null {
-    if (records.length === 0) {
-      return null;
+  clearErrors(): void {
+    this.errors.set([]);
+  }
+
+  /**
+   * Enriches plots (whose `/plots` payload omits health) with the per-plot
+   * health status reported by the overview, so the map widget and cards align.
+   */
+  private mergePlotHealth(plots: Plot[], overview: MyPlotsOverview | null): Plot[] {
+    if (!overview) {
+      return plots;
     }
 
-    return [...records].sort((firstRecord, secondRecord) => {
-      const firstDate = firstRecord.recordedAt?.getTime() ?? 0;
-      const secondDate = secondRecord.recordedAt?.getTime() ?? 0;
+    const healthById = new Map(
+      overview.plots.map((plot) => [String(plot.id), plot.healthStatus] as const),
+    );
 
-      return secondDate - firstDate;
-    })[0];
+    return plots.map((plot) => {
+      const healthStatus = healthById.get(String(plot.id));
+
+      if (!healthStatus || healthStatus === plot.healthStatus) {
+        return plot;
+      }
+
+      return new Plot({
+        id: plot.id,
+        name: plot.name,
+        polygonCoordinates: plot.polygonCoordinates,
+        areaSize: plot.areaSize,
+        lastUpdate: plot.lastUpdate,
+        currentImagery: plot.currentImagery,
+        healthStatus,
+        phenologicalRisk: plot.phenologicalRisk,
+      });
+    });
   }
 
   private formatRelativeTime(timestamp: number): string {
@@ -931,6 +700,10 @@ export class AgronomicStore {
     const diffInDays = Math.round(diffInHours / 24);
 
     return `${diffInDays} days ago`;
+  }
+
+  private formatRelativeSync(timestamp: number): string {
+    return `Last sync: ${this.formatRelativeTime(timestamp)}`;
   }
 
   private createSoilMoistureCard(devices: IotDevice[]): IotSensorCard {
@@ -964,7 +737,7 @@ export class AgronomicStore {
       sourceLabel: 'IoT',
       metricLabel: 'Soil temperature',
       metricValue: averageValue,
-      metricUnit: '\u00b0C',
+      metricUnit: '°C',
       trend: riskLevel === 'High' ? 'up' : 'stable',
       riskLevel,
       recommendation: this.getSoilTemperatureRecommendation(riskLevel),
@@ -1012,9 +785,7 @@ export class AgronomicStore {
       High: 3,
     };
 
-    return (
-      riskLevels.sort((first, second) => riskWeight[second] - riskWeight[first]).at(0) ?? 'Low'
-    );
+    return riskLevels.sort((first, second) => riskWeight[second] - riskWeight[first]).at(0) ?? 'Low';
   }
 
   private getSoilMoistureRecommendation(riskLevel: IotRiskLevel): string {
@@ -1039,246 +810,6 @@ export class AgronomicStore {
     }
 
     return 'Temperature is within expected range.';
-  }
-
-  private formatRelativeSync(timestamp: number): string {
-    const diffInMinutes = Math.max(0, Math.round((Date.now() - timestamp) / 60000));
-
-    if (diffInMinutes < 1) {
-      return 'Last sync: just now';
-    }
-
-    if (diffInMinutes < 60) {
-      return `Last sync: ${diffInMinutes} min ago`;
-    }
-
-    const diffInHours = Math.round(diffInMinutes / 60);
-
-    if (diffInHours < 24) {
-      return `Last sync: ${diffInHours} h ago`;
-    }
-
-    const diffInDays = Math.round(diffInHours / 24);
-
-    return `Last sync: ${diffInDays} days ago`;
-  }
-
-  private toDashboardTimeRange(timeRange: string): DashboardTimeRange {
-    const validRanges: DashboardTimeRange[] = ['current', '7days', '30days'];
-
-    return validRanges.includes(timeRange as DashboardTimeRange)
-      ? (timeRange as DashboardTimeRange)
-      : 'current';
-  }
-
-  private toStatisticsTimeRange(timeRange: DashboardTimeRange): string {
-    if (timeRange === 'current') {
-      return '30days';
-    }
-
-    return timeRange;
-  }
-
-  private toSummaryPeriod(timeRange: DashboardTimeRange): string {
-    return timeRange;
-  }
-
-  private toRecordsPeriod(timeRange: DashboardTimeRange): string | undefined {
-    if (timeRange === 'current') {
-      return undefined;
-    }
-
-    return timeRange;
-  }
-
-  private fetchFallbackAgronomicStatistics(
-    plotId: number | string,
-    timeRange: DashboardTimeRange,
-  ): void {
-    if (timeRange === '30days') {
-      this.agronomicStatistics.set(null);
-      return;
-    }
-
-    this.setLoading('statistics', true);
-
-    this.agronomicApi
-      .getAgronomicStatistics({
-        plotId,
-        timeRange: '30days',
-      })
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('statistics', false)),
-      )
-      .subscribe({
-        next: (statistics) => {
-          this.agronomicStatistics.set(
-            statistics ? this.toDashboardStatistics(statistics, timeRange, true) : null,
-          );
-        },
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  private fetchFallbackTrendStatistics(
-    plotId: number | string,
-    timeRange: TrendAnalysisTimeRange,
-  ): void {
-    if (timeRange === '30days') {
-      this.trendAgronomicStatistics.set(null);
-      return;
-    }
-
-    if (timeRange === 'campaign') {
-      this.trendAgronomicStatistics.set(null);
-      return;
-    }
-
-    this.setLoading('statistics', true);
-
-    this.agronomicApi
-      .getAgronomicStatistics({
-        plotId,
-        timeRange: '30days',
-      })
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('statistics', false)),
-      )
-      .subscribe({
-        next: (statistics) => {
-          this.trendAgronomicStatistics.set(
-            statistics
-              ? this.sliceStatistics(
-                  statistics,
-                  timeRange,
-                  2,
-                  '7-day view based on the latest available trend data.',
-                )
-              : null,
-          );
-        },
-        error: (error) => this.registerError(error),
-      });
-  }
-
-  private toDashboardStatistics(
-    statistics: AgronomicStatistics,
-    timeRange: DashboardTimeRange,
-    fromFallback = false,
-  ): AgronomicStatistics {
-    if (timeRange === 'current') {
-      return this.sliceStatistics(
-        statistics,
-        timeRange,
-        1,
-        'Current state based on the latest available trend data.',
-      );
-    }
-
-    if (timeRange === '7days' && fromFallback) {
-      return this.sliceStatistics(
-        statistics,
-        timeRange,
-        2,
-        '7-day view based on the latest available trend data.',
-      );
-    }
-
-    return statistics;
-  }
-
-  private sliceStatistics(
-    statistics: AgronomicStatistics,
-    timeRange: DashboardTimeRange | TrendAnalysisTimeRange,
-    points: number,
-    description: string,
-  ): AgronomicStatistics {
-    const labels = statistics.labels.slice(-points);
-    const ndviSeries = statistics.ndviSeries.slice(-points);
-    const cpSeries = statistics.cpSeries.slice(-points);
-    const trend = this.toStatisticsTrend(ndviSeries);
-
-    return new AgronomicStatistics({
-      id: `${statistics.id ?? statistics.plotId ?? 'statistics'}-${timeRange}`,
-      plotId: statistics.plotId,
-      timeRange,
-      labels,
-      ndviSeries,
-      cpSeries,
-      threshold: statistics.threshold,
-      observation: statistics.observation,
-      description,
-      trend,
-      statusLabel: statistics.statusLabel,
-    });
-  }
-
-  private createDashboardRecordFromStatistics(): AgronomicRecord | null {
-    if (this.selectedDashboardTimeRange() === 'current') {
-      return null;
-    }
-
-    const statistics = this.agronomicStatistics();
-
-    if (!statistics?.hasNdviData) {
-      return null;
-    }
-
-    return new AgronomicRecord({
-      plotId: this.selectedDashboardScope(),
-      ndviIndex: statistics.currentNdviValue,
-      ndviTrend: this.toNdviTrend(statistics.ndviSeries),
-      ndviStatusLabel: statistics.statusLabel || statistics.trend,
-    });
-  }
-
-  private createChillRecordFromStatistics(): ChillHourRecord | null {
-    if (this.selectedDashboardTimeRange() === 'current') {
-      return null;
-    }
-
-    const statistics = this.agronomicStatistics();
-    const currentCp = statistics?.cpSeries.at(-1);
-
-    if (currentCp === undefined) {
-      return null;
-    }
-
-    const previousCp = statistics?.cpSeries.at(0) ?? currentCp;
-
-    return new ChillHourRecord({
-      plotId: this.selectedDashboardScope(),
-      accumulatedChillPortions: currentCp,
-      weeklyDiff: currentCp - previousCp,
-      threshold: statistics?.threshold ?? 600,
-    });
-  }
-
-  private toNdviTrend(values: number[]): 'up' | 'down' | 'stable' {
-    const first = values.at(0);
-    const last = values.at(-1);
-
-    if (first === undefined || last === undefined || first === last) {
-      return 'stable';
-    }
-
-    return last > first ? 'up' : 'down';
-  }
-
-  private toStatisticsTrend(values: number[]): 'Stable' | 'Up' | 'Down' {
-    const trend = this.toNdviTrend(values);
-
-    if (trend === 'up') {
-      return 'Up';
-    }
-
-    if (trend === 'down') {
-      return 'Down';
-    }
-
-    return 'Stable';
   }
 
   private setLoading(key: keyof AgronomicLoadingState, value: boolean): void {

@@ -12,8 +12,6 @@ export interface DashboardScopeOption {
   badge?: number;
 }
 
-export type DashboardTimeRange = 'current' | '7days' | '30days';
-
 export interface DashboardToolbarViewOption {
   id: string;
   label: string;
@@ -25,12 +23,6 @@ export interface DashboardToolbarViewOption {
   disabled?: boolean;
 }
 
-export interface DashboardToolbarTimeRangeOption {
-  value: DashboardTimeRange;
-  label: string;
-  labelKey?: string;
-}
-
 @Component({
   selector: 'app-dashboard-toolbar',
   standalone: true,
@@ -40,7 +32,6 @@ export interface DashboardToolbarTimeRangeOption {
 })
 export class DashboardToolbar {
   @Input() selectedScope: number | string = 'all';
-  @Input() selectedTimeRange: DashboardTimeRange = 'current';
   @Input() scopeOptions: DashboardScopeOption[] = [];
   @Input() viewOptions: DashboardToolbarViewOption[] = [
     {
@@ -62,27 +53,9 @@ export class DashboardToolbar {
       icon: 'cloud'
     }
   ];
-  @Input() timeRangeOptions: DashboardToolbarTimeRangeOption[] = [
-    {
-      value: 'current',
-      label: 'Current',
-      labelKey: 'time.current'
-    },
-    {
-      value: '7days',
-      label: '7 days',
-      labelKey: 'time.7days'
-    },
-    {
-      value: '30days',
-      label: '30 days',
-      labelKey: 'time.30days'
-    }
-  ];
 
   @Output() viewChange = new EventEmitter<string>();
   @Output() scopeChange = new EventEmitter<number | string>();
-  @Output() timeRangeChange = new EventEmitter<DashboardTimeRange>();
 
   protected getIconMask(iconPath: string): string {
     return `url("${iconPath}")`;
@@ -96,9 +69,5 @@ export class DashboardToolbar {
 
   protected onScopeSelected(event: MatSelectChange): void {
     this.scopeChange.emit(event.value);
-  }
-
-  protected selectTimeRange(timeRange: DashboardTimeRange): void {
-    this.timeRangeChange.emit(timeRange);
   }
 }

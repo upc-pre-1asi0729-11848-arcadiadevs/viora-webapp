@@ -17,9 +17,32 @@ export type ApiQueryParams = Record<
 export abstract class BaseApi {
   protected readonly http = inject(HttpClient);
   protected readonly baseUrl = environment.vioraPlatformApiUrl;
+  protected readonly mockBaseUrl = environment.mockApiUrl;
+
+  /**
+   * Active user identifier sent to the real backend, which requires `userId`
+   * on every request. Sourced from configuration until authentication exists.
+   */
+  protected readonly defaultUserId = environment.defaultUserId;
 
   protected endpoint(path: string): BaseApiEndpoint {
     return new BaseApiEndpoint(this.baseUrl, path);
+  }
+
+  /**
+   * Builds an endpoint against the mock API base, used for bounded contexts
+   * not yet served by the real backend.
+   */
+  protected mockEndpoint(path: string): BaseApiEndpoint {
+    return new BaseApiEndpoint(this.mockBaseUrl, path);
+  }
+
+  /**
+   * Merges the active `userId` into a set of query params, letting callers
+   * override it when needed.
+   */
+  protected withUserId(params: ApiQueryParams = {}): ApiQueryParams {
+    return { userId: this.defaultUserId, ...params };
   }
 
   protected queryParams(params: ApiQueryParams = {}): HttpParams {

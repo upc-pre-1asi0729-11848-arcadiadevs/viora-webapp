@@ -1,0 +1,24 @@
+<div class="boundary-wrap">
+  <div class="boundary-search">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="text"
+        [formControl]="searchControl"
+        [matAutocomplete]="placeAuto"
+        [placeholder]="'plotCreate.boundary.searchPlace' | translate"
+        autocomplete="off" />
+      <mat-autocomplete
+        #placeAuto="matAutocomplete"
+        [displayWith]="displayPlace"
+        (optionSelected)="onPlaceSelected($event)">
+        @for (place of suggestions(); track place.label) {
+          <mat-option [value]="place">{{ place.label }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+
+  <div class="boundary-map" #mapContainer></div>
+</div>

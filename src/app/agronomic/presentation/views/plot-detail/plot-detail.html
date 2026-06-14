@@ -1,0 +1,254 @@
+<section class="detail-page">
+  <!-- Header -->
+  <header class="detail-header">
+    <div class="header-left">
+      <a mat-icon-button class="back-button" routerLink="/agronomic/plots"
+         [attr.aria-label]="'plotDetail.back' | translate">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div>
+        <h1 class="header-title">
+          {{ 'sidebar.myPlots' | translate }}
+          <span class="title-sep">/</span>
+          {{ 'plotDetail.title' | translate }}
+          @if (detail(); as plot) {
+            <span class="title-sep">/</span> {{ plot.name }}
+          }
+        </h1>
+        <p class="header-subtitle">{{ 'plotDetail.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <app-language-switcher />
+      <button mat-icon-button class="reset-button" type="button" (click)="refresh()"
+              [attr.aria-label]="'common.updated' | translate">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading() && !detail()) {
+    <mat-card class="state-card">{{ 'common.loading' | translate }}…</mat-card>
+  } @else if (detail(); as plot) {
+    <!-- Top row: summary cards + actions -->
+    <section class="top-grid">
+      <mat-card class="summary-card">
+        <h2 class="card-title">{{ 'plotDetail.productiveArea.title' | translate }}</h2>
+        <div class="line">
+          <span>{{ 'plotDetail.productiveArea.area' | translate }}</span>
+          <strong>{{ plot.areaLabel }}</strong>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.productiveArea.points' | translate }}</span>
+          <strong>{{ plot.boundaryPointCount }} {{ 'plotDetail.productiveArea.pointsUnit' | translate }}</strong>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.productiveArea.boundary' | translate }}</span>
+          <span class="pill" [class.tag-active]="plot.boundaryValidated" [class.tag-muted]="!plot.boundaryValidated">
+            {{ (plot.boundaryValidated ? 'plotDetail.productiveArea.validated' : 'plotDetail.status.pending') | translate }}
+          </span>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.productiveArea.registered' | translate }}</span>
+          <strong>{{ dateLabel(plot.registeredAt) }}</strong>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <h2 class="card-title">{{ 'plotDetail.monitoring.title' | translate }}</h2>
+        <div class="line">
+          <span>{{ 'plotDetail.monitoring.climate' | translate }}</span>
+          <span class="pill" [class]="linkClass(plot.climateMonitoring)">{{ linkLabelKey(plot.climateMonitoring) | translate }}</span>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.monitoring.satellite' | translate }}</span>
+          <span class="pill" [class]="linkClass(plot.satelliteNdvi)">{{ linkLabelKey(plot.satelliteNdvi) | translate }}</span>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.monitoring.alerts' | translate }}</span>
+          <span class="pill tag-active">{{ 'plotDetail.monitoring.enabled' | translate }}</span>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.monitoring.lastSync' | translate }}</span>
+          <strong>{{ relativeTime(plot.climateLastSyncAt) }}</strong>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <div class="card-title-row">
+          <h2 class="card-title">{{ 'plotDetail.iot.title' | translate }}</h2>
+          <span class="iot-chip">{{ 'myPlots.kpi.iot' | translate }}</span>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.iot.status' | translate }}</span>
+          @if (plot.hasIot) {
+            <span class="pill tag-devices">{{ 'myPlots.devicesOnline' | translate: { count: plot.onlineDeviceCount } }}</span>
+          } @else {
+            <span class="pill tag-muted">{{ 'plotDetail.status.notLinked' | translate }}</span>
+          }
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.iot.telemetry' | translate }}</span>
+          <strong>{{ (plot.hasIot ? 'plotDetail.iot.available' : 'plotDetail.iot.none') | translate }}</strong>
+        </div>
+        <div class="line">
+          <span>{{ 'plotDetail.iot.lastReading' | translate }}</span>
+          <strong>{{ relativeTime(plot.iotLastActivityAt) }}</strong>
+        </div>
+        <a mat-stroked-button class="ghost-button block" routerLink="/agronomic/iot-devices">
+          <mat-icon>settings</mat-icon> {{ 'plotDetail.iot.manage' | translate }}
+        </a>
+      </mat-card>
+
+      <div class="action-column">
+        <a mat-stroked-button class="ghost-button" [routerLink]="['/agronomic/plots', plot.id, 'edit']">
+          <mat-icon>edit</mat-icon> {{ 'plotDetail.actions.edit' | translate }}
+        </a>
+        <a mat-stroked-button class="ghost-button" routerLink="/dashboard">
+          <mat-icon>grid_view</mat-icon> {{ 'plotDetail.actions.openDashboard' | translate }}
+        </a>
+        <a mat-stroked-button class="ghost-button" routerLink="/agronomic/iot-devices/new">
+          <mat-icon>wifi</mat-icon> {{ 'plotDetail.actions.addIot' | translate }}
+        </a>
+        <button mat-stroked-button type="button" class="delete-action" (click)="openDeleteDialog()">
+          <mat-icon>delete</mat-icon> {{ 'plotDetail.actions.delete' | translate }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Middle: boundary + configuration summary -->
+    <section class="detail-grid">
+      <div class="col">
+        <mat-card class="boundary-card">
+          <div class="card-title-row">
+            <h2 class="card-title">{{ 'plotDetail.boundary.title' | translate }}</h2>
+            <a mat-stroked-button class="ghost-button" routerLink="/dashboard">
+              <mat-icon>open_in_full</mat-icon> {{ 'plotDetail.boundary.expand' | translate }}
+            </a>
+          </div>
+          <p class="card-subtitle">{{ 'plotDetail.boundary.subtitle' | translate }}</p>
+
+          <div class="boundary-map">
+            <app-plot-thumbnail [polygonCoordinates]="plot.polygonCoordinates" />
+            <span class="map-status">
+              <span class="status-dot"></span>
+              {{ 'plotDetail.boundary.closed' | translate: { count: plot.boundaryPointCount } }}
+            </span>
+            <span class="map-label">{{ plot.name }} · {{ plot.areaLabel }}</span>
+          </div>
+
+          <p class="field-info">
+            <mat-icon>info</mat-icon> {{ 'plotDetail.boundary.note' | translate }}
+          </p>
+          <a mat-stroked-button class="ghost-button block" routerLink="/dashboard">
+            <mat-icon>grid_view</mat-icon> {{ 'plotDetail.boundary.openDashboard' | translate }}
+          </a>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <div class="card-title-row">
+            <h2 class="card-title">{{ 'plotDetail.info.title' | translate }}</h2>
+            <a mat-stroked-button class="ghost-button" [routerLink]="['/agronomic/plots', plot.id, 'edit']">
+              <mat-icon>edit</mat-icon> {{ 'plotDetail.info.edit' | translate }}
+            </a>
+          </div>
+          <div class="card-divider"></div>
+          <div class="info-row"><span class="info-name"><mat-icon>sell</mat-icon> {{ 'plotCreate.fields.name' | translate }}</span><strong>{{ plot.name }}</strong></div>
+          <div class="info-row"><span class="info-name"><mat-icon>description</mat-icon> {{ 'plotCreate.fields.cropType' | translate }}</span><strong>{{ plot.cropType || '—' }}</strong></div>
+          <div class="info-row"><span class="info-name"><mat-icon>place</mat-icon> {{ 'plotCreate.fields.location' | translate }}</span><strong>{{ plot.location || '—' }}</strong></div>
+          <div class="info-row"><span class="info-name"><mat-icon>event</mat-icon> {{ 'plotCreate.fields.campaign' | translate }}</span><strong>{{ plot.campaign || '—' }}</strong></div>
+          <div class="info-row"><span class="info-name"><mat-icon>notes</mat-icon> {{ 'plotCreate.fields.notes' | translate }}</span><span class="info-notes">{{ plot.notes || '—' }}</span></div>
+        </mat-card>
+      </div>
+
+      <div class="col">
+        <mat-card class="config-card">
+          <h2 class="card-title">{{ 'plotDetail.config.title' | translate }}</h2>
+          <p class="card-subtitle">{{ 'plotDetail.config.subtitle' | translate }}</p>
+
+          <div class="config-row">
+            <span class="config-name"><span class="ico ico-green"><mat-icon>account_tree</mat-icon></span> {{ 'plotDetail.config.boundary' | translate }}</span>
+            <span class="pill" [class.tag-active]="plot.boundaryValidated" [class.tag-muted]="!plot.boundaryValidated">
+              <mat-icon>check</mat-icon> {{ (plot.boundaryValidated ? 'plotDetail.config.done' : 'plotDetail.status.pending') | translate }}
+            </span>
+          </div>
+          <div class="config-row">
+            <span class="config-name"><span class="ico ico-blue"><mat-icon>cloud</mat-icon></span> {{ 'plotDetail.config.climate' | translate }}</span>
+            <span class="pill" [class]="linkClass(plot.climateMonitoring)">{{ linkLabelKey(plot.climateMonitoring) | translate }}</span>
+          </div>
+          <div class="config-row">
+            <span class="config-name"><span class="ico ico-purple"><mat-icon>satellite_alt</mat-icon></span> {{ 'plotDetail.config.satellite' | translate }}</span>
+            <span class="pill" [class]="linkClass(plot.satelliteNdvi)">{{ linkLabelKey(plot.satelliteNdvi) | translate }}</span>
+          </div>
+          <div class="config-row">
+            <span class="config-name"><span class="ico ico-blue4"><mat-icon>wifi</mat-icon></span> {{ 'plotDetail.config.iot' | translate }}</span>
+            @if (plot.hasIot) {
+              <span class="pill tag-devices">{{ 'myPlots.devicesOnline' | translate: { count: plot.linkedDeviceCount } }}</span>
+            } @else {
+              <span class="pill tag-muted">{{ 'plotDetail.status.notLinked' | translate }}</span>
+            }
+          </div>
+          <div class="config-row">
+            <span class="config-name"><span class="ico ico-secondary"><mat-icon>notifications</mat-icon></span> {{ 'plotDetail.config.alerts' | translate }}</span>
+            <span class="pill tag-on">{{ 'plotDetail.config.on' | translate }}</span>
+          </div>
+        </mat-card>
+
+        <mat-card class="activity-card">
+          <h2 class="card-title">{{ 'plotDetail.activity.title' | translate }}</h2>
+          <p class="card-subtitle">{{ 'plotDetail.activity.subtitle' | translate }}</p>
+
+          @if (plot.activity.length === 0) {
+            <p class="field-info">{{ 'plotDetail.activity.empty' | translate }}</p>
+          } @else {
+            <ul class="timeline">
+              @for (item of plot.activity; track $index) {
+                <li class="timeline-item">
+                  <span class="dot"></span>
+                  <div>
+                    <strong>{{ item.description }}</strong>
+                    <p>{{ dateTimeLabel(item.occurredAt) }}</p>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Linked IoT devices -->
+    <mat-card class="devices-card">
+      <div class="card-title-row">
+        <div>
+          <h2 class="card-title">{{ 'plotDetail.devices.title' | translate }}</h2>
+          <p class="card-subtitle">{{ 'plotDetail.devices.subtitle' | translate: { name: plot.name } }}</p>
+        </div>
+        <a mat-stroked-button class="ghost-button" routerLink="/agronomic/iot-devices/new">
+          <mat-icon>add</mat-icon> {{ 'plotDetail.devices.add' | translate }}
+        </a>
+      </div>
+
+      @if (plot.devices.length === 0) {
+        <p class="field-info">{{ 'plotDetail.devices.empty' | translate }}</p>
+      } @else {
+        <div class="devices-grid">
+          @for (device of plot.devices; track device.id) {
+            <div class="device-card">
+              <div class="device-head">
+                <strong>{{ device.name }}</strong>
+                <span class="pill" [class.tag-active]="device.status === 'ONLINE'" [class.tag-muted]="device.status !== 'ONLINE'">
+                  {{ device.status }}
+                </span>
+              </div>
+              <div class="device-line"><span>{{ 'plotDetail.devices.lastRead' | translate }}</span><strong>{{ relativeTime(device.lastActivityAt) }}</strong></div>
+            </div>
+          }
+        </div>
+      }
+    </mat-card>
+  } @else {
+    <mat-card class="state-card">{{ 'plotDetail.notFound' | translate }}</mat-card>
+  }
+</section>

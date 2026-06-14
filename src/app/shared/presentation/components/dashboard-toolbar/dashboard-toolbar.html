@@ -58,15 +58,5 @@
         </mat-option>
       }
     </mat-select>
-
-    @for (option of timeRangeOptions; track option.value) {
-      <button
-        mat-stroked-button
-        type="button"
-        [class.is-active]="selectedTimeRange === option.value"
-        (click)="selectTimeRange(option.value)">
-        {{ option.labelKey ? (option.labelKey | translate) : option.label }}
-      </button>
-    }
   </div>
 </section>

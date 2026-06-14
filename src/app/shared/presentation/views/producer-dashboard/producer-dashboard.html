@@ -8,10 +8,8 @@
     [viewOptions]="dashboardToolbarViewOptions"
     [scopeOptions]="dashboardScopeOptions()"
     [selectedScope]="store.selectedDashboardScope()"
-    [selectedTimeRange]="store.selectedDashboardTimeRange()"
     (scopeChange)="onDashboardScopeChange($event)"
-    (viewChange)="onDashboardViewChange($event)"
-    (timeRangeChange)="onDashboardTimeRangeChange($event)" />
+    (viewChange)="onDashboardViewChange($event)" />
 
   <section class="kpi-grid">
     <app-overall-plot-health-card />
