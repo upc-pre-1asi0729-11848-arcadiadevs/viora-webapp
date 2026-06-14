@@ -14,4 +14,20 @@ import { AgronomicStore } from '../../../application/agronomic.store';
 })
 export class OverallPlotHealthCard {
   protected readonly store = inject(AgronomicStore);
+
+  /**
+   * Maps a health status (display or backend form) to a pill color modifier so
+   * the state reads at a glance: healthy = green, warning/review = secondary, critical = red.
+   */
+  protected statusClass(status: string | null | undefined): string {
+    switch ((status ?? '').trim().toUpperCase()) {
+      case 'HEALTHY':
+        return 'is-healthy';
+      case 'HIGH':
+      case 'CRITICAL':
+        return 'is-critical';
+      default:
+        return 'is-review';
+    }
+  }
 }

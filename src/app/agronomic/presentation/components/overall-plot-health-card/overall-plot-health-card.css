@@ -36,6 +36,22 @@ p {
   font-size: 12px;
 }
 
+/* Status-driven colors for quick differentiation. */
+.status-pill.is-healthy {
+  background: #57EBA1; /* green4 */
+  color: #17432f;
+}
+
+.status-pill.is-review {
+  background: #C15A2E; /* secondary — warning / under review */
+  color: #ffffff;
+}
+
+.status-pill.is-critical {
+  background: #FF5C5C; /* red3 — critical */
+  color: #ffffff;
+}
+
 .status-pill.muted {
   background: #eeeeee;
   color: #777777;
