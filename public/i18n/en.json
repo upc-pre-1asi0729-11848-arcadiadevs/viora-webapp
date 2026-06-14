@@ -209,7 +209,8 @@
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
-    "overview": "Overview"
+    "overview": "Overview",
+    "plotOverview": "Plot Overview"
   },
   "time": {
     "current": "Current",
@@ -302,13 +303,49 @@
       "monitoring": "Continue regular monitoring"
     }
   },
+  "plotOverviewPage": {
+    "subtitle": "Detailed satellite view and indicators for this plot.",
+    "actions": {
+      "plotDetail": "Plot detail",
+      "editPlot": "Edit plot",
+      "weather": "Weather"
+    },
+    "legend": {
+      "title": "NDVI legend",
+      "low": "Low vigor",
+      "high": "High vigor"
+    },
+    "recommended": {
+      "title": "Recommended Action",
+      "viewDetails": "View plot details",
+      "reportSymptoms": "Report symptoms",
+      "openNutrition": "Open nutrition plan",
+      "requestExpert": "Request expert"
+    }
+  },
   "weather": {
     "title": "Weather Summary",
     "details": "Weather details",
     "forecast3Days": "3-Day forecast",
     "temperatureAnomaly": "Temperature anomaly",
     "climateRisk": "Climate risk",
-    "loading": "Loading weather summary"
+    "loading": "Loading weather summary",
+    "selectPlotPrompt": "Select a specific plot to see its weather summary."
+  },
+  "dataFreshness": {
+    "title": "Data Freshness",
+    "satellite": "Satellite image",
+    "weatherSync": "Weather sync",
+    "prediction": "Prediction model",
+    "units": {
+      "justNow": "just now",
+      "minuteAgo": "minute ago",
+      "minutesAgo": "minutes ago",
+      "hourAgo": "hour ago",
+      "hoursAgo": "hours ago",
+      "dayAgo": "day ago",
+      "daysAgo": "days ago"
+    }
   },
   "trend": {
     "title": "Trend Analysis / NDVI",

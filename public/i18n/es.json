@@ -209,7 +209,8 @@
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
-    "overview": "Resumen"
+    "overview": "Resumen",
+    "plotOverview": "Plot Overview"
   },
   "time": {
     "current": "Actual",
@@ -302,13 +303,49 @@
       "monitoring": "Continuar monitoreo regular"
     }
   },
+  "plotOverviewPage": {
+    "subtitle": "Vista satelital detallada e indicadores de esta parcela.",
+    "actions": {
+      "plotDetail": "Detalle de parcela",
+      "editPlot": "Editar parcela",
+      "weather": "Clima"
+    },
+    "legend": {
+      "title": "Leyenda NDVI",
+      "low": "Vigor bajo",
+      "high": "Vigor alto"
+    },
+    "recommended": {
+      "title": "Acción recomendada",
+      "viewDetails": "Ver detalle de parcela",
+      "reportSymptoms": "Reportar síntomas",
+      "openNutrition": "Abrir plan de nutrición",
+      "requestExpert": "Solicitar experto"
+    }
+  },
   "weather": {
     "title": "Resumen del clima",
     "details": "Detalles del clima",
     "forecast3Days": "Pronóstico de 3 días",
     "temperatureAnomaly": "Anomalía de temperatura",
     "climateRisk": "Riesgo climático",
-    "loading": "Cargando resumen del clima"
+    "loading": "Cargando resumen del clima",
+    "selectPlotPrompt": "Selecciona una parcela específica para ver su resumen del clima."
+  },
+  "dataFreshness": {
+    "title": "Frescura de datos",
+    "satellite": "Imagen satelital",
+    "weatherSync": "Sincronización de clima",
+    "prediction": "Modelo de predicción",
+    "units": {
+      "justNow": "recién",
+      "minuteAgo": "minuto atrás",
+      "minutesAgo": "minutos atrás",
+      "hourAgo": "hora atrás",
+      "hoursAgo": "horas atrás",
+      "dayAgo": "día atrás",
+      "daysAgo": "días atrás"
+    }
   },
   "trend": {
     "title": "Análisis de tendencia / NDVI",

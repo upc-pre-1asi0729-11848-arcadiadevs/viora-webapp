@@ -43,6 +43,28 @@ export class MapboxService {
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
+    this.keepCanvasFitted(map, options.container);
+
     return Promise.resolve(map);
+  }
+
+  /**
+   * Keeps the Mapbox canvas matched to its container size. Mapbox does not detect
+   * layout-driven width changes (e.g. collapsing the sidebar), which leaves an
+   * unrendered strip; a ResizeObserver resizes the map whenever the container
+   * dimensions change. The resize is deferred to the next frame to avoid
+   * "ResizeObserver loop" warnings.
+   */
+  private keepCanvasFitted(map: MapboxMap, container: HTMLElement): void {
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      requestAnimationFrame(() => map.resize());
+    });
+
+    observer.observe(container);
+    map.on('remove', () => observer.disconnect());
   }
 }

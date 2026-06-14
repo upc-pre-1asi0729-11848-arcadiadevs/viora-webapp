@@ -1,0 +1,305 @@
+:host {
+  display: block;
+}
+
+.overview-page {
+  min-height: 100%;
+  color: #1f2523;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ---------- Quick actions ---------- */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+.ghost-button.mat-mdc-outlined-button {
+  border-color: #e8e4df;
+  border-radius: 8px;
+  color: #333333;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.ghost-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- Map card ---------- */
+.map-card {
+  padding: 24px 26px;
+  margin-bottom: 24px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(31, 37, 35, 0.05);
+}
+
+.map-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.map-title {
+  margin: 0;
+  font-weight: 500;
+  font-size: 20px;
+  color: #333333;
+}
+
+.plot-select {
+  min-width: 180px;
+  padding: 8px 14px;
+  border: 1px solid #e0dbd2;
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2e4a3a;
+}
+
+.map-frame {
+  position: relative;
+  width: 100%;
+  height: 560px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e7e2d9;
+}
+
+.map-frame app-plot-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.map-empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #8a8f8b;
+  font-size: 14px;
+}
+
+/* NDVI legend overlay */
+.map-legend {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(46, 74, 58, 0.86);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.legend-title {
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.legend-bar {
+  display: block;
+  width: 140px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d45a19, #f3cf2d, #9ff0c6, #2e8b3a);
+}
+
+.legend-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+/* Plot name + area caption */
+.map-plot-label {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+.map-plot-label strong {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2523;
+}
+
+.map-plot-label span {
+  font-weight: 400;
+  font-size: 12px;
+  color: #4f4f4f;
+}
+
+/* ---------- KPI / IoT grids ---------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.35fr) repeat(3, minmax(180px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+}
+
+.iot-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.35fr) repeat(3, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+}
+
+.kpi-grid,
+.iot-grid {
+  scrollbar-width: thin;
+  scrollbar-color: #d6d0c8 #f8f4ed;
+}
+
+.add-iot-card {
+  height: 186px;
+  box-sizing: border-box;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  border-radius: 12px;
+  background: transparent;
+  color: #4f4f4f;
+}
+
+.add-iot-card h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.add-iot-card a {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 2px solid #4f4f4f;
+  background: transparent;
+  color: #4f4f4f;
+  font-size: 32px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* ---------- Bottom grid ---------- */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.scroll-target {
+  display: block;
+  scroll-margin-top: 24px;
+}
+
+/* ---------- Recommended action bar ---------- */
+.recommended-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  padding: 18px 24px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(31, 37, 35, 0.05);
+}
+
+.recommended-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2523;
+}
+
+.recommended-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.recommended-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 13px;
+  color: #4f4f4f;
+}
+
+.recommended-action mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #6b716d;
+}
+
+.recommended-action:hover {
+  color: #2e4a3a;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+
+  .iot-grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .map-frame {
+    height: 360px;
+  }
+
+  .kpi-grid,
+  .iot-grid {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+}

@@ -1,1 +1,10 @@
-<div class="map-container" #mapContainer></div>
+<div class="plot-map-wrap">
+  <div class="map-container" #mapContainer></div>
+
+  @if (showLocation && locationLabel(); as label) {
+    <span class="map-location-chip">
+      <mat-icon>location_on</mat-icon>
+      <span>{{ label }}</span>
+    </span>
+  }
+</div>

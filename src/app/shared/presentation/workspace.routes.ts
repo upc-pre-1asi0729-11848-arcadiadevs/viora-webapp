@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 
 const producerDashboard = () =>
   import('./views/producer-dashboard/producer-dashboard').then((m) => m.ProducerDashboard);
+const plotOverviewPage = () =>
+  import('./views/plot-overview-page/plot-overview-page').then((m) => m.PlotOverviewPage);
 const comingSoonPage = () =>
   import('./views/coming-soon-page/coming-soon-page').then((m) => m.ComingSoonPage);
 
@@ -86,6 +88,11 @@ export const workspaceRoutes: Routes = [
     path: 'dashboard',
     title: 'Overview',
     loadComponent: producerDashboard,
+  },
+  {
+    path: 'dashboard/plot-overview/:plotId',
+    title: 'Plot Overview',
+    loadComponent: plotOverviewPage,
   },
   ...workspacePlaceholderRoutes,
 ];

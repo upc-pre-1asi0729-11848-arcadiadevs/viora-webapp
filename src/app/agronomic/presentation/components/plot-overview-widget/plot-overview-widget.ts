@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +13,7 @@ import { PlotMap } from '../plot-map/plot-map';
   selector: 'app-plot-overview-widget',
   standalone: true,
   imports: [
+    RouterLink,
     MatCardModule,
     MatSelectModule,
     MatIconModule,
