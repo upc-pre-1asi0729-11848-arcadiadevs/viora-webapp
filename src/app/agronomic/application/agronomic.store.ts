@@ -247,6 +247,17 @@ export class AgronomicStore {
 
   readonly hasErrors = computed<boolean>(() => this.errors().length > 0);
 
+  /**
+   * Minimum gap between on-demand statistic ingestions. The backend already runs
+   * a daily scheduled ingestion and throttles AgroMonitoring per plot, so firing
+   * an ingest on every dashboard visit is wasteful; we only top it up at most
+   * once per window.
+   */
+  private static readonly STATISTICS_SYNC_COOLDOWN_MS = 30 * 60 * 1000;
+
+  /** Epoch ms of the last on-demand ingestion (0 = never this session). */
+  private lastStatisticsSyncAt = 0;
+
   /** Loads (or reloads) every Dashboard / Overview data source. */
   refreshDashboardData(): void {
     this.fetchPlots();
@@ -255,13 +266,25 @@ export class AgronomicStore {
     this.loadScopeData(this.selectedDashboardScope());
     this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
 
+    if (!this.shouldSyncStatistics()) {
+      return;
+    }
+
     // Pull the latest AgroMonitoring snapshot on demand, then reload the
     // statistic-derived views (monitoring summary + trend) so NDVI/chill/yield
     // populate without waiting for the daily scheduled ingestion.
+    this.lastStatisticsSyncAt = Date.now();
     this.syncStatistics(() => {
       this.loadScopeData(this.selectedDashboardScope());
       this.fetchTrendStatistics(this.selectedTrendPlotId(), this.selectedTrendTimeRange());
     });
+  }
+
+  /** True when no on-demand ingestion has run within the cooldown window. */
+  private shouldSyncStatistics(): boolean {
+    return (
+      Date.now() - this.lastStatisticsSyncAt >= AgronomicStore.STATISTICS_SYNC_COOLDOWN_MS
+    );
   }
 
   /**
