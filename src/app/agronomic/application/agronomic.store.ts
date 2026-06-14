@@ -27,6 +27,7 @@ import { OverallPlotHealth } from '../domain/model/overall-plot-health.entity';
 import { AgronomicStatistics } from '../domain/model/agronomic-statistics.entity';
 import { MyPlotsOverview } from '../domain/model/my-plots-overview.entity';
 import { PlotRegistration } from '../domain/model/plot-registration.entity';
+import { PlotDetail } from '../domain/model/plot-detail.entity';
 import { IotDevice } from '../domain/model/iot-device.entity';
 import { IotRiskLevel, IotSensorCard } from '../domain/model/iot-device-summary.entity';
 import { CreatePlotResource } from '../infrastructure/plot-registration-response';
@@ -45,6 +46,7 @@ export interface AgronomicLoadingState {
   summary: boolean;
   statistics: boolean;
   devices: boolean;
+  detail: boolean;
   saving: boolean;
   deleting: boolean;
 }
@@ -73,6 +75,7 @@ export class AgronomicStore {
   readonly weatherSummary = signal<WeatherSummary | null>(null);
   readonly myPlotsOverview = signal<MyPlotsOverview | null>(null);
   readonly lastPlotRegistration = signal<PlotRegistration | null>(null);
+  readonly plotDetail = signal<PlotDetail | null>(null);
 
   readonly summaryLoaded = signal<boolean>(false);
 
@@ -92,6 +95,7 @@ export class AgronomicStore {
     summary: false,
     statistics: false,
     devices: false,
+    detail: false,
     saving: false,
     deleting: false,
   });
@@ -515,6 +519,50 @@ export class AgronomicStore {
           this.plotsLoaded.set(false);
           this.fetchMyPlotsOverview();
           onSuccess?.(registration);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
+      });
+  }
+
+  /** Loads the configuration + monitoring detail for one plot. */
+  fetchPlotDetail(plotId: number | string): void {
+    this.setLoading('detail', true);
+    this.plotDetail.set(null);
+
+    this.agronomicApi
+      .getPlotDetail(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('detail', false)),
+      )
+      .subscribe({
+        next: (detail) => this.plotDetail.set(detail),
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Deletes a plot, then refreshes the overview so it disappears from My Plots. */
+  deletePlot(
+    plotId: number | string,
+    onSuccess?: () => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('deleting', true);
+
+    this.agronomicApi
+      .deletePlot(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('deleting', false)),
+      )
+      .subscribe({
+        next: () => {
+          this.plotsLoaded.set(false);
+          this.fetchMyPlotsOverview();
+          onSuccess?.();
         },
         error: (error) => {
           this.registerError(error);

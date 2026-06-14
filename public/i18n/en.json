@@ -76,6 +76,7 @@
     "boundary": {
       "title": "Draw plot boundary",
       "subtitle": "Click on the map to add boundary points. Close the polygon to register the plot.",
+      "searchPlace": "Search a place…",
       "polygonClosed": "Polygon closed",
       "polygonOpen": "Polygon open",
       "addPoint": "Add point",
@@ -93,7 +94,10 @@
       "autoLinkNote": "Once registered, climate and satellite monitoring will be automatically linked to this boundary.",
       "register": "Register plot",
       "registerLocked": "Register plot — close boundary first",
-      "registering": "Registering plot…"
+      "registerTooSmall": "Register plot — area must be at least 1 ha",
+      "registering": "Registering plot…",
+      "tooSmallTitle": "Area too small",
+      "tooSmallBody": "This boundary is {{area}} ha. Satellite monitoring requires a plot of at least 1 hectare, so draw a larger area before registering."
     },
     "confirm": {
       "title": "Plot registered successfully",
@@ -103,6 +107,91 @@
       "note": "First NDVI analysis may take up to 24 hours while satellite imagery is processed for your boundary.",
       "viewDetail": "View plot detail",
       "back": "Back to My plots"
+    }
+  },
+  "plotDetail": {
+    "back": "Back to My plots",
+    "title": "Plot Detail",
+    "subtitle": "Review plot configuration, registered boundary, monitoring links, and connected devices.",
+    "notFound": "Plot not found.",
+    "status": {
+      "active": "Active",
+      "initializing": "Initializing…",
+      "notLinked": "Not linked",
+      "pending": "Pending"
+    },
+    "productiveArea": {
+      "title": "Productive area",
+      "area": "Area",
+      "points": "Polygon points",
+      "pointsUnit": "points",
+      "boundary": "Boundary",
+      "validated": "Validated",
+      "registered": "Registered"
+    },
+    "monitoring": {
+      "title": "Monitoring links",
+      "climate": "Climate link",
+      "satellite": "Satellite (NDVI)",
+      "alerts": "Alerts",
+      "enabled": "Enabled",
+      "lastSync": "Last sync"
+    },
+    "iot": {
+      "title": "IoT devices",
+      "status": "Status",
+      "telemetry": "Telemetry",
+      "available": "Available",
+      "none": "—",
+      "lastReading": "Last reading",
+      "manage": "Manage devices"
+    },
+    "actions": {
+      "edit": "Edit plot",
+      "openDashboard": "Open dashboard view",
+      "addIot": "Add IoT device",
+      "delete": "Delete plot"
+    },
+    "boundary": {
+      "title": "Registered boundary",
+      "expand": "Expand",
+      "subtitle": "This boundary is used to retrieve satellite indicators and local climate data.",
+      "closed": "Boundary closed · {{count}} points",
+      "note": "No NDVI overlay — open dashboard view for analysis.",
+      "openDashboard": "Open in Dashboard"
+    },
+    "info": {
+      "title": "Plot information",
+      "edit": "Edit"
+    },
+    "config": {
+      "title": "Configuration summary",
+      "subtitle": "Active integrations and setup status for this plot.",
+      "boundary": "Boundary registered",
+      "done": "Done",
+      "climate": "Climate data linked",
+      "satellite": "Satellite monitoring",
+      "iot": "IoT telemetry linked",
+      "alerts": "Alerts enabled",
+      "on": "On"
+    },
+    "activity": {
+      "title": "Recent configuration activity",
+      "subtitle": "Setup changes and integration updates.",
+      "empty": "No configuration activity yet."
+    },
+    "devices": {
+      "title": "Linked IoT devices",
+      "subtitle": "Sensors connected to {{name}} for real-time telemetry.",
+      "add": "Add device",
+      "empty": "No IoT devices linked to this plot yet.",
+      "lastRead": "Last read"
+    },
+    "delete": {
+      "title": "Delete plot",
+      "body": "This permanently deletes \"{{name}}\" and unlinks its satellite and climate monitoring. This action cannot be undone.",
+      "confirmLabel": "Type the plot name to confirm",
+      "confirm": "Delete plot"
     }
   },
   "common": {

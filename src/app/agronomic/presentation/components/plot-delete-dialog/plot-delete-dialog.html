@@ -1,0 +1,37 @@
+<div class="delete-dialog">
+  <div class="dialog-head">
+    <span class="warn-icon"><mat-icon>warning</mat-icon></span>
+    <h2 mat-dialog-title>{{ 'plotDetail.delete.title' | translate }}</h2>
+  </div>
+
+  <mat-dialog-content>
+    <p class="dialog-text">
+      {{ 'plotDetail.delete.body' | translate: { name: data.plotName } }}
+    </p>
+
+    <label class="field-label">{{ 'plotDetail.delete.confirmLabel' | translate }}</label>
+    <mat-form-field appearance="outline" class="field">
+      <input
+        matInput
+        [placeholder]="data.plotName"
+        [value]="typedName()"
+        (input)="onInput($any($event.target).value)"
+        autocomplete="off" />
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" class="cancel-button" (click)="cancel()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      mat-flat-button
+      type="button"
+      class="delete-button"
+      [disabled]="!canDelete()"
+      (click)="confirm()">
+      <mat-icon>delete</mat-icon>
+      {{ 'plotDetail.delete.confirm' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

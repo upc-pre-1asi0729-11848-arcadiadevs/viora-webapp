@@ -1,0 +1,99 @@
+.delete-dialog {
+  font-family: 'Poppins', sans-serif;
+  padding: 4px 8px;
+  max-width: 440px;
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warn-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fdecec;
+  color: #ff5c5c;
+}
+
+.warn-icon mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.dialog-head h2 {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #1f2523;
+}
+
+.dialog-text {
+  margin: 4px 0 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #4f4f4f;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #1f2523;
+}
+
+.field {
+  width: 100%;
+}
+
+.field ::ng-deep input.mat-mdc-input-element {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #4f4f4f;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px 0 4px;
+}
+
+.cancel-button.mat-mdc-outlined-button {
+  border-color: #2e4a3a;
+  color: #2e4a3a;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.delete-button.mat-mdc-unelevated-button {
+  background: #ff5c5c;
+  color: #ffffff;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.delete-button.mat-mdc-unelevated-button[disabled] {
+  background: #f0d6d6;
+  color: #ffffff;
+}
+
+.delete-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

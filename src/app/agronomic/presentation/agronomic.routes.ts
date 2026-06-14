@@ -11,6 +11,7 @@ const iotDeviceForm = () =>
 const myPlotsOverview = () =>
   import('./views/my-plots-overview/my-plots-overview').then((m) => m.MyPlotsOverviewView);
 const plotCreate = () => import('./views/plot-create/plot-create').then((m) => m.PlotCreate);
+const plotDetail = () => import('./views/plot-detail/plot-detail').then((m) => m.PlotDetailView);
 
 /**
  * Route tree for agronomic bounded-context views.
@@ -52,9 +53,19 @@ export const agronomicRoutes: Routes = [
     },
   },
   {
+    path: 'plots/:id/edit',
+    title: 'My Plots / Edit plot',
+    loadComponent: comingSoonPage,
+    data: {
+      pageTitle: 'My Plots / Edit plot',
+      sectionLabel: 'My Plots',
+      subtitle: 'Update plot information and boundary.',
+    },
+  },
+  {
     path: 'plots/:id',
     title: 'My Plots / Plot detail',
-    loadComponent: comingSoonPage,
+    loadComponent: plotDetail,
     data: {
       pageTitle: 'My Plots / Plot detail',
       sectionLabel: 'My Plots',
