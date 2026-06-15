@@ -1,11 +1,18 @@
-<mat-card class="kpi-card">
+<mat-card class="kpi-card" [class.detailed]="detailed">
   <h2>{{ 'cards.chill.title' | translate }}</h2>
 
   @if (store.selectedChillHourRecord(); as chill) {
     <strong class="main-value">{{ chill.valueLabel }}</strong>
 
-    @if (chill.weeklyDiff !== 0) {
+    @if (chill.weeklyDiffRounded !== 0) {
       <span class="blue-pill">{{ chill.weeklyDiffLabel }}</span>
+    }
+
+    @if (detailed) {
+      <span class="target-row">
+        <mat-icon>star_border</mat-icon>
+        <span>{{ 'cards.chill.target' | translate }}: {{ chill.thresholdLabel }}</span>
+      </span>
     }
 
     <mat-progress-bar
@@ -13,6 +20,19 @@
       [value]="chill.progressPercentage"
       style="--mdc-linear-progress-active-indicator-color: #5B8DEF; --mdc-linear-progress-track-color: #e0e0e0;">
     </mat-progress-bar>
+
+    @if (detailed) {
+      <footer class="card-disclaimer">
+        <mat-icon>info</mat-icon>
+        @if (!chill.hasStartedAccumulating) {
+          <span>{{ 'cards.chill.disclaimerZero' | translate }}</span>
+        } @else if (chill.hasReachedThreshold) {
+          <span>{{ 'cards.chill.requirementMet' | translate }}</span>
+        } @else {
+          <span>{{ 'cards.chill.remaining' | translate: { remaining: chill.remainingLabel } }}</span>
+        }
+      </footer>
+    }
   } @else {
     <div class="empty-state">{{ 'cards.chill.loading' | translate }}</div>
   }

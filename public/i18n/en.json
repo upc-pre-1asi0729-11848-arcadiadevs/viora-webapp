@@ -403,14 +403,21 @@
     },
     "ndvi": {
       "title": "NDVI Status",
+      "fromLastUpdate": "from last update",
       "loading": "Loading NDVI records"
     },
     "chill": {
       "title": "Chill Accumulation",
+      "target": "Target",
+      "disclaimerZero": "Chill builds up only during the cold hours of the dormancy season; warm periods add none.",
+      "remaining": "{{remaining}} to reach the requirement.",
+      "requirementMet": "Dormancy chill requirement met.",
       "loading": "Loading chill accumulation"
     },
     "yield": {
       "title": "Yield Forecast",
+      "alternateBearing": "Risk of alternate bearing",
+      "campaign": "Estimated for current campaign",
       "loading": "Loading yield forecast"
     },
     "phenological": {
