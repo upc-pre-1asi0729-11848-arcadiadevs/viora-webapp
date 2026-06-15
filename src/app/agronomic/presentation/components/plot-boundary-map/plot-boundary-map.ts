@@ -6,7 +6,9 @@ import {
   OnDestroy,
   Output,
   ViewChild,
+  effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -84,6 +86,13 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
 
   @Output() readonly boundaryChange = new EventEmitter<BoundaryState>();
 
+  /**
+   * Existing polygon to preload when editing a plot. Accepts the stored
+   * coordinates (with the repeated closing vertex) and seeds a closed,
+   * editable boundary once the map is ready.
+   */
+  readonly initialBoundary = input<PlotCoordinate[] | null>(null);
+
   private readonly mapboxService = inject(MapboxService);
   private readonly http = inject(HttpClient);
 
@@ -93,6 +102,10 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
   private closed = false;
   private addMode = true;
   private markers: Marker[] = [];
+
+  /** Boundary awaiting the map to finish loading before it can be drawn. */
+  private pendingInitial: PlotCoordinate[] | null = null;
+  private initialApplied = false;
 
   // ----- Place search (Mapbox geocoding) -----
   protected readonly searchControl = new FormControl('');
@@ -125,6 +138,20 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
         switchMap((center) => this.reverseGeocode(center)),
       )
       .subscribe((label) => this.locationLabel.set(label));
+
+    // Seed the editor with the plot's existing boundary (edit mode). The input
+    // may arrive before or after the map finishes loading, so we stash it and
+    // apply once both the data and the map are ready.
+    effect(() => {
+      const boundary = this.initialBoundary();
+
+      if (this.initialApplied || !boundary || boundary.length < 3) {
+        return;
+      }
+
+      this.pendingInitial = boundary;
+      this.tryApplyInitialBoundary();
+    });
   }
 
   private reverseGeocode(center: PlotCoordinate) {
@@ -202,6 +229,7 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
           this.ready = true;
           this.applyCursor();
           this.emitCenter(mapInstance);
+          this.tryApplyInitialBoundary();
           [200, 600, 1200].forEach((delay) =>
             setTimeout(() => mapInstance.resize(), delay),
           );
@@ -270,6 +298,59 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
     this.addMode = !this.addMode;
     this.applyCursor();
     this.emit();
+  }
+
+  // ----- Edit-mode preload -----
+
+  /** Draws the pending boundary once both the data and the map are ready. */
+  private tryApplyInitialBoundary(): void {
+    if (this.initialApplied || !this.ready || !this.map || !this.pendingInitial) {
+      return;
+    }
+
+    const points = this.stripClosingPoint(this.pendingInitial);
+
+    if (points.length < 3) {
+      return;
+    }
+
+    this.points = points;
+    this.closed = true;
+    this.addMode = false;
+    this.initialApplied = true;
+    this.pendingInitial = null;
+
+    this.refresh();
+    this.applyCursor();
+    this.fitToPoints(points);
+  }
+
+  /** Stored polygons repeat the first vertex to close; the editor wants it open. */
+  private stripClosingPoint(points: PlotCoordinate[]): PlotCoordinate[] {
+    if (points.length >= 2) {
+      const first = points[0];
+      const last = points[points.length - 1];
+
+      if (first[0] === last[0] && first[1] === last[1]) {
+        return points.slice(0, -1);
+      }
+    }
+
+    return points;
+  }
+
+  /** Centers and zooms the map to fit the given polygon. */
+  private fitToPoints(points: PlotCoordinate[]): void {
+    if (!this.map || points.length === 0) {
+      return;
+    }
+
+    const bounds = points.reduce(
+      (acc, point) => acc.extend(point),
+      new mapboxgl.LngLatBounds(points[0], points[0]),
+    );
+
+    this.map.fitBounds(bounds, { padding: 60, duration: 800, maxZoom: 16 });
   }
 
   // ----- Internal rendering -----

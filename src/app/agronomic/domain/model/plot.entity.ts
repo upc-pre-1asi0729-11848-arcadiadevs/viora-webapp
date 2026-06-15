@@ -19,6 +19,11 @@ export interface PlotProperties {
   currentImagery?: SatelliteImagery | null;
   healthStatus?: PlotHealthStatus;
   phenologicalRisk?: PhenologicalRiskLevel;
+  cropType?: string;
+  variety?: string;
+  location?: string;
+  campaign?: string;
+  notes?: string;
 }
 
 export class Plot {
@@ -30,6 +35,12 @@ export class Plot {
   readonly currentImagery: SatelliteImagery | null;
   readonly healthStatus: PlotHealthStatus;
   readonly phenologicalRisk: PhenologicalRiskLevel;
+  /** Descriptive fields carried for the edit form (the dashboard ignores them). */
+  readonly cropType: string;
+  readonly variety: string;
+  readonly location: string;
+  readonly campaign: string;
+  readonly notes: string;
 
   /**
    * @param {PlotProperties} params - Entity data.
@@ -51,6 +62,11 @@ export class Plot {
     currentImagery = null,
     healthStatus = 'Healthy',
     phenologicalRisk = 'Low',
+    cropType = '',
+    variety = '',
+    location = '',
+    campaign = '',
+    notes = '',
   }: PlotProperties = {}) {
     this.id = id;
     this.name = name;
@@ -60,6 +76,11 @@ export class Plot {
     this.currentImagery = currentImagery;
     this.healthStatus = healthStatus;
     this.phenologicalRisk = phenologicalRisk;
+    this.cropType = cropType;
+    this.variety = variety;
+    this.location = location;
+    this.campaign = campaign;
+    this.notes = notes;
   }
 
   calculateCurrentBiomass(ndviValue: number): number {
