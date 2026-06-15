@@ -46,12 +46,12 @@
   } @else if (!plan()) {
     <!-- Empty state: no active plan -->
     <div class="state-box empty-plan">
-      <mat-icon>eco</mat-icon>
+      <mat-icon class="empty-plan-icon">eco</mat-icon>
       <h2>{{ 'dynamicNutrition.empty.title' | translate }}</h2>
       <p>{{ 'dynamicNutrition.empty.body' | translate: { plot: selectedPlot()?.name || '—' } }}</p>
       <p class="empty-hint">{{ 'dynamicNutrition.empty.hint' | translate }}</p>
       <button mat-flat-button class="primary-button" (click)="generatePlan()" [disabled]="isSaving()">
-        <mat-icon>{{ isSaving() ? 'hourglass_empty' : 'auto_awesome' }}</mat-icon>
+        <mat-icon>{{ isSaving() ? 'hourglass_top' : 'auto_awesome' }}</mat-icon>
         {{ (isSaving() ? 'dynamicNutrition.empty.generating' : 'dynamicNutrition.empty.generate') | translate }}
       </button>
       @if (generateMessage(); as message) {
