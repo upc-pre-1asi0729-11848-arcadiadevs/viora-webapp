@@ -1,5 +1,6 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { MonoTypeOperatorFunction, Observable, catchError, map, of, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { ApiQueryParams, BaseApi } from '../../shared/infrastructure/base-api';
@@ -27,6 +28,7 @@ import { PlotRegistration } from '../domain/model/plot-registration.entity';
 import {
   CreatePlotResource,
   PlotRegistrationResource,
+  UpdatePlotResource,
 } from './plot-registration-response';
 import { PlotRegistrationAssembler } from './plot-registration.assembler';
 import { PlotDetail } from '../domain/model/plot-detail.entity';
@@ -38,6 +40,13 @@ import {
   IotDeviceResource,
 } from './iot-devices-response';
 import { IotDeviceAssembler } from './iot-device.assembler';
+
+import { DynamicNutritionPlan } from '../domain/model/dynamic-nutrition-plan.entity';
+import {
+  CertifyNutritionPlanResource,
+  DynamicNutritionPlanResource,
+} from './dynamic-nutrition-plan-response';
+import { DynamicNutritionPlanAssembler } from './dynamic-nutrition-plan.assembler';
 
 /**
  * Trend ranges understood by the agronomic statistics series endpoint.
@@ -69,9 +78,27 @@ export class AgronomicApiService extends BaseApi {
   private readonly statisticsEndpoint = this.endpoint(
     environment.endpoints.agronomicStatistics,
   );
+  private readonly nutritionPlansEndpoint = this.endpoint(
+    environment.endpoints.dynamicNutritionPlans,
+  );
 
   // IoT device management remains on the mock API for now.
   private readonly iotDevicesEndpoint = this.mockEndpoint(environment.endpoints.iotDevices);
+
+  /**
+   * Maps a "no data yet" `404` to the given empty value (an expected backend
+   * state, e.g. `monitoring-summaries/current` before the first ingestion),
+   * while letting real failures (5xx, network, CORS) propagate. The store keeps
+   * its cached signal on a propagated error instead of blanking the dashboard,
+   * so a transient outage no longer wipes good data.
+   */
+  private emptyOnNotFound<T>(empty: T): MonoTypeOperatorFunction<T> {
+    return catchError((error: unknown) =>
+      error instanceof HttpErrorResponse && error.status === 404
+        ? of(empty)
+        : throwError(() => error),
+    );
+  }
 
   /**
    * Fetches the producer's plots together with their current satellite imagery.
@@ -84,7 +111,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resources) => PlotAssembler.toEntitiesFromResources(resources ?? [])),
-        catchError(() => of([] as Plot[])),
+        this.emptyOnNotFound<Plot[]>([]),
       );
   }
 
@@ -99,7 +126,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resource) => MyPlotsOverviewAssembler.toEntityFromResource(resource)),
-        catchError(() => of(null)),
+        this.emptyOnNotFound<MyPlotsOverview | null>(null),
       );
   }
 
@@ -121,6 +148,19 @@ export class AgronomicApiService extends BaseApi {
   }
 
   /**
+   * Partially updates a plot (PATCH /plots/{plotId}). The backend keeps any
+   * field that is omitted from the body, recomputes the area, and re-links
+   * climate/satellite monitoring when the boundary changes. Errors are not
+   * swallowed so the edit form can surface them.
+   * @returns {Observable<void>}
+   */
+  updatePlot(plotId: number | string, changes: UpdatePlotResource): Observable<void> {
+    return this.http
+      .patch<unknown>(this.plotsEndpoint.resourceUrl(plotId), changes)
+      .pipe(map(() => undefined));
+  }
+
+  /**
    * Fetches the All Plots current monitoring summary.
    * @returns {Observable<MonitoringSummary | null>}
    */
@@ -131,7 +171,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resource) => MonitoringSummaryAssembler.toEntityFromResource(resource)),
-        catchError(() => of(null)),
+        this.emptyOnNotFound<MonitoringSummary | null>(null),
       );
   }
 
@@ -148,7 +188,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resource) => PlotDetailAssembler.toEntityFromResource(resource)),
-        catchError(() => of(null)),
+        this.emptyOnNotFound<PlotDetail | null>(null),
       );
   }
 
@@ -191,7 +231,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resource) => PlotMonitoringSummaryAssembler.toEntityFromResource(resource)),
-        catchError(() => of(null)),
+        this.emptyOnNotFound<MonitoringSummary | null>(null),
       );
   }
 
@@ -217,7 +257,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resource) => AgronomicStatisticSeriesAssembler.toEntityFromResource(resource)),
-        catchError(() => of(null)),
+        this.emptyOnNotFound<AgronomicStatistics | null>(null),
       );
   }
 
@@ -234,7 +274,7 @@ export class AgronomicApiService extends BaseApi {
       })
       .pipe(
         map((resource) => PlotWeatherForecastAssembler.toEntityFromResource(resource)),
-        catchError(() => of(null)),
+        this.emptyOnNotFound<WeatherSummary | null>(null),
       );
   }
 
@@ -297,6 +337,54 @@ export class AgronomicApiService extends BaseApi {
    */
   deleteIotDevice(id: number | string): Observable<void> {
     return this.http.delete<void>(this.iotDevicesEndpoint.resourceUrl(id));
+  }
+
+  /**
+   * Fetches the active compensatory nutrition plan for a plot. Returns null on
+   * 404 (no plan yet) so the page can offer to generate one.
+   * @returns {Observable<DynamicNutritionPlan | null>}
+   */
+  getActiveNutritionPlan(plotId: number | string): Observable<DynamicNutritionPlan | null> {
+    const url = `${this.nutritionPlansEndpoint.collectionUrl}/active`;
+
+    return this.http
+      .get<DynamicNutritionPlanResource>(url, {
+        params: this.queryParams(this.withUserId({ plotId })),
+      })
+      .pipe(
+        map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)),
+        this.emptyOnNotFound<DynamicNutritionPlan | null>(null),
+      );
+  }
+
+  /**
+   * Generates a new compensatory nutrition plan for a plot (no request body; the
+   * backend derives it from the active alert + monitoring indicators).
+   * @returns {Observable<DynamicNutritionPlan | null>}
+   */
+  generateNutritionPlan(plotId: number | string): Observable<DynamicNutritionPlan | null> {
+    return this.http
+      .post<DynamicNutritionPlanResource>(this.nutritionPlansEndpoint.collectionUrl, null, {
+        params: this.queryParams(this.withUserId({ plotId })),
+      })
+      .pipe(map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Certifies the field application of a plan (date, applied inputs, operator…).
+   * @returns {Observable<DynamicNutritionPlan | null>}
+   */
+  certifyNutritionPlan(
+    planId: number | string,
+    certification: CertifyNutritionPlanResource,
+  ): Observable<DynamicNutritionPlan | null> {
+    const url = `${this.nutritionPlansEndpoint.resourceUrl(planId)}/certification`;
+
+    return this.http
+      .post<DynamicNutritionPlanResource>(url, certification, {
+        params: this.queryParams(this.withUserId()),
+      })
+      .pipe(map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)));
   }
 
   /** Maps a frontend trend range to the backend TimeRange enum name. */

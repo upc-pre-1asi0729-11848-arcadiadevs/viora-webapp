@@ -16,6 +16,21 @@ export interface CreatePlotResource {
   notes?: string;
 }
 
+/**
+ * UpdatePlotResource — request body for PATCH /api/v1/plots/{plotId}. All fields
+ * are optional (partial update); the backend keeps any field that is omitted, so
+ * we only send the ones the edit form manages.
+ */
+export interface UpdatePlotResource {
+  name?: string;
+  polygonCoordinates?: PlotCoordinateResource[];
+  cropType?: string;
+  variety?: string;
+  location?: string;
+  campaign?: string;
+  notes?: string;
+}
+
 /** PlotRegistrationResource — response body for POST /api/v1/plots. */
 export interface PlotRegistrationResource {
   id?: number;

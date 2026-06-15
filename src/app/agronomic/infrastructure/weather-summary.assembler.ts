@@ -3,7 +3,6 @@
  * @description specialized assembler for mapping Weather Summary resources to domain entities.
  */
 import {
-  ClimateRiskLevel,
   WeatherForecastDay,
   WeatherSummary
 } from '../domain/model/weather-summary.entity';
@@ -13,6 +12,7 @@ import {
   WeatherForecastDayResource,
   WeatherSummaryResource
 } from './weather-summaries-response';
+import { normalizeClimateRisk } from './status-normalizers';
 
 export class WeatherSummaryAssembler extends BaseAssembler {
   /**
@@ -33,7 +33,7 @@ export class WeatherSummaryAssembler extends BaseAssembler {
       backgroundImage: resource?.backgroundImage ?? '',
       forecast3Days: this.toForecastDays(resource?.forecast3Days ?? []),
       temperatureAnomaly: resource?.temperatureAnomaly ?? 0,
-      climateRisk: this.toClimateRiskLevel(resource?.climateRisk)
+      climateRisk: normalizeClimateRisk(resource?.climateRisk)
     });
   }
 
@@ -53,17 +53,11 @@ export class WeatherSummaryAssembler extends BaseAssembler {
   ): WeatherForecastDay[] {
     return resources.map(resource => ({
       dayLabel: resource.dayLabel ?? '',
+      date: '',
       minTemp: resource.minTemp ?? 0,
       maxTemp: resource.maxTemp ?? 0,
-      condition: resource.condition ?? ''
+      condition: resource.condition ?? '',
+      status: ''
     }));
-  }
-
-  private static toClimateRiskLevel(value: string | undefined): ClimateRiskLevel {
-    const validRiskLevels: ClimateRiskLevel[] = ['Low', 'Medium', 'High'];
-
-    return validRiskLevels.includes(value as ClimateRiskLevel)
-      ? value as ClimateRiskLevel
-      : 'Low';
   }
 }

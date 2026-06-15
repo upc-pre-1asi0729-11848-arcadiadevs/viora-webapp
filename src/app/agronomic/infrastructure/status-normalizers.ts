@@ -24,7 +24,7 @@ export function normalizePlotHealthStatus(value: string | null | undefined): Plo
     case 'UNDER REVIEW':
     case 'UNDER_REVIEW':
     case 'UNKNOWN':
-      return 'Under Review';
+      return 'Moderate';
     default:
       return 'Healthy';
   }
@@ -46,7 +46,7 @@ export function normalizeOverallHealthStatus(
     case 'UNKNOWN':
     case 'UNDER REVIEW':
     case 'UNDER_REVIEW':
-      return 'Under Review';
+      return 'Moderate';
     default:
       return 'Healthy';
   }
@@ -62,7 +62,26 @@ export function normalizeClimateRisk(value: string | null | undefined): ClimateR
       return 'Low';
     case 'MODERATE':
     case 'MEDIUM':
-      return 'Medium';
+      return 'Moderate';
+    case 'HIGH':
+      return 'High';
+    case 'EXTREME':
+      return 'Extreme';
+    default:
+      return 'Low';
+  }
+}
+
+/**
+ * Normalizes the three-level phenological risk scale.
+ */
+export function normalizePhenologicalRisk(
+  value: string | null | undefined,
+): PhenologicalRiskLevel {
+  switch ((value ?? '').trim().toUpperCase()) {
+    case 'MODERATE':
+    case 'MEDIUM':
+      return 'Moderate';
     case 'HIGH':
     case 'EXTREME':
       return 'High';
@@ -72,19 +91,19 @@ export function normalizeClimateRisk(value: string | null | undefined): ClimateR
 }
 
 /**
- * Reuses the climate-risk scale for phenological risk levels.
- */
-export function normalizePhenologicalRisk(
-  value: string | null | undefined,
-): PhenologicalRiskLevel {
-  return normalizeClimateRisk(value);
-}
-
-/**
- * Reuses the climate-risk scale for the yield-forecast risk pill.
+ * Normalizes the three-level yield-forecast risk scale.
  */
 export function normalizeYieldRisk(value: string | null | undefined): YieldRiskLevel {
-  return normalizeClimateRisk(value);
+  switch ((value ?? '').trim().toUpperCase()) {
+    case 'MODERATE':
+    case 'MEDIUM':
+      return 'Moderate';
+    case 'HIGH':
+    case 'EXTREME':
+      return 'High';
+    default:
+      return 'Low';
+  }
 }
 
 /**

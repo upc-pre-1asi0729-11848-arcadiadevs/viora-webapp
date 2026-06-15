@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +11,7 @@ import { WeatherForecastDay } from '../../../domain/model/weather-summary.entity
 @Component({
   selector: 'app-weather-summary-card',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, TranslatePipe],
+  imports: [RouterLink, MatButtonModule, MatCardModule, MatIconModule, TranslatePipe],
   templateUrl: './weather-summary-card.html',
   styleUrl: './weather-summary-card.css'
 })

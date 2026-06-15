@@ -3,9 +3,18 @@
     <h2>{{ 'plotOverview.title' | translate }}</h2>
 
     <div class="plot-actions">
-      <button mat-icon-button class="icon-button" [attr.aria-label]="'plotOverview.openSelectedPlot' | translate">
-        <mat-icon>arrow_forward</mat-icon>
-      </button>
+      @if (store.selectedMapPlotId(); as plotId) {
+        <a mat-icon-button class="icon-button"
+           [routerLink]="['/dashboard/plot-overview', plotId]"
+           [attr.aria-label]="'plotOverview.openSelectedPlot' | translate">
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      } @else {
+        <button mat-icon-button class="icon-button" disabled
+                [attr.aria-label]="'plotOverview.openSelectedPlot' | translate">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      }
 
       <mat-select
         class="plot-select"
@@ -34,7 +43,7 @@
           <span
             class="status-pill"
             [class.status-healthy]="plot.healthStatus === 'Healthy'"
-            [class.status-under-review]="plot.healthStatus === 'Under Review'"
+            [class.status-moderate]="plot.healthStatus === 'Moderate'"
             [class.status-critical]="plot.healthStatus === 'Critical'">
             {{ plot.healthStatus }}
           </span>
@@ -45,7 +54,7 @@
           <span
             class="risk-pill"
             [class.risk-low]="plot.phenologicalRisk === 'Low'"
-            [class.risk-medium]="plot.phenologicalRisk === 'Medium'"
+            [class.risk-moderate]="plot.phenologicalRisk === 'Moderate'"
             [class.risk-high]="plot.phenologicalRisk === 'High'">
             {{ plot.phenologicalRisk }}
           </span>

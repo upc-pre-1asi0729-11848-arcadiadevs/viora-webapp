@@ -1,0 +1,116 @@
+<section class="overview-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs()"
+    [subtitle]="'plotOverviewPage.subtitle' | translate"
+    [updatedLabel]="updatedLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Quick actions -->
+  <nav class="quick-actions">
+    @if (selectedPlot()?.id; as plotId) {
+      <a mat-stroked-button class="ghost-button" [routerLink]="['/agronomic/plots', plotId]">
+        <mat-icon>grid_view</mat-icon> {{ 'plotOverviewPage.actions.plotDetail' | translate }}
+      </a>
+      <a mat-stroked-button class="ghost-button" [routerLink]="['/agronomic/plots', plotId, 'edit']">
+        <mat-icon>edit</mat-icon> {{ 'plotOverviewPage.actions.editPlot' | translate }}
+      </a>
+    }
+    <button mat-stroked-button type="button" class="ghost-button" (click)="scrollToWeather()">
+      <mat-icon>cloud</mat-icon> {{ 'plotOverviewPage.actions.weather' | translate }}
+    </button>
+  </nav>
+
+  <!-- Big plot map -->
+  <mat-card class="map-card">
+    <header class="map-card-header">
+      <h2 class="map-title">{{ 'plotOverview.title' | translate }}</h2>
+
+      <mat-select
+        class="plot-select"
+        [value]="store.selectedMapPlotId()"
+        [compareWith]="comparePlotId"
+        [placeholder]="'plotOverview.selectPlot' | translate"
+        (selectionChange)="onPlotSelected($event)"
+        [attr.aria-label]="'plotOverview.selectPlot' | translate">
+        @for (plot of store.plots(); track plot.id) {
+          <mat-option [value]="plot.id">{{ plot.name }}</mat-option>
+        }
+      </mat-select>
+    </header>
+
+    <div class="map-frame">
+      @if (selectedPlot(); as plot) {
+        <app-plot-map [plot]="plot" [showImagery]="true" [showLocation]="true" />
+
+        <div class="map-legend">
+          <span class="legend-title">{{ 'plotOverviewPage.legend.title' | translate }}</span>
+          <span class="legend-scale">
+            <span class="legend-bar"></span>
+            <span class="legend-ends">
+              <span>{{ 'plotOverviewPage.legend.low' | translate }}</span>
+              <span>{{ 'plotOverviewPage.legend.high' | translate }}</span>
+            </span>
+          </span>
+        </div>
+
+        <span class="map-plot-label">
+          <strong>{{ plot.name }}</strong>
+          <span>{{ plot.areaSizeLabel }}</span>
+        </span>
+      } @else {
+        <div class="map-empty">{{ 'plotOverview.loading' | translate }}</div>
+      }
+    </div>
+  </mat-card>
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <app-overall-plot-health-card />
+    <app-ndvi-status-card />
+    <app-chill-accumulation-card />
+    <app-yield-forecast-card />
+    <app-phenological-risk-card />
+  </section>
+
+  <!-- IoT cards -->
+  <section class="iot-grid">
+    <app-iot-devices-card />
+
+    @for (sensor of store.dashboardInsightCards(); track sensor.id) {
+      <app-iot-sensor-card [sensor]="sensor" />
+    }
+
+    <div class="add-iot-card">
+      <h2>{{ 'dashboard.addIotDevice' | translate }}</h2>
+      <a routerLink="/agronomic/iot-devices/new" [attr.aria-label]="'dashboard.addIotDevice' | translate">+</a>
+    </div>
+  </section>
+
+  <!-- Freshness + weather -->
+  <section class="bottom-grid">
+    <app-data-freshness-card />
+    <app-weather-summary-card id="weather-section" class="scroll-target" />
+  </section>
+
+  <!-- Recommended action bar -->
+  <footer class="recommended-bar">
+    <span class="recommended-label">{{ 'plotOverviewPage.recommended.title' | translate }}</span>
+
+    <div class="recommended-actions">
+      @if (selectedPlot()?.id; as plotId) {
+        <a class="recommended-action" [routerLink]="['/agronomic/plots', plotId]">
+          <mat-icon>visibility</mat-icon> {{ 'plotOverviewPage.recommended.viewDetails' | translate }}
+        </a>
+      }
+      <a class="recommended-action" routerLink="/pest-surveillance/report-symptoms">
+        <mat-icon>bug_report</mat-icon> {{ 'plotOverviewPage.recommended.reportSymptoms' | translate }}
+      </a>
+      <a class="recommended-action" routerLink="/agronomic/dynamic-nutrition/plan">
+        <mat-icon>eco</mat-icon> {{ 'plotOverviewPage.recommended.openNutrition' | translate }}
+      </a>
+      <a class="recommended-action" routerLink="/assistance/expert-assistance/request">
+        <mat-icon>support_agent</mat-icon> {{ 'plotOverviewPage.recommended.requestExpert' | translate }}
+      </a>
+    </div>
+  </footer>
+</section>

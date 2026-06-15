@@ -2,6 +2,7 @@
  * @file satellite-imagery.assembler.ts
  * @description specialized assembler for mapping Satellite Imagery resources to domain entities.
  */
+import { environment } from '../../../environments/environment';
 import { SatelliteImagery } from '../domain/model/satellite-imagery.entity';
 import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
 import { SatelliteImageryResource } from './satellite-imagery-response';
@@ -18,11 +19,31 @@ export class SatelliteImageryAssembler extends BaseAssembler {
     return new SatelliteImagery({
       id: resource?.id ?? null,
       plotId: resource?.plotId ?? null,
-      tileUrl: resource?.tileUrl ?? '',
+      tileUrl: this.absoluteTileUrl(resource?.tileUrl),
       captureDate: resource?.captureDate ?? '',
       ndviMean: resource?.ndviMean ?? 0,
       cloudPercentage: resource?.cloudPercentage ?? 0,
     });
+  }
+
+  /**
+   * The backend serves NDVI tiles through a relative proxy path
+   * (`/api/v1/plots/{id}/imagery/tile/{z}/{x}/{y}`). Mapbox raster sources need a
+   * fully-qualified URL, so we resolve it against the platform API origin.
+   */
+  private static absoluteTileUrl(tileUrl: string | null | undefined): string {
+    const url = tileUrl ?? '';
+
+    if (!url || /^https?:\/\//i.test(url)) {
+      return url;
+    }
+
+    try {
+      const origin = new URL(environment.vioraPlatformApiUrl).origin;
+      return `${origin}${url.startsWith('/') ? '' : '/'}${url}`;
+    } catch {
+      return url;
+    }
   }
 
   /**

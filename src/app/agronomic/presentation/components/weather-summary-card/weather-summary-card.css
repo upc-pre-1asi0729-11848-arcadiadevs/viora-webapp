@@ -28,9 +28,13 @@
 }
 
 .weather-header-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
   padding: 0;
+  line-height: 0;
   border: 1.5px solid #2e4a3a;
   border-radius: 13px;
   color: #2e4a3a;
@@ -40,6 +44,17 @@
     0 8px 18px rgba(31, 37, 35, 0.06);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* Material centers its own icon span; force the inner content box to center the
+   image so the cloud sits in the middle of the button instead of riding high. */
+.weather-header-button .mat-mdc-button-touch-target {
+  display: none;
+}
+
+.weather-header-button img {
+  display: block;
+  margin: auto;
 }
 
 .weather-header-button img {

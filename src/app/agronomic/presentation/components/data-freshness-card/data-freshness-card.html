@@ -1,0 +1,24 @@
+<mat-card class="freshness-card">
+  <header class="freshness-header">
+    <h2>{{ 'dataFreshness.title' | translate }}</h2>
+    <span class="freshness-clock">
+      <mat-icon>schedule</mat-icon>
+    </span>
+  </header>
+
+  <ul class="freshness-list">
+    @for (row of rows(); track row.labelKey) {
+      <li class="freshness-row">
+        <span class="freshness-label">{{ row.labelKey | translate }}</span>
+        <span class="freshness-value">
+          @if (row.amount) {
+            <strong>{{ row.amount }}</strong>
+          }
+          @if (row.unitKey) {
+            <span class="freshness-unit">{{ row.unitKey | translate }}</span>
+          }
+        </span>
+      </li>
+    }
+  </ul>
+</mat-card>
