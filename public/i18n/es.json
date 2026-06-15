@@ -30,6 +30,12 @@
     "title": "Crear parcela",
     "subtitle": "Define el límite geográfico de tu parcela para habilitar el monitoreo satelital y climático.",
     "reset": "Reiniciar formulario",
+    "edit": {
+      "title": "Editar parcela",
+      "subtitle": "Actualiza los datos y el límite de la parcela. Los cambios se guardan en la parcela seleccionada.",
+      "save": "Guardar cambios",
+      "saving": "Guardando cambios…"
+    },
     "steps": {
       "basicInfo": "Datos básicos",
       "boundary": "Límite",
@@ -199,6 +205,8 @@
     "loading": "Cargando",
     "risk": "Riesgo",
     "backToDashboard": "Volver al dashboard",
+    "back": "Atrás",
+    "refresh": "Actualizar",
     "cancel": "Cancelar",
     "somethingWrong": "Algo salió mal"
   },
@@ -210,7 +218,142 @@
   "breadcrumbs": {
     "dashboard": "Dashboard",
     "overview": "Resumen",
-    "plotOverview": "Plot Overview"
+    "plotOverview": "Plot Overview",
+    "weather": "Weather"
+  },
+  "dynamicNutrition": {
+    "subtitle": "Revisa el plan nutricional compensatorio generado por las alertas de riesgo fenológico y certifica la aplicación en campo.",
+    "activePlan": "Plan activo",
+    "plot": "Parcela",
+    "plan": "Plan",
+    "linkedAlert": "Alerta vinculada",
+    "stable": "Estable",
+    "loading": "Cargando plan nutricional…",
+    "certify": "Certificar aplicación",
+    "registerExpense": "Registrar gasto de mitigación",
+    "empty": {
+      "title": "Sin plan nutricional activo",
+      "body": "No hay un plan compensatorio activo para {{plot}}. Genera uno a partir de la última alerta e indicadores de monitoreo.",
+      "hint": "Un plan compensatorio solo se genera cuando el riesgo climático de la parcela es alto.",
+      "generate": "Generar plan",
+      "generating": "Generando plan…"
+    },
+    "cards": {
+      "activePlan": "Plan activo",
+      "activePlanNote": "Generado a partir de la última alerta de riesgo.",
+      "linkedPlot": "Parcela vinculada",
+      "viewInMyPlots": "Ver en My Plots",
+      "applicationWindow": "Ventana de aplicación",
+      "windowNote": "Antes de la siguiente etapa fenológica.",
+      "climate": "Clima",
+      "certification": "Estado de certificación",
+      "certifiedNote": "Aplicación en campo certificada.",
+      "pendingNote": "Aún no se registró la aplicación en campo."
+    },
+    "table": {
+      "title": "Plan nutricional recomendado",
+      "input": "Insumo",
+      "purpose": "Propósito",
+      "coverage": "Cobertura",
+      "rate": "Dosis planificada",
+      "status": "Estado"
+    },
+    "rationale": {
+      "title": "Justificación del plan",
+      "subtitle": "Por qué el sistema generó este plan compensatorio.",
+      "chill": "Acumulación de frío",
+      "gap": "Brecha",
+      "anomaly": "Anomalía de temperatura",
+      "yieldRisk": "Riesgo de rendimiento",
+      "note": "Este plan fue generado por Viora usando la alerta activa y los indicadores de monitoreo recientes."
+    },
+    "window": {
+      "title": "Ventana de aplicación",
+      "subtitle": "La ventana óptima se actualiza cuando cambia el pronóstico.",
+      "current": "Ventana actual",
+      "climateCheck": "Verificación climática",
+      "stableConditions": "Condiciones estables",
+      "note": "La ventana puede actualizarse si las condiciones del pronóstico cambian antes de la ejecución."
+    },
+    "exec": {
+      "title": "Ejecución del plan",
+      "subtitle": "La certificación y la declaración financiera son obligatorias para cerrar la intervención nutricional.",
+      "applicationStatus": "Estado de aplicación",
+      "requiredCertification": "Certificación requerida",
+      "dateAndInputs": "Fecha e insumos aplicados",
+      "expenseDeclaration": "Declaración de gasto",
+      "declared": "Declarado",
+      "pending": "Pendiente"
+    },
+    "certifyModal": {
+      "title": "Certificar aplicación",
+      "subtitle": "Registra la fecha exacta y los insumos aplicados en campo.",
+      "date": "Fecha de aplicación",
+      "time": "Hora de aplicación",
+      "appliedInputs": "Insumos aplicados",
+      "doseConfirmation": "Confirmación de dosis",
+      "doseRecommended": "Aplicado según recomendación",
+      "doseAdjusted": "Dosis ajustada",
+      "dosePartial": "Aplicación parcial",
+      "fieldOperator": "Operario de campo",
+      "fieldNotes": "Notas de campo",
+      "note": "Esta certificación actualiza el historial de la parcela y alimenta el motor predictivo con las acciones ejecutadas.",
+      "save": "Guardar certificación"
+    },
+    "expenseModal": {
+      "title": "Registrar gasto de mitigación",
+      "subtitle": "Declara los costos asociados al plan nutricional.",
+      "inputCost": "Costo de insumos (S/)",
+      "laborCost": "Costo de mano de obra (S/)",
+      "equipmentCost": "Costo de equipos (S/)",
+      "code": "Recibo o código interno",
+      "notes": "Notas del gasto",
+      "total": "Total calculado",
+      "margin": "Margen esperado tras el gasto",
+      "note": "La intervención no puede cerrarse hasta registrar la declaración financiera.",
+      "save": "Guardar gasto"
+    }
+  },
+  "weatherPage": {
+    "subtitle": "Pronóstico detallado e indicadores de la parcela seleccionada.",
+    "search": "Buscar",
+    "climateRisk": "riesgo climático",
+    "loading": "Cargando…",
+    "loadingDetail": "Cargando clima…",
+    "hourlySummary": "Se esperan condiciones {{condition}}. Ráfagas de viento de alrededor de {{gust}} km/h.",
+    "daysForecast": "Pronóstico de {{count}} días",
+    "precipitation": "Precipitación",
+    "todayStats": "Estadísticas de hoy",
+    "agronomicImpact": "Impacto agronómico",
+    "weatherAlerts": "Alertas meteorológicas",
+    "noAlerts": "Sin alertas meteorológicas activas.",
+    "stats": {
+      "anomaly": "Anomalía de temperatura",
+      "climateRisk": "Riesgo climático",
+      "windGusts": "Ráfagas de viento",
+      "humidity": "Humedad",
+      "currentChill": "Acumulación de frío actual",
+      "targetChill": "Objetivo de campaña",
+      "gap": "Brecha",
+      "trend": "Tendencia"
+    },
+    "impact": {
+      "stable": "Las condiciones se mantienen estables para {{name}}.",
+      "attention": "Las condiciones requieren atención en {{name}} (riesgo climático: {{risk}}).",
+      "chillBelow": "La acumulación de frío por debajo del objetivo ({{gap}} CP) puede afectar la floración.",
+      "chillOnTarget": "La acumulación de frío está en objetivo para la campaña.",
+      "recommendation": "Recomendación a corto plazo: monitorear el riesgo fenológico y revisar el plan de nutrición."
+    },
+    "alerts": {
+      "anomaly": "Anomalía de temperatura alta detectada",
+      "chill": "Acumulación de frío por debajo del objetivo",
+      "risk": "Riesgo climático alto"
+    },
+    "actions": {
+      "nutrition": "Plan de nutrición",
+      "alerts": "Ver alertas",
+      "inspect": "Inspeccionar parcela"
+    }
   },
   "time": {
     "current": "Actual",
@@ -267,6 +410,12 @@
     "yield": {
       "title": "Pronóstico de rendimiento",
       "loading": "Cargando pronóstico de rendimiento"
+    },
+    "phenological": {
+      "title": "Riesgo fenológico",
+      "description": "Riesgo a la floración por cumplimiento de frío invernal.",
+      "disclaimer": "Basado en el frío acumulado vs el requerimiento del cultivo durante la temporada de frío; el frío fuera de temporada no cuenta como riesgo.",
+      "loading": "Cargando riesgo fenológico"
     },
     "iot": {
       "title": "Dispositivos IoT",

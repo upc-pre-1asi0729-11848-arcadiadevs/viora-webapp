@@ -59,7 +59,10 @@
 }
 
 .plot-select {
-  min-width: 180px;
+  flex: 0 0 auto;
+  width: 220px;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 8px 14px;
   border: 1px solid #e0dbd2;
   border-radius: 10px;
@@ -159,7 +162,7 @@
 /* ---------- KPI / IoT grids ---------- */
 .kpi-grid {
   display: grid;
-  grid-template-columns: minmax(300px, 1.35fr) repeat(3, minmax(180px, 1fr));
+  grid-template-columns: minmax(300px, 1.35fr) repeat(4, minmax(180px, 1fr));
   gap: 24px;
   margin-bottom: 24px;
   overflow-x: auto;

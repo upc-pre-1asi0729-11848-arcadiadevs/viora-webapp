@@ -17,6 +17,7 @@ export interface MyPlotOverviewItemResource {
   currentNdvi?: number;
   chillPortions?: number;
   healthStatus?: string;
+  phenologicalRisk?: string;
   onlineDeviceCount?: number;
   activeAlertCount?: number;
   lastUpdatedAt?: string;

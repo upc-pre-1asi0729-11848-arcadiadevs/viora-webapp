@@ -13,7 +13,7 @@
  * @module AgronomicStore
  */
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { finalize, take } from 'rxjs';
+import { Observable, Subscription, finalize, take } from 'rxjs';
 
 import { AgronomicApiService } from '../infrastructure/agronomic-api.service';
 
@@ -28,12 +28,20 @@ import { AgronomicStatistics } from '../domain/model/agronomic-statistics.entity
 import { MyPlotsOverview } from '../domain/model/my-plots-overview.entity';
 import { PlotRegistration } from '../domain/model/plot-registration.entity';
 import { PlotDetail } from '../domain/model/plot-detail.entity';
+import { DynamicNutritionPlan } from '../domain/model/dynamic-nutrition-plan.entity';
+import { CertifyNutritionPlanResource } from '../infrastructure/dynamic-nutrition-plan-response';
 import { IotDevice } from '../domain/model/iot-device.entity';
 import { IotRiskLevel, IotSensorCard } from '../domain/model/iot-device-summary.entity';
-import { CreatePlotResource } from '../infrastructure/plot-registration-response';
+import {
+  CreatePlotResource,
+  UpdatePlotResource,
+} from '../infrastructure/plot-registration-response';
 
 /** Create Plot wizard payload (userId is injected by the API service). */
 export type CreatePlotRequest = Omit<CreatePlotResource, 'userId'>;
+
+/** Edit Plot payload — partial; omitted fields are kept by the backend. */
+export type UpdatePlotRequest = UpdatePlotResource;
 
 export type DashboardScope = number | string;
 export type DashboardTimeRange = 'current' | '7days' | '30days';
@@ -47,6 +55,7 @@ export interface AgronomicLoadingState {
   statistics: boolean;
   devices: boolean;
   detail: boolean;
+  nutrition: boolean;
   saving: boolean;
   deleting: boolean;
 }
@@ -76,6 +85,7 @@ export class AgronomicStore {
   readonly myPlotsOverview = signal<MyPlotsOverview | null>(null);
   readonly lastPlotRegistration = signal<PlotRegistration | null>(null);
   readonly plotDetail = signal<PlotDetail | null>(null);
+  readonly activeNutritionPlan = signal<DynamicNutritionPlan | null>(null);
 
   readonly summaryLoaded = signal<boolean>(false);
 
@@ -96,6 +106,7 @@ export class AgronomicStore {
     statistics: false,
     devices: false,
     detail: false,
+    nutrition: false,
     saving: false,
     deleting: false,
   });
@@ -131,7 +142,30 @@ export class AgronomicStore {
 
 
   readonly latestAgronomicRecord = computed<AgronomicRecord | null>(() => {
-    return this.activeSummary()?.latestNdvi ?? null;
+    const summaryRecord = this.activeSummary()?.latestNdvi ?? null;
+
+    if (summaryRecord && summaryRecord.ndviIndex > 0) {
+      return summaryRecord;
+    }
+
+    // Single-plot scope whose slow monitoring summary hasn't landed yet: fill
+    // NDVI from the imagery we already loaded with `/plots` (same source the
+    // Plot Overview widget uses), so the card shows instantly. The summary still
+    // refines it (plus chill/yield) once it arrives.
+    const plot = this.selectedDashboardScope() === 'all' ? null : this.selectedDashboardPlot();
+    const imagery = plot?.currentImagery;
+
+    if (plot && imagery && imagery.ndviMean > 0) {
+      return new AgronomicRecord({
+        plotId: plot.id,
+        date: imagery.captureDate || plot.lastUpdate,
+        ndviIndex: imagery.ndviMean,
+        ndviTrend: 'stable',
+        ndviStatusLabel: plot.healthStatus,
+      });
+    }
+
+    return summaryRecord;
   });
 
   readonly selectedChillHourRecord = computed<ChillHourRecord | null>(() => {
@@ -258,6 +292,61 @@ export class AgronomicStore {
   /** Epoch ms of the last on-demand ingestion (0 = never this session). */
   private lastStatisticsSyncAt = 0;
 
+  /**
+   * Per-plot caches for the slow on-demand endpoints
+   * (`/plots/{id}/monitoring-summary` and `/weather-forecast`). Keyed by
+   * `String(plotId)`. Once a plot has been loaded this session, re-selecting it
+   * (or returning to the dashboard on that scope) renders instantly from cache
+   * and refreshes silently in the background instead of blanking and waiting
+   * out the multi-minute server-side recompute. Signals so the Weather page can
+   * react as each plot's data lands.
+   */
+  readonly plotSummaryCache = signal<Record<string, MonitoringSummary>>({});
+  readonly plotWeatherCache = signal<Record<string, WeatherSummary>>({});
+
+  /** Plot ids with an in-flight ensure* fetch, to avoid duplicate requests. */
+  private readonly ensureInFlight = new Set<string>();
+
+  /**
+   * In-flight request per data channel. Each scope-bound fetch cancels the
+   * previous request on its channel before issuing a new one (see
+   * {@link runExclusive}).
+   */
+  private readonly inFlightRequests = new Map<keyof AgronomicLoadingState, Subscription>();
+
+  /**
+   * Runs a request on a named channel, cancelling any previous in-flight
+   * request on the same channel first.
+   *
+   * Switching plots (or navigating between the dashboard and the plot overview)
+   * fires a fresh request on each channel. Without cancellation the superseded
+   * requests keep occupying the browser's connection pool (~6 per host) and the
+   * slow per-plot monitoring endpoint starves the dashboard reload, leaving the
+   * cards stuck on their loading placeholders. Unsubscribing aborts the
+   * underlying HTTP request and frees the connection immediately.
+   */
+  private runExclusive<T>(
+    channel: keyof AgronomicLoadingState,
+    request$: Observable<T>,
+    onNext: (value: T) => void,
+  ): void {
+    // Abort the previous request on this channel (its finalize clears loading).
+    this.inFlightRequests.get(channel)?.unsubscribe();
+    this.setLoading(channel, true);
+
+    const subscription = request$
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading(channel, false)),
+      )
+      .subscribe({
+        next: onNext,
+        error: (error) => this.registerError(error),
+      });
+
+    this.inFlightRequests.set(channel, subscription);
+  }
+
   /** Loads (or reloads) every Dashboard / Overview data source. */
   refreshDashboardData(): void {
     this.fetchPlots();
@@ -315,141 +404,177 @@ export class AgronomicStore {
 
   /** Loads the producer's plots together with current imagery. */
   fetchPlots(): void {
-    this.setLoading('plots', true);
+    this.runExclusive('plots', this.agronomicApi.getPlots(), (plots) => {
+      this.plots.set(this.mergePlotHealth(plots, this.myPlotsOverview()));
+      this.plotsLoaded.set(true);
 
-    this.agronomicApi
-      .getPlots()
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('plots', false)),
-      )
-      .subscribe({
-        next: (plots) => {
-          this.plots.set(this.mergePlotHealth(plots, this.myPlotsOverview()));
-          this.plotsLoaded.set(true);
-
-          if (plots.length > 0 && this.selectedMapPlotId() === null) {
-            this.selectMapPlot(plots[0].id);
-          }
-        },
-        error: (error) => this.registerError(error),
-      });
+      if (plots.length > 0 && this.selectedMapPlotId() === null) {
+        this.selectMapPlot(plots[0].id);
+      }
+    });
   }
 
   /** Loads the aggregated overview (real IoT + plot-health counts). */
   fetchMyPlotsOverview(): void {
-    this.setLoading('overview', true);
-
-    this.agronomicApi
-      .getMyPlotsOverview()
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('overview', false)),
-      )
-      .subscribe({
-        next: (overview) => {
-          this.myPlotsOverview.set(overview);
-          this.devicesLoaded.set(true);
-          this.plots.update((plots) => this.mergePlotHealth(plots, overview));
-        },
-        error: (error) => this.registerError(error),
-      });
+    this.runExclusive('overview', this.agronomicApi.getMyPlotsOverview(), (overview) => {
+      this.myPlotsOverview.set(overview);
+      this.devicesLoaded.set(true);
+      this.plots.update((plots) => this.mergePlotHealth(plots, overview));
+    });
   }
 
   /** Loads the All Plots current monitoring summary (and its weather snapshot). */
   fetchCurrentMonitoringSummary(): void {
-    this.setLoading('summary', true);
+    this.runExclusive('summary', this.agronomicApi.getCurrentMonitoringSummary(), (summary) => {
+      this.monitoringSummary.set(summary);
+      this.summaryLoaded.set(Boolean(summary));
 
-    this.agronomicApi
-      .getCurrentMonitoringSummary()
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('summary', false)),
-      )
-      .subscribe({
-        next: (summary) => {
-          this.monitoringSummary.set(summary);
-          this.summaryLoaded.set(Boolean(summary));
-
-          if (this.selectedDashboardScope() === 'all') {
-            this.weatherSummary.set(summary?.weather ?? null);
-          }
-        },
-        error: (error) => this.registerError(error),
-      });
+      if (this.selectedDashboardScope() === 'all') {
+        this.weatherSummary.set(summary?.weather ?? null);
+      }
+    });
   }
 
   /** Loads the current monitoring summary for a single plot. */
   fetchPlotMonitoringSummary(plotId: DashboardScope): void {
-    this.setLoading('summary', true);
+    const key = String(plotId);
 
-    this.agronomicApi
-      .getPlotMonitoringSummary(plotId)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('summary', false)),
-      )
-      .subscribe({
-        next: (summary) => {
-          this.plotMonitoringSummary.set(summary);
+    this.runExclusive('summary', this.agronomicApi.getPlotMonitoringSummary(plotId), (summary) => {
+      if (summary) {
+        this.plotSummaryCache.update((cache) => ({ ...cache, [key]: summary }));
+      }
 
-          if (
-            String(this.selectedDashboardScope()) === String(plotId) &&
-            summary?.weather &&
-            !this.weatherSummary()
-          ) {
-            this.weatherSummary.set(summary.weather);
-          }
-        },
-        error: (error) => this.registerError(error),
-      });
+      if (String(this.selectedDashboardScope()) !== key) {
+        return;
+      }
+
+      // Don't blank cached figures if a background refresh comes back empty (404).
+      if (summary || !(key in this.plotSummaryCache())) {
+        this.plotMonitoringSummary.set(summary);
+      }
+
+      if (summary?.weather && !this.weatherSummary()) {
+        this.weatherSummary.set(summary.weather);
+      }
+    });
   }
 
-  fetchPlotWeatherForecast(plotId: DashboardScope): void {
-    this.setLoading('weather', true);
+  /**
+   * Loads a plot's weather into {@link plotWeatherCache} if absent. Used by the
+   * Weather page to populate every plot in the side list concurrently — it does
+   * NOT go through the single-channel {@link runExclusive} (which would cancel
+   * all but the last) and never touches the dashboard's scoped signals.
+   */
+  ensurePlotWeather(plotId: number | string): void {
+    const key = String(plotId);
+
+    if (key in this.plotWeatherCache() || this.ensureInFlight.has(`weather:${key}`)) {
+      return;
+    }
+
+    this.ensureInFlight.add(`weather:${key}`);
 
     this.agronomicApi
       .getPlotWeatherForecast(plotId)
       .pipe(
         take(1),
-        finalize(() => this.setLoading('weather', false)),
+        finalize(() => this.ensureInFlight.delete(`weather:${key}`)),
       )
       .subscribe({
         next: (weather) => {
-          if (weather && String(this.selectedDashboardScope()) === String(plotId)) {
-            this.weatherSummary.set(weather);
+          if (weather) {
+            this.plotWeatherCache.update((cache) => ({ ...cache, [key]: weather }));
           }
         },
         error: (error) => this.registerError(error),
       });
+  }
+
+  /** Loads a plot's monitoring summary into {@link plotSummaryCache} if absent. */
+  ensurePlotSummary(plotId: number | string): void {
+    const key = String(plotId);
+
+    if (key in this.plotSummaryCache() || this.ensureInFlight.has(`summary:${key}`)) {
+      return;
+    }
+
+    this.ensureInFlight.add(`summary:${key}`);
+
+    this.agronomicApi
+      .getPlotMonitoringSummary(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.ensureInFlight.delete(`summary:${key}`)),
+      )
+      .subscribe({
+        next: (summary) => {
+          if (summary) {
+            this.plotSummaryCache.update((cache) => ({ ...cache, [key]: summary }));
+          }
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Drops a plot's cached summary + weather (after edit/delete). */
+  private evictPlotCaches(key: string): void {
+    this.plotSummaryCache.update(({ [key]: _summary, ...rest }) => rest);
+    this.plotWeatherCache.update(({ [key]: _weather, ...rest }) => rest);
+  }
+
+  /** Forces a fresh weather + summary fetch for one plot (Weather page refresh). */
+  reloadPlotWeather(plotId: number | string): void {
+    this.evictPlotCaches(String(plotId));
+    this.ensurePlotWeather(plotId);
+    this.ensurePlotSummary(plotId);
+  }
+
+  fetchPlotWeatherForecast(plotId: DashboardScope): void {
+    const key = String(plotId);
+
+    this.runExclusive('weather', this.agronomicApi.getPlotWeatherForecast(plotId), (weather) => {
+      if (weather) {
+        this.plotWeatherCache.update((cache) => ({ ...cache, [key]: weather }));
+      }
+
+      if (weather && String(this.selectedDashboardScope()) === key) {
+        this.weatherSummary.set(weather);
+      }
+    });
   }
 
   fetchTrendStatistics(
     plotId: DashboardScope = this.selectedTrendPlotId(),
     timeRange: TrendAnalysisTimeRange = this.selectedTrendTimeRange(),
   ): void {
-    this.setLoading('statistics', true);
-
-    this.agronomicApi
-      .getAgronomicStatisticsSeries(plotId, timeRange)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('statistics', false)),
-      )
-      .subscribe({
-        next: (statistics) => this.trendAgronomicStatistics.set(statistics),
-        error: (error) => this.registerError(error),
-      });
+    this.runExclusive(
+      'statistics',
+      this.agronomicApi.getAgronomicStatisticsSeries(plotId, timeRange),
+      (statistics) => this.trendAgronomicStatistics.set(statistics),
+    );
   }
 
   selectDashboardScope(scope: DashboardScope): void {
     this.selectedDashboardScope.set(scope);
-    this.plotMonitoringSummary.set(null);
-    this.weatherSummary.set(null);
 
     if (scope === 'all') {
+      // "All Plots" leaves the Plot Overview widget on its own selection.
+      this.plotMonitoringSummary.set(null);
       this.weatherSummary.set(this.monitoringSummary()?.weather ?? null);
+      this.loadScopeData(scope);
+      return;
     }
+
+    // Picking a specific plot mirrors it onto the Plot Overview widget (its
+    // map/selector follow the active plot).
+    this.selectMapPlot(scope);
+
+    // Seed from cache so a re-selected plot renders instantly; only the first
+    // visit to a plot shows the loading state. `loadScopeData` then refreshes
+    // both signals (and the cache) silently in the background.
+    const key = String(scope);
+    this.plotMonitoringSummary.set(this.plotSummaryCache()[key] ?? null);
+    this.weatherSummary.set(this.plotWeatherCache()[key] ?? null);
 
     this.loadScopeData(scope);
   }
@@ -481,21 +606,10 @@ export class AgronomicStore {
 
 
   fetchDevices(): void {
-    this.setLoading('devices', true);
-
-    this.agronomicApi
-      .getIotDevices()
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('devices', false)),
-      )
-      .subscribe({
-        next: (devices) => {
-          this.devices.set(devices);
-          this.devicesLoaded.set(true);
-        },
-        error: (error) => this.registerError(error),
-      });
+    this.runExclusive('devices', this.agronomicApi.getIotDevices(), (devices) => {
+      this.devices.set(devices);
+      this.devicesLoaded.set(true);
+    });
   }
 
   fetchDeviceById(id: number | string): void {
@@ -550,6 +664,126 @@ export class AgronomicStore {
       });
   }
 
+  /**
+   * Partially updates a plot via PATCH (reuses the Create Plot wizard in edit
+   * mode). On success it invalidates every cached view that depends on the plot
+   * — per-plot monitoring summary, weather, and the detail — because an edited
+   * boundary changes area/NDVI/weather; without this the dashboard would keep
+   * serving the pre-edit figures from {@link plotSummaryCache}. Then it reloads
+   * plots + overview so the new name/area/crop propagate.
+   */
+  updatePlot(
+    plotId: number | string,
+    changes: UpdatePlotRequest,
+    onSuccess?: () => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('saving', true);
+
+    this.agronomicApi
+      .updatePlot(plotId, changes)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('saving', false)),
+      )
+      .subscribe({
+        next: () => {
+          const key = String(plotId);
+          this.evictPlotCaches(key);
+
+          if (String(this.selectedDashboardScope()) === key) {
+            this.plotMonitoringSummary.set(null);
+            this.weatherSummary.set(null);
+          }
+
+          if (String(this.plotDetail()?.id ?? '') === key) {
+            this.plotDetail.set(null);
+          }
+
+          this.plotsLoaded.set(false);
+          this.fetchPlots();
+          this.fetchMyPlotsOverview();
+          onSuccess?.();
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
+      });
+  }
+
+  /** Loads the active compensatory nutrition plan for a plot (null = none yet). */
+  fetchActiveNutritionPlan(plotId: number | string): void {
+    this.setLoading('nutrition', true);
+    this.activeNutritionPlan.set(null);
+
+    this.agronomicApi
+      .getActiveNutritionPlan(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('nutrition', false)),
+      )
+      .subscribe({
+        next: (plan) => this.activeNutritionPlan.set(plan),
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /** Generates a new nutrition plan for a plot and stores it as the active one. */
+  generateNutritionPlan(
+    plotId: number | string,
+    onSuccess?: (plan: DynamicNutritionPlan | null) => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('saving', true);
+
+    this.agronomicApi
+      .generateNutritionPlan(plotId)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('saving', false)),
+      )
+      .subscribe({
+        next: (plan) => {
+          this.activeNutritionPlan.set(plan);
+          onSuccess?.(plan);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
+      });
+  }
+
+  /** Certifies the field application of a plan; refreshes the stored plan. */
+  certifyNutritionPlan(
+    planId: number | string,
+    certification: CertifyNutritionPlanResource,
+    onSuccess?: () => void,
+    onError?: (error: unknown) => void,
+  ): void {
+    this.setLoading('saving', true);
+
+    this.agronomicApi
+      .certifyNutritionPlan(planId, certification)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('saving', false)),
+      )
+      .subscribe({
+        next: (plan) => {
+          if (plan) {
+            this.activeNutritionPlan.set(plan);
+          }
+          onSuccess?.();
+        },
+        error: (error) => {
+          this.registerError(error);
+          onError?.(error);
+        },
+      });
+  }
+
   /** Loads the configuration + monitoring detail for one plot. */
   fetchPlotDetail(plotId: number | string): void {
     this.setLoading('detail', true);
@@ -583,6 +817,7 @@ export class AgronomicStore {
       )
       .subscribe({
         next: () => {
+          this.evictPlotCaches(String(plotId));
           this.plotsLoaded.set(false);
           this.fetchMyPlotsOverview();
           onSuccess?.();
@@ -679,14 +914,21 @@ export class AgronomicStore {
       return plots;
     }
 
-    const healthById = new Map(
-      overview.plots.map((plot) => [String(plot.id), plot.healthStatus] as const),
+    const overviewById = new Map(
+      overview.plots.map((plot) => [String(plot.id), plot] as const),
     );
 
     return plots.map((plot) => {
-      const healthStatus = healthById.get(String(plot.id));
+      const item = overviewById.get(String(plot.id));
 
-      if (!healthStatus || healthStatus === plot.healthStatus) {
+      if (!item) {
+        return plot;
+      }
+
+      const healthStatus = item.healthStatus;
+      const phenologicalRisk = item.phenologicalRisk;
+
+      if (healthStatus === plot.healthStatus && phenologicalRisk === plot.phenologicalRisk) {
         return plot;
       }
 
@@ -698,7 +940,12 @@ export class AgronomicStore {
         lastUpdate: plot.lastUpdate,
         currentImagery: plot.currentImagery,
         healthStatus,
-        phenologicalRisk: plot.phenologicalRisk,
+        phenologicalRisk,
+        cropType: plot.cropType,
+        variety: plot.variety,
+        location: plot.location,
+        campaign: plot.campaign,
+        notes: plot.notes,
       });
     });
   }

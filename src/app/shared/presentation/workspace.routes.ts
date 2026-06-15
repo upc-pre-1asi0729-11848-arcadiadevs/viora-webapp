@@ -4,6 +4,8 @@ const producerDashboard = () =>
   import('./views/producer-dashboard/producer-dashboard').then((m) => m.ProducerDashboard);
 const plotOverviewPage = () =>
   import('./views/plot-overview-page/plot-overview-page').then((m) => m.PlotOverviewPage);
+const weatherPage = () =>
+  import('./views/weather-page/weather-page').then((m) => m.WeatherPage);
 const comingSoonPage = () =>
   import('./views/coming-soon-page/coming-soon-page').then((m) => m.ComingSoonPage);
 
@@ -93,6 +95,11 @@ export const workspaceRoutes: Routes = [
     path: 'dashboard/plot-overview/:plotId',
     title: 'Plot Overview',
     loadComponent: plotOverviewPage,
+  },
+  {
+    path: 'dashboard/weather/:plotId',
+    title: 'Weather',
+    loadComponent: weatherPage,
   },
   ...workspacePlaceholderRoutes,
 ];

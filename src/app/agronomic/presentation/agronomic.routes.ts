@@ -12,6 +12,8 @@ const myPlotsOverview = () =>
   import('./views/my-plots-overview/my-plots-overview').then((m) => m.MyPlotsOverviewView);
 const plotCreate = () => import('./views/plot-create/plot-create').then((m) => m.PlotCreate);
 const plotDetail = () => import('./views/plot-detail/plot-detail').then((m) => m.PlotDetailView);
+const dynamicNutritionPage = () =>
+  import('./views/dynamic-nutrition/dynamic-nutrition-page').then((m) => m.DynamicNutritionPage);
 
 /**
  * Route tree for agronomic bounded-context views.
@@ -55,7 +57,7 @@ export const agronomicRoutes: Routes = [
   {
     path: 'plots/:id/edit',
     title: 'My Plots / Edit plot',
-    loadComponent: comingSoonPage,
+    loadComponent: plotCreate,
     data: {
       pageTitle: 'My Plots / Edit plot',
       sectionLabel: 'My Plots',
@@ -75,7 +77,7 @@ export const agronomicRoutes: Routes = [
   {
     path: 'dynamic-nutrition',
     title: 'Dynamic Nutrition',
-    loadComponent: comingSoonPage,
+    loadComponent: dynamicNutritionPage,
     data: {
       pageTitle: 'Dynamic Nutrition',
       sectionLabel: 'Dynamic Nutrition',
@@ -85,7 +87,7 @@ export const agronomicRoutes: Routes = [
   {
     path: 'dynamic-nutrition/plan',
     title: 'Nutrition Plan',
-    loadComponent: comingSoonPage,
+    loadComponent: dynamicNutritionPage,
     data: {
       pageTitle: 'Nutrition Plan',
       sectionLabel: 'Dynamic Nutrition',

@@ -28,6 +28,8 @@
       <mat-select
         class="plot-select"
         [value]="store.selectedMapPlotId()"
+        [compareWith]="comparePlotId"
+        [placeholder]="'plotOverview.selectPlot' | translate"
         (selectionChange)="onPlotSelected($event)"
         [attr.aria-label]="'plotOverview.selectPlot' | translate">
         @for (plot of store.plots(); track plot.id) {
@@ -67,6 +69,7 @@
     <app-ndvi-status-card />
     <app-chill-accumulation-card />
     <app-yield-forecast-card />
+    <app-phenological-risk-card />
   </section>
 
   <!-- IoT cards -->
