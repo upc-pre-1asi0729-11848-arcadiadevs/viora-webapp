@@ -1,0 +1,162 @@
+<section class="weather-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs()"
+    [subtitle]="'weatherPage.subtitle' | translate"
+    [updatedLabel]="updatedLabel()"
+    (refresh)="refresh()" />
+
+  <div class="weather-layout">
+    <!-- LEFT: plot list -->
+    <aside class="plot-list">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input
+          type="search"
+          [value]="searchTerm()"
+          (input)="onSearch($event)"
+          [placeholder]="'weatherPage.search' | translate" />
+      </div>
+
+      @for (plot of filteredPlots(); track plot.id) {
+        <button
+          type="button"
+          class="plot-card"
+          [class.is-selected]="isSelected(plot.id)"
+          [style.background-image]="listBackground(plot.id)"
+          (click)="selectPlot(plot.id)">
+          <span class="pc-overlay"></span>
+          <span class="pc-info">
+            <span class="pc-name">{{ plot.name }}</span>
+            @if (weatherFor(plot.id); as w) {
+              <span class="pc-risk">{{ w.climateRisk }} {{ 'weatherPage.climateRisk' | translate }}</span>
+              <span class="pc-cond">{{ w.condition }}</span>
+            } @else {
+              <span class="pc-risk">{{ 'weatherPage.loading' | translate }}</span>
+            }
+          </span>
+          <span class="pc-temp">{{ tempLabel(weatherFor(plot.id)?.currentTemp) }}</span>
+        </button>
+      }
+    </aside>
+
+    <!-- RIGHT: detail -->
+    <main class="weather-detail" [style.background-image]="heroBackground()">
+      @if (selectedWeather(); as weather) {
+        <!-- Hero -->
+        <section class="hero">
+          <h2 class="hero-name">{{ selectedPlot()?.name }}</h2>
+          <p class="hero-loc">
+            {{ selectedPlot()?.location || '—' }} · {{ selectedPlot()?.areaSizeLabel }}
+          </p>
+          <div class="hero-temp">{{ tempLabel(weather.currentTemp) }}</div>
+          <p class="hero-cond">{{ weather.condition }}</p>
+          @if (today(); as day) {
+            <p class="hero-hl">H: {{ tempLabel(day.maxTemp) }} &nbsp; L: {{ tempLabel(day.minTemp) }}</p>
+          }
+        </section>
+
+        <!-- Hourly -->
+        <section class="glass-card hourly-card">
+          <p class="hourly-summary">{{ 'weatherPage.hourlySummary' | translate: hourlySummaryParams() }}</p>
+          <div class="hourly-strip">
+            @for (cell of hourlyCells(); track $index) {
+              <div class="hour-cell">
+                <span class="hour-label">{{ cell.label }}</span>
+                <img class="hour-icon" [src]="iconFor(cell.status)" alt="" />
+                <span class="hour-temp">{{ cell.temp }}°</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Forecast + precipitation -->
+        <section class="mid-row">
+          <div class="glass-card forecast-card">
+            <h3 class="card-title">{{ 'weatherPage.daysForecast' | translate: { count: dailyRows().length } }}</h3>
+            @for (row of dailyRows(); track $index) {
+              <div class="day-row">
+                <span class="day-label">{{ row.label }}</span>
+                <img class="day-icon" [src]="iconFor(row.status)" alt="" />
+                <span class="day-min">{{ row.min }}°</span>
+                <span class="range">
+                  <span class="range-fill" [style.left.%]="row.leftPct" [style.width.%]="row.widthPct"></span>
+                </span>
+                <span class="day-max">{{ row.max }}°</span>
+              </div>
+            }
+          </div>
+
+          <div class="glass-card precip-card">
+            <h3 class="card-title">{{ 'weatherPage.precipitation' | translate }}</h3>
+            <div class="precip-map-wrap">
+              <app-weather-precip-map [plot]="selectedPlot()" />
+            </div>
+            <p class="precip-caption">
+              <mat-icon>water_drop</mat-icon>
+              {{ weather.precipitationMm }} mm
+            </p>
+          </div>
+        </section>
+
+        <!-- Today statistics -->
+        <section class="glass-card stats-card">
+          <h3 class="card-title">{{ 'weatherPage.todayStats' | translate }}</h3>
+          <div class="stats-grid">
+            @for (tile of statTiles(); track tile.labelKey) {
+              <div class="stat-tile">
+                <span class="stat-head">
+                  <mat-icon>{{ tile.icon }}</mat-icon>
+                  {{ tile.labelKey | translate }}
+                </span>
+                <span class="stat-value" [class.tone-risk]="tile.tone === 'risk'" [class.tone-warn]="tile.tone === 'warn'">
+                  {{ tile.value }}
+                </span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Agronomic impact + alerts -->
+        <section class="bottom-row">
+          <div class="glass-card impact-card">
+            <h3 class="card-title">{{ 'weatherPage.agronomicImpact' | translate }}</h3>
+            <ul class="impact-list">
+              @for (bullet of impactBullets(); track $index) {
+                <li>{{ bullet.key | translate: bullet.params }}</li>
+              }
+            </ul>
+            <div class="impact-actions">
+              <a class="pill-action" routerLink="/agronomic/dynamic-nutrition/plan">
+                <mat-icon>eco</mat-icon> {{ 'weatherPage.actions.nutrition' | translate }}
+              </a>
+              <a class="pill-action" routerLink="/pest-surveillance/report-symptoms">
+                <mat-icon>campaign</mat-icon> {{ 'weatherPage.actions.alerts' | translate }}
+              </a>
+              @if (selectedPlot()?.id; as plotId) {
+                <a class="pill-action" [routerLink]="['/agronomic/plots', plotId]">
+                  <mat-icon>visibility</mat-icon> {{ 'weatherPage.actions.inspect' | translate }}
+                </a>
+              }
+            </div>
+          </div>
+
+          <div class="glass-card alerts-card">
+            <h3 class="card-title">{{ 'weatherPage.weatherAlerts' | translate }}</h3>
+            <div class="alerts-list">
+              @for (chip of alertChips(); track $index) {
+                <span class="alert-chip">{{ chip.text ?? (chip.key | translate) }}</span>
+              } @empty {
+                <span class="alert-empty">{{ 'weatherPage.noAlerts' | translate }}</span>
+              }
+            </div>
+          </div>
+        </section>
+      } @else {
+        <div class="detail-loading">
+          <mat-icon>cloud</mat-icon>
+          <span>{{ 'weatherPage.loadingDetail' | translate }}</span>
+        </div>
+      }
+    </main>
+  </div>
+</section>

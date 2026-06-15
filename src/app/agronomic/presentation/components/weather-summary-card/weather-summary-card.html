@@ -1,9 +1,18 @@
 <mat-card class="weather-card">
   <header class="weather-header">
     <h2>{{ 'weather.title' | translate }}</h2>
-    <button mat-icon-button class="weather-header-button" [attr.aria-label]="'weather.details' | translate">
-      <img src="/assets/icons/general/cloud.svg" alt="" />
-    </button>
+    @if (store.selectedMapPlotId(); as plotId) {
+      <a mat-icon-button class="weather-header-button"
+         [routerLink]="['/dashboard/weather', plotId]"
+         [attr.aria-label]="'weather.details' | translate">
+        <img src="/assets/icons/general/cloud.svg" alt="" />
+      </a>
+    } @else {
+      <button mat-icon-button class="weather-header-button" disabled
+              [attr.aria-label]="'weather.details' | translate">
+        <img src="/assets/icons/general/cloud.svg" alt="" />
+      </button>
+    }
   </header>
 
   @if (store.selectedDashboardScope() === 'all') {

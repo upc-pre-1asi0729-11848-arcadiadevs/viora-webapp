@@ -9,9 +9,31 @@ export type WeatherSummaryId = number | string | null;
 
 export interface WeatherForecastDay {
   dayLabel: string;
+  /** ISO date (YYYY-MM-DD) so consumers can label "Today" / weekday. */
+  date: string;
   minTemp: number;
   maxTemp: number;
   condition: string;
+  /** Raw backend status (e.g. SUNNY) used to pick the icon. */
+  status: string;
+}
+
+/** A single hour of the forecast strip. */
+export interface WeatherHour {
+  /** ISO timestamp. */
+  time: string;
+  temp: number;
+  /** Raw backend status (e.g. SUNNY) used to pick the icon/label. */
+  status: string;
+  precipitationMm: number;
+}
+
+/** A backend-issued weather warning. */
+export interface WeatherWarning {
+  type: string;
+  severity: string;
+  message: string;
+  date: string;
 }
 
 export interface WeatherSummaryProperties {
@@ -25,6 +47,12 @@ export interface WeatherSummaryProperties {
   forecast3Days?: WeatherForecastDay[];
   temperatureAnomaly?: number;
   climateRisk?: ClimateRiskLevel;
+  humidity?: number;
+  windSpeedKmh?: number;
+  windGustKmh?: number;
+  precipitationMm?: number;
+  hourly?: WeatherHour[];
+  warnings?: WeatherWarning[];
 }
 
 export class WeatherSummary {
@@ -38,6 +66,12 @@ export class WeatherSummary {
   readonly forecast3Days: WeatherForecastDay[];
   readonly temperatureAnomaly: number;
   readonly climateRisk: ClimateRiskLevel;
+  readonly humidity: number;
+  readonly windSpeedKmh: number;
+  readonly windGustKmh: number;
+  readonly precipitationMm: number;
+  readonly hourly: WeatherHour[];
+  readonly warnings: WeatherWarning[];
 
   /**
    * @param {WeatherSummaryProperties} params - Entity data.
@@ -62,7 +96,13 @@ export class WeatherSummary {
                 backgroundImage = '',
                 forecast3Days = [],
                 temperatureAnomaly = 0,
-                climateRisk = 'Low'
+                climateRisk = 'Low',
+                humidity = 0,
+                windSpeedKmh = 0,
+                windGustKmh = 0,
+                precipitationMm = 0,
+                hourly = [],
+                warnings = []
               }: WeatherSummaryProperties = {}) {
     this.id = id;
     this.city = city;
@@ -74,6 +114,12 @@ export class WeatherSummary {
     this.forecast3Days = forecast3Days;
     this.temperatureAnomaly = temperatureAnomaly;
     this.climateRisk = climateRisk;
+    this.humidity = humidity;
+    this.windSpeedKmh = windSpeedKmh;
+    this.windGustKmh = windGustKmh;
+    this.precipitationMm = precipitationMm;
+    this.hourly = hourly;
+    this.warnings = warnings;
   }
 
   get temperatureLabel(): string {

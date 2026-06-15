@@ -53,9 +53,11 @@ export class WeatherSummaryAssembler extends BaseAssembler {
   ): WeatherForecastDay[] {
     return resources.map(resource => ({
       dayLabel: resource.dayLabel ?? '',
+      date: '',
       minTemp: resource.minTemp ?? 0,
       maxTemp: resource.maxTemp ?? 0,
-      condition: resource.condition ?? ''
+      condition: resource.condition ?? '',
+      status: ''
     }));
   }
 
