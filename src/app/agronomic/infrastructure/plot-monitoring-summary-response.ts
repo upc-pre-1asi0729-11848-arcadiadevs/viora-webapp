@@ -24,6 +24,7 @@ export interface PlotMonitoringSummaryResource {
   currentNdvi?: number;
   ndviTrend?: NdviTrendResource | null;
   chillPortions?: number;
+  chillPortionsWeeklyDelta?: number | null;
   chillRequirementPortions?: number;
   chillRequirementSource?: string;
   chillMetricModel?: string;

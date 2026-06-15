@@ -163,11 +163,19 @@
 .kpi-grid {
   display: grid;
   grid-template-columns: minmax(300px, 1.35fr) repeat(4, minmax(180px, 1fr));
+  grid-auto-rows: minmax(208px, auto);
   gap: 24px;
   margin-bottom: 24px;
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 8px;
+}
+
+/* Keep the five KPI cards the same height for symmetry: the tallest card drives
+   the row (floored at 208px) and the rest stretch to fill it. Overall Plot Health
+   grows along with them — it is the most content-rich, so it stays the longest. */
+.kpi-grid ::ng-deep .kpi-card {
+  height: 100% !important;
 }
 
 .iot-grid {

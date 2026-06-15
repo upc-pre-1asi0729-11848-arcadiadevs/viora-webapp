@@ -38,6 +38,7 @@ export class PlotMonitoringSummaryAssembler {
         date: lastUpdatedAt,
         ndviIndex: resource?.currentNdvi ?? 0,
         ndviTrend: normalizeNdviTrend(resource?.ndviTrend?.direction),
+        ndviChangeRate: resource?.ndviTrend?.changeRate ?? 0,
         ndviStatusLabel: healthStatusLabel,
       }),
       chillHourRecord: new ChillHourRecord({
@@ -45,7 +46,7 @@ export class PlotMonitoringSummaryAssembler {
         accumulatedChillPortions: resource?.chillPortions ?? 0,
         unit: 'CP',
         threshold: resource?.chillRequirementPortions ?? 600,
-        weeklyDiff: 0,
+        weeklyDiff: resource?.chillPortionsWeeklyDelta ?? 0,
         generatedAt: lastUpdatedAt,
       }),
       yieldForecast: new YieldForecast({

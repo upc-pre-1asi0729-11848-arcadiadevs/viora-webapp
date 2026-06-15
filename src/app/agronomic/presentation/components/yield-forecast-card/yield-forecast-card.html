@@ -1,10 +1,23 @@
-<mat-card class="kpi-card">
+<mat-card class="kpi-card" [class.detailed]="detailed">
   <h2>{{ 'cards.yield.title' | translate }}</h2>
 
   @if (store.selectedYieldForecast(); as forecast) {
     <strong class="main-value">{{ forecast.tonnesLabel }}</strong>
     <span class="risk-pill">{{ forecast.riskLevel }}</span>
-    <p>{{ forecast.description }}</p>
+
+    @if (detailed) {
+      <footer class="card-disclaimer">
+        <span
+          class="alternate-bearing"
+          [class.risk-moderate]="forecast.riskLevel === 'Moderate'"
+          [class.risk-high]="forecast.riskLevel === 'High'">
+          {{ 'cards.yield.alternateBearing' | translate }}: {{ forecast.riskLevel }}
+        </span>
+        <span class="campaign-note">{{ 'cards.yield.campaign' | translate }}</span>
+      </footer>
+    } @else {
+      <p>{{ forecast.description }}</p>
+    }
   } @else {
     <div class="empty-state">{{ 'cards.yield.loading' | translate }}</div>
   }

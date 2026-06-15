@@ -72,9 +72,28 @@ export class ChillHourRecord {
     return this.unit === 'h' ? `${rounded} h` : `${rounded} CP`;
   }
 
+  /**
+   * Chill requirement target with its unit (e.g. "90 CP"), shown alongside the
+   * accumulation in the detailed Plot Overview card.
+   */
+  get thresholdLabel(): string {
+    const rounded = Math.round(this.threshold);
+
+    return this.unit === 'h' ? `${rounded} h` : `${rounded} CP`;
+  }
+
+  /**
+   * Weekly chill gain rounded to whole portions for display. Chill deltas arrive
+   * fractional from the model, so the pill both rounds and is hidden when the
+   * rounded gain is zero (see the card's guard).
+   */
+  get weeklyDiffRounded(): number {
+    return Math.round(this.weeklyDiff);
+  }
+
   get weeklyDiffLabel(): string {
-    const sign = this.weeklyDiff >= 0 ? '+' : '-';
-    const value = Math.abs(this.weeklyDiff);
+    const sign = this.weeklyDiffRounded >= 0 ? '+' : '-';
+    const value = Math.abs(this.weeklyDiffRounded);
 
     return `${sign}${value} from last week`;
   }
@@ -100,6 +119,17 @@ export class ChillHourRecord {
 
   get remainingChillPortions(): number {
     return Math.max(this.threshold - this.accumulatedChillPortions, 0);
+  }
+
+  /** Chill still needed to reach the requirement, with its unit (e.g. "40 CP"). */
+  get remainingLabel(): string {
+    const rounded = Math.round(this.remainingChillPortions);
+
+    return this.unit === 'h' ? `${rounded} h` : `${rounded} CP`;
+  }
+
+  get hasStartedAccumulating(): boolean {
+    return this.accumulatedChillPortions > 0;
   }
 
   get hasReachedThreshold(): boolean {
