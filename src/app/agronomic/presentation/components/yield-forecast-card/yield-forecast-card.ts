@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -13,4 +13,7 @@ import { AgronomicStore } from '../../../application/agronomic.store';
 })
 export class YieldForecastCard {
   protected readonly store = inject(AgronomicStore);
+
+  /** Enriched layout (alternate-bearing + campaign notes) — Plot Overview only. */
+  @Input() detailed = false;
 }

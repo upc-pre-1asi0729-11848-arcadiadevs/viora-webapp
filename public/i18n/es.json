@@ -403,14 +403,21 @@
     },
     "ndvi": {
       "title": "Estado NDVI",
+      "fromLastUpdate": "desde la última actualización",
       "loading": "Cargando registros NDVI"
     },
     "chill": {
       "title": "Acumulación de frío",
+      "target": "Objetivo",
+      "disclaimerZero": "El frío se acumula solo durante las horas frías de la temporada de dormancia; los periodos cálidos no suman.",
+      "remaining": "{{remaining}} para alcanzar el requerimiento.",
+      "requirementMet": "Requerimiento de frío de dormancia cumplido.",
       "loading": "Cargando acumulación de frío"
     },
     "yield": {
       "title": "Pronóstico de rendimiento",
+      "alternateBearing": "Riesgo de vecería",
+      "campaign": "Estimado para la campaña actual",
       "loading": "Cargando pronóstico de rendimiento"
     },
     "phenological": {

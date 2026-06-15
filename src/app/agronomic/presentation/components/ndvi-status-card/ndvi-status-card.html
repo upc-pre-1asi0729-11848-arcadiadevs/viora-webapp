@@ -1,4 +1,4 @@
-<mat-card class="kpi-card">
+<mat-card class="kpi-card" [class.detailed]="detailed">
   <h2>{{ 'cards.ndvi.title' | translate }}</h2>
 
   @if (store.latestAgronomicRecord(); as record) {
@@ -14,6 +14,13 @@
       [value]="ndviProgress()"
       style="--mdc-linear-progress-active-indicator-color: #2E4A3A; --mdc-linear-progress-track-color: #e0e0e0;">
     </mat-progress-bar>
+
+    @if (detailed) {
+      <footer class="card-disclaimer">
+        <mat-icon>info</mat-icon>
+        <span>{{ record.ndviChangeValueLabel }} {{ 'cards.ndvi.fromLastUpdate' | translate }}</span>
+      </footer>
+    }
   } @else {
     <div class="empty-state">{{ 'cards.ndvi.loading' | translate }}</div>
   }
