@@ -1,0 +1,354 @@
+<section class="nutrition-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs()"
+    [subtitle]="'dynamicNutrition.subtitle' | translate"
+    [updatedLabel]="updatedLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Quick actions -->
+  <nav class="quick-actions">
+    <a mat-stroked-button class="ghost-button" routerLink="/dashboard">
+      <mat-icon>grid_view</mat-icon> {{ 'breadcrumbs.dashboard' | translate }}
+    </a>
+    @if (selectedPlotId(); as plotId) {
+      <a mat-stroked-button class="ghost-button" [routerLink]="['/dashboard/plot-overview', plotId]">
+        <mat-icon>map</mat-icon> {{ 'toolbar.plotOverview' | translate }}
+      </a>
+      <a mat-stroked-button class="ghost-button" [routerLink]="['/dashboard/weather', plotId]">
+        <mat-icon>cloud</mat-icon> {{ 'toolbar.weather' | translate }}
+      </a>
+    }
+
+    <span class="qa-spacer"></span>
+
+    <div class="plot-picker">
+      <span class="picker-label">{{ 'dynamicNutrition.plot' | translate }}:</span>
+      <mat-select
+        class="plot-select"
+        [value]="selectedPlotId()"
+        (selectionChange)="onPlotChange($event.value)">
+        @for (plot of store.plots(); track plot.id) {
+          <mat-option [value]="plot.id != null ? plot.id.toString() : ''">{{ plot.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    @if (plan()?.rationale?.triggeringRiskLevel; as risk) {
+      <span class="linked-alert">
+        <mat-icon>warning</mat-icon>
+        {{ 'dynamicNutrition.linkedAlert' | translate }}: <strong>{{ risk }}</strong>
+      </span>
+    }
+  </nav>
+
+  @if (isLoading() && !plan()) {
+    <div class="state-box">{{ 'dynamicNutrition.loading' | translate }}</div>
+  } @else if (!plan()) {
+    <!-- Empty state: no active plan -->
+    <div class="state-box empty-plan">
+      <mat-icon>eco</mat-icon>
+      <h2>{{ 'dynamicNutrition.empty.title' | translate }}</h2>
+      <p>{{ 'dynamicNutrition.empty.body' | translate: { plot: selectedPlot()?.name || '—' } }}</p>
+      <p class="empty-hint">{{ 'dynamicNutrition.empty.hint' | translate }}</p>
+      <button mat-flat-button class="primary-button" (click)="generatePlan()" [disabled]="isSaving()">
+        <mat-icon>{{ isSaving() ? 'hourglass_empty' : 'auto_awesome' }}</mat-icon>
+        {{ (isSaving() ? 'dynamicNutrition.empty.generating' : 'dynamicNutrition.empty.generate') | translate }}
+      </button>
+      @if (generateMessage(); as message) {
+        <p class="generate-error"><mat-icon class="inline">info</mat-icon> {{ message }}</p>
+      }
+    </div>
+  } @else if (plan(); as p) {
+    <!-- Status cards -->
+    <section class="status-cards">
+      <article class="status-card">
+        <header><h3>{{ 'dynamicNutrition.cards.activePlan' | translate }}</h3>
+          <span class="pill pill-green">{{ p.status }}</span>
+        </header>
+        <strong class="big">{{ 'dynamicNutrition.plan' | translate }} #{{ p.planCode }}</strong>
+        <p class="muted">{{ p.rationale?.summary || ('dynamicNutrition.cards.activePlanNote' | translate) }}</p>
+      </article>
+
+      <article class="status-card">
+        <header><h3>{{ 'dynamicNutrition.cards.linkedPlot' | translate }}</h3>
+          @if (selectedPlot()?.cropType; as crop) { <span class="pill pill-soft">{{ crop }}</span> }
+        </header>
+        <strong class="big">{{ selectedPlot()?.name || '—' }}</strong>
+        <p class="muted"><mat-icon class="inline">place</mat-icon> {{ selectedPlot()?.location || '—' }} · {{ selectedPlot()?.areaSizeLabel }}</p>
+        @if (selectedPlot()?.id; as plotId) {
+          <a mat-stroked-button class="ghost-button wide" [routerLink]="['/agronomic/plots', plotId]">
+            <mat-icon>grid_view</mat-icon> {{ 'dynamicNutrition.cards.viewInMyPlots' | translate }}
+          </a>
+        }
+      </article>
+
+      <article class="status-card">
+        <header><h3>{{ 'dynamicNutrition.cards.applicationWindow' | translate }}</h3></header>
+        <strong class="big">{{ formatWindow(p.applicationWindow?.startDate, p.applicationWindow?.endDate) }}</strong>
+        <p class="muted">{{ 'dynamicNutrition.cards.windowNote' | translate }}</p>
+        <div class="divider"></div>
+        <div class="climate-row">
+          <span>{{ 'dynamicNutrition.cards.climate' | translate }}</span>
+          <span class="pill pill-green">{{ 'dynamicNutrition.stable' | translate }}</span>
+        </div>
+      </article>
+
+      <article class="status-card">
+        <header><h3>{{ 'dynamicNutrition.cards.certification' | translate }}</h3></header>
+        <span class="pill" [class.pill-red]="!p.isCertified" [class.pill-green]="p.isCertified">{{ p.certificationStatus }}</span>
+        <p class="muted">
+          {{ (p.isCertified ? 'dynamicNutrition.cards.certifiedNote' : 'dynamicNutrition.cards.pendingNote') | translate }}
+        </p>
+        <button mat-stroked-button class="ghost-button wide" (click)="openCertify()">
+          <mat-icon>verified</mat-icon> {{ 'dynamicNutrition.certify' | translate }}
+        </button>
+      </article>
+    </section>
+
+    <!-- Recommended nutrition plan -->
+    <section class="table-card">
+      <header class="table-head">
+        <div>
+          <h2>{{ 'dynamicNutrition.table.title' | translate }}</h2>
+          <p class="muted">{{ p.rationale?.summary }}</p>
+        </div>
+        <span class="pill pill-green">{{ p.planCode }}</span>
+      </header>
+
+      <div class="plan-table">
+        <div class="row row-head">
+          <span>{{ 'dynamicNutrition.table.input' | translate }}</span>
+          <span>{{ 'dynamicNutrition.table.purpose' | translate }}</span>
+          <span>{{ 'dynamicNutrition.table.coverage' | translate }}</span>
+          <span>{{ 'dynamicNutrition.table.rate' | translate }}</span>
+          <span>{{ 'dynamicNutrition.table.status' | translate }}</span>
+        </div>
+        @for (input of p.inputs; track input.name) {
+          <div class="row">
+            <span class="cell-input"><strong>{{ input.name }}</strong></span>
+            <span class="muted">{{ input.purpose }}</span>
+            <span>{{ selectedPlot()?.areaSizeLabel }}</span>
+            <span><strong>{{ input.dosage }} {{ input.dosageUnit }}</strong></span>
+            <span>
+              <span class="pill" [class.pill-green]="input.status === 'Recommended'" [class.pill-soft]="input.status === 'Optional'">
+                {{ input.status }}
+              </span>
+            </span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Rationale + window -->
+    <section class="two-col">
+      <article class="info-card">
+        <header><mat-icon>description</mat-icon>
+          <div><h3>{{ 'dynamicNutrition.rationale.title' | translate }}</h3>
+            <p class="muted">{{ 'dynamicNutrition.rationale.subtitle' | translate }}</p></div>
+        </header>
+        <div class="divider"></div>
+
+        <div class="kv">
+          <span><mat-icon class="inline">warning</mat-icon> {{ 'dynamicNutrition.linkedAlert' | translate }}</span>
+          <strong class="accent-red">{{ p.rationale?.triggeringRiskLevel || '—' }}</strong>
+        </div>
+
+        <div class="kv">
+          <span><mat-icon class="inline">ac_unit</mat-icon> {{ 'dynamicNutrition.rationale.chill' | translate }}</span>
+          <strong class="accent-blue">{{ chill()?.accumulatedChillPortions ?? 0 }} / {{ chill()?.threshold ?? 0 }} CP</strong>
+        </div>
+        <div class="chill-bar">
+          <span class="chill-fill" [style.width.%]="chill() ? (chill()!.accumulatedChillPortions / (chill()!.threshold || 1)) * 100 : 0"></span>
+        </div>
+        <div class="chill-legend">
+          <span>{{ chill()?.accumulatedChillPortions ?? 0 }} CP</span>
+          <span class="accent-blue">{{ 'dynamicNutrition.rationale.gap' | translate }}: {{ chillGap() }} CP</span>
+          <span>{{ chill()?.threshold ?? 0 }} CP</span>
+        </div>
+
+        <div class="kv">
+          <span><mat-icon class="inline">device_thermostat</mat-icon> {{ 'dynamicNutrition.rationale.anomaly' | translate }}</span>
+          <strong class="accent-orange">{{ (p.rationale?.temperatureAnomaly ?? 0) > 0 ? '+' : '' }}{{ p.rationale?.temperatureAnomaly ?? 0 }}°C</strong>
+        </div>
+
+        <div class="kv">
+          <span><mat-icon class="inline">shield</mat-icon> {{ 'dynamicNutrition.rationale.yieldRisk' | translate }}</span>
+          <span class="pill pill-soft">{{ yieldRiskLabel() }}</span>
+        </div>
+
+        <div class="note">
+          <mat-icon class="inline">info</mat-icon> {{ 'dynamicNutrition.rationale.note' | translate }}
+        </div>
+      </article>
+
+      <article class="info-card">
+        <header><mat-icon>schedule</mat-icon>
+          <div><h3>{{ 'dynamicNutrition.window.title' | translate }}</h3>
+            <p class="muted">{{ 'dynamicNutrition.window.subtitle' | translate }}</p></div>
+        </header>
+        <div class="divider"></div>
+
+        <div class="kv">
+          <span><mat-icon class="inline">label</mat-icon> {{ 'dynamicNutrition.window.current' | translate }}</span>
+          <strong>{{ formatWindow(p.applicationWindow?.startDate, p.applicationWindow?.endDate) }}</strong>
+        </div>
+
+        <div class="timeline">
+          <span class="timeline-fill"></span>
+        </div>
+        <div class="timeline-legend">
+          <span>{{ formatDate(p.applicationWindow?.startDate) }}</span>
+          <strong>{{ formatWindow(p.applicationWindow?.startDate, p.applicationWindow?.endDate) }}</strong>
+          <span>{{ formatDate(p.applicationWindow?.endDate) }}+</span>
+        </div>
+
+        <div class="kv">
+          <span><mat-icon class="inline">cloud</mat-icon> {{ 'dynamicNutrition.window.climateCheck' | translate }}</span>
+          <span class="dot-ok">{{ 'dynamicNutrition.window.stableConditions' | translate }}</span>
+        </div>
+
+        <div class="note">
+          <mat-icon class="inline">info</mat-icon> {{ 'dynamicNutrition.window.note' | translate }}
+        </div>
+      </article>
+    </section>
+
+    <!-- Execution -->
+    <section class="exec-card">
+      <header><mat-icon>eco</mat-icon>
+        <div><h3>{{ 'dynamicNutrition.exec.title' | translate }}</h3>
+          <p class="muted">{{ 'dynamicNutrition.exec.subtitle' | translate }}</p></div>
+      </header>
+
+      <div class="exec-tiles">
+        <div class="exec-tile">
+          <span class="muted">{{ 'dynamicNutrition.exec.applicationStatus' | translate }}</span>
+          <span class="dot-{{ p.isCertified ? 'ok' : 'pending' }}">{{ p.certificationStatus }}</span>
+        </div>
+        <div class="exec-tile">
+          <span class="muted">{{ 'dynamicNutrition.exec.requiredCertification' | translate }}</span>
+          <span class="dot-pending">{{ 'dynamicNutrition.exec.dateAndInputs' | translate }}</span>
+        </div>
+        <div class="exec-tile">
+          <span class="muted">{{ 'dynamicNutrition.exec.expenseDeclaration' | translate }}</span>
+          <span class="dot-{{ savedExpenseTotal() != null ? 'ok' : 'pending' }}">
+            {{ savedExpenseTotal() != null ? ('dynamicNutrition.exec.declared' | translate) : ('dynamicNutrition.exec.pending' | translate) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="exec-actions">
+        <button mat-stroked-button class="ghost-button wide" (click)="openCertify()">
+          <mat-icon>verified</mat-icon> {{ 'dynamicNutrition.certify' | translate }}
+        </button>
+        <button mat-stroked-button class="ghost-button wide" (click)="openExpense()">
+          <mat-icon>save</mat-icon> {{ 'dynamicNutrition.registerExpense' | translate }}
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- Certify modal -->
+  @if (showCertify() && plan(); as p) {
+    <div class="modal-backdrop" (click)="closeCertify()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <header class="modal-head">
+          <div><h2>{{ 'dynamicNutrition.certifyModal.title' | translate }}</h2>
+            <p class="muted">{{ 'dynamicNutrition.certifyModal.subtitle' | translate }}</p></div>
+          <button mat-icon-button (click)="closeCertify()"><mat-icon>close</mat-icon></button>
+        </header>
+
+        <div class="modal-body">
+          <div class="field-row">
+            <label>{{ 'dynamicNutrition.certifyModal.date' | translate }}
+              <input type="date" [(ngModel)]="certForm.date" /></label>
+            <label>{{ 'dynamicNutrition.certifyModal.time' | translate }}
+              <input type="time" [(ngModel)]="certForm.time" /></label>
+          </div>
+
+          <label class="block-label">{{ 'dynamicNutrition.certifyModal.appliedInputs' | translate }}</label>
+          <div class="input-checks">
+            @for (input of p.inputs; track input.name) {
+              <label class="check-row">
+                <span>{{ input.name }} - {{ input.dosage }} {{ input.dosageUnit }}</span>
+                <input type="checkbox" [(ngModel)]="appliedInputs[input.name]" />
+              </label>
+            }
+          </div>
+
+          <div class="field-row">
+            <label>{{ 'dynamicNutrition.certifyModal.doseConfirmation' | translate }}
+              <select [(ngModel)]="certForm.dose">
+                <option value="Applied as recommended">{{ 'dynamicNutrition.certifyModal.doseRecommended' | translate }}</option>
+                <option value="Adjusted dose">{{ 'dynamicNutrition.certifyModal.doseAdjusted' | translate }}</option>
+                <option value="Partial application">{{ 'dynamicNutrition.certifyModal.dosePartial' | translate }}</option>
+              </select></label>
+            <label>{{ 'dynamicNutrition.certifyModal.fieldOperator' | translate }}
+              <input type="text" [(ngModel)]="certForm.operator" /></label>
+          </div>
+
+          <label class="block-label">{{ 'dynamicNutrition.certifyModal.fieldNotes' | translate }}
+            <textarea rows="2" [(ngModel)]="certForm.notes"></textarea></label>
+
+          <div class="info-banner">
+            <mat-icon class="inline">info</mat-icon> {{ 'dynamicNutrition.certifyModal.note' | translate }}
+          </div>
+        </div>
+
+        <button mat-flat-button class="primary-button block" [disabled]="!canCertify" (click)="submitCertify()">
+          <mat-icon>{{ isSaving() ? 'hourglass_empty' : 'verified' }}</mat-icon>
+          {{ 'dynamicNutrition.certifyModal.save' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Expense modal -->
+  @if (showExpense()) {
+    <div class="modal-backdrop" (click)="closeExpense()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <header class="modal-head">
+          <div><h2>{{ 'dynamicNutrition.expenseModal.title' | translate }}</h2>
+            <p class="muted">{{ 'dynamicNutrition.expenseModal.subtitle' | translate }}</p></div>
+          <button mat-icon-button (click)="closeExpense()"><mat-icon>close</mat-icon></button>
+        </header>
+
+        <div class="modal-body">
+          <div class="field-row">
+            <label>{{ 'dynamicNutrition.expenseModal.inputCost' | translate }}
+              <input type="number" min="0" [(ngModel)]="expenseForm.input" /></label>
+            <label>{{ 'dynamicNutrition.expenseModal.laborCost' | translate }}
+              <input type="number" min="0" [(ngModel)]="expenseForm.labor" /></label>
+          </div>
+          <div class="field-row">
+            <label>{{ 'dynamicNutrition.expenseModal.equipmentCost' | translate }}
+              <input type="number" min="0" [(ngModel)]="expenseForm.equipment" /></label>
+            <label>{{ 'dynamicNutrition.expenseModal.code' | translate }}
+              <input type="text" [(ngModel)]="expenseForm.code" /></label>
+          </div>
+          <label class="block-label">{{ 'dynamicNutrition.expenseModal.notes' | translate }}
+            <textarea rows="2" [(ngModel)]="expenseForm.notes"></textarea></label>
+
+          <div class="totals">
+            <div class="total-row">
+              <span class="muted">{{ 'dynamicNutrition.expenseModal.total' | translate }}</span>
+              <strong>S/ {{ expenseTotal.toFixed(2) }}</strong>
+            </div>
+            <div class="total-row">
+              <span class="muted">{{ 'dynamicNutrition.expenseModal.margin' | translate }}</span>
+              <strong>{{ expenseMargin != null ? expenseMargin + '%' : '—' }}</strong>
+            </div>
+          </div>
+
+          <div class="info-banner">
+            <mat-icon class="inline">info</mat-icon> {{ 'dynamicNutrition.expenseModal.note' | translate }}
+          </div>
+        </div>
+
+        <button mat-flat-button class="primary-button block" [disabled]="!canSaveExpense" (click)="submitExpense()">
+          <mat-icon>save</mat-icon> {{ 'dynamicNutrition.expenseModal.save' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</section>
