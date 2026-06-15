@@ -15,6 +15,7 @@ export interface AgronomicRecordProperties {
   date?: string;
   ndviIndex?: number;
   ndviTrend?: NdviTrend;
+  ndviChangeRate?: number;
   ndviStatusLabel?: string;
   temp?: number;
   cp?: number;
@@ -27,6 +28,7 @@ export class AgronomicRecord {
   readonly date: string;
   readonly ndviIndex: number;
   readonly ndviTrend: NdviTrend;
+  readonly ndviChangeRate: number;
   readonly ndviStatusLabel: string;
   readonly temp: number;
   readonly cp: number;
@@ -50,6 +52,7 @@ export class AgronomicRecord {
     date = '',
     ndviIndex = 0,
     ndviTrend = 'stable',
+    ndviChangeRate = 0,
     ndviStatusLabel = '',
     temp = 0,
     cp = 0,
@@ -60,6 +63,7 @@ export class AgronomicRecord {
     this.date = date;
     this.ndviIndex = ndviIndex;
     this.ndviTrend = ndviTrend;
+    this.ndviChangeRate = ndviChangeRate;
     this.ndviStatusLabel = ndviStatusLabel;
     this.temp = temp;
     this.cp = cp;
@@ -80,6 +84,16 @@ export class AgronomicRecord {
 
   get ndviLabel(): string {
     return this.ndviIndex.toFixed(2);
+  }
+
+  /**
+   * Signed NDVI net change across the trend window (e.g. "-0.03"), shown as the
+   * "from last update" delta in the detailed Plot Overview card.
+   */
+  get ndviChangeValueLabel(): string {
+    const sign = this.ndviChangeRate > 0 ? '+' : this.ndviChangeRate < 0 ? '-' : '';
+
+    return `${sign}${Math.abs(this.ndviChangeRate).toFixed(2)}`;
   }
 
   get temperatureLabel(): string {
