@@ -358,13 +358,13 @@ export class WeatherPage implements OnInit {
 
     // No backend warnings: derive from the plot's state so the card is useful.
     const chips: AlertChip[] = [];
-    if (weather.climateRisk === 'High' || Math.abs(weather.temperatureAnomaly) >= 3) {
+    if (weather.isHighThermalRisk || Math.abs(weather.temperatureAnomaly) >= 3) {
       chips.push({ key: 'weatherPage.alerts.anomaly' });
     }
     if (this.chillGap() < 0) {
       chips.push({ key: 'weatherPage.alerts.chill' });
     }
-    if (weather.climateRisk === 'High') {
+    if (weather.climateRisk === 'High' || weather.climateRisk === 'Extreme') {
       chips.push({ key: 'weatherPage.alerts.risk' });
     }
     return chips;

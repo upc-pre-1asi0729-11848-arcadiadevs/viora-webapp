@@ -213,7 +213,9 @@
   "risk": {
     "Low": "Low",
     "Medium": "Medium",
-    "High": "High"
+    "Moderate": "Moderate",
+    "High": "High",
+    "Extreme": "Extreme"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",

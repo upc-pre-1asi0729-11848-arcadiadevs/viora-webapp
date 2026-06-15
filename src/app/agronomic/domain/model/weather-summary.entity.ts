@@ -3,7 +3,7 @@
  * @description Domain entity representing local weather conditions.
  */
 
-export type ClimateRiskLevel = 'Low' | 'Medium' | 'High';
+export type ClimateRiskLevel = 'Low' | 'Moderate' | 'High' | 'Extreme';
 
 export type WeatherSummaryId = number | string | null;
 
@@ -169,10 +169,14 @@ export class WeatherSummary {
   }
 
   get requiresClimateAttention(): boolean {
-    return this.climateRisk === 'Medium' || this.climateRisk === 'High';
+    return this.climateRisk !== 'Low';
   }
 
   get isHighThermalRisk(): boolean {
-    return this.climateRisk === 'High' || this.hasSignificantTemperatureAnomaly;
+    return (
+      this.climateRisk === 'High' ||
+      this.climateRisk === 'Extreme' ||
+      this.hasSignificantTemperatureAnomaly
+    );
   }
 }

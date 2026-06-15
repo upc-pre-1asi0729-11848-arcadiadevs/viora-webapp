@@ -203,9 +203,21 @@ export class DynamicNutritionPage implements OnInit {
   private toErrorMessage(error: unknown): string {
     if (error instanceof HttpErrorResponse) {
       const body = error.error as { details?: string; message?: string } | null;
-      return body?.details || body?.message || error.message;
+      return this.normalizeRiskLabels(body?.details || body?.message || error.message);
     }
     return 'Could not generate the plan.';
+  }
+
+  private normalizeRiskLabels(message: string): string {
+    const labels: Record<string, string> = {
+      LOW: 'Low',
+      MEDIUM: 'Moderate',
+      MODERATE: 'Moderate',
+      HIGH: 'High',
+      EXTREME: 'Extreme',
+    };
+
+    return message.replace(/\b(LOW|MEDIUM|MODERATE|HIGH|EXTREME)\b/g, (value) => labels[value]);
   }
 
   protected refresh(): void {

@@ -5,7 +5,7 @@
 import { SatelliteImagery } from './satellite-imagery.entity';
 
 export type PlotHealthStatus = 'Healthy' | 'Moderate' | 'Critical';
-export type PhenologicalRiskLevel = 'Low' | 'Medium' | 'High';
+export type PhenologicalRiskLevel = 'Low' | 'Moderate' | 'High';
 export type PlotId = number | string | null;
 
 export type PlotCoordinate = [longitude: number, latitude: number];

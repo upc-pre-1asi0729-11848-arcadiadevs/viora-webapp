@@ -14,6 +14,7 @@ import {
   NutritionApplicationResource,
   NutritionInputRecommendationResource,
 } from './dynamic-nutrition-plan-response';
+import { normalizeClimateRisk } from './status-normalizers';
 
 export class DynamicNutritionPlanAssembler {
   static toEntityFromResource(
@@ -40,7 +41,9 @@ export class DynamicNutritionPlanAssembler {
       rationale: resource.rationale
         ? {
             summary: resource.rationale.summary ?? '',
-            triggeringRiskLevel: resource.rationale.triggeringRiskLevel ?? '',
+            triggeringRiskLevel: resource.rationale.triggeringRiskLevel
+              ? normalizeClimateRisk(resource.rationale.triggeringRiskLevel)
+              : '',
             ndviValue: resource.rationale.ndviValue ?? 0,
             temperatureAnomaly: resource.rationale.temperatureAnomaly ?? 0,
           }
