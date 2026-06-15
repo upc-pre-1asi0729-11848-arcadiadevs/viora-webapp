@@ -7,7 +7,7 @@ export type YieldForecastId = number | string | null;
 
 export type YieldForecastPlotId = number | string | null;
 
-export type YieldRiskLevel = 'Low' | 'Medium' | 'High';
+export type YieldRiskLevel = 'Low' | 'Moderate' | 'High';
 
 export interface YieldForecastProperties {
   id?: YieldForecastId;
@@ -51,7 +51,7 @@ export class YieldForecast {
   }
 
   get hasAlternateBearingRisk(): boolean {
-    return this.riskLevel === 'Medium' || this.riskLevel === 'High';
+    return this.riskLevel === 'Moderate' || this.riskLevel === 'High';
   }
 
   get isHighRisk(): boolean {

@@ -20,5 +20,18 @@
     </mat-form-field>
   </div>
 
-  <div class="boundary-map" #mapContainer></div>
+  <div class="boundary-map-area">
+    <div class="boundary-map" #mapContainer></div>
+    <span class="map-status" [class.is-open]="!closedState()">
+      <span class="status-dot"></span>
+      {{ (closedState() ? 'plotCreate.boundary.polygonClosed' : 'plotCreate.boundary.polygonOpen') | translate }}
+    </span>
+  </div>
+
+  @if (locationLabel()) {
+    <p class="map-location">
+      <mat-icon>location_on</mat-icon>
+      <span>{{ locationLabel() }}</span>
+    </p>
+  }
 </div>

@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +13,7 @@ import { PlotMap } from '../plot-map/plot-map';
   selector: 'app-plot-overview-widget',
   standalone: true,
   imports: [
+    RouterLink,
     MatCardModule,
     MatSelectModule,
     MatIconModule,
@@ -41,8 +43,8 @@ export class PlotOverviewWidget {
     }
 
     if (
-      plot.healthStatus === 'Under Review' ||
-      plot.phenologicalRisk === 'Medium' ||
+      plot.healthStatus === 'Moderate' ||
+      plot.phenologicalRisk === 'Moderate' ||
       record?.ndviTrend === 'down' ||
       ndviValue < 0.5
     ) {

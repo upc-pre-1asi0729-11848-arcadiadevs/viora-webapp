@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { AgronomicStore } from '../../../../agronomic/application/agronomic.store';
@@ -55,11 +55,19 @@ import {
 })
 export class ProducerDashboard implements OnInit {
   private readonly document = inject(DOCUMENT);
+  private readonly router = inject(Router);
 
   protected readonly store = inject(AgronomicStore);
 
   ngOnInit(): void {
-    this.refreshDashboardData();
+    // The store is a session-wide cache. Only do the heavy initial load when we
+    // have nothing yet; on later returns (e.g. back from Plot Overview) we keep
+    // showing the cached data instead of re-firing every request and flashing
+    // empty cards while the slow endpoints respond. Use the header refresh
+    // button for an explicit reload.
+    if (!this.store.plotsLoaded()) {
+      this.refreshDashboardData();
+    }
   }
 
   protected refreshDashboardData(): void {
@@ -167,9 +175,19 @@ export class ProducerDashboard implements OnInit {
   }
 
   protected onDashboardViewChange(viewId: string): void {
+    // Weather opens the dedicated subsection for the active plot.
+    if (viewId === 'weather') {
+      const plotId = this.store.selectedMapPlotId() ?? this.store.plots()[0]?.id ?? null;
+
+      if (plotId != null) {
+        this.router.navigate(['/dashboard/weather', plotId]);
+      }
+
+      return;
+    }
+
     const sectionIds: Record<string, string> = {
-      'plot-overview': 'plot-overview-section',
-      weather: 'weather-section'
+      'plot-overview': 'plot-overview-section'
     };
 
     const sectionId = sectionIds[viewId];

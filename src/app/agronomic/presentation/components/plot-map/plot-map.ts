@@ -9,6 +9,7 @@ import {
   ViewChild,
   inject
 } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 
 import { Plot } from '../../../domain/model/plot.entity';
 import { PlotMapService } from '../../../application/plot-map.service';
@@ -16,7 +17,7 @@ import { PlotMapService } from '../../../application/plot-map.service';
 @Component({
   selector: 'app-plot-map',
   standalone: true,
-  imports: [],
+  imports: [MatIconModule],
   providers: [PlotMapService],
   templateUrl: './plot-map.html',
   styleUrl: './plot-map.css'
@@ -24,11 +25,20 @@ import { PlotMapService } from '../../../application/plot-map.service';
 export class PlotMap implements AfterViewInit, OnChanges, OnDestroy {
   @Input() plot: Plot | null = null;
 
+  /** Overlay the NDVI raster tiles (off by default for the compact dashboard widget). */
+  @Input() showImagery = false;
+
+  /** Reverse-geocode the map center and show it as an overlay chip. */
+  @Input() showLocation = false;
+
   @ViewChild('mapContainer')
   private readonly mapContainer?: ElementRef<HTMLElement>;
 
   private readonly plotMapService = inject(PlotMapService);
   private viewInitialized = false;
+
+  /** Place name of the current map center, shown as an overlay chip when enabled. */
+  protected readonly locationLabel = this.plotMapService.locationLabel;
 
   ngAfterViewInit(): void {
     this.viewInitialized = true;
@@ -56,6 +66,9 @@ export class PlotMap implements AfterViewInit, OnChanges, OnDestroy {
       return;
     }
 
-    this.plotMapService.init(container, this.plot);
+    this.plotMapService.init(container, this.plot, {
+      imagery: this.showImagery,
+      location: this.showLocation,
+    });
   }
 }

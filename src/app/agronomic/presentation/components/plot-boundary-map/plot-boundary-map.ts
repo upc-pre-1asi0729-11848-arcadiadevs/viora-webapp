@@ -6,7 +6,9 @@ import {
   OnDestroy,
   Output,
   ViewChild,
+  effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -19,7 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
-import { catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { Subject, catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import mapboxgl from 'mapbox-gl';
 import type { Map as MapboxMap, Marker } from 'mapbox-gl';
 
@@ -84,6 +86,13 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
 
   @Output() readonly boundaryChange = new EventEmitter<BoundaryState>();
 
+  /**
+   * Existing polygon to preload when editing a plot. Accepts the stored
+   * coordinates (with the repeated closing vertex) and seeds a closed,
+   * editable boundary once the map is ready.
+   */
+  readonly initialBoundary = input<PlotCoordinate[] | null>(null);
+
   private readonly mapboxService = inject(MapboxService);
   private readonly http = inject(HttpClient);
 
@@ -94,9 +103,22 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
   private addMode = true;
   private markers: Marker[] = [];
 
+  /** Boundary awaiting the map to finish loading before it can be drawn. */
+  private pendingInitial: PlotCoordinate[] | null = null;
+  private initialApplied = false;
+
   // ----- Place search (Mapbox geocoding) -----
   protected readonly searchControl = new FormControl('');
   protected readonly suggestions = signal<PlaceSuggestion[]>([]);
+
+  /** Mirror of `closed` for the status chip overlaid on the map. */
+  protected readonly closedState = signal<boolean>(false);
+
+  /** Human-readable place name of the current map center, shown below the map. */
+  protected readonly locationLabel = signal<string>('');
+
+  /** Emits the map center after each pan/zoom so we can reverse-geocode it. */
+  private readonly centerChanges = new Subject<PlotCoordinate>();
 
   constructor() {
     this.searchControl.valueChanges
@@ -106,6 +128,47 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
         switchMap((query) => this.geocode(query)),
       )
       .subscribe((results) => this.suggestions.set(results));
+
+    // Reverse-geocode the center only after the user stops moving (debounced),
+    // to keep Mapbox geocoding calls to a minimum.
+    this.centerChanges
+      .pipe(
+        debounceTime(700),
+        distinctUntilChanged((a, b) => a[0] === b[0] && a[1] === b[1]),
+        switchMap((center) => this.reverseGeocode(center)),
+      )
+      .subscribe((label) => this.locationLabel.set(label));
+
+    // Seed the editor with the plot's existing boundary (edit mode). The input
+    // may arrive before or after the map finishes loading, so we stash it and
+    // apply once both the data and the map are ready.
+    effect(() => {
+      const boundary = this.initialBoundary();
+
+      if (this.initialApplied || !boundary || boundary.length < 3) {
+        return;
+      }
+
+      this.pendingInitial = boundary;
+      this.tryApplyInitialBoundary();
+    });
+  }
+
+  private reverseGeocode(center: PlotCoordinate) {
+    const token = environment.mapbox.accessToken;
+
+    if (!token) {
+      return of('');
+    }
+
+    const url =
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${center[0]},${center[1]}.json` +
+      `?types=place,locality,region,country&limit=1&access_token=${token}`;
+
+    return this.http.get<MapboxGeocodingResponse>(url).pipe(
+      map((response) => response.features?.[0]?.place_name ?? ''),
+      catchError(() => of('')),
+    );
   }
 
   protected displayPlace(place: PlaceSuggestion | string | null): string {
@@ -117,8 +180,11 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
     this.map?.flyTo({ center: place.center, zoom: 15, duration: 1500 });
   }
 
-  private geocode(query: string | null) {
-    const term = (query ?? '').trim();
+  private geocode(query: unknown) {
+    // After an option is selected the control value becomes the PlaceSuggestion
+    // object; coerce non-string values to '' so the stream never throws (which
+    // would silently kill the subscription and stop further searches).
+    const term = (typeof query === 'string' ? query : '').trim();
 
     if (term.length < 3 || !environment.mapbox.accessToken) {
       return of<PlaceSuggestion[]>([]);
@@ -162,6 +228,8 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
           this.setupLayers();
           this.ready = true;
           this.applyCursor();
+          this.emitCenter(mapInstance);
+          this.tryApplyInitialBoundary();
           [200, 600, 1200].forEach((delay) =>
             setTimeout(() => mapInstance.resize(), delay),
           );
@@ -176,6 +244,8 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
         mapInstance.on('error', (event) => {
           console.error('[PlotBoundaryMap] Mapbox error.', event.error ?? event);
         });
+
+        mapInstance.on('moveend', () => this.emitCenter(mapInstance));
 
         mapInstance.on('click', (event) => {
           if (this.closed || !this.addMode) {
@@ -228,6 +298,59 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
     this.addMode = !this.addMode;
     this.applyCursor();
     this.emit();
+  }
+
+  // ----- Edit-mode preload -----
+
+  /** Draws the pending boundary once both the data and the map are ready. */
+  private tryApplyInitialBoundary(): void {
+    if (this.initialApplied || !this.ready || !this.map || !this.pendingInitial) {
+      return;
+    }
+
+    const points = this.stripClosingPoint(this.pendingInitial);
+
+    if (points.length < 3) {
+      return;
+    }
+
+    this.points = points;
+    this.closed = true;
+    this.addMode = false;
+    this.initialApplied = true;
+    this.pendingInitial = null;
+
+    this.refresh();
+    this.applyCursor();
+    this.fitToPoints(points);
+  }
+
+  /** Stored polygons repeat the first vertex to close; the editor wants it open. */
+  private stripClosingPoint(points: PlotCoordinate[]): PlotCoordinate[] {
+    if (points.length >= 2) {
+      const first = points[0];
+      const last = points[points.length - 1];
+
+      if (first[0] === last[0] && first[1] === last[1]) {
+        return points.slice(0, -1);
+      }
+    }
+
+    return points;
+  }
+
+  /** Centers and zooms the map to fit the given polygon. */
+  private fitToPoints(points: PlotCoordinate[]): void {
+    if (!this.map || points.length === 0) {
+      return;
+    }
+
+    const bounds = points.reduce(
+      (acc, point) => acc.extend(point),
+      new mapboxgl.LngLatBounds(points[0], points[0]),
+    );
+
+    this.map.fitBounds(bounds, { padding: 60, duration: 800, maxZoom: 16 });
   }
 
   // ----- Internal rendering -----
@@ -314,7 +437,7 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
 
     const color = this.closed ? CLOSED_COLOR : OPEN_COLOR;
 
-    this.points.forEach((point) => {
+    this.points.forEach((point, index) => {
       const element = document.createElement('div');
       element.style.width = '14px';
       element.style.height = '14px';
@@ -322,10 +445,34 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
       element.style.background = '#ffffff';
       element.style.border = `3px solid ${color}`;
       element.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.35)';
+      element.style.cursor = 'grab';
 
-      const marker = new mapboxgl.Marker({ element }).setLngLat(point).addTo(this.map!);
+      const marker = new mapboxgl.Marker({ element, draggable: true })
+        .setLngLat(point)
+        .addTo(this.map!);
+
+      // Live-update the geometry while dragging; recompute area on release.
+      marker.on('dragstart', () => (element.style.cursor = 'grabbing'));
+      marker.on('drag', () => {
+        const position = marker.getLngLat();
+        this.points[index] = [position.lng, position.lat];
+        this.renderGeometry();
+      });
+      marker.on('dragend', () => {
+        element.style.cursor = 'grab';
+        const position = marker.getLngLat();
+        this.points[index] = [position.lng, position.lat];
+        this.refresh();
+      });
+
       this.markers.push(marker);
     });
+  }
+
+  /** Pushes the map center into the reverse-geocode pipeline. */
+  private emitCenter(mapInstance: MapboxMap): void {
+    const center = mapInstance.getCenter();
+    this.centerChanges.next([center.lng, center.lat]);
   }
 
   private clearMarkers(): void {
@@ -342,6 +489,7 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
   }
 
   private emit(): void {
+    this.closedState.set(this.closed);
     this.boundaryChange.emit({
       points: [...this.points],
       closed: this.closed,

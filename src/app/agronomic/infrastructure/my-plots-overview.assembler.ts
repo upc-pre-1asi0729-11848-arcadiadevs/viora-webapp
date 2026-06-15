@@ -11,7 +11,7 @@ import {
   MyPlotOverviewItemResource,
   MyPlotsOverviewResource,
 } from './my-plots-overview-response';
-import { normalizePlotHealthStatus } from './status-normalizers';
+import { normalizePhenologicalRisk, normalizePlotHealthStatus } from './status-normalizers';
 
 export class MyPlotsOverviewAssembler {
   static toEntityFromResource(
@@ -34,6 +34,7 @@ export class MyPlotsOverviewAssembler {
       areaSizeHectares: resource.areaSizeHectares ?? 0,
       polygonCoordinates: resource.polygonCoordinates ?? [],
       healthStatus: normalizePlotHealthStatus(resource.healthStatus),
+      phenologicalRisk: normalizePhenologicalRisk(resource.phenologicalRisk),
       currentNdvi: resource.currentNdvi ?? 0,
       chillPortions: resource.chillPortions ?? 0,
       onlineDeviceCount: resource.onlineDeviceCount ?? 0,

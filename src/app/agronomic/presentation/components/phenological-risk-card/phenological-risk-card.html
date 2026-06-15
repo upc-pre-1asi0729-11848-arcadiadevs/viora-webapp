@@ -1,0 +1,20 @@
+<mat-card class="kpi-card">
+  <h2>{{ 'cards.phenological.title' | translate }}</h2>
+
+  @if (risk(); as level) {
+    <span
+      class="risk-pill"
+      [class.risk-low]="level === 'Low'"
+      [class.risk-moderate]="level === 'Moderate'"
+      [class.risk-high]="level === 'High'">
+      {{ level }}
+    </span>
+
+    <footer>
+      <mat-icon>info</mat-icon>
+      <span>{{ 'cards.phenological.disclaimer' | translate }}</span>
+    </footer>
+  } @else {
+    <div class="empty-state">{{ 'cards.phenological.loading' | translate }}</div>
+  }
+</mat-card>

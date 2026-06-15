@@ -2,10 +2,11 @@
  * @file yield-forecast.assembler.ts
  * @description specialized assembler for mapping Yield Forecast resources to domain entities.
  */
-import { YieldForecast, YieldRiskLevel } from '../domain/model/yield-forecast.entity';
+import { YieldForecast } from '../domain/model/yield-forecast.entity';
 
 import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
 import { YieldForecastResource } from './yield-forecasts-response';
+import { normalizeYieldRisk } from './status-normalizers';
 
 export class YieldForecastAssembler extends BaseAssembler {
   /**
@@ -18,7 +19,7 @@ export class YieldForecastAssembler extends BaseAssembler {
       id: resource?.id ?? null,
       plotId: resource?.plotId ?? null,
       tonnes: resource?.tonnes ?? 0,
-      riskLevel: this.toYieldRiskLevel(resource?.riskLevel),
+      riskLevel: normalizeYieldRisk(resource?.riskLevel),
       description: resource?.description ?? '',
     });
   }
@@ -30,11 +31,5 @@ export class YieldForecastAssembler extends BaseAssembler {
    */
   static toEntitiesFromResources(resources: YieldForecastResource[] = []): YieldForecast[] {
     return this.toEntities(resources, (resource) => this.toEntityFromResource(resource));
-  }
-
-  private static toYieldRiskLevel(value: string | undefined): YieldRiskLevel {
-    const validRiskLevels: YieldRiskLevel[] = ['Low', 'Medium', 'High'];
-
-    return validRiskLevels.includes(value as YieldRiskLevel) ? (value as YieldRiskLevel) : 'Low';
   }
 }

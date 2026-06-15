@@ -29,21 +29,22 @@
 .header-title {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 20px;
-  color: #1f2523;
+  color: #333333;
 }
 
 .title-sep {
-  color: #b8b2a8;
-  font-weight: 400;
+  color: #333333;
+  font-weight: 500;
 }
 
 .header-subtitle {
   margin: 4px 0 0;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #8c877f;
+  color: #4f4f4f;
 }
 
 .header-right {

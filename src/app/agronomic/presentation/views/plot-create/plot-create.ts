@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -49,10 +49,21 @@ interface WizardStep {
 export class PlotCreate {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly store = inject(AgronomicStore);
 
   private readonly boundaryMap = viewChild(PlotBoundaryMap);
+
+  /** Plot id when the wizard is reused to EDIT an existing plot (else null). */
+  protected readonly editPlotId = this.route.snapshot.paramMap.get('id');
+  protected readonly isEditMode = this.editPlotId !== null;
+
+  /** Existing polygon fed to the boundary map to preload it (edit mode). */
+  protected readonly boundaryToLoad = signal<PlotCoordinate[] | null>(null);
+
+  /** Guards the one-time form/boundary preload from the loaded plot. */
+  private preloaded = false;
 
   protected readonly form = this.formBuilder.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
@@ -78,6 +89,38 @@ export class PlotCreate {
 
   constructor() {
     this.form.statusChanges.subscribe(() => this.formStatus.set(this.form.valid));
+
+    if (this.isEditMode) {
+      // Make sure the plot list is available, then preload the form + boundary
+      // from it once (the descriptive fields ride along on the Plot entity).
+      if (this.store.plots().length === 0) {
+        this.store.fetchPlots();
+      }
+
+      effect(() => {
+        if (this.preloaded) {
+          return;
+        }
+
+        const plot = this.store
+          .plots()
+          .find((item) => String(item.id) === this.editPlotId);
+
+        if (!plot) {
+          return;
+        }
+
+        this.preloaded = true;
+        this.form.patchValue({
+          name: plot.name,
+          cropType: plot.cropType,
+          campaign: plot.campaign,
+          location: plot.location,
+          notes: plot.notes,
+        });
+        this.boundaryToLoad.set(plot.polygonCoordinates);
+      });
+    }
   }
 
   protected readonly pointCount = computed<number>(() => this.boundaryPoints().length);
@@ -111,6 +154,14 @@ export class PlotCreate {
     this.boundaryClosed() ? `${this.boundaryArea().toFixed(1)} ha` : '—',
   );
 
+  /** Page title / subtitle switch between Create and Edit copy. */
+  protected readonly titleKey = computed<string>(() =>
+    this.isEditMode ? 'plotCreate.edit.title' : 'plotCreate.title',
+  );
+  protected readonly subtitleKey = computed<string>(() =>
+    this.isEditMode ? 'plotCreate.edit.subtitle' : 'plotCreate.subtitle',
+  );
+
   protected readonly registerIcon = computed<string>(() => {
     if (this.store.loading().saving) {
       return 'hourglass_empty';
@@ -120,12 +171,12 @@ export class PlotCreate {
       return 'lock';
     }
 
-    return 'check';
+    return this.isEditMode ? 'save' : 'check';
   });
 
   protected readonly registerLabelKey = computed<string>(() => {
     if (this.store.loading().saving) {
-      return 'plotCreate.boundary.registering';
+      return this.isEditMode ? 'plotCreate.edit.saving' : 'plotCreate.boundary.registering';
     }
 
     if (!this.boundaryClosed()) {
@@ -136,7 +187,7 @@ export class PlotCreate {
       return 'plotCreate.boundary.registerTooSmall';
     }
 
-    return 'plotCreate.boundary.register';
+    return this.isEditMode ? 'plotCreate.edit.save' : 'plotCreate.boundary.register';
   });
 
   protected readonly steps = computed<WizardStep[]>(() => {
@@ -212,6 +263,25 @@ export class PlotCreate {
     const raw = this.form.getRawValue();
     const points = this.boundaryPoints();
     const polygonCoordinates: PlotCoordinate[] = [...points, points[0]];
+
+    if (this.isEditMode && this.editPlotId) {
+      // PATCH: send the form's current values (empty string clears a field the
+      // user wiped). `variety` is untouched by this form, so we omit it and the
+      // backend keeps it.
+      this.store.updatePlot(
+        this.editPlotId,
+        {
+          name: (raw.name ?? '').trim(),
+          polygonCoordinates,
+          cropType: (raw.cropType ?? '').trim(),
+          campaign: (raw.campaign ?? '').trim(),
+          location: (raw.location ?? '').trim(),
+          notes: (raw.notes ?? '').trim(),
+        },
+        () => this.router.navigate(['/agronomic/plots', this.editPlotId]),
+      );
+      return;
+    }
 
     this.store.createPlot(
       {

@@ -39,7 +39,7 @@ export class OverallPlotHealthAssembler extends BaseAssembler {
     const validStatuses: OverallPlotHealthStatus[] = [
       'Healthy',
       'Warning',
-      'Under Review',
+      'Moderate',
       'Critical',
     ];
 

@@ -43,7 +43,7 @@ p {
 }
 
 .status-pill.is-review {
-  background: #C15A2E; /* secondary — warning / under review */
+  background: #E39A24;
   color: #ffffff;
 }
 

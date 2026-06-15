@@ -6,7 +6,7 @@
 export type OverallPlotHealthStatus =
   | 'Healthy'
   | 'Warning'
-  | 'Under Review'
+  | 'Moderate'
   | 'Critical';
 
 export interface OverallPlotHealthProperties {
@@ -24,7 +24,7 @@ export class OverallPlotHealth {
    * @param {OverallPlotHealthProperties} params - Entity data.
    * @param {OverallPlotHealthStatus} [params.status] - Overall status label.
    * @param {number} [params.healthyPlotsCount] - Number of healthy plots.
-   * @param {number} [params.reviewPlotsCount] - Number of plots under review.
+   * @param {number} [params.reviewPlotsCount] - Number of plots with moderate health.
    */
   constructor({
                 status = 'Healthy',
@@ -49,7 +49,7 @@ export class OverallPlotHealth {
   }
 
   get summaryLabel(): string {
-    return `${this.healthyPlotsCount} plots healthy / ${this.reviewPlotsCount} plot under review`;
+    return `${this.healthyPlotsCount} plots healthy / ${this.reviewPlotsCount} moderate plots`;
   }
 
   get healthyPercentage(): number {

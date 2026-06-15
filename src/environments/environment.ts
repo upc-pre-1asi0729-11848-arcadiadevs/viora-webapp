@@ -19,6 +19,7 @@ export const environment = {
     monitoringSummaryCurrent: '/monitoring-summaries/current',
     agronomicStatistics: '/agronomic-statistics',
     agronomicStatisticsSeries: '/agronomic-statistics/series',
+    dynamicNutritionPlans: '/dynamic-nutrition-plans',
 
     // Mock API (other bounded contexts / not yet on the real backend)
     alerts: '/alerts',

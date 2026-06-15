@@ -10,18 +10,20 @@
         <h1 class="header-title">
           {{ 'sidebar.myPlots' | translate }}
           <span class="title-sep">/</span>
-          {{ 'plotCreate.title' | translate }}
+          {{ titleKey() | translate }}
         </h1>
-        <p class="header-subtitle">{{ 'plotCreate.subtitle' | translate }}</p>
+        <p class="header-subtitle">{{ subtitleKey() | translate }}</p>
       </div>
     </div>
 
     <div class="header-right">
       <app-language-switcher />
-      <button mat-icon-button class="reset-button" type="button" (click)="resetWizard()"
-              [attr.aria-label]="'plotCreate.reset' | translate">
-        <mat-icon>restart_alt</mat-icon>
-      </button>
+      @if (!isEditMode) {
+        <button mat-icon-button class="reset-button" type="button" (click)="resetWizard()"
+                [attr.aria-label]="'plotCreate.reset' | translate">
+          <mat-icon>restart_alt</mat-icon>
+        </button>
+      }
     </div>
   </header>
 
@@ -148,37 +150,29 @@
                    [placeholder]="'plotCreate.placeholders.location' | translate" />
           </mat-form-field>
 
-          <label class="field-label">{{ 'plotCreate.fields.area' | translate }}</label>
-          <mat-form-field appearance="outline" class="field">
-            <input matInput readonly
-                   [value]="boundaryClosed() ? estimatedAreaLabel() : ''"
-                   [placeholder]="'plotCreate.placeholders.area' | translate" />
-          </mat-form-field>
-          <p class="field-info">
-            <mat-icon>info</mat-icon> {{ 'plotCreate.info.areaNote' | translate }}
-          </p>
-
           <label class="field-label">{{ 'plotCreate.fields.notes' | translate }}</label>
           <mat-form-field appearance="outline" class="field">
             <textarea matInput rows="2" formControlName="notes"
                       [placeholder]="'plotCreate.placeholders.notes' | translate"></textarea>
           </mat-form-field>
 
-          <div class="card-divider"></div>
+          @if (!isEditMode) {
+            <div class="card-divider"></div>
 
-          <h3 class="links-title">{{ 'plotCreate.links.title' | translate }}</h3>
-          <div class="link-line">
-            <span class="link-name"><mat-icon>cloud</mat-icon> {{ 'plotCreate.links.climate' | translate }}</span>
-            <span class="link-tag tag-will">{{ 'plotCreate.links.willActivate' | translate }}</span>
-          </div>
-          <div class="link-line">
-            <span class="link-name"><mat-icon>eco</mat-icon> {{ 'plotCreate.links.ndvi' | translate }}</span>
-            <span class="link-tag tag-will">{{ 'plotCreate.links.willActivate' | translate }}</span>
-          </div>
-          <div class="link-line">
-            <span class="link-name"><mat-icon>wifi</mat-icon> {{ 'plotCreate.links.iot' | translate }}</span>
-            <span class="link-tag tag-dark">{{ 'plotCreate.links.linkFromDetail' | translate }}</span>
-          </div>
+            <h3 class="links-title">{{ 'plotCreate.links.title' | translate }}</h3>
+            <div class="link-line">
+              <span class="link-name"><mat-icon>cloud</mat-icon> {{ 'plotCreate.links.climate' | translate }}</span>
+              <span class="link-tag tag-will">{{ 'plotCreate.links.willActivate' | translate }}</span>
+            </div>
+            <div class="link-line">
+              <span class="link-name"><mat-icon>eco</mat-icon> {{ 'plotCreate.links.ndvi' | translate }}</span>
+              <span class="link-tag tag-will">{{ 'plotCreate.links.willActivate' | translate }}</span>
+            </div>
+            <div class="link-line">
+              <span class="link-name"><mat-icon>wifi</mat-icon> {{ 'plotCreate.links.iot' | translate }}</span>
+              <span class="link-tag tag-dark">{{ 'plotCreate.links.linkFromDetail' | translate }}</span>
+            </div>
+          }
         </form>
       </mat-card>
 
@@ -188,11 +182,9 @@
         <p class="card-subtitle">{{ 'plotCreate.boundary.subtitle' | translate }}</p>
 
         <div class="map-wrap">
-          <app-plot-boundary-map (boundaryChange)="onBoundaryChange($event)" />
-          <span class="map-status" [class.is-open]="!boundaryClosed()">
-            <span class="status-dot"></span>
-            {{ (boundaryClosed() ? 'plotCreate.boundary.polygonClosed' : 'plotCreate.boundary.polygonOpen') | translate }}
-          </span>
+          <app-plot-boundary-map
+            [initialBoundary]="boundaryToLoad()"
+            (boundaryChange)="onBoundaryChange($event)" />
         </div>
 
         <div class="map-actions">

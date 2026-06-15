@@ -123,7 +123,7 @@
         <mat-card class="boundary-card">
           <div class="card-title-row">
             <h2 class="card-title">{{ 'plotDetail.boundary.title' | translate }}</h2>
-            <a mat-stroked-button class="ghost-button" routerLink="/dashboard">
+            <a mat-stroked-button class="ghost-button" [routerLink]="['/dashboard/plot-overview', plot.id]">
               <mat-icon>open_in_full</mat-icon> {{ 'plotDetail.boundary.expand' | translate }}
             </a>
           </div>

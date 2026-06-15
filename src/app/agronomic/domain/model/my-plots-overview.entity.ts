@@ -3,7 +3,7 @@
  * @description Domain entity for the aggregated My Plots overview, used on the
  * dashboard to source real IoT device and plot-health counts.
  */
-import { PlotCoordinate, PlotHealthStatus } from './plot.entity';
+import { PhenologicalRiskLevel, PlotCoordinate, PlotHealthStatus } from './plot.entity';
 
 export interface MyPlotOverviewItemProperties {
   id?: number | string | null;
@@ -12,6 +12,7 @@ export interface MyPlotOverviewItemProperties {
   areaSizeHectares?: number;
   polygonCoordinates?: PlotCoordinate[];
   healthStatus?: PlotHealthStatus;
+  phenologicalRisk?: PhenologicalRiskLevel;
   currentNdvi?: number;
   chillPortions?: number;
   onlineDeviceCount?: number;
@@ -26,6 +27,7 @@ export class MyPlotOverviewItem {
   readonly areaSizeHectares: number;
   readonly polygonCoordinates: PlotCoordinate[];
   readonly healthStatus: PlotHealthStatus;
+  readonly phenologicalRisk: PhenologicalRiskLevel;
   readonly currentNdvi: number;
   readonly chillPortions: number;
   readonly onlineDeviceCount: number;
@@ -39,6 +41,7 @@ export class MyPlotOverviewItem {
     areaSizeHectares = 0,
     polygonCoordinates = [],
     healthStatus = 'Healthy',
+    phenologicalRisk = 'Low',
     currentNdvi = 0,
     chillPortions = 0,
     onlineDeviceCount = 0,
@@ -51,6 +54,7 @@ export class MyPlotOverviewItem {
     this.areaSizeHectares = areaSizeHectares;
     this.polygonCoordinates = polygonCoordinates;
     this.healthStatus = healthStatus;
+    this.phenologicalRisk = phenologicalRisk;
     this.currentNdvi = currentNdvi;
     this.chillPortions = chillPortions;
     this.onlineDeviceCount = onlineDeviceCount;

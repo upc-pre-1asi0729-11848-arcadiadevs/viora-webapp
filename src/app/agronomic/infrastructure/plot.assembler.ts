@@ -29,6 +29,11 @@ export class PlotAssembler extends BaseAssembler {
       currentImagery,
       healthStatus: normalizePlotHealthStatus(resource?.healthStatus),
       phenologicalRisk: normalizePhenologicalRisk(resource?.phenologicalRisk),
+      cropType: resource?.cropType ?? '',
+      variety: resource?.variety ?? '',
+      location: resource?.location ?? '',
+      campaign: resource?.campaign ?? '',
+      notes: resource?.notes ?? '',
     });
   }
 
