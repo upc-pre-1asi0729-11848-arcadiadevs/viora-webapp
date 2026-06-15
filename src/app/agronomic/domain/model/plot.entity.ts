@@ -4,7 +4,7 @@
  */
 import { SatelliteImagery } from './satellite-imagery.entity';
 
-export type PlotHealthStatus = 'Healthy' | 'Under Review' | 'Critical';
+export type PlotHealthStatus = 'Healthy' | 'Moderate' | 'Critical';
 export type PhenologicalRiskLevel = 'Low' | 'Medium' | 'High';
 export type PlotId = number | string | null;
 
@@ -94,7 +94,7 @@ export class Plot {
   }
 
   get requiresReview(): boolean {
-    return this.healthStatus === 'Under Review' || this.phenologicalRisk !== 'Low';
+    return this.healthStatus === 'Moderate' || this.phenologicalRisk !== 'Low';
   }
 
   get isOffline(): boolean {

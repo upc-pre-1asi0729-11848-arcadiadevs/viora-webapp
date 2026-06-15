@@ -24,7 +24,7 @@ export function normalizePlotHealthStatus(value: string | null | undefined): Plo
     case 'UNDER REVIEW':
     case 'UNDER_REVIEW':
     case 'UNKNOWN':
-      return 'Under Review';
+      return 'Moderate';
     default:
       return 'Healthy';
   }
@@ -46,7 +46,7 @@ export function normalizeOverallHealthStatus(
     case 'UNKNOWN':
     case 'UNDER REVIEW':
     case 'UNDER_REVIEW':
-      return 'Under Review';
+      return 'Moderate';
     default:
       return 'Healthy';
   }

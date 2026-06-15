@@ -43,7 +43,7 @@ export class PlotOverviewWidget {
     }
 
     if (
-      plot.healthStatus === 'Under Review' ||
+      plot.healthStatus === 'Moderate' ||
       plot.phenologicalRisk === 'Medium' ||
       record?.ndviTrend === 'down' ||
       ndviValue < 0.5
