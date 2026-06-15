@@ -20,7 +20,7 @@
 .weather-header h2 {
   margin: 0;
   color: #1f2523;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -71,7 +71,7 @@
   align-items: center;
   justify-content: flex-end;
   box-sizing: border-box;
-  padding: 18px 32px;
+  padding: 18px 24px;
   border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 22px;
   background-color: #506a9b;
@@ -152,7 +152,7 @@
 }
 
 .weather-current strong {
-  font-size: 56px;
+  font-size: 48px;
   font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -303,7 +303,7 @@
 
   .weather-header h2,
   .forecast-section h3 {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .weather-hero {
@@ -328,7 +328,7 @@
   }
 
   .weather-current strong {
-    font-size: 52px;
+    font-size: 46px;
   }
 
   .weather-current span,
