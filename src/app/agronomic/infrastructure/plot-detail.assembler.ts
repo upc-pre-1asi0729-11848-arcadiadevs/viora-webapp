@@ -1,6 +1,6 @@
 /**
  * @file plot-detail.assembler.ts
- * @description Maps GET /plots/{plotId}/detail resource to the domain entity.
+ * @description Maps GET /plots/{plotId}?view=detail resource to the domain entity.
  */
 import { PlotDetail } from '../domain/model/plot-detail.entity';
 
