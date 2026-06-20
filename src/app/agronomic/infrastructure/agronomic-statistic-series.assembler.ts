@@ -1,6 +1,6 @@
 /**
  * @file agronomic-statistic-series.assembler.ts
- * @description Maps GET /agronomic-statistics/series into the AgronomicStatistics
+ * @description Maps GET /agronomic-statistics?view=series into the AgronomicStatistics
  * entity that powers the Trend Analysis chart.
  */
 import {

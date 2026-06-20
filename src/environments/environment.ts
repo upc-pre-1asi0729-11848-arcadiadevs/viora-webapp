@@ -13,12 +13,12 @@ export const environment = {
   defaultUserId: 1,
 
   endpoints: {
-    // Real backend (agronomic bounded context)
+    // Real backend (agronomic bounded context). Aggregate roots are addressed
+    // by their collection/resource URL; projections are requested via the
+    // ?view= query param and collection filters via query params (sort/status).
     plots: '/plots',
-    plotsOverview: '/plots/overview',
-    monitoringSummaryCurrent: '/monitoring-summaries/current',
+    monitoringSummaries: '/monitoring-summaries',
     agronomicStatistics: '/agronomic-statistics',
-    agronomicStatisticsSeries: '/agronomic-statistics/series',
     dynamicNutritionPlans: '/dynamic-nutrition-plans',
 
     // Mock API (other bounded contexts / not yet on the real backend)
@@ -28,6 +28,6 @@ export const environment = {
 
   mapbox: {
     accessToken:
-      'YOUR_MAPBOX_TOKEN:HERE',
+      'YOUR_TOKEN_HERE',
   },
 };

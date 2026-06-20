@@ -1,6 +1,6 @@
 /**
  * @file plot-detail-response.ts
- * @description API resource for GET /plots/{plotId}/detail (real backend).
+ * @description API resource for GET /plots/{plotId}?view=detail (real backend).
  */
 import { PlotCoordinateResource } from './plots-response';
 
