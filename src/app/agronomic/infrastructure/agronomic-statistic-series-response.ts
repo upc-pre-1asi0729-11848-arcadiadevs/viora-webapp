@@ -1,6 +1,6 @@
 /**
  * @file agronomic-statistic-series-response.ts
- * @description API resource payload for GET /agronomic-statistics/series.
+ * @description API resource payload for GET /agronomic-statistics?view=series.
  */
 
 export interface MetricTrendResource {
