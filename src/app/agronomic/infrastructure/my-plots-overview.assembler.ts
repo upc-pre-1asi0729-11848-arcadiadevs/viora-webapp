@@ -1,6 +1,6 @@
 /**
  * @file my-plots-overview.assembler.ts
- * @description Maps the GET /plots/overview resource to the domain entity.
+ * @description Maps the GET /plots?view=overview resource to the domain entity.
  */
 import {
   MyPlotOverviewItem,

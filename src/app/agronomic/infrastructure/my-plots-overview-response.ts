@@ -1,6 +1,6 @@
 /**
  * @file my-plots-overview-response.ts
- * @description API resource payload for GET /plots/overview (real backend).
+ * @description API resource payload for GET /plots?view=overview (real backend).
  */
 import { PlotCoordinateResource } from './plots-response';
 
