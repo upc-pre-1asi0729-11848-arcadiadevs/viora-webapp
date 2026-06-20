@@ -1,9 +1,9 @@
 /**
  * @file dynamic-nutrition-plan-response.ts
  * @description API payloads for the Dynamic Nutrition endpoints:
- *  - GET  /api/v1/dynamic-nutrition-plans/active?userId&plotId
- *  - POST /api/v1/dynamic-nutrition-plans?userId&plotId            (generate)
- *  - POST /api/v1/dynamic-nutrition-plans/{planId}/certification?userId
+ *  - GET   /api/v1/dynamic-nutrition-plans?userId&plotId&status=ACTIVE  (active plan, as a single-element list)
+ *  - POST  /api/v1/dynamic-nutrition-plans?userId&plotId               (generate)
+ *  - PATCH /api/v1/dynamic-nutrition-plans/{planId}?userId             (certify application)
  */
 
 export interface NutritionInputRecommendationResource {
@@ -48,7 +48,7 @@ export interface DynamicNutritionPlanResource {
   application?: NutritionApplicationResource | null;
 }
 
-/** Request body for POST /{planId}/certification. */
+/** Request body for PATCH /dynamic-nutrition-plans/{planId} (certify application). */
 export interface CertifyNutritionPlanResource {
   applicationDate: string;
   applicationTime: string;

@@ -1,6 +1,6 @@
 /**
  * @file monitoring-summaries-response.ts
- * @description API resource payload for GET /monitoring-summaries/current
+ * @description API resource payload for GET /monitoring-summaries
  * (All Plots aggregate from the real backend).
  */
 

@@ -1,14 +1,6 @@
 /**
  * Application service store for the `Agronomic` bounded context.
  *
- * Coordinates the Dashboard / Overview use cases against the real Viora Platform
- * backend. The main KPI cards always show *current* figures:
- *  - All Plots scope  -> GET /monitoring-summaries/current
- *  - Single plot scope -> GET /plots/{plotId}/monitoring-summary
- *
- * Historical analysis lives in the Trend Analysis card (statistics series).
- * IoT/plot-health counts come from GET /plots/overview, while the Water Stress
- * sensor cards still use mock telemetry until the backend exposes sensor data.
  *
  * @module AgronomicStore
  */
@@ -294,7 +286,7 @@ export class AgronomicStore {
 
   /**
    * Per-plot caches for the slow on-demand endpoints
-   * (`/plots/{id}/monitoring-summary` and `/weather-forecast`). Keyed by
+   * (`/plots/{id}?view=monitoring` and `?view=weather`). Keyed by
    * `String(plotId)`. Once a plot has been loaded this session, re-selecting it
    * (or returning to the dashboard on that scope) renders instantly from cache
    * and refreshes silently in the background instead of blanking and waiting

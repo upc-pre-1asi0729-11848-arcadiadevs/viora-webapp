@@ -1,6 +1,6 @@
 /**
  * @file plot-weather-forecast.assembler.ts
- * @description Maps GET /plots/{plotId}/weather-forecast into the WeatherSummary
+ * @description Maps GET /plots/{plotId}?view=weather into the WeatherSummary
  * entity: current conditions, hourly strip, multi-day forecast, humidity/wind/
  * precipitation, thermal anomaly, climate risk and backend warnings.
  */

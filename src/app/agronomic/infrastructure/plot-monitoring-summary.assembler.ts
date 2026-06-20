@@ -1,6 +1,6 @@
 /**
  * @file plot-monitoring-summary.assembler.ts
- * @description Maps GET /plots/{plotId}/monitoring-summary into the shared
+ * @description Maps GET /plots/{plotId}?view=monitoring into the shared
  * MonitoringSummary entity, so the dashboard KPI cards render the selected
  * plot's current figures with the same consumers as the All Plots scope.
  */
