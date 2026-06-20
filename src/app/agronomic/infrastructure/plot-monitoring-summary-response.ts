@@ -1,6 +1,6 @@
 /**
  * @file plot-monitoring-summary-response.ts
- * @description API resource payload for GET /plots/{plotId}/monitoring-summary.
+ * @description API resource payload for GET /plots/{plotId}?view=monitoring.
  */
 import { WeatherSnapshotResource, MitigationRecommendationResource } from './monitoring-summaries-response';
 
