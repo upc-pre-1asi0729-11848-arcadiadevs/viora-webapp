@@ -16,7 +16,7 @@ export type PlotCoordinateResource = [number, number];
  * GET /plots?userId&includeCurrentImagery=true returns a plain array of these.
  * Note: the real backend currently serializes `healthStatus` and
  * `phenologicalRisk` as null on this endpoint; per-plot health is sourced from
- * /plots/overview and /plots/{plotId}/monitoring-summary instead.
+ * /plots?view=overview and /plots/{plotId}?view=monitoring instead.
  */
 export interface PlotResource extends BaseResource {
   userId?: number | string | null;

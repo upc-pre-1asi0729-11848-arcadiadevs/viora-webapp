@@ -1,6 +1,6 @@
 /**
  * @file plot-weather-forecast-response.ts
- * @description API resource payload for GET /plots/{plotId}/weather-forecast.
+ * @description API resource payload for GET /plots/{plotId}?view=weather.
  */
 import { DataSourceResource } from './plot-monitoring-summary-response';
 
