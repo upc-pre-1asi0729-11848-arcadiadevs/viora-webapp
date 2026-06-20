@@ -1,6 +1,6 @@
 /**
  * @file monitoring-summary.assembler.ts
- * @description Maps the real flat GET /monitoring-summaries/current resource
+ * @description Maps the real flat GET /monitoring-summaries resource
  * into the nested MonitoringSummary domain entity consumed by the dashboard.
  */
 import { MonitoringSummary } from '../domain/model/monitoring-summary.entity';
