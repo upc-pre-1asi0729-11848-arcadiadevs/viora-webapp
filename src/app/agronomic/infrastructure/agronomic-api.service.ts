@@ -68,12 +68,8 @@ export type SeriesTimeRange = '7days' | '30days' | 'campaign';
  */
 export class AgronomicApiService extends BaseApi {
   private readonly plotsEndpoint = this.endpoint(environment.endpoints.plots);
-  private readonly plotsOverviewEndpoint = this.endpoint(environment.endpoints.plotsOverview);
-  private readonly monitoringCurrentEndpoint = this.endpoint(
-    environment.endpoints.monitoringSummaryCurrent,
-  );
-  private readonly statisticsSeriesEndpoint = this.endpoint(
-    environment.endpoints.agronomicStatisticsSeries,
+  private readonly monitoringSummariesEndpoint = this.endpoint(
+    environment.endpoints.monitoringSummaries,
   );
   private readonly statisticsEndpoint = this.endpoint(
     environment.endpoints.agronomicStatistics,
@@ -87,7 +83,7 @@ export class AgronomicApiService extends BaseApi {
 
   /**
    * Maps a "no data yet" `404` to the given empty value (an expected backend
-   * state, e.g. `monitoring-summaries/current` before the first ingestion),
+   * state, e.g. `monitoring-summaries` before the first ingestion),
    * while letting real failures (5xx, network, CORS) propagate. The store keeps
    * its cached signal on a propagated error instead of blanking the dashboard,
    * so a transient outage no longer wipes good data.
@@ -121,8 +117,8 @@ export class AgronomicApiService extends BaseApi {
    */
   getMyPlotsOverview(): Observable<MyPlotsOverview | null> {
     return this.http
-      .get<MyPlotsOverviewResource>(this.plotsOverviewEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId()),
+      .get<MyPlotsOverviewResource>(this.plotsEndpoint.collectionUrl, {
+        params: this.queryParams(this.withUserId({ view: 'overview' })),
       })
       .pipe(
         map((resource) => MyPlotsOverviewAssembler.toEntityFromResource(resource)),
@@ -166,7 +162,7 @@ export class AgronomicApiService extends BaseApi {
    */
   getCurrentMonitoringSummary(): Observable<MonitoringSummary | null> {
     return this.http
-      .get<MonitoringSummaryResource>(this.monitoringCurrentEndpoint.collectionUrl, {
+      .get<MonitoringSummaryResource>(this.monitoringSummariesEndpoint.collectionUrl, {
         params: this.queryParams(this.withUserId()),
       })
       .pipe(
@@ -180,11 +176,9 @@ export class AgronomicApiService extends BaseApi {
    * @returns {Observable<PlotDetail | null>}
    */
   getPlotDetail(plotId: number | string): Observable<PlotDetail | null> {
-    const url = `${this.plotsEndpoint.resourceUrl(plotId)}/detail`;
-
     return this.http
-      .get<PlotDetailResource>(url, {
-        params: this.queryParams(this.withUserId()),
+      .get<PlotDetailResource>(this.plotsEndpoint.resourceUrl(plotId), {
+        params: this.queryParams(this.withUserId({ view: 'detail' })),
       })
       .pipe(
         map((resource) => PlotDetailAssembler.toEntityFromResource(resource)),
@@ -208,10 +202,10 @@ export class AgronomicApiService extends BaseApi {
    * @returns {Observable<void>}
    */
   ingestStatistics(): Observable<void> {
-    const url = `${this.statisticsEndpoint.collectionUrl}/ingest`;
-
     return this.http
-      .post<unknown>(url, null, { params: this.queryParams(this.withUserId()) })
+      .post<unknown>(this.statisticsEndpoint.collectionUrl, null, {
+        params: this.queryParams(this.withUserId()),
+      })
       .pipe(
         map(() => undefined),
         catchError(() => of(undefined)),
@@ -223,11 +217,9 @@ export class AgronomicApiService extends BaseApi {
    * @returns {Observable<MonitoringSummary | null>}
    */
   getPlotMonitoringSummary(plotId: number | string): Observable<MonitoringSummary | null> {
-    const url = `${this.plotsEndpoint.resourceUrl(plotId)}/monitoring-summary`;
-
     return this.http
-      .get<PlotMonitoringSummaryResource>(url, {
-        params: this.queryParams(this.withUserId()),
+      .get<PlotMonitoringSummaryResource>(this.plotsEndpoint.resourceUrl(plotId), {
+        params: this.queryParams(this.withUserId({ view: 'monitoring' })),
       })
       .pipe(
         map((resource) => PlotMonitoringSummaryAssembler.toEntityFromResource(resource)),
@@ -244,6 +236,7 @@ export class AgronomicApiService extends BaseApi {
     timeRange: SeriesTimeRange,
   ): Observable<AgronomicStatistics | null> {
     const params: ApiQueryParams = this.withUserId({
+      view: 'series',
       timeRange: this.toBackendTimeRange(timeRange),
     });
 
@@ -252,7 +245,7 @@ export class AgronomicApiService extends BaseApi {
     }
 
     return this.http
-      .get<AgronomicStatisticSeriesResource>(this.statisticsSeriesEndpoint.collectionUrl, {
+      .get<AgronomicStatisticSeriesResource>(this.statisticsEndpoint.collectionUrl, {
         params: this.queryParams(params),
       })
       .pipe(
@@ -266,11 +259,9 @@ export class AgronomicApiService extends BaseApi {
    * @returns {Observable<WeatherSummary | null>}
    */
   getPlotWeatherForecast(plotId: number | string): Observable<WeatherSummary | null> {
-    const url = `${this.plotsEndpoint.resourceUrl(plotId)}/weather-forecast`;
-
     return this.http
-      .get<PlotWeatherForecastResource>(url, {
-        params: this.queryParams(this.withUserId()),
+      .get<PlotWeatherForecastResource>(this.plotsEndpoint.resourceUrl(plotId), {
+        params: this.queryParams(this.withUserId({ view: 'weather' })),
       })
       .pipe(
         map((resource) => PlotWeatherForecastAssembler.toEntityFromResource(resource)),
@@ -345,14 +336,12 @@ export class AgronomicApiService extends BaseApi {
    * @returns {Observable<DynamicNutritionPlan | null>}
    */
   getActiveNutritionPlan(plotId: number | string): Observable<DynamicNutritionPlan | null> {
-    const url = `${this.nutritionPlansEndpoint.collectionUrl}/active`;
-
     return this.http
-      .get<DynamicNutritionPlanResource>(url, {
-        params: this.queryParams(this.withUserId({ plotId })),
+      .get<DynamicNutritionPlanResource[]>(this.nutritionPlansEndpoint.collectionUrl, {
+        params: this.queryParams(this.withUserId({ plotId, status: 'ACTIVE' })),
       })
       .pipe(
-        map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)),
+        map((resources) => DynamicNutritionPlanAssembler.toEntityFromResource(resources?.[0])),
         this.emptyOnNotFound<DynamicNutritionPlan | null>(null),
       );
   }
@@ -378,12 +367,12 @@ export class AgronomicApiService extends BaseApi {
     planId: number | string,
     certification: CertifyNutritionPlanResource,
   ): Observable<DynamicNutritionPlan | null> {
-    const url = `${this.nutritionPlansEndpoint.resourceUrl(planId)}/certification`;
-
     return this.http
-      .post<DynamicNutritionPlanResource>(url, certification, {
-        params: this.queryParams(this.withUserId()),
-      })
+      .patch<DynamicNutritionPlanResource>(
+        this.nutritionPlansEndpoint.resourceUrl(planId),
+        certification,
+        { params: this.queryParams(this.withUserId()) },
+      )
       .pipe(map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)));
   }
 
