@@ -1,0 +1,17 @@
+<div class="crm">
+  <div #mapContainer class="crm-canvas"></div>
+
+  @if (mapUnavailable()) {
+    <div class="crm-fallback">Map unavailable</div>
+  }
+
+  @if (signals().length === 0) {
+    <span class="crm-empty">No nearby signals within radius</span>
+  }
+
+  <div class="crm-legend">
+    <span><i class="dot dot--high"></i> High</span>
+    <span><i class="dot dot--medium"></i> Medium</span>
+    <span><i class="dot dot--low"></i> Low</span>
+  </div>
+</div>

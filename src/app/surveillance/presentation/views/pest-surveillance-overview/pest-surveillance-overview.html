@@ -1,0 +1,290 @@
+<section class="pest-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    subtitle="Monitor biological risk signals, symptom reports, and autonomous pest-related detections across your plots."
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Quick navigation + plot scope -->
+  <app-dashboard-toolbar
+    [viewOptions]="toolbarViewOptions()"
+    [scopeOptions]="scopeOptions()"
+    [selectedScope]="selectedPlotId() ?? 'all'"
+    (scopeChange)="onSelectPlot($event)" />
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Surveillance status</h2>
+        <span class="kpi-pill kpi-pill--green">Active</span>
+      </div>
+      <span class="kpi-number kpi-number--sm">Active</span>
+      <p class="kpi-caption">Satellite, manual reports, and community signals are being evaluated.</p>
+      <button mat-stroked-button type="button" class="ghost-button" (click)="navigateTo('/agronomic/plots')">
+        <mat-icon>map</mat-icon> {{ plotsMonitored() }} plots monitored
+      </button>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Probable threat</h2>
+        <span class="kpi-pill kpi-pill--soft">Under observation</span>
+      </div>
+      <span class="kpi-threat">{{ store.probableThreatLabel() }}</span>
+      <p class="kpi-caption">Detected from low-vigor signals and recent symptom reports.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Risk confidence</h2>
+        <span class="kpi-pill kpi-pill--soft">Medium-high</span>
+      </div>
+      <span class="kpi-number">{{ store.riskConfidence() }}%</span>
+      <div class="confidence-bar"><span [style.width.%]="store.riskConfidence()"></span></div>
+      <p class="kpi-caption">Calculated from symptoms, NDVI variation, and nearby signals.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Community exposure</h2>
+        <span class="kpi-pill kpi-pill--soft">{{ store.communityRisk().radiusKm }} km radius</span>
+      </div>
+      <span class="kpi-number kpi-number--sm">{{ store.communityExposureCount() }} signals</span>
+      <p class="kpi-caption">Nearby plots show related risk patterns within the monitoring radius.</p>
+      <button mat-stroked-button type="button" class="ghost-button" (click)="navigateTo('/surveillance/alerts')">
+        <mat-icon>campaign</mat-icon> View community risk
+      </button>
+    </mat-card>
+  </section>
+
+  <!-- Map + risk evaluation / history + autonomous -->
+  <section class="content-grid">
+    <div class="content-col">
+    <mat-card class="map-card">
+      <div class="card-head">
+        <div>
+          <h2>Surveillance map</h2>
+          <p>Risk signals from manual reports, satellite indicators, and community activity.</p>
+        </div>
+        <span class="kpi-pill kpi-pill--soft">{{ activeSignalsCount() }} active signals</span>
+      </div>
+
+      <div class="filter-chips">
+        @for (filter of mapFilters; track filter.id) {
+          <button
+            type="button"
+            class="filter-chip"
+            [class.is-active]="mapFilter() === filter.id"
+            (click)="setMapFilter(filter.id)">
+            {{ filter.label }}
+          </button>
+        }
+      </div>
+
+      <app-surveillance-map [boundary]="selectedBoundary()" [markers]="mapMarkers()" />
+
+      <div class="map-legend-row">
+        <span><i class="dot dot--high"></i> Manual report</span>
+        <span><i class="dot dot--medium"></i> Satellite signal</span>
+        <span><i class="dot dot--low"></i> Community signal</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="history-card">
+      <div class="card-head">
+        <div>
+          <h2>Symptom report history</h2>
+          <p>Reports submitted by you across all plots.</p>
+        </div>
+        <button mat-flat-button type="button" class="primary-button" (click)="openReportForm()">
+          <mat-icon>add</mat-icon> Create new report
+        </button>
+      </div>
+
+      <div class="history-table">
+        <div class="history-header">
+          <span>Report ID</span>
+          <span>Plot</span>
+          <span>Symptoms</span>
+          <span>Result</span>
+        </div>
+
+        @if (store.loading().reports && store.pestReports().length === 0) {
+          <div class="history-state">Loading reports…</div>
+        } @else if (store.pestReports().length === 0) {
+          <div class="history-state">No reports submitted yet.</div>
+        } @else {
+          @for (report of store.pestReports(); track report.id) {
+            <div class="history-row">
+              <span class="report-code">{{ report.code }}</span>
+              <span>{{ plotName(report.plotId) }}</span>
+              <span class="report-symptoms">{{ report.symptomsLabel || '—' }}</span>
+              <span><span class="pill" [class]="resultClass(report.result)">{{ report.result }}</span></span>
+            </div>
+          }
+        }
+      </div>
+    </mat-card>
+    </div>
+
+    <div class="content-col">
+    <mat-card class="risk-card">
+      <div class="card-head">
+        <div>
+          <h2>Current risk evaluation</h2>
+          <p>System analysis based on available indicators.</p>
+        </div>
+        <span class="kpi-pill kpi-pill--soft">Under observation</span>
+      </div>
+
+      <span class="risk-pattern-label">Probable pattern</span>
+      <strong class="risk-pattern">Possible {{ store.probableThreatLabel() }} pattern</strong>
+
+      <div class="risk-status-grid">
+        <div class="risk-status-box">
+          <span>Status</span>
+          <strong>Under observation</strong>
+        </div>
+        <div class="risk-status-box">
+          <span>Estimated risk</span>
+          <strong class="risk-estimate">{{ store.riskConfidence() >= 60 ? 'Medium-high' : 'Low-medium' }}</strong>
+        </div>
+      </div>
+
+      <span class="evidence-title">Main evidence</span>
+      <div class="evidence-list">
+        <div class="evidence-row">
+          <span class="evidence-num">{{ store.confirmedReports().length }}</span>
+          Confirmed symptom reports
+        </div>
+        <div class="evidence-row">
+          <span class="evidence-num">{{ store.pestReports().length }}</span>
+          Total symptom reports submitted
+        </div>
+        <div class="evidence-row">
+          <span class="evidence-num">{{ store.communityExposureCount() }}</span>
+          Nearby community signals
+        </div>
+      </div>
+
+      <div class="next-step">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>Recommended next step</strong>
+          <p>Inspect leaves and monitor low-vigor zones before requesting a specialist intervention.</p>
+        </div>
+      </div>
+
+      <button mat-stroked-button type="button" class="ghost-button block" (click)="openReportForm()">
+        <mat-icon>pest_control</mat-icon> Report symptoms
+      </button>
+      <button mat-stroked-button type="button" class="ghost-button block" (click)="navigateTo('/surveillance/alerts')">
+        <mat-icon>campaign</mat-icon> View related alerts
+      </button>
+      <button mat-stroked-button type="button" class="ghost-button block" (click)="navigateTo('/assistance/expert-assistance/request')">
+        <mat-icon>groups</mat-icon> Request expert
+      </button>
+    </mat-card>
+
+    <mat-card class="autonomous-card">
+      <div class="card-head">
+        <div>
+          <h2>Autonomous detections</h2>
+          <p>Signals detected without manual symptom reports.</p>
+        </div>
+        <span class="kpi-pill kpi-pill--muted">Preview</span>
+      </div>
+
+      <div class="autonomous-list">
+        @for (detection of autonomousDetections; track detection.title) {
+          <div class="autonomous-row">
+            <span class="autonomous-icon"><mat-icon>eco</mat-icon></span>
+            <div class="autonomous-body">
+              <strong>{{ detection.title }}</strong>
+              <span class="autonomous-source">{{ detection.plotLabel }}</span>
+              <p>{{ detection.description }}</p>
+            </div>
+            <span class="pill" [class]="severityClass(detection.severity)">{{ detection.severity }}</span>
+          </div>
+        }
+      </div>
+      <p class="autonomous-note">Automatic detections will populate here once agronomic monitoring emits risk events.</p>
+    </mat-card>
+    </div>
+  </section>
+
+  @if (store.errors().length > 0) {
+    <section class="error-box"><strong>Something went wrong loading surveillance data.</strong></section>
+  }
+</section>
+
+<!-- Report form modal -->
+@if (formOpen()) {
+  <div class="modal-overlay" (click)="closeReportForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>Report symptoms</h2>
+        <button mat-icon-button type="button" (click)="closeReportForm()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <label class="field">
+        <span>Plot</span>
+        <select [value]="formPlotId()" (change)="formPlotId.set($any($event.target).value)">
+          @for (plot of plots(); track plot.id) {
+            <option [value]="plot.id">{{ plot.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Risk zone</span>
+        <select [value]="formRiskZone()" (change)="formRiskZone.set($any($event.target).value)">
+          @for (zone of riskZones; track zone) {
+            <option [value]="zone">{{ zone }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Observed severity</span>
+        <select [value]="formSeverity()" (change)="formSeverity.set($any($event.target).value)">
+          @for (sev of severities; track sev) {
+            <option [value]="sev">{{ sev }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="field">
+        <span>Symptoms</span>
+        @if (store.symptoms().length === 0) {
+          <p class="field-hint">No symptom catalog available.</p>
+        } @else {
+          <div class="symptom-grid">
+            @for (symptom of store.symptoms(); track symptom.id) {
+              <button
+                type="button"
+                class="symptom-chip"
+                [class.is-selected]="isSymptomSelected(symptom.id ?? '')"
+                (click)="toggleSymptom(symptom.id ?? '')">
+                {{ symptom.description || symptom.id }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <label class="field">
+        <span>Notes (optional)</span>
+        <textarea rows="2" [value]="formNotes()" (input)="formNotes.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeReportForm()">Cancel</button>
+        <button mat-flat-button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submitReport()">
+          {{ store.loading().submitting ? 'Submitting…' : 'Submit report' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,8 +1,14 @@
 /**
  * @file alert.assembler.ts
- * @description specialized assembler for mapping Alert resources to domain entities.
+ * @description Maps the real backend's Alert resources (UPPERCASE enum names)
+ * into the surveillance domain entity.
  */
-import { Alert, AlertSeverity, AlertStatus } from '../domain/model/alert.entity';
+import {
+  Alert,
+  AlertSeverity,
+  AlertSource,
+  AlertStatus,
+} from '../domain/model/alert.entity';
 
 import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
 import { AlertResource } from './alerts-response';
@@ -10,8 +16,8 @@ import { AlertResource } from './alerts-response';
 export class AlertAssembler extends BaseAssembler {
   /**
    * Transforms a single resource into an entity.
-   * @param {Object} resource - Raw data point.
-   * @returns {any}
+   * @param {AlertResource} resource - Raw alert summary payload.
+   * @returns {Alert}
    */
   static toEntityFromResource(resource: AlertResource | null | undefined): Alert {
     return new Alert({
@@ -21,6 +27,10 @@ export class AlertAssembler extends BaseAssembler {
       severity: this.toSeverity(resource?.severity),
       date: resource?.date ?? '',
       status: this.toStatus(resource?.status),
+      sources: (resource?.sources ?? [])
+        .map((source) => this.toSource(source))
+        .filter((source): source is AlertSource => source !== null),
+      plotId: resource?.plotId ?? null,
       plot: {
         name: resource?.plot?.name ?? '',
         location: resource?.plot?.location ?? '',
@@ -31,29 +41,62 @@ export class AlertAssembler extends BaseAssembler {
 
   /**
    * Transforms a collection of resources into entities.
-   * @param {Object[]} resources - Array of raw data points.
-   * @returns {any[]}
+   * @param {AlertResource[]} resources - Array of raw alert summaries.
+   * @returns {Alert[]}
    */
   static toEntitiesFromResources(resources: AlertResource[] = []): Alert[] {
     return this.toEntities(resources, (resource) => this.toEntityFromResource(resource));
   }
 
+  /** Backend AlertSeverity: LOW | MEDIUM | HIGH | CRITICAL. */
   private static toSeverity(value: string | undefined): AlertSeverity {
-    const validSeverities: AlertSeverity[] = ['Low', 'Medium', 'High', 'Critical'];
-
-    return validSeverities.includes(value as AlertSeverity) ? (value as AlertSeverity) : 'Low';
+    switch ((value ?? '').trim().toUpperCase()) {
+      case 'CRITICAL':
+        return 'Critical';
+      case 'HIGH':
+        return 'High';
+      case 'MEDIUM':
+        return 'Medium';
+      default:
+        return 'Low';
+    }
   }
 
+  /** Backend AlertStatus: ACTIVE | SUGGEST | UNDER_REVIEW | RESOLVED | DISMISSED. */
   private static toStatus(value: string | undefined): AlertStatus {
-    const validStatuses: AlertStatus[] = [
-      'Pending',
-      'Active',
-      'Suggest',
-      'Under review',
-      'In Progress',
-      'Resolved',
-    ];
+    switch ((value ?? '').trim().toUpperCase()) {
+      case 'ACTIVE':
+        return 'Active';
+      case 'SUGGEST':
+        return 'Suggest';
+      case 'UNDER_REVIEW':
+        return 'Under review';
+      case 'RESOLVED':
+        return 'Resolved';
+      case 'DISMISSED':
+        return 'Dismissed';
+      default:
+        return 'Pending';
+    }
+  }
 
-    return validStatuses.includes(value as AlertStatus) ? (value as AlertStatus) : 'Pending';
+  /** Backend AlertSource: CLIMATE | MANUAL_REPORT | COMMUNITY | SATELLITE | IOT | SYSTEM. */
+  private static toSource(value: string | undefined): AlertSource | null {
+    switch ((value ?? '').trim().toUpperCase()) {
+      case 'CLIMATE':
+        return 'Climate';
+      case 'MANUAL_REPORT':
+        return 'Manual report';
+      case 'COMMUNITY':
+        return 'Community';
+      case 'SATELLITE':
+        return 'Satellite';
+      case 'IOT':
+        return 'IoT';
+      case 'SYSTEM':
+        return 'System';
+      default:
+        return null;
+    }
   }
 }
