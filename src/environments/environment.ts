@@ -21,8 +21,13 @@ export const environment = {
     agronomicStatistics: '/agronomic-statistics',
     dynamicNutritionPlans: '/dynamic-nutrition-plans',
 
-    // Mock API (other bounded contexts / not yet on the real backend)
+    // Surveillance bounded context (real backend)
     alerts: '/alerts',
+    communityRisk: '/community-risk',
+    pestSightingReports: '/pest-sighting-reports',
+    symptomDictionaryItems: '/symptom-dictionary-items',
+
+    // Mock API (other bounded contexts / not yet on the real backend)
     iotDevices: '/iot-devices',
   },
 

@@ -2,50 +2,119 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { ApiQueryParams, BaseApi } from '../../shared/infrastructure/base-api';
+import { BaseApi } from '../../shared/infrastructure/base-api';
 
 import { Alert } from '../domain/model/alert.entity';
-import { AlertCollectionResponse, AlertResource } from './alerts-response';
+import { CommunityRiskSnapshot } from '../domain/model/nearby-risk-signal.entity';
+import { PestReport } from '../domain/model/pest-report.entity';
+import { AlertResource, UpdateAlertRequest } from './alerts-response';
 import { AlertAssembler } from './alert.assembler';
-
-type SurveillanceQueryParams = ApiQueryParams;
+import { CommunityRiskResource } from './community-risk-response';
+import { CommunityRiskAssembler } from './community-risk.assembler';
+import {
+  CreatePestSightingReportRequest,
+  PestSightingReportResource,
+} from './pest-sighting-report-response';
+import { PestReportAssembler } from './pest-report.assembler';
+import { SymptomResource } from './symptom-response';
 
 @Injectable({
   providedIn: 'root',
 })
 /**
- * Infrastructure service gateway for the Surveillance bounded-context endpoints.
- * Manages multiple specific endpoints for surveillance entities.
+ * Infrastructure gateway for the Surveillance bounded context, served by the
+ * real Viora Platform backend. Alerts are addressed as an aggregate-root
+ * collection: the recent feed via `?sort=recent`, and status transitions via
+ * PATCH on the alert resource.
  *
  * @class SurveillanceApiService
  * @extends BaseApi
  */
 export class SurveillanceApiService extends BaseApi {
-  // Alerts belong to a bounded context still served by the mock API.
-  private readonly alertsEndpoint = this.mockEndpoint(environment.endpoints.alerts);
+  private readonly alertsEndpoint = this.endpoint(environment.endpoints.alerts);
+  private readonly communityRiskEndpoint = this.endpoint(environment.endpoints.communityRisk);
+  private readonly pestReportsEndpoint = this.endpoint(environment.endpoints.pestSightingReports);
+  private readonly symptomsEndpoint = this.endpoint(environment.endpoints.symptomDictionaryItems);
 
   /**
-   * Fetches Alerts resources.
+   * Fetches the user's most recent alerts (newest first). A high limit returns
+   * the full working set so the Alerts page can paginate and aggregate locally.
+   * @param {number} limit - Maximum number of alerts to retrieve.
    * @returns {Observable<Alert[]>}
    */
-  getAlerts(params: SurveillanceQueryParams = {}): Observable<Alert[]> {
+  getAlerts(limit = 50): Observable<Alert[]> {
     return this.http
-      .get<AlertCollectionResponse>(this.alertsEndpoint.collectionUrl, {
-        params: this.queryParams(params),
+      .get<AlertResource[]>(this.alertsEndpoint.collectionUrl, {
+        params: this.queryParams(this.withUserId({ sort: 'recent', limit })),
       })
-      .pipe(
-        map((response) => this.collectionFrom(response, 'alerts')),
-        map((resources) => AlertAssembler.toEntitiesFromResources(resources)),
-      );
+      .pipe(map((resources) => AlertAssembler.toEntitiesFromResources(resources ?? [])));
   }
 
   /**
-   * Fetches AlertById resources.
-   * @returns {Observable<Alert>}
+   * Marks an alert as under review (backend status UNDER_REVIEW).
+   * @param {number|string} id - Alert identifier.
+   * @returns {Observable<void>}
    */
-  getAlertById(id: number | string): Observable<Alert> {
+  markAlertUnderReview(id: number | string): Observable<void> {
+    const body: UpdateAlertRequest = { status: 'UNDER_REVIEW' };
+
     return this.http
-      .get<AlertResource>(this.alertsEndpoint.resourceUrl(id))
-      .pipe(map((resource) => AlertAssembler.toEntityFromResource(resource)));
+      .patch<AlertResource>(this.alertsEndpoint.resourceUrl(id), body)
+      .pipe(map(() => undefined));
+  }
+
+  /**
+   * Fetches the anonymized community-risk snapshot around a plot.
+   * @param {number|string} plotId - Reference plot identifier.
+   * @param {number} radiusKm - Monitoring radius in kilometers.
+   * @returns {Observable<CommunityRiskSnapshot | null>}
+   */
+  getCommunityRisk(plotId: number | string, radiusKm = 5): Observable<CommunityRiskSnapshot | null> {
+    return this.http
+      .get<CommunityRiskResource>(this.communityRiskEndpoint.collectionUrl, {
+        params: this.queryParams({ plotId, radiusKm }),
+      })
+      .pipe(map((resource) => CommunityRiskAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Fetches the producer's symptom report history (newest first).
+   * @returns {Observable<PestReport[]>}
+   */
+  getPestReports(): Observable<PestReport[]> {
+    return this.http
+      .get<PestSightingReportResource[]>(this.pestReportsEndpoint.collectionUrl, {
+        params: this.queryParams({ reporterUserId: this.defaultUserId }),
+      })
+      .pipe(map((resources) => PestReportAssembler.toEntitiesFromResources(resources ?? [])));
+  }
+
+  /**
+   * Submits a manual pest sighting report. The backend evaluates the biological
+   * risk and may auto-create an alert. Errors are not swallowed so the form can
+   * surface them.
+   * @returns {Observable<PestReport>}
+   */
+  createPestReport(
+    request: Omit<CreatePestSightingReportRequest, 'reporterUserId'>,
+  ): Observable<PestReport> {
+    const body: CreatePestSightingReportRequest = {
+      reporterUserId: Number(this.defaultUserId),
+      ...request,
+    };
+
+    return this.http
+      .post<PestSightingReportResource>(this.pestReportsEndpoint.collectionUrl, body)
+      .pipe(map((resource) => PestReportAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Fetches the symptom catalog used by the report form.
+   * @returns {Observable<SymptomResource[]>}
+   */
+  getSymptomDictionary(): Observable<SymptomResource[]> {
+    return this.http
+      .get<SymptomResource[]>(this.symptomsEndpoint.collectionUrl)
+      .pipe(map((resources) => resources ?? []));
   }
 }
