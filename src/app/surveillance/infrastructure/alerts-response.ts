@@ -1,12 +1,10 @@
 /**
  * @file alerts-response.ts
- * @description API resource payload definition for Alerts data.
+ * @description API resource payloads for the real Surveillance backend:
+ *  - GET   /api/v1/alerts?userId&sort=recent&limit   (AlertSummaryResource[])
+ *  - GET   /api/v1/alerts/{id}                        (AlertDetailResource)
+ *  - PATCH /api/v1/alerts/{id}                        ({ status })
  */
-import {
-  BaseResource,
-  BaseResponse,
-  CollectionResponse,
-} from '../../shared/infrastructure/base-response';
 
 export interface AlertPlotResource {
   name?: string;
@@ -14,17 +12,34 @@ export interface AlertPlotResource {
   hectares?: number;
 }
 
-export interface AlertResource extends BaseResource {
+/** Row payload returned by GET /alerts (AlertSummaryResource). */
+export interface AlertResource {
+  id?: number;
   type?: string;
   description?: string;
   severity?: string;
   date?: string;
   status?: string;
+  sources?: string[];
+  plotId?: number;
   plot?: AlertPlotResource;
 }
 
-export interface AlertsResponse extends BaseResponse {
-  alerts: AlertResource[];
+/** Detail payload returned by GET /alerts/{id} (AlertResource on the backend). */
+export interface AlertDetailResource {
+  id?: number;
+  plotId?: number;
+  type?: string;
+  severity?: string;
+  status?: string;
+  title?: string;
+  riskExplanation?: string;
+  sources?: string[];
+  dataProviders?: string[];
+  supportingData?: Record<string, string>;
 }
 
-export type AlertCollectionResponse = CollectionResponse<AlertResource, 'alerts'>;
+/** Request body for PATCH /alerts/{id}. */
+export interface UpdateAlertRequest {
+  status: string;
+}

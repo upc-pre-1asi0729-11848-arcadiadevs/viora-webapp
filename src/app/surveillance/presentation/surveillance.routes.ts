@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
-const comingSoonPage = () => import('../../shared/presentation/views/coming-soon-page/coming-soon-page').then(m => m.ComingSoonPage);
+const alertsOverview = () => import('./views/alerts-overview/alerts-overview').then(m => m.AlertsOverviewView);
+const pestSurveillanceOverview = () => import('./views/pest-surveillance-overview/pest-surveillance-overview').then(m => m.PestSurveillanceOverviewView);
 
 /**
  * Route tree for surveillance bounded-context views.
@@ -14,31 +15,16 @@ export const surveillanceRoutes: Routes = [
   {
     path: 'alerts',
     title: 'Alerts',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Alerts',
-      sectionLabel: 'Alerts',
-      subtitle: 'Review field notifications and agronomic risk alerts.'
-    }
+    loadComponent: alertsOverview
   },
   {
     path: 'pest-surveillance',
     title: 'Pest Surveillance',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Pest Surveillance',
-      sectionLabel: 'Pest Surveillance',
-      subtitle: 'Track pest pressure and surveillance recommendations.'
-    }
+    loadComponent: pestSurveillanceOverview
   },
   {
     path: 'pest-surveillance/report-symptoms',
-    title: 'Report Symptoms',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Report Symptoms',
-      sectionLabel: 'Pest Surveillance',
-      subtitle: 'Register field symptoms for surveillance review.'
-    }
+    redirectTo: 'pest-surveillance',
+    pathMatch: 'full'
   }
 ];

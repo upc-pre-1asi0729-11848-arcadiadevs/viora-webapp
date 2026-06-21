@@ -12,7 +12,17 @@ export type AlertStatus =
   | 'Suggest'
   | 'Under review'
   | 'In Progress'
-  | 'Resolved';
+  | 'Resolved'
+  | 'Dismissed';
+
+/** Origin of the signal that raised the alert (backend AlertSource). */
+export type AlertSource =
+  | 'Climate'
+  | 'Manual report'
+  | 'Community'
+  | 'Satellite'
+  | 'IoT'
+  | 'System';
 
 export interface AlertPlotInfo {
   name: string;
@@ -27,8 +37,27 @@ export interface AlertProperties {
   severity?: AlertSeverity;
   date?: string;
   status?: AlertStatus;
+  sources?: AlertSource[];
+  plotId?: number | null;
   plot?: AlertPlotInfo;
 }
+
+/** Maps a backend ThreatType enum name to a producer-facing label. */
+const THREAT_TYPE_LABELS: Record<string, string> = {
+  PHENOLOGICAL_RISK: 'Phenological risk',
+  CHILL_DEFICIT: 'Chill deficit warning',
+  CLIMATE_EXTREME: 'Climate extreme warning',
+  PEST_SYMPTOM: 'Pest symptom report',
+  COMMUNITY_PEST: 'Community pest alert',
+  LOW_NDVI: 'Low NDVI zone',
+  HYDRIC_STRESS: 'Hydric stress warning',
+  WATER_STRESS: 'Hydric stress warning',
+  XYLELLA_RELATED: 'Xylella-related alert',
+  OLIVE_FRUIT_FLY: 'Olive fruit fly',
+  OLIVE_MOTH: 'Olive moth',
+  PEACOCK_SPOT: 'Peacock spot',
+  UNKNOWN: 'Agronomic alert',
+};
 
 export class Alert {
   readonly id: AlertId;
@@ -37,16 +66,19 @@ export class Alert {
   readonly severity: AlertSeverity;
   readonly date: string;
   readonly status: AlertStatus;
+  readonly sources: AlertSource[];
+  readonly plotId: number | null;
   readonly plot: AlertPlotInfo;
 
   /**
    * @param {AlertProperties} params - Entity data.
    * @param {AlertId} [params.id] - Unique identifier.
-   * @param {string} [params.type] - Alert type.
+   * @param {string} [params.type] - Alert type (backend ThreatType enum name).
    * @param {string} [params.description] - Detailed description of the alert.
    * @param {AlertSeverity} [params.severity] - Level of urgency.
    * @param {string} [params.date] - Date string for the alert.
    * @param {AlertStatus} [params.status] - Current status.
+   * @param {AlertSource[]} [params.sources] - Signals that raised the alert.
    * @param {AlertPlotInfo} [params.plot] - Associated plot information.
    */
   constructor({
@@ -56,6 +88,8 @@ export class Alert {
     severity = 'Low',
     date = '',
     status = 'Pending',
+    sources = [],
+    plotId = null,
     plot = {
       name: '',
       location: '',
@@ -68,6 +102,8 @@ export class Alert {
     this.severity = severity;
     this.date = date;
     this.status = status;
+    this.sources = sources;
+    this.plotId = plotId;
     this.plot = plot;
   }
 
@@ -76,6 +112,16 @@ export class Alert {
     const isOpen = this.status === 'Active' || this.status === 'Pending';
 
     return isSevere && isOpen;
+  }
+
+  /** Producer-facing label for the alert type (e.g. "Phenological risk"). */
+  get typeLabel(): string {
+    return THREAT_TYPE_LABELS[this.type?.trim().toUpperCase()] ?? (this.type || 'Agronomic alert');
+  }
+
+  /** Primary signal shown in the table's Source column. */
+  get primarySource(): AlertSource | null {
+    return this.sources.length > 0 ? this.sources[0] : null;
   }
 
   get dateValue(): Date | null {
