@@ -1,0 +1,17 @@
+<div class="sm">
+  <div #mapContainer class="sm-canvas"></div>
+
+  @if (mapUnavailable()) {
+    <div class="sm-fallback">Map unavailable</div>
+  }
+
+  @if (markers().length === 0) {
+    <span class="sm-empty">No risk signals on this plot</span>
+  }
+
+  <div class="sm-legend">
+    <span><i class="dot dot--high"></i> High</span>
+    <span><i class="dot dot--medium"></i> Medium</span>
+    <span><i class="dot dot--low"></i> Low</span>
+  </div>
+</div>
