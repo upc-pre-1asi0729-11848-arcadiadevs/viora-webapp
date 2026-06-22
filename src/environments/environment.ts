@@ -32,7 +32,10 @@ export const environment = {
   },
 
   mapbox: {
+    // CI replaces this placeholder at build time with the MAPBOX_ACCESS_TOKEN
+    // GitHub secret (see .github/workflows/firebase-hosting-merge.yml). The real
+    // token is never committed; local dev uses environment.development.ts.
     accessToken:
-      'YOUR_TOKEN_HERE',
+      'YOUR_MAPBOX_TOKEN:HERE',
   },
 };
