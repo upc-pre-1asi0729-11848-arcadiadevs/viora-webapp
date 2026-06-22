@@ -20,7 +20,7 @@ import { Plot } from '../../../../agronomic/domain/model/plot.entity';
 
 import { SurveillanceStore } from '../../../application/surveillance.store';
 import { PestReport, RiskZone } from '../../../domain/model/pest-report.entity';
-import { AlertSeverity } from '../../../domain/model/alert.entity';
+import { AlertSeverity, AlertSource } from '../../../domain/model/alert.entity';
 import {
   LngLat,
   SurveillanceMap,
@@ -30,8 +30,9 @@ import {
 /** Signal-source filter for the surveillance map. */
 type MapFilter = 'all' | 'manual' | 'satellite' | 'community' | 'autonomous';
 
-/** A mocked autonomous detection (no backend feed yet). */
+/** An autonomous (machine-generated) detection derived from the real alerts feed. */
 interface AutonomousDetection {
+  key: string;
   title: string;
   plotLabel: string;
   description: string;
@@ -85,27 +86,32 @@ export class PestSurveillanceOverviewView implements OnInit {
   protected readonly formSymptoms = signal<string[]>([]);
   protected readonly formNotes = signal<string>('');
 
-  /** Autonomous detections are not fed by the backend yet (placeholder). */
-  protected readonly autonomousDetections: AutonomousDetection[] = [
-    {
-      title: 'Persistent low-vigor zone',
-      plotLabel: 'Satellite',
-      description: 'NDVI remained below expected range for 3 consecutive updates.',
-      severity: 'Medium',
-    },
-    {
-      title: 'Low-vigor cluster near boundary',
-      plotLabel: 'Satellite',
-      description: 'Vegetation vigor decreased in the south-west block.',
-      severity: 'Medium',
-    },
-    {
-      title: 'Community pattern detected',
-      plotLabel: 'Satellite',
-      description: 'Nearby signals suggest preventive monitoring is advised.',
-      severity: 'Low',
-    },
-  ];
+  /** Signal sources that are machine-generated (not a manual report or community signal). */
+  private readonly autonomousSources: ReadonlySet<AlertSource> = new Set<AlertSource>([
+    'Satellite',
+    'IoT',
+    'System',
+    'Climate',
+  ]);
+
+  /**
+   * Autonomous detections derived from the real alerts feed: backend-generated alerts
+   * (satellite NDVI drops, IoT hydric stress, climate risks) that were raised without a
+   * manual symptom report.
+   */
+  protected readonly autonomousDetections = computed<AutonomousDetection[]>(() =>
+    this.store
+      .alerts()
+      .filter((alert) => alert.sources.some((source) => this.autonomousSources.has(source)))
+      .slice(0, 6)
+      .map((alert) => ({
+        key: `${alert.id ?? ''}-${alert.type}`,
+        title: alert.typeLabel,
+        plotLabel: alert.plot.name || alert.primarySource || 'Satellite',
+        description: alert.description || 'Automatic monitoring signal.',
+        severity: alert.severity,
+      })),
+  );
 
   /** Reports submitted for the currently selected plot. */
   protected readonly reportsForSelectedPlot = computed<PestReport[]>(() => {
@@ -168,11 +174,13 @@ export class PestSurveillanceOverviewView implements OnInit {
   ngOnInit(): void {
     this.store.loadPestReports();
     this.store.loadSymptoms();
+    this.store.fetchAlerts(50);
     this.loadPlots();
   }
 
   protected refresh(): void {
     this.store.loadPestReports();
+    this.store.fetchAlerts(50);
     const plotId = this.selectedPlotId();
     if (plotId != null) {
       this.store.loadCommunityRisk(plotId, 5);
@@ -211,11 +219,29 @@ export class PestSurveillanceOverviewView implements OnInit {
     switch (result) {
       case 'Alert confirmed':
         return 'result-confirmed';
-      case 'Under review':
+      case 'Needs inspection':
         return 'result-review';
+      case 'Ruled out':
+        return 'result-ruled-out';
       default:
-        return 'result-archived';
+        return 'result-logged';
     }
+  }
+
+  /** Confirms a report after the grower inspected the plot (escalates to a high-priority alert). */
+  protected confirmReport(report: PestReport): void {
+    if (report.id == null || this.store.loading().submitting) {
+      return;
+    }
+    this.store.reviewReport(report.id, 'CONFIRMED');
+  }
+
+  /** Rules a report out as a verified false positive after inspection. */
+  protected dismissReport(report: PestReport): void {
+    if (report.id == null || this.store.loading().submitting) {
+      return;
+    }
+    this.store.reviewReport(report.id, 'RULED_OUT');
   }
 
   protected severityClass(severity: AlertSeverity): string {

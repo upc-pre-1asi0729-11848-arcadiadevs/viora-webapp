@@ -6,8 +6,8 @@ import { AlertSeverity } from './alert.entity';
 
 export type RiskZone = 'FULL_PLOT' | 'PARTIAL_PLOT' | 'EDGES';
 
-/** Outcome of a report's automatic biological-risk evaluation. */
-export type PestReportResult = 'Alert confirmed' | 'Under review' | 'Archived';
+/** Triage / inspection outcome of a report. */
+export type PestReportResult = 'Alert confirmed' | 'Needs inspection' | 'Logged' | 'Ruled out';
 
 export interface PestReportProperties {
   id?: number | null;
@@ -60,7 +60,7 @@ export class PestReport {
     return this.symptoms.join(', ');
   }
 
-  /** Outcome shown in the "Result" column. */
+  /** Triage outcome shown in the "Result" column. */
   get result(): PestReportResult {
     const status = this.status.trim().toUpperCase();
 
@@ -68,10 +68,24 @@ export class PestReport {
       return 'Alert confirmed';
     }
 
-    if (status === 'UNDER_REVIEW') {
-      return 'Under review';
+    // NEEDS_INSPECTION is the current state; UNDER_REVIEW is the legacy pre-triage
+    // state, surfaced the same way so older reports still read sensibly.
+    if (status === 'NEEDS_INSPECTION' || status === 'UNDER_REVIEW') {
+      return 'Needs inspection';
     }
 
-    return 'Archived';
+    if (status === 'RULED_OUT') {
+      return 'Ruled out';
+    }
+
+    return 'Logged';
+  }
+
+  /**
+   * Whether the report is awaiting a field inspection and can therefore be
+   * confirmed or ruled out by the grower.
+   */
+  get awaitsInspection(): boolean {
+    return this.result === 'Needs inspection';
   }
 }

@@ -15,7 +15,10 @@ import { Alert } from '../domain/model/alert.entity';
 import { CommunityRiskSnapshot, NearbyRiskSignal } from '../domain/model/nearby-risk-signal.entity';
 import { PestReport } from '../domain/model/pest-report.entity';
 import { SymptomResource } from '../infrastructure/symptom-response';
-import { CreatePestSightingReportRequest } from '../infrastructure/pest-sighting-report-response';
+import {
+  CreatePestSightingReportRequest,
+  PestReportReviewOutcome,
+} from '../infrastructure/pest-sighting-report-response';
 
 /** Empty snapshot shown until the real community-risk endpoint responds. */
 const EMPTY_COMMUNITY_RISK: CommunityRiskSnapshot = {
@@ -313,6 +316,39 @@ export class SurveillanceStore {
 
     this.surveillanceApi
       .createPestReport(request)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('submitting', false)),
+      )
+      .subscribe({
+        next: () => {
+          this.loadPestReports();
+          this.fetchAlerts(50);
+          onDone?.(true);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onDone?.(false);
+        },
+      });
+  }
+
+  /**
+   * Resolves a report after a field inspection (confirm or rule out). On success,
+   * refreshes the report history and alerts (a confirmation raises a new alert).
+   * @param reportId The report to resolve.
+   * @param outcome CONFIRMED or RULED_OUT.
+   * @param onDone Optional callback with the success flag.
+   */
+  reviewReport(
+    reportId: number | string,
+    outcome: PestReportReviewOutcome,
+    onDone?: (success: boolean) => void,
+  ): void {
+    this.setLoading('submitting', true);
+
+    this.surveillanceApi
+      .reviewPestReport(reportId, outcome)
       .pipe(
         take(1),
         finalize(() => this.setLoading('submitting', false)),

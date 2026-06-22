@@ -120,7 +120,29 @@
               <span class="report-code">{{ report.code }}</span>
               <span>{{ plotName(report.plotId) }}</span>
               <span class="report-symptoms">{{ report.symptomsLabel || '—' }}</span>
-              <span><span class="pill" [class]="resultClass(report.result)">{{ report.result }}</span></span>
+              <span class="result-cell">
+                <span class="pill" [class]="resultClass(report.result)">{{ report.result }}</span>
+                @if (report.awaitsInspection) {
+                  <span class="result-actions">
+                    <button
+                      type="button"
+                      class="result-action confirm"
+                      [disabled]="store.loading().submitting"
+                      (click)="confirmReport(report)"
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      type="button"
+                      class="result-action dismiss"
+                      [disabled]="store.loading().submitting"
+                      (click)="dismissReport(report)"
+                    >
+                      Dismiss
+                    </button>
+                  </span>
+                }
+              </span>
             </div>
           }
         }
@@ -193,11 +215,11 @@
           <h2>Autonomous detections</h2>
           <p>Signals detected without manual symptom reports.</p>
         </div>
-        <span class="kpi-pill kpi-pill--muted">Preview</span>
+        <span class="kpi-pill kpi-pill--muted">{{ autonomousDetections().length }}</span>
       </div>
 
       <div class="autonomous-list">
-        @for (detection of autonomousDetections; track detection.title) {
+        @for (detection of autonomousDetections(); track detection.key) {
           <div class="autonomous-row">
             <span class="autonomous-icon"><mat-icon>eco</mat-icon></span>
             <div class="autonomous-body">
@@ -207,9 +229,13 @@
             </div>
             <span class="pill" [class]="severityClass(detection.severity)">{{ detection.severity }}</span>
           </div>
+        } @empty {
+          <p class="autonomous-note">
+            No autonomous detections yet. Satellite, IoT and climate monitoring populate this
+            automatically as risk events are emitted.
+          </p>
         }
       </div>
-      <p class="autonomous-note">Automatic detections will populate here once agronomic monitoring emits risk events.</p>
     </mat-card>
     </div>
   </section>

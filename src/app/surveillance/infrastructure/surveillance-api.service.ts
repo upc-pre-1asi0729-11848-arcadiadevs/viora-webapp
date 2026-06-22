@@ -13,7 +13,9 @@ import { CommunityRiskResource } from './community-risk-response';
 import { CommunityRiskAssembler } from './community-risk.assembler';
 import {
   CreatePestSightingReportRequest,
+  PestReportReviewOutcome,
   PestSightingReportResource,
+  ReviewPestSightingReportRequest,
 } from './pest-sighting-report-response';
 import { PestReportAssembler } from './pest-report.assembler';
 import { SymptomResource } from './symptom-response';
@@ -105,6 +107,27 @@ export class SurveillanceApiService extends BaseApi {
 
     return this.http
       .post<PestSightingReportResource>(this.pestReportsEndpoint.collectionUrl, body)
+      .pipe(map((resource) => PestReportAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Resolves a report after a field inspection: confirms the threat (raising a
+   * high-priority alert) or rules it out as a verified false positive. Errors are
+   * not swallowed so the view can surface them.
+   * @param {number|string} reportId - Report identifier.
+   * @param {PestReportReviewOutcome} outcome - CONFIRMED or RULED_OUT.
+   * @returns {Observable<PestReport>}
+   */
+  reviewPestReport(
+    reportId: number | string,
+    outcome: PestReportReviewOutcome,
+  ): Observable<PestReport> {
+    const body: ReviewPestSightingReportRequest = { outcome };
+
+    return this.http
+      .patch<PestSightingReportResource>(this.pestReportsEndpoint.resourceUrl(reportId), body, {
+        params: this.queryParams({ reporterUserId: this.defaultUserId }),
+      })
       .pipe(map((resource) => PestReportAssembler.toEntityFromResource(resource)));
   }
 
