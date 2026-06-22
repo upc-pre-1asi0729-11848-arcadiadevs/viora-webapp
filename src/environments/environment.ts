@@ -32,7 +32,8 @@ export const environment = {
   },
 
   mapbox: {
+
     accessToken:
-      'YOUR_TOKEN_HERE',
+      'YOUR_MAPBOX_TOKEN:HERE',
   },
 };
