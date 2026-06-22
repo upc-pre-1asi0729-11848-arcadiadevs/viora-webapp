@@ -28,7 +28,7 @@ export class SatelliteImageryAssembler extends BaseAssembler {
 
   /**
    * The backend serves NDVI tiles through a relative proxy path
-   * (`/api/v1/plots/{id}/imagery/tile/{z}/{x}/{y}`). Mapbox raster sources need a
+   * (`/api/v1/plots/{id}/images?zoom={z}&x={x}&y={y}`). Mapbox raster sources need a
    * fully-qualified URL, so we resolve it against the platform API origin.
    */
   private static absoluteTileUrl(tileUrl: string | null | undefined): string {
