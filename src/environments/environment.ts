@@ -12,6 +12,11 @@ export const environment = {
   // is wired, this configurable id acts as the active producer.
   defaultUserId: 1,
 
+
+  platformProviderSignInEndpointPath: '/authentication/sign-in',
+  platformProviderSignUpEndpointPath: '/authentication/sign-up',
+  platformProviderApiBaseUrl: 'http://localhost:8080/api/v1',
+
   endpoints: {
     // Real backend (agronomic bounded context). Aggregate roots are addressed
     // by their collection/resource URL; projections are requested via the
@@ -32,8 +37,6 @@ export const environment = {
   },
 
   mapbox: {
-
-    accessToken:
-      'YOUR_MAPBOX_TOKEN:HERE',
+    accessToken: 'YOUR_MAPBOX_TOKEN:HERE',
   },
 };
