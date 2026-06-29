@@ -80,10 +80,14 @@
       <app-iot-sensor-card [sensor]="sensor" />
     }
 
-    <div class="add-iot-card">
-      <h2>{{ 'dashboard.addIotDevice' | translate }}</h2>
-      <a routerLink="/agronomic/iot-devices/new" [attr.aria-label]="'dashboard.addIotDevice' | translate">+</a>
-    </div>
+    <!-- The IoT row holds the devices widget + at most 3 aggregated metric cards.
+         Only offer "Add" while a slot is free, so the row never wraps. -->
+    @if (store.dashboardInsightCards().length < 3) {
+      <div class="add-iot-card">
+        <h2>{{ 'dashboard.addIotDevice' | translate }}</h2>
+        <a routerLink="/agronomic/iot-devices/new" [attr.aria-label]="'dashboard.addIotDevice' | translate">+</a>
+      </div>
+    }
   </section>
 
   <!-- Freshness + weather -->
