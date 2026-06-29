@@ -62,10 +62,10 @@ export class IotDeviceForm implements OnInit {
 
   private formHydrated = false;
 
+  // Operational state only: whether the sensor is enabled/connected. The health
+  // (warning/critical) is derived by the backend from telemetry, not chosen here.
   protected readonly statusOptions: StatusOption[] = [
     { label: 'Active', value: 'active' },
-    { label: 'Warning', value: 'warning' },
-    { label: 'Critical', value: 'critical' },
     { label: 'Inactive', value: 'inactive' }
   ];
 
