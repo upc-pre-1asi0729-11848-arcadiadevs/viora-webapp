@@ -71,7 +71,7 @@ export class IotDeviceList implements OnInit {
     const confirmed = window.confirm(`Delete ${device.name}?`);
 
     if (confirmed) {
-      this.agronomicStore.deleteDevice(device.id);
+      this.agronomicStore.deleteDevice(device);
     }
   }
 

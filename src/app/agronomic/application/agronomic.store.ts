@@ -266,7 +266,20 @@ export class AgronomicStore {
       return [];
     }
 
-    return [this.createSoilMoistureCard(devices), this.createSoilTemperatureCard(devices)];
+    const soilMoistureDevices = devices.filter((device) => device.measuresSoilMoisture);
+    const soilTemperatureDevices = devices.filter((device) => device.measuresSoilTemperature);
+
+    const cards: IotSensorCard[] = [];
+
+    if (soilMoistureDevices.length > 0) {
+      cards.push(this.createSoilMoistureCard(soilMoistureDevices));
+    }
+
+    if (soilTemperatureDevices.length > 0) {
+      cards.push(this.createSoilTemperatureCard(soilTemperatureDevices));
+    }
+
+    return cards;
   });
 
   readonly plotsCount = computed<number>(() => (this.plotsLoaded() ? this.plots().length : 0));
@@ -604,24 +617,13 @@ export class AgronomicStore {
     });
   }
 
+  /**
+   * Selects a device for the edit form. The device is resolved from the loaded
+   * `devices` list (the backend has no single-device GET; the flat collection is
+   * the source of truth). `loadReferenceData` ensures the list is fetched.
+   */
   fetchDeviceById(id: number | string): void {
     this.selectedDeviceId.set(id);
-
-    this.agronomicApi
-      .getIotDeviceById(id)
-      .pipe(take(1))
-      .subscribe({
-        next: (device) => {
-          this.devices.update((devices) => {
-            const exists = devices.some((item) => String(item.id) === String(device.id));
-
-            return exists
-              ? devices.map((item) => (String(item.id) === String(device.id) ? device : item))
-              : [...devices, device];
-          });
-        },
-        error: (error) => this.registerError(error),
-      });
   }
 
   /**
@@ -862,11 +864,16 @@ export class AgronomicStore {
       });
   }
 
-  deleteDevice(id: number | string): void {
+  deleteDevice(device: IotDevice): void {
+    if (device.id === null || device.plotId === null || device.plotId === undefined) {
+      return;
+    }
+
+    const deviceId = device.id;
     this.setLoading('deleting', true);
 
     this.agronomicApi
-      .deleteIotDevice(id)
+      .deleteIotDevice(device.plotId, deviceId)
       .pipe(
         take(1),
         finalize(() => this.setLoading('deleting', false)),
@@ -874,7 +881,7 @@ export class AgronomicStore {
       .subscribe({
         next: () => {
           this.devices.update((devices) =>
-            devices.filter((device) => String(device.id) !== String(id)),
+            devices.filter((item) => String(item.id) !== String(deviceId)),
           );
         },
         error: (error) => this.registerError(error),
