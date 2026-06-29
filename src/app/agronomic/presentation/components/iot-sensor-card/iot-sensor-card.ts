@@ -15,19 +15,38 @@ import { IotSensorCard as IotSensorCardEntity } from '../../../domain/model/iot-
 export class IotSensorCard {
   @Input() sensor: IotSensorCardEntity | null = null;
 
-  protected getMetricLabel(sensor: IotSensorCardEntity): string {
-    return sensor.metricLabel.toLowerCase().includes('temperature')
-      ? 'cards.iot.soilTemperature'
-      : 'cards.iot.soilMoisture';
+  /** i18n key for the card title, derived from the metric the card represents. */
+  protected getTitleKey(sensor: IotSensorCardEntity): string {
+    const metric = sensor.metricLabel.toLowerCase();
+
+    if (metric.includes('temperature')) {
+      return 'cards.iot.soilTemperature';
+    }
+
+    if (metric.includes('leaf')) {
+      return 'cards.iot.leafHumidity';
+    }
+
+    return 'cards.iot.soilMoisture';
   }
 
   protected getRecommendationKey(sensor: IotSensorCardEntity): string {
-    if (sensor.metricLabel.toLowerCase().includes('temperature')) {
+    const metric = sensor.metricLabel.toLowerCase();
+
+    if (metric.includes('temperature')) {
       return sensor.riskLevel === 'High'
         ? 'cards.iot.temperatureHigh'
         : sensor.riskLevel === 'Medium'
           ? 'cards.iot.temperatureMedium'
           : 'cards.iot.temperatureLow';
+    }
+
+    if (metric.includes('leaf')) {
+      return sensor.riskLevel === 'High'
+        ? 'cards.iot.leafHigh'
+        : sensor.riskLevel === 'Medium'
+          ? 'cards.iot.leafMedium'
+          : 'cards.iot.leafLow';
     }
 
     return sensor.riskLevel === 'High'

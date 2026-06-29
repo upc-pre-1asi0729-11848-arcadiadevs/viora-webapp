@@ -437,12 +437,16 @@
       "waterStress": "Water Stress",
       "soilMoisture": "Soil moisture",
       "soilTemperature": "Soil temperature",
+      "leafHumidity": "Leaf humidity",
       "moistureHigh": "Irrigation attention required.",
       "moistureMedium": "Monitor soil moisture trend.",
       "moistureLow": "Moisture conditions are stable.",
       "temperatureHigh": "Temperature may increase water stress.",
       "temperatureMedium": "Watch temperature exposure.",
-      "temperatureLow": "Temperature is within expected range."
+      "temperatureLow": "Temperature is within expected range.",
+      "leafHigh": "High canopy wetness — disease risk.",
+      "leafMedium": "Watch canopy wetness.",
+      "leafLow": "Canopy humidity is healthy."
     }
   },
   "plotOverview": {
