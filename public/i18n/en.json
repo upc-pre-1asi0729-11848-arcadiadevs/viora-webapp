@@ -437,12 +437,16 @@
       "waterStress": "Water Stress",
       "soilMoisture": "Soil moisture",
       "soilTemperature": "Soil temperature",
+      "leafHumidity": "Leaf humidity",
       "moistureHigh": "Irrigation attention required.",
       "moistureMedium": "Monitor soil moisture trend.",
       "moistureLow": "Moisture conditions are stable.",
       "temperatureHigh": "Temperature may increase water stress.",
       "temperatureMedium": "Watch temperature exposure.",
-      "temperatureLow": "Temperature is within expected range."
+      "temperatureLow": "Temperature is within expected range.",
+      "leafHigh": "High canopy wetness — disease risk.",
+      "leafMedium": "Watch canopy wetness.",
+      "leafLow": "Canopy humidity is healthy."
     }
   },
   "plotOverview": {
@@ -540,12 +544,19 @@
     "liveData": "Live data",
     "name": "Name",
     "leafHumidity": "Leaf humidity",
+    "health": "Health",
     "actions": "Actions",
-    "empty": "No IoT devices registered yet."
+    "empty": "No IoT devices registered yet.",
+    "healthStatus": {
+      "healthy": "Healthy",
+      "warning": "Warning",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    }
   },
   "iotForm": {
-    "newSubtitle": "Register an external IoT device connected to a monitored plot.",
-    "editSubtitle": "Update device telemetry configuration and monitoring status.",
+    "newSubtitle": "Claim an IoT device with its activation code and link it to one of your plots.",
+    "editSubtitle": "Update the device name and monitoring status.",
     "formMode": "Form mode",
     "backToIot": "Back to IoT devices",
     "generalInfo": "General Information",
@@ -553,9 +564,18 @@
     "devicePlaceholder": "Sensor Alpha-1",
     "deviceNameRequired": "Device name is required.",
     "plotRequired": "Plot is required.",
-    "telemetryCalibration": "Telemetry Calibration",
-    "percentError": "Enter a value from 0 to 100.",
-    "temperatureError": "Enter a valid temperature.",
+    "activation": "Device activation",
+    "activationHint": "Enter the activation code printed on your sensor's label to link it to this plot.",
+    "activationCode": "Activation code",
+    "activationCodeInvalid": "Enter a valid code, e.g. VIORA-SP01-7K3M.",
+    "detectedType": "Detected sensor",
+    "editLockedNote": "This device is already activated. The activation code and its plot cannot be changed.",
+    "deviceType": {
+      "soil-probe": "Soil probe (moisture + temperature)",
+      "leaf-wetness": "Leaf wetness sensor",
+      "weather-station": "Weather station (all metrics)",
+      "unknown": "Generic sensor"
+    },
     "saveDevice": "Save device",
     "newDevice": "New device",
     "editDevice": "Edit device",
