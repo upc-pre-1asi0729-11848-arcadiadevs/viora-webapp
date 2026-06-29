@@ -226,11 +226,12 @@ export class AgronomicStore {
 
 
   readonly onlineDevicesCount = computed<number>(() => {
-    return this.myPlotsOverview()?.onlineDeviceCountForScope(this.selectedDashboardScope()) ?? 0;
+    return this.getDevicesForScope(this.selectedDashboardScope())
+      .filter((device) => device.status !== 'inactive').length;
   });
 
   readonly plotsWithIotCount = computed<number>(() => {
-    return this.myPlotsOverview()?.plotsWithIotCount ?? 0;
+    return new Set(this.devices().map((device) => String(device.plotId))).size;
   });
 
   readonly lastSyncLabel = computed<string>(() => {
@@ -266,7 +267,25 @@ export class AgronomicStore {
       return [];
     }
 
-    return [this.createSoilMoistureCard(devices), this.createSoilTemperatureCard(devices)];
+    const soilMoistureDevices = devices.filter((device) => device.measuresSoilMoisture);
+    const soilTemperatureDevices = devices.filter((device) => device.measuresSoilTemperature);
+    const leafHumidityDevices = devices.filter((device) => device.measuresLeafHumidity);
+
+    const cards: IotSensorCard[] = [];
+
+    if (soilMoistureDevices.length > 0) {
+      cards.push(this.createSoilMoistureCard(soilMoistureDevices));
+    }
+
+    if (soilTemperatureDevices.length > 0) {
+      cards.push(this.createSoilTemperatureCard(soilTemperatureDevices));
+    }
+
+    if (leafHumidityDevices.length > 0) {
+      cards.push(this.createLeafHumidityCard(leafHumidityDevices));
+    }
+
+    return cards;
   });
 
   readonly plotsCount = computed<number>(() => (this.plotsLoaded() ? this.plots().length : 0));
@@ -604,24 +623,13 @@ export class AgronomicStore {
     });
   }
 
+  /**
+   * Selects a device for the edit form. The device is resolved from the loaded
+   * `devices` list (the backend has no single-device GET; the flat collection is
+   * the source of truth). `loadReferenceData` ensures the list is fetched.
+   */
   fetchDeviceById(id: number | string): void {
     this.selectedDeviceId.set(id);
-
-    this.agronomicApi
-      .getIotDeviceById(id)
-      .pipe(take(1))
-      .subscribe({
-        next: (device) => {
-          this.devices.update((devices) => {
-            const exists = devices.some((item) => String(item.id) === String(device.id));
-
-            return exists
-              ? devices.map((item) => (String(item.id) === String(device.id) ? device : item))
-              : [...devices, device];
-          });
-        },
-        error: (error) => this.registerError(error),
-      });
   }
 
   /**
@@ -862,11 +870,16 @@ export class AgronomicStore {
       });
   }
 
-  deleteDevice(id: number | string): void {
+  deleteDevice(device: IotDevice): void {
+    if (device.id === null || device.plotId === null || device.plotId === undefined) {
+      return;
+    }
+
+    const deviceId = device.id;
     this.setLoading('deleting', true);
 
     this.agronomicApi
-      .deleteIotDevice(id)
+      .deleteIotDevice(device.plotId, deviceId)
       .pipe(
         take(1),
         finalize(() => this.setLoading('deleting', false)),
@@ -874,7 +887,7 @@ export class AgronomicStore {
       .subscribe({
         next: () => {
           this.devices.update((devices) =>
-            devices.filter((device) => String(device.id) !== String(id)),
+            devices.filter((item) => String(item.id) !== String(deviceId)),
           );
         },
         error: (error) => this.registerError(error),
@@ -1006,6 +1019,25 @@ export class AgronomicStore {
     });
   }
 
+  private createLeafHumidityCard(devices: IotDevice[]): IotSensorCard {
+    const averageValue = this.average(devices.map((device) => device.leafHumidity));
+    const riskLevel = this.highestRisk(
+      devices.map((device) => this.getLeafHumidityRisk(device.leafHumidity)),
+    );
+
+    return new IotSensorCard({
+      id: 'leaf-humidity',
+      title: 'Leaf humidity',
+      sourceLabel: 'IoT',
+      metricLabel: 'Leaf humidity',
+      metricValue: averageValue,
+      metricUnit: '%',
+      trend: riskLevel === 'High' ? 'up' : 'stable',
+      riskLevel,
+      recommendation: this.getLeafHumidityRecommendation(riskLevel),
+    });
+  }
+
   private average(values: number[]): number {
     if (values.length === 0) {
       return 0;
@@ -1034,6 +1066,20 @@ export class AgronomicStore {
     }
 
     if (value >= 25) {
+      return 'Medium';
+    }
+
+    return 'Low';
+  }
+
+  private getLeafHumidityRisk(value: number): IotRiskLevel {
+    // Prolonged canopy wetness drives fungal disease risk, so HIGH leaf humidity
+    // is the risky end (the opposite axis to soil moisture).
+    if (value > 85) {
+      return 'High';
+    }
+
+    if (value >= 70) {
       return 'Medium';
     }
 
@@ -1072,6 +1118,18 @@ export class AgronomicStore {
     }
 
     return 'Temperature is within expected range.';
+  }
+
+  private getLeafHumidityRecommendation(riskLevel: IotRiskLevel): string {
+    if (riskLevel === 'High') {
+      return 'High canopy wetness — disease risk.';
+    }
+
+    if (riskLevel === 'Medium') {
+      return 'Watch canopy wetness.';
+    }
+
+    return 'Canopy humidity is healthy.';
   }
 
   private setLoading(key: keyof AgronomicLoadingState, value: boolean): void {

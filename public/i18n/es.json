@@ -437,12 +437,16 @@
       "waterStress": "Estrés hídrico",
       "soilMoisture": "Humedad del suelo",
       "soilTemperature": "Temperatura del suelo",
+      "leafHumidity": "Humedad foliar",
       "moistureHigh": "Requiere atención de riego.",
       "moistureMedium": "Monitorear tendencia de humedad del suelo.",
       "moistureLow": "Las condiciones de humedad están estables.",
       "temperatureHigh": "La temperatura puede aumentar el estrés hídrico.",
       "temperatureMedium": "Vigilar exposición a temperatura.",
-      "temperatureLow": "La temperatura está dentro del rango esperado."
+      "temperatureLow": "La temperatura está dentro del rango esperado.",
+      "leafHigh": "Humedad foliar alta — riesgo de enfermedad.",
+      "leafMedium": "Vigilar la humedad del follaje.",
+      "leafLow": "La humedad del follaje es saludable."
     }
   },
   "plotOverview": {
@@ -540,12 +544,19 @@
     "liveData": "Datos en vivo",
     "name": "Nombre",
     "leafHumidity": "Humedad de hoja",
+    "health": "Salud",
     "actions": "Acciones",
-    "empty": "Aún no hay dispositivos IoT registrados."
+    "empty": "Aún no hay dispositivos IoT registrados.",
+    "healthStatus": {
+      "healthy": "Saludable",
+      "warning": "Advertencia",
+      "critical": "Crítico",
+      "unknown": "Desconocido"
+    }
   },
   "iotForm": {
-    "newSubtitle": "Registra un dispositivo IoT externo conectado a una parcela monitoreada.",
-    "editSubtitle": "Actualiza la configuración de telemetría y el estado de monitoreo del dispositivo.",
+    "newSubtitle": "Activa un dispositivo IoT con su código de activación y vincúlalo a una de tus parcelas.",
+    "editSubtitle": "Actualiza el nombre y el estado de monitoreo del dispositivo.",
     "formMode": "Modo formulario",
     "backToIot": "Volver a dispositivos IoT",
     "generalInfo": "Información general",
@@ -553,9 +564,18 @@
     "devicePlaceholder": "Sensor Alpha-1",
     "deviceNameRequired": "El nombre del dispositivo es obligatorio.",
     "plotRequired": "La parcela es obligatoria.",
-    "telemetryCalibration": "Calibración de telemetría",
-    "percentError": "Ingresa un valor de 0 a 100.",
-    "temperatureError": "Ingresa una temperatura válida.",
+    "activation": "Activación del dispositivo",
+    "activationHint": "Ingresa el código de activación impreso en la etiqueta de tu sensor para vincularlo a esta parcela.",
+    "activationCode": "Código de activación",
+    "activationCodeInvalid": "Ingresa un código válido, p. ej. VIORA-SP01-7K3M.",
+    "detectedType": "Sensor detectado",
+    "editLockedNote": "Este dispositivo ya está activado. El código de activación y su parcela no se pueden cambiar.",
+    "deviceType": {
+      "soil-probe": "Sonda de suelo (humedad + temperatura)",
+      "leaf-wetness": "Sensor de humedad foliar",
+      "weather-station": "Estación meteorológica (todas las métricas)",
+      "unknown": "Sensor genérico"
+    },
     "saveDevice": "Guardar dispositivo",
     "newDevice": "Nuevo dispositivo",
     "editDevice": "Editar dispositivo",

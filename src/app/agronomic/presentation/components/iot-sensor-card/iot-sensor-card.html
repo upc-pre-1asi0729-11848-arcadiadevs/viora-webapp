@@ -1,12 +1,11 @@
 @if (sensor) {
   <mat-card class="sensor-card">
     <header>
-      <h2>{{ 'cards.iot.waterStress' | translate }}</h2>
+      <h2>{{ getTitleKey(sensor) | translate }}</h2>
       <span>{{ sensor.sourceLabel }}</span>
     </header>
 
     <section class="metric-row">
-      <p>{{ getMetricLabel(sensor) | translate }}:</p>
       <strong>{{ sensor.metricValueLabel }} <small>{{ sensor.trendSymbol }}</small></strong>
     </section>
 

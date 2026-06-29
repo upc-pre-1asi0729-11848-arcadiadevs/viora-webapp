@@ -4,10 +4,6 @@ export const environment = {
   // Real Viora Platform backend (Spring Boot, hosted on Render).
   vioraPlatformApiUrl: 'https://os-viora-platform.onrender.com/api/v1',
 
-  // Mock API kept for bounded contexts not yet covered by the real backend
-  // (surveillance alerts, IoT sensor telemetry for the Water Stress cards).
-  mockApiUrl: 'https://69ff99d02b7ab349602fc9e2.mockapi.io/api/v1',
-
   // The real backend requires a userId on every request. Until authentication
   // is wired, this configurable id acts as the active producer.
   defaultUserId: 1,
@@ -27,7 +23,8 @@ export const environment = {
     pestSightingReports: '/pest-sighting-reports',
     symptomDictionaryItems: '/symptom-dictionary-items',
 
-    // Mock API (other bounded contexts / not yet on the real backend)
+    // IoT devices (real backend): flat aggregate read for the dashboard; writes
+    // are nested under the owning plot (/plots/{plotId}/iot-devices).
     iotDevices: '/iot-devices',
   },
 

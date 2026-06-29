@@ -69,70 +69,51 @@
         </div>
       </section>
 
-      <section class="form-section">
-        <header class="section-title">
-          <mat-icon>bar_chart</mat-icon>
-          <span>{{ 'iotForm.telemetryCalibration' | translate }}</span>
-        </header>
+      @if (!isEdit) {
+        <section class="form-section">
+          <header class="section-title">
+            <mat-icon>sensors</mat-icon>
+            <span>{{ 'iotForm.activation' | translate }}</span>
+          </header>
 
-        <div class="form-row">
-          <label for="soilMoisture">{{ 'cards.iot.soilMoisture' | translate }}</label>
+          <p class="section-hint">{{ 'iotForm.activationHint' | translate }}</p>
 
-          <mat-form-field appearance="outline">
-            <input
-              id="soilMoisture"
-              matInput
-              type="number"
-              formControlName="soilMoisture"
-              min="0"
-              max="100">
+          <div class="form-row">
+            <label for="activationCode">{{ 'iotForm.activationCode' | translate }}</label>
 
-            <span matTextSuffix>%</span>
+            <mat-form-field appearance="outline">
+              <input
+                id="activationCode"
+                matInput
+                formControlName="activationCode"
+                placeholder="VIORA-SP01-7K3M"
+                autocomplete="off"
+                style="text-transform: uppercase">
 
-            @if (hasFieldError('soilMoisture')) {
-              <mat-error>{{ 'iotForm.percentError' | translate }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
+              @if (hasFieldError('activationCode')) {
+                <mat-error>{{ 'iotForm.activationCodeInvalid' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
 
-        <div class="form-row">
-          <label for="temperature">{{ 'cards.iot.soilTemperature' | translate }}</label>
+          @if (detectedType !== 'unknown') {
+            <p class="detected-type">
+              <mat-icon>check_circle</mat-icon>
+              {{ 'iotForm.detectedType' | translate }}:
+              <strong>{{ 'iotForm.deviceType.' + detectedType | translate }}</strong>
+            </p>
+          }
+        </section>
+      } @else {
+        <section class="form-section">
+          <header class="section-title">
+            <mat-icon>lock</mat-icon>
+            <span>{{ 'iotForm.activation' | translate }}</span>
+          </header>
 
-          <mat-form-field appearance="outline">
-            <input
-              id="temperature"
-              matInput
-              type="number"
-              formControlName="temperature">
-
-            <span matTextSuffix>&deg;C</span>
-
-            @if (hasFieldError('temperature')) {
-              <mat-error>{{ 'iotForm.temperatureError' | translate }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <label for="leafHumidity">{{ 'iotList.leafHumidity' | translate }}</label>
-
-          <mat-form-field appearance="outline">
-            <input
-              id="leafHumidity"
-              matInput
-              type="number"
-              formControlName="leafHumidity"
-              min="0"
-              max="100">
-
-            <span matTextSuffix>%</span>
-
-            @if (hasFieldError('leafHumidity')) {
-              <mat-error>{{ 'iotForm.percentError' | translate }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </section>
+          <p class="section-hint">{{ 'iotForm.editLockedNote' | translate }}</p>
+        </section>
+      }
 
       <footer class="form-actions">
         <button

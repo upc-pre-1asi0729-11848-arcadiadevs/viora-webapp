@@ -24,6 +24,7 @@
       <span>{{ 'cards.iot.soilMoisture' | translate }}</span>
       <span>{{ 'cards.iot.soilTemperature' | translate }}</span>
       <span>{{ 'iotList.leafHumidity' | translate }}</span>
+      <span>{{ 'iotList.health' | translate }}</span>
       <span>{{ 'alerts.status' | translate }}</span>
       <span>{{ 'iotList.actions' | translate }}</span>
     </section>
@@ -54,8 +55,12 @@
 
           <span>{{ device.leafHumidityLabel }}</span>
 
+          <span class="health-pill" [class]="getHealthClass(device)">
+            {{ 'iotList.healthStatus.' + device.health | translate }}
+          </span>
+
           <span class="status-pill" [class]="getStatusClass(device)">
-            {{ device.status }}
+            {{ 'iotForm.status.' + device.status | translate }}
           </span>
 
           <div class="actions-cell">

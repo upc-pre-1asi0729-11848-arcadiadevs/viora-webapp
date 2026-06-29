@@ -22,8 +22,13 @@ import {
 import { AgronomicStore } from '../../../application/agronomic.store';
 import {
   IotDevice,
-  IotDeviceStatus
+  IotDeviceStatus,
+  IotDeviceType
 } from '../../../domain/model/iot-device.entity';
+import {
+  ACTIVATION_CODE_PATTERN,
+  deviceTypeFromActivationCode
+} from '../../../domain/model/iot-activation-code';
 
 interface StatusOption {
   label: string;
@@ -57,23 +62,26 @@ export class IotDeviceForm implements OnInit {
 
   private formHydrated = false;
 
+  // Operational state only: whether the sensor is enabled/connected. The health
+  // (warning/critical) is derived by the backend from telemetry, not chosen here.
   protected readonly statusOptions: StatusOption[] = [
     { label: 'Active', value: 'active' },
-    { label: 'Warning', value: 'warning' },
-    { label: 'Critical', value: 'critical' },
     { label: 'Inactive', value: 'inactive' }
   ];
 
   protected readonly form = this.formBuilder.group({
     name: ['', [Validators.required, Validators.maxLength(80)]],
     plotId: [null as number | string | null, [Validators.required]],
-    soilMoisture: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-    temperature: [0, [Validators.required, Validators.min(-20), Validators.max(60)]],
-    leafHumidity: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+    activationCode: ['', [Validators.required, Validators.pattern(ACTIVATION_CODE_PATTERN)]],
     status: ['active' as IotDeviceStatus, [Validators.required]]
   });
 
   protected readonly isEdit = Boolean(this.route.snapshot.paramMap.get('id'));
+
+  /** Sensor kind detected live from the activation code, for the form preview. */
+  protected get detectedType(): IotDeviceType {
+    return deviceTypeFromActivationCode(this.form.controls.activationCode.value);
+  }
 
   protected readonly subtitle = this.isEdit
     ? 'Update device telemetry configuration and monitoring status.'
@@ -93,6 +101,13 @@ export class IotDeviceForm implements OnInit {
   ];
 
   constructor() {
+    // A device is already claimed when editing: the activation code is fixed and
+    // the plot cannot be reassigned, so both are disabled (excluded from validity).
+    if (this.isEdit) {
+      this.form.controls.activationCode.disable();
+      this.form.controls.plotId.disable();
+    }
+
     effect(() => {
       const selectedDevice = this.agronomicStore.selectedDevice();
 
@@ -103,9 +118,6 @@ export class IotDeviceForm implements OnInit {
       this.form.patchValue({
         name: selectedDevice.name,
         plotId: selectedDevice.plotId,
-        soilMoisture: selectedDevice.soilMoisture,
-        temperature: selectedDevice.temperature,
-        leafHumidity: selectedDevice.leafHumidity,
         status: selectedDevice.status
       });
 
@@ -148,11 +160,8 @@ export class IotDeviceForm implements OnInit {
       id,
       name: rawValue.name ?? '',
       plotId: rawValue.plotId,
-      soilMoisture: Number(rawValue.soilMoisture ?? 0),
-      temperature: Number(rawValue.temperature ?? 0),
-      leafHumidity: Number(rawValue.leafHumidity ?? 0),
       status: rawValue.status ?? 'active',
-      lastUpdate: new Date().toISOString()
+      activationCode: rawValue.activationCode ?? ''
     });
 
     if (this.isEdit) {

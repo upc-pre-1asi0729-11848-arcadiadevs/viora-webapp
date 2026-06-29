@@ -36,8 +36,9 @@ import { PlotDetailResource } from './plot-detail-response';
 import { PlotDetailAssembler } from './plot-detail.assembler';
 
 import {
-  IotDeviceCollectionResponse,
+  CreateIotDeviceRequest,
   IotDeviceResource,
+  UpdateIotDeviceRequest,
 } from './iot-devices-response';
 import { IotDeviceAssembler } from './iot-device.assembler';
 
@@ -78,8 +79,13 @@ export class AgronomicApiService extends BaseApi {
     environment.endpoints.dynamicNutritionPlans,
   );
 
-  // IoT device management remains on the mock API for now.
-  private readonly iotDevicesEndpoint = this.mockEndpoint(environment.endpoints.iotDevices);
+  // Flat aggregate read for the dashboard ("all my devices across plots").
+  private readonly iotDevicesEndpoint = this.endpoint(environment.endpoints.iotDevices);
+
+  /** Builds the per-plot nested IoT devices collection URL. */
+  private plotDevicesUrl(plotId: number | string): string {
+    return `${this.plotsEndpoint.resourceUrl(plotId)}/iot-devices`;
+  }
 
   /**
    * Maps a "no data yet" `404` to the given empty value (an expected backend
@@ -270,64 +276,65 @@ export class AgronomicApiService extends BaseApi {
   }
 
   /**
-   * Fetches all IoT devices (mock API).
+   * Fetches all the user's IoT devices across plots, each enriched with its
+   * current (simulated) telemetry. Backs the dashboard Water Stress cards.
    * @returns {Observable<IotDevice[]>}
    */
   getIotDevices(): Observable<IotDevice[]> {
     return this.http
-      .get<IotDeviceCollectionResponse>(this.iotDevicesEndpoint.collectionUrl)
+      .get<IotDeviceResource[]>(this.iotDevicesEndpoint.collectionUrl, {
+        params: this.queryParams(this.withUserId()),
+      })
       .pipe(
-        map((response) => this.collectionFrom(response, 'iotDevices')),
-        map((resources) => IotDeviceAssembler.toEntitiesFromResources(resources)),
+        map((resources) => IotDeviceAssembler.toEntitiesFromResources(resources ?? [])),
+        this.emptyOnNotFound<IotDevice[]>([]),
       );
   }
 
   /**
-   * Fetches a single IoT device by id (mock API).
-   * @returns {Observable<IotDevice>}
-   */
-  getIotDeviceById(id: number | string): Observable<IotDevice> {
-    return this.http
-      .get<IotDeviceResource>(this.iotDevicesEndpoint.resourceUrl(id))
-      .pipe(map((resource) => IotDeviceAssembler.toEntityFromResource(resource)));
-  }
-
-  /**
-   * Creates a new IoT device (mock API).
+   * Claims (registers) a new IoT device for a plot via its activation code.
+   * POST /api/v1/plots/{plotId}/iot-devices. Errors are not swallowed so the
+   * form can surface an invalid/duplicate activation code (422/409).
    * @returns {Observable<IotDevice>}
    */
   createIotDevice(device: IotDevice): Observable<IotDevice> {
-    return this.http
-      .post<IotDeviceResource>(
-        this.iotDevicesEndpoint.collectionUrl,
-        IotDeviceAssembler.toResourceFromEntity(device),
-      )
-      .pipe(map((resource) => IotDeviceAssembler.toEntityFromResource(resource)));
-  }
-
-  /**
-   * Updates an existing IoT device (mock API).
-   * @returns {Observable<IotDevice>}
-   */
-  updateIotDevice(device: IotDevice): Observable<IotDevice> {
-    if (device.id === null) {
-      return throwError(() => new Error('Cannot update an IoT device without an id.'));
+    if (device.plotId === null || device.plotId === undefined) {
+      return throwError(() => new Error('Cannot claim an IoT device without a plot.'));
     }
 
     return this.http
-      .put<IotDeviceResource>(
-        this.iotDevicesEndpoint.resourceUrl(device.id),
-        IotDeviceAssembler.toResourceFromEntity(device),
+      .post<IotDeviceResource>(
+        this.plotDevicesUrl(device.plotId),
+        IotDeviceAssembler.toCreateRequest(device),
       )
       .pipe(map((resource) => IotDeviceAssembler.toEntityFromResource(resource)));
   }
 
   /**
-   * Deletes an IoT device (mock API).
+   * Updates an existing IoT device's metadata.
+   * PATCH /api/v1/plots/{plotId}/iot-devices/{deviceId}.
+   * @returns {Observable<IotDevice>}
+   */
+  updateIotDevice(device: IotDevice): Observable<IotDevice> {
+    if (device.id === null || device.plotId === null || device.plotId === undefined) {
+      return throwError(() => new Error('Cannot update an IoT device without a plot and id.'));
+    }
+
+    return this.http
+      .patch<IotDeviceResource>(
+        `${this.plotDevicesUrl(device.plotId)}/${device.id}`,
+        IotDeviceAssembler.toUpdateRequest(device),
+      )
+      .pipe(map((resource) => IotDeviceAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Deletes (unlinks) an IoT device from its plot.
+   * DELETE /api/v1/plots/{plotId}/iot-devices/{deviceId}.
    * @returns {Observable<void>}
    */
-  deleteIotDevice(id: number | string): Observable<void> {
-    return this.http.delete<void>(this.iotDevicesEndpoint.resourceUrl(id));
+  deleteIotDevice(plotId: number | string, id: number | string): Observable<void> {
+    return this.http.delete<void>(`${this.plotDevicesUrl(plotId)}/${id}`);
   }
 
   /**

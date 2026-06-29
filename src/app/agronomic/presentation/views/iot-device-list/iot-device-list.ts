@@ -71,7 +71,7 @@ export class IotDeviceList implements OnInit {
     const confirmed = window.confirm(`Delete ${device.name}?`);
 
     if (confirmed) {
-      this.agronomicStore.deleteDevice(device.id);
+      this.agronomicStore.deleteDevice(device);
     }
   }
 
@@ -84,5 +84,9 @@ export class IotDeviceList implements OnInit {
 
   protected getStatusClass(device: IotDevice): string {
     return `status-${device.status}`;
+  }
+
+  protected getHealthClass(device: IotDevice): string {
+    return `health-${device.health}`;
   }
 }
