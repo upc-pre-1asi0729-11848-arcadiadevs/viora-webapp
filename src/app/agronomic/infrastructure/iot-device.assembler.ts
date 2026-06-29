@@ -3,7 +3,12 @@
  * @description Maps IoT device REST resources to domain entities and builds the
  * provisioning request bodies (create/update) for the real backend.
  */
-import { IotDevice, IotDeviceStatus, IotDeviceType } from '../domain/model/iot-device.entity';
+import {
+  IotDevice,
+  IotDeviceHealth,
+  IotDeviceStatus,
+  IotDeviceType,
+} from '../domain/model/iot-device.entity';
 
 import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
 import {
@@ -28,6 +33,7 @@ export class IotDeviceAssembler extends BaseAssembler {
       temperature: resource?.temperature ?? 0,
       leafHumidity: resource?.leafHumidity ?? 0,
       status: this.toStatus(resource?.status),
+      health: this.toHealth(resource?.health),
       lastUpdate: resource?.lastUpdate ?? '',
     });
   }
@@ -65,6 +71,15 @@ export class IotDeviceAssembler extends BaseAssembler {
     return validStatuses.includes(normalized as IotDeviceStatus)
       ? (normalized as IotDeviceStatus)
       : 'active';
+  }
+
+  private static toHealth(value: string | undefined): IotDeviceHealth {
+    const validHealth: IotDeviceHealth[] = ['healthy', 'warning', 'critical', 'unknown'];
+    const normalized = value?.toLowerCase();
+
+    return validHealth.includes(normalized as IotDeviceHealth)
+      ? (normalized as IotDeviceHealth)
+      : 'unknown';
   }
 
   private static toDeviceType(value: string | undefined): IotDeviceType {

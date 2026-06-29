@@ -51,7 +51,7 @@
 .table-header,
 .table-row {
   display: grid;
-  grid-template-columns: 2.4fr 1.4fr 1fr 1fr 1fr 1fr 0.8fr;
+  grid-template-columns: 2.4fr 1.4fr 1fr 1fr 1fr 1fr 1fr 0.8fr;
   align-items: center;
   gap: 18px;
   padding: 16px 24px;
@@ -134,6 +134,37 @@
 }
 
 .status-inactive {
+  background: #eeeeee;
+  color: #4f4f4f;
+}
+
+.health-pill {
+  width: 116px;
+  min-height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.health-healthy {
+  background: rgba(87, 235, 161, 0.22);
+  color: #2e4a3a;
+}
+
+.health-warning {
+  background: rgba(193, 90, 46, 0.18);
+  color: #c15a2e;
+}
+
+.health-critical {
+  background: rgba(229, 53, 53, 0.18);
+  color: #e53535;
+}
+
+.health-unknown {
   background: #eeeeee;
   color: #4f4f4f;
 }

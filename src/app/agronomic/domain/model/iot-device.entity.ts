@@ -5,7 +5,19 @@
 
 export type IotDeviceId = number | string | null;
 export type IotDevicePlotId = number | string | null;
+
+/**
+ * Operational state of the device, set by the producer: whether the sensor is
+ * enabled/connected. (Legacy `warning`/`critical` kept for backward compatibility
+ * with old records; new devices are only `active`/`inactive`.)
+ */
 export type IotDeviceStatus = 'active' | 'warning' | 'critical' | 'inactive';
+
+/**
+ * Health/alert level DERIVED by the backend from the telemetry thresholds (not
+ * user-set). Distinct axis from the operational status.
+ */
+export type IotDeviceHealth = 'healthy' | 'warning' | 'critical' | 'unknown';
 
 /**
  * Kind of physical sensor, derived from the device's activation code prefix.
@@ -26,6 +38,7 @@ export interface IotDeviceProperties {
   temperature?: number;
   leafHumidity?: number;
   status?: IotDeviceStatus;
+  health?: IotDeviceHealth;
   lastUpdate?: string;
   /** One-time activation/claim code; only carried on registration (input-only). */
   activationCode?: string;
@@ -40,6 +53,7 @@ export class IotDevice {
   readonly temperature: number;
   readonly leafHumidity: number;
   readonly status: IotDeviceStatus;
+  readonly health: IotDeviceHealth;
   readonly lastUpdate: string;
   readonly activationCode: string;
 
@@ -65,6 +79,7 @@ export class IotDevice {
                 temperature = 0,
                 leafHumidity = 0,
                 status = 'active',
+                health = 'unknown',
                 lastUpdate = '',
                 activationCode = ''
               }: IotDeviceProperties = {}) {
@@ -76,6 +91,7 @@ export class IotDevice {
     this.temperature = temperature;
     this.leafHumidity = leafHumidity;
     this.status = status;
+    this.health = health;
     this.lastUpdate = lastUpdate;
     this.activationCode = activationCode;
   }

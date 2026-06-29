@@ -544,8 +544,15 @@
     "liveData": "Datos en vivo",
     "name": "Nombre",
     "leafHumidity": "Humedad de hoja",
+    "health": "Salud",
     "actions": "Acciones",
-    "empty": "Aún no hay dispositivos IoT registrados."
+    "empty": "Aún no hay dispositivos IoT registrados.",
+    "healthStatus": {
+      "healthy": "Saludable",
+      "warning": "Advertencia",
+      "critical": "Crítico",
+      "unknown": "Desconocido"
+    }
   },
   "iotForm": {
     "newSubtitle": "Activa un dispositivo IoT con su código de activación y vincúlalo a una de tus parcelas.",

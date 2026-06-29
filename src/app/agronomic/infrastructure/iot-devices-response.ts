@@ -17,6 +17,8 @@ export interface IotDeviceResource extends BaseResource {
   temperature?: number;
   leafHumidity?: number;
   status?: string;
+  /** Backend-derived health: HEALTHY | WARNING | CRITICAL | UNKNOWN. */
+  health?: string;
   lastUpdate?: string;
 }
 

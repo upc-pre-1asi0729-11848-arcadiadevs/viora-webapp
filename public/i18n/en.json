@@ -544,8 +544,15 @@
     "liveData": "Live data",
     "name": "Name",
     "leafHumidity": "Leaf humidity",
+    "health": "Health",
     "actions": "Actions",
-    "empty": "No IoT devices registered yet."
+    "empty": "No IoT devices registered yet.",
+    "healthStatus": {
+      "healthy": "Healthy",
+      "warning": "Warning",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    }
   },
   "iotForm": {
     "newSubtitle": "Claim an IoT device with its activation code and link it to one of your plots.",

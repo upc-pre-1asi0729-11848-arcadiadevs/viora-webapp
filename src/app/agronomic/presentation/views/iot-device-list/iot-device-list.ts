@@ -85,4 +85,8 @@ export class IotDeviceList implements OnInit {
   protected getStatusClass(device: IotDevice): string {
     return `status-${device.status}`;
   }
+
+  protected getHealthClass(device: IotDevice): string {
+    return `health-${device.health}`;
+  }
 }
