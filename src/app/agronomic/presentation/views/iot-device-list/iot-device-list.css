@@ -70,11 +70,6 @@
 .table-row {
   min-height: 82px;
   border-bottom: 1px solid #f0f0f3;
-  transition: background-color 180ms ease;
-}
-
-.table-row:hover {
-  background: #f8f4ed;
 }
 
 .device-cell {
