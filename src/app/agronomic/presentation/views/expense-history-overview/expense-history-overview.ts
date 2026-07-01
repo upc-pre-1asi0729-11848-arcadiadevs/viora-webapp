@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +12,8 @@ import {
 
 import { AgronomicApiService } from '../../../infrastructure/agronomic-api.service';
 import { Plot } from '../../../domain/model/plot.entity';
+import { DynamicNutritionPlan } from '../../../domain/model/dynamic-nutrition-plan.entity';
+import { InterventionApiService } from '../../../../intervention/infrastructure/intervention-api.service';
 
 import { ExpenseStore } from '../../../application/expense.store';
 import {
@@ -45,6 +48,7 @@ const ALL_PLOTS = 'all';
 export class ExpenseHistoryOverviewView implements OnInit {
   protected readonly store = inject(ExpenseStore);
   private readonly agronomicApi = inject(AgronomicApiService);
+  private readonly interventionApi = inject(InterventionApiService);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
     { label: 'Expense History', disabled: true },
@@ -132,6 +136,7 @@ export class ExpenseHistoryOverviewView implements OnInit {
       if (this.formPlotId() == null) {
         this.formPlotId.set(plots.find((plot) => plot.id != null)?.id ?? null);
       }
+      this.refreshPendingRecords();
     });
     this.store.loadExpenses(null);
   }
@@ -147,6 +152,46 @@ export class ExpenseHistoryOverviewView implements OnInit {
 
   private reload(): void {
     this.store.loadExpenses(this.isAllScope() ? null : this.selectedScope());
+    this.refreshPendingRecords();
+  }
+
+  /**
+   * Computes "Pending records" = certified nutrition plans + accepted intervention
+   * requests (in scope) that have no registered expense linked to them yet.
+   */
+  private refreshPendingRecords(): void {
+    const scopedPlots = this.isAllScope()
+      ? this.plots()
+      : this.plots().filter((plot) => String(plot.id) === String(this.selectedScope()));
+
+    const planCalls = scopedPlots
+      .filter((plot) => plot.id != null)
+      .map((plot) => this.agronomicApi.getActiveNutritionPlan(plot.id as number | string));
+
+    forkJoin({
+      requests: this.interventionApi.getAllRequests(),
+      plans: planCalls.length > 0 ? forkJoin(planCalls) : of([] as (DynamicNutritionPlan | null)[]),
+    }).subscribe(({ requests, plans }) => {
+      const linkedCodes = new Set(
+        this.store.expenses().map((expense) => expense.linkedActionCode).filter(Boolean),
+      );
+      const inScope = (plotId: number | null) =>
+        this.isAllScope() || String(plotId) === String(this.selectedScope());
+
+      const pendingRequests = requests.filter(
+        (request) =>
+          request.status === 'ACCEPTED' &&
+          inScope(request.plotId) &&
+          !linkedCodes.has(request.referenceCode),
+      ).length;
+
+      const pendingPlans = plans.filter(
+        (plan): plan is DynamicNutritionPlan =>
+          !!plan && plan.isCertified && !linkedCodes.has(plan.planCode),
+      ).length;
+
+      this.store.pendingRecords.set(pendingRequests + pendingPlans);
+    });
   }
 
   protected plotName(plotId: number | string | null): string {
