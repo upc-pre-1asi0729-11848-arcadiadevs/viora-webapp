@@ -1,0 +1,335 @@
+<section class="assistance-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs()"
+    subtitle="Track this assistance case and coordinate the field visit with the specialist."
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="refresh()" />
+
+  @if (!request()) {
+    <mat-card class="section-card">
+      <div class="requests-state">Case not found. It may have been closed or reassigned.</div>
+      <button mat-stroked-button type="button" class="ghost-button" (click)="backToOverview()">
+        <mat-icon>arrow_back</mat-icon> Back to expert assistance
+      </button>
+    </mat-card>
+  } @else {
+    <!-- KPI cards -->
+    <section class="kpi-grid">
+      <mat-card class="kpi-card">
+        <div class="kpi-head">
+          <h2>Case status</h2>
+          <span class="kpi-pill" [class.kpi-pill--soft]="phase() !== 'accepted'" [class.kpi-pill--green]="phase() === 'accepted'">
+            {{ phase() === 'accepted' ? 'Accepted' : (phase() === 'declined' ? 'Declined' : 'Pending') }}
+          </span>
+        </div>
+        <span class="kpi-value">{{ caseStatusLabel() }}</span>
+        <p class="kpi-foot">{{ caseStatusCaption() }}</p>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-head">
+          <h2>Specialist</h2>
+        </div>
+        @if (specialist()) {
+          <div class="mini-specialist">
+            <span class="avatar avatar--sm">{{ specialist()!.initials }}</span>
+            <div class="identity-text">
+              <span class="specialist-name">{{ specialist()!.name }}</span>
+              <span class="specialist-role">{{ specialist()!.role }}</span>
+            </div>
+          </div>
+          <p class="kpi-foot">{{ specialist()!.distanceLabel }} · {{ specialist()!.availabilityLabel }}</p>
+        }
+      </mat-card>
+
+      <mat-card class="kpi-card" [class.kpi-card--alert]="linkedAlert()?.severity === 'Critical'">
+        <div class="kpi-head">
+          <h2>Linked alert</h2>
+          @if (linkedAlert()) {
+            <span class="pill" [class]="severityClass(linkedAlert()!.severity)">{{ linkedAlert()!.severity }}</span>
+          }
+        </div>
+        <span class="kpi-value">{{ linkedAlert()?.typeLabel ?? 'Pest symptom report' }}</span>
+        <p class="kpi-foot">{{ alertSummary() }}</p>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-head">
+          <h2>Contact access</h2>
+          <span class="kpi-pill" [class.kpi-pill--muted]="!contactUnlocked()" [class.kpi-pill--green]="contactUnlocked()">
+            {{ contactUnlocked() ? 'Unlocked' : 'Locked' }}
+          </span>
+        </div>
+        <span class="kpi-value kpi-value--lock">
+          <mat-icon>{{ contactUnlocked() ? 'lock_open' : 'lock' }}</mat-icon> {{ contactUnlocked() ? 'Unlocked' : 'Locked' }}
+        </span>
+        <p class="kpi-foot">
+          {{ contactUnlocked() ? 'Direct contact is now available below.' : 'Accept the proposal to unlock direct contact.' }}
+        </p>
+      </mat-card>
+    </section>
+
+    <div class="detail-grid">
+      <!-- Left column: service proposal -->
+      <div class="detail-col">
+        <mat-card class="section-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Service proposal</h2>
+              <p class="section-subtitle">
+                {{ phase() === 'awaiting'
+                    ? 'Waiting for the specialist to submit a proposal.'
+                    : 'Read-only proposal submitted by the specialist.' }}
+              </p>
+            </div>
+            @if (phase() !== 'awaiting' && phase() !== 'declined') {
+              <span class="tag-blue">Received {{ proposal.receivedDate }}</span>
+            }
+          </div>
+
+          @if (phase() === 'awaiting') {
+            <div class="pending-block">
+              <span class="pending-icon"><mat-icon>schedule</mat-icon></span>
+              <strong>Proposal pending</strong>
+              <p>
+                {{ specialist()?.name }} has received your request and is preparing a service proposal.
+                You'll be notified when it's ready.
+              </p>
+            </div>
+            <div class="proposal-actions">
+              <button mat-stroked-button type="button" class="ghost-button" disabled>
+                <mat-icon>check</mat-icon> Accept proposal
+              </button>
+              <button mat-stroked-button type="button" class="ghost-button" (click)="openDecline()">
+                <mat-icon>close</mat-icon> Decline proposal
+              </button>
+            </div>
+          } @else if (phase() === 'declined') {
+            <div class="pending-block">
+              <span class="pending-icon pending-icon--muted"><mat-icon>search</mat-icon></span>
+              <strong>Proposal declined</strong>
+              <p>Specialist search has been reactivated for this alert. Choose another specialist to continue.</p>
+            </div>
+            <div class="proposal-actions">
+              <button mat-flat-button type="button" class="primary-button" (click)="backToOverview()">
+                <mat-icon>search</mat-icon> Find another specialist
+              </button>
+            </div>
+          } @else {
+            <div class="proposal-rows">
+              <div class="proposal-row">
+                <span>Proposed service</span>
+                <strong>{{ proposal.proposedService }}</strong>
+              </div>
+              <div class="proposal-row">
+                <span>Estimated visit date</span>
+                <strong>{{ proposal.visitDate }}</strong>
+              </div>
+              <div class="proposal-row">
+                <span>Estimated duration</span>
+                <strong>{{ proposal.duration }}</strong>
+              </div>
+              <div class="proposal-row proposal-row--scope">
+                <span>Scope</span>
+                <ul class="scope-list">
+                  @for (item of proposal.scope; track item) {
+                    <li><mat-icon>check</mat-icon> {{ item }}</li>
+                  }
+                </ul>
+              </div>
+              <div class="proposal-row">
+                <span>Estimated cost</span>
+                <strong class="proposal-cost">{{ proposal.cost }}</strong>
+              </div>
+            </div>
+
+            <div class="notes-box">
+              <strong>Notes from specialist</strong>
+              <p>{{ proposal.notes }}</p>
+            </div>
+
+            @if (phase() === 'proposal') {
+              <div class="proposal-actions">
+                <button mat-stroked-button type="button" class="ghost-button" (click)="openDecline()">
+                  <mat-icon>close</mat-icon> Decline proposal
+                </button>
+                <button mat-flat-button type="button" class="primary-button" (click)="acceptProposal()">
+                  <mat-icon>check</mat-icon> Accept proposal
+                </button>
+              </div>
+            } @else {
+              <div class="accepted-banner">
+                <mat-icon>check_circle</mat-icon> Proposal accepted · visit scheduled {{ contact.visitScheduled }}
+              </div>
+            }
+          }
+        </mat-card>
+      </div>
+
+      <!-- Right column: specialist profile + contact + timeline -->
+      <div class="detail-col">
+        <mat-card class="section-card">
+          <div class="section-head">
+            <h2 class="section-title">Specialist profile</h2>
+            <button mat-stroked-button type="button" class="ghost-button ghost-button--sm">View full profile</button>
+          </div>
+
+          @if (specialist()) {
+            <div class="profile-head">
+              <span class="avatar">{{ specialist()!.initials }}</span>
+              <div class="identity-text">
+                <span class="specialist-name">{{ specialist()!.name }}</span>
+                <span class="specialist-role">{{ specialist()!.role }}</span>
+              </div>
+              <span class="foot-availability avail-today"><i class="dot"></i> Available</span>
+            </div>
+
+            <div class="profile-stats">
+              <div class="profile-stat">
+                <span><mat-icon>verified</mat-icon> Success rate</span>
+                <strong>{{ specialist()!.successRate }}%</strong>
+              </div>
+              <div class="profile-stat">
+                <span><mat-icon>work_history</mat-icon> Cases handled</span>
+                <strong>{{ specialist()!.caseCount }}</strong>
+              </div>
+              <div class="profile-stat">
+                <span><mat-icon>location_on</mat-icon> Distance</span>
+                <strong>{{ specialist()!.distanceLabel }}</strong>
+              </div>
+            </div>
+          }
+        </mat-card>
+
+        <!-- Contact specialist -->
+        @if (contactUnlocked()) {
+          <mat-card class="section-card">
+            <div class="unlocked-head">
+              <span class="unlocked-icon"><mat-icon>lock_open</mat-icon></span>
+              <div>
+                <h2 class="section-title">Contact unlocked</h2>
+                <p class="section-subtitle">The proposal has been accepted. Coordinate the field visit directly with the specialist.</p>
+              </div>
+            </div>
+
+            <div class="contact-specialist">
+              <span class="avatar">{{ specialist()?.initials }}</span>
+              <div class="identity-text">
+                <span class="specialist-name">{{ specialist()?.name }}</span>
+                <span class="specialist-role">Visit scheduled · {{ contact.visitScheduled }}</span>
+              </div>
+              <span class="pill status-proposal">Accepted</span>
+            </div>
+
+            <div class="contact-rows">
+              <div class="contact-row">
+                <div><span class="contact-label">Phone</span><strong>{{ contact.phone }}</strong></div>
+                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="copy(contact.phone)">
+                  <mat-icon>content_copy</mat-icon> Copy
+                </button>
+              </div>
+              <div class="contact-row">
+                <div><span class="contact-label">Email</span><strong>{{ contact.email }}</strong></div>
+                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="copy(contact.email)">
+                  <mat-icon>content_copy</mat-icon> Copy
+                </button>
+              </div>
+              <div class="contact-row">
+                <div><span class="contact-label">WhatsApp</span><strong>{{ contact.whatsapp }}</strong></div>
+                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="openWhatsApp()">
+                  <mat-icon>chat</mat-icon> Open
+                </button>
+              </div>
+            </div>
+
+            <p class="info-note">
+              <mat-icon>info</mat-icon>
+              Contact details are only visible to you and will remain accessible for the duration of the case.
+            </p>
+
+            <button mat-stroked-button type="button" class="ghost-button block" (click)="openWhatsApp()">
+              <mat-icon>chat</mat-icon> Open WhatsApp
+            </button>
+            <button mat-stroked-button type="button" class="ghost-button block" (click)="backToOverview()">
+              <mat-icon>arrow_back</mat-icon> Back to case detail
+            </button>
+          </mat-card>
+        } @else {
+          <mat-card class="section-card">
+            <h2 class="section-title">Contact specialist</h2>
+            <div class="locked-box">
+              <span class="locked-icon"><mat-icon>lock</mat-icon></span>
+              <strong>Contact details locked</strong>
+              <p>Contact details will be available after accepting the proposal.</p>
+              <button mat-stroked-button type="button" class="ghost-button" disabled>
+                <mat-icon>call</mat-icon> Contact specialist
+              </button>
+            </div>
+          </mat-card>
+        }
+
+        <!-- Case timeline -->
+        @if (phase() === 'proposal' || phase() === 'accepted') {
+          <mat-card class="section-card">
+            <h2 class="section-title">Case timeline</h2>
+            <div class="timeline">
+              @for (event of timeline; track event.label) {
+                <div class="timeline-row">
+                  <span class="timeline-dot" [class]="'dot--' + event.tone"></span>
+                  <div class="timeline-body">
+                    <strong>{{ event.label }}</strong>
+                    <span>{{ event.timestamp }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card>
+        }
+      </div>
+    </div>
+  }
+</section>
+
+<!-- Decline proposal modal -->
+@if (declineOpen()) {
+  <div class="modal-overlay" (click)="closeDecline()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Decline proposal</h2>
+          <p class="modal-subtitle">This will cancel the current proposal and return you to specialist search.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeDecline()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="warning-box">
+        <mat-icon>warning</mat-icon>
+        Declining this proposal will reactivate the specialist search for this alert. The specialist will be notified.
+      </div>
+
+      <div class="field">
+        <span>Proposal from</span>
+        <div class="field-readonly">
+          <span class="avatar avatar--xs">{{ specialist()?.initials }}</span>
+          {{ specialist()?.name }} · {{ proposal.cost }}
+        </div>
+      </div>
+
+      <label class="field">
+        <span>Reason for declining (optional)</span>
+        <textarea
+          rows="3"
+          placeholder="e.g. Budget too high, preferred a different availability…"
+          [value]="declineReason()"
+          (input)="declineReason.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDecline()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="confirmDecline()">
+          <mat-icon>close</mat-icon> Decline proposal
+        </button>
+      </div>
+    </div>
+  </div>
+}
