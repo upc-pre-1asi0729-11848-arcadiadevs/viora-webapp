@@ -1,0 +1,266 @@
+<section class="assistance-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    subtitle="Find available phytosanitary specialists near your active alerts and manage assistance requests."
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Quick navigation + per-plot scope (no threats selector) -->
+  <app-dashboard-toolbar
+    [viewOptions]="toolbarViewOptions()"
+    [scopeOptions]="scopeOptions()"
+    [selectedScope]="selectedPlotId() ?? ''"
+    (scopeChange)="onSelectPlot($event)" />
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Active assistance case</h2>
+        @if (activeAlert()) {
+          <span class="pill" [class]="severityClass(activeAlert()!.severity)">{{ activeAlert()!.severity }}</span>
+        }
+      </div>
+      <span class="case-title">{{ activeAlert()?.typeLabel ?? 'No active case' }}</span>
+      <p class="case-location">
+        <mat-icon>location_on</mat-icon>
+        {{ plotSummary() || 'Select a plot to view its active case.' }}
+      </p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Available specialists</h2>
+        <span class="kpi-pill kpi-pill--muted">Within 15 km</span>
+      </div>
+      <span class="kpi-value">{{ store.availableSpecialistsCount() }} nearby</span>
+      <p class="kpi-foot">Candidates ranked by distance and availability.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Request status</h2>
+        @if (store.pendingRequestsCount() > 0) {
+          <span class="kpi-pill kpi-pill--soft">Pending</span>
+        }
+      </div>
+      <span class="kpi-value">{{ store.pendingRequestsCount() }} pending</span>
+      <p class="kpi-foot">Waiting for specialist response.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Contact access</h2>
+        <span class="kpi-pill kpi-pill--muted">Proposal required</span>
+      </div>
+      <span class="kpi-value kpi-value--lock"><mat-icon>lock</mat-icon> Locked</span>
+      <p class="kpi-foot">Contact details unlock after proposal acceptance.</p>
+    </mat-card>
+  </section>
+
+  <!-- Recommended specialists -->
+  <mat-card class="section-card">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Recommended specialists</h2>
+        <p class="section-subtitle">
+          Available candidates near {{ selectedPlot()?.name ?? 'your plot' }} for the selected alert.
+        </p>
+      </div>
+      <span class="tag-green">{{ store.availableSpecialistsCount() }} candidates</span>
+    </div>
+
+    <div class="specialist-grid">
+      @for (specialist of store.specialists(); track specialist.id) {
+        <div class="specialist-card" [class.is-best]="specialist.bestMatch">
+          <div class="specialist-badges">
+            @if (specialist.bestMatch) {
+              <span class="badge badge--best"><mat-icon>star</mat-icon> Best match</span>
+            }
+            <span class="badge" [class]="availabilityClass(specialist)">
+              <i class="dot"></i> {{ specialist.availabilityLabel }}
+            </span>
+          </div>
+
+          <div class="specialist-identity">
+            <span class="avatar">{{ specialist.initials }}</span>
+            <div class="identity-text">
+              <span class="specialist-name">{{ specialist.name }}</span>
+              <span class="specialist-role">{{ specialist.role }}</span>
+              <span class="specialist-stats">
+                <span class="stat-success">{{ specialist.successRateLabel }}</span>
+                <span class="stat-sep">·</span>
+                <span class="stat-cases">{{ specialist.caseCountLabel }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="specialist-meta">
+            <span><mat-icon>location_on</mat-icon> {{ specialist.distanceLabel }}</span>
+          </div>
+
+          <div class="specialist-tags">
+            @for (tag of specialist.tags; track tag) {
+              <span class="specialist-tag">{{ tag }}</span>
+            }
+          </div>
+
+          <div class="specialist-foot">
+            <span class="foot-availability" [class]="availabilityClass(specialist)">
+              <i class="dot"></i> {{ specialist.availabilityLabel }}
+            </span>
+            <button mat-flat-button type="button" class="primary-button" (click)="openRequest(specialist)">
+              <mat-icon>send</mat-icon> Request
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </mat-card>
+
+  <!-- My assistance requests -->
+  <mat-card class="section-card">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">My assistance requests</h2>
+        <p class="section-subtitle">Track requests for this plot and their current status.</p>
+      </div>
+      @if (store.pendingRequestsCount() > 0) {
+        <span class="kpi-pill kpi-pill--soft">{{ store.pendingRequestsCount() }} pending response</span>
+      }
+    </div>
+
+    <div class="requests-table">
+      <div class="requests-header">
+        <span>Request</span>
+        <span>Specialist</span>
+        <span>Status</span>
+        <span>Last update</span>
+        <span>Action</span>
+      </div>
+
+      @if (store.loading().requests && store.requests().length === 0) {
+        <div class="requests-state">Loading requests…</div>
+      } @else if (store.requests().length === 0) {
+        <div class="requests-state">No assistance requests for this plot yet.</div>
+      } @else {
+        @for (request of store.requests(); track request.id) {
+          <div class="requests-row">
+            <span class="request-code">{{ request.referenceCode || '—' }}</span>
+            <span>{{ store.specialistName(request.specialistId) }}</span>
+            <span><span class="pill" [class]="statusClass(request.status)">{{ request.statusLabel }}</span></span>
+            <span>{{ request.lastUpdateLabel }}</span>
+            <span>
+              <button mat-stroked-button type="button" class="ghost-button ghost-button--sm">
+                {{ request.status === 'PROPOSAL_RECEIVED' ? 'Review proposal' : (request.status === 'DECLINED' ? 'Search again' : 'View case') }}
+              </button>
+            </span>
+          </div>
+        }
+      }
+    </div>
+  </mat-card>
+</section>
+
+<!-- Request expert assistance modal -->
+@if (modalStep() === 'form' && modalSpecialist()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Request expert assistance</h2>
+          <p class="modal-subtitle">Send a formal intervention request linked to the selected alert.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="modal-specialist">
+        <span class="avatar">{{ modalSpecialist()!.initials }}</span>
+        <div class="identity-text">
+          <span class="specialist-name">{{ modalSpecialist()!.name }}</span>
+          <span class="specialist-role">
+            {{ modalSpecialist()!.role }} · {{ modalSpecialist()!.distanceLabel }}
+          </span>
+        </div>
+        <span class="foot-availability" [class]="availabilityClass(modalSpecialist()!)">
+          <i class="dot"></i> {{ modalSpecialist()!.availabilityLabel }}
+        </span>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field">
+          <span>Plot</span>
+          <div class="field-readonly">{{ plotSummary() || '—' }}</div>
+        </div>
+        <div class="field">
+          <span>Related alert</span>
+          <div class="field-readonly">
+            @if (activeAlert()) {
+              <span class="pill" [class]="severityClass(activeAlert()!.severity)">{{ activeAlert()!.severity }}</span>
+              {{ activeAlert()!.typeLabel }}
+            } @else {
+              No active alert
+            }
+          </div>
+        </div>
+      </div>
+
+      <label class="field">
+        <span>Reason for request</span>
+        <textarea rows="2" [value]="formReason()" (input)="formReason.set($any($event.target).value)"></textarea>
+      </label>
+
+      <label class="field">
+        <span>Message to specialist (optional)</span>
+        <textarea
+          rows="3"
+          placeholder="Describe what you need the specialist to evaluate during the field visit…"
+          [value]="formMessage()"
+          (input)="formMessage.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-flat-button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submitRequest()">
+          <mat-icon>send</mat-icon> {{ store.loading().submitting ? 'Sending…' : 'Send request' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Request sent successfully modal -->
+@if (modalStep() === 'success' && createdRequest()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal--success" (click)="$event.stopPropagation()">
+      <span class="success-icon"><mat-icon>check_circle</mat-icon></span>
+      <h2>Request sent successfully</h2>
+      <p class="success-text">
+        Your intervention request was sent to <strong>{{ modalSpecialist()?.name }}</strong>.
+        The request is now pending specialist response.
+      </p>
+
+      <div class="success-summary">
+        <div class="summary-row"><span>Request ID</span><strong>{{ createdRequest()!.referenceCode || '—' }}</strong></div>
+        <div class="summary-row"><span>Specialist</span><strong>{{ modalSpecialist()?.name }}</strong></div>
+        <div class="summary-row"><span>Plot</span><strong>{{ selectedPlot()?.name ?? '—' }}</strong></div>
+        <div class="summary-row">
+          <span>Status</span>
+          <span class="pill status-pending">{{ createdRequest()!.statusLabel }}</span>
+        </div>
+      </div>
+
+      <p class="success-note">
+        <mat-icon>info</mat-icon>
+        You'll be notified when the specialist responds. Contact details remain locked until a proposal is accepted.
+      </p>
+
+      <button mat-stroked-button type="button" class="ghost-button block" (click)="closeModal()">
+        <mat-icon>visibility</mat-icon> View case
+      </button>
+      <button mat-stroked-button type="button" class="ghost-button block" (click)="closeModal()">
+        <mat-icon>arrow_back</mat-icon> Back to expert assistance
+      </button>
+    </div>
+  </div>
+}

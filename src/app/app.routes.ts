@@ -6,6 +6,8 @@ const agronomicRoutes = () =>
   import('./agronomic/presentation/agronomic.routes').then((m) => m.agronomicRoutes);
 const surveillanceRoutes = () =>
   import('./surveillance/presentation/surveillance.routes').then((m) => m.surveillanceRoutes);
+const interventionRoutes = () =>
+  import('./intervention/presentation/intervention.routes').then((m) => m.interventionRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
 
 /**
@@ -34,6 +36,16 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: surveillanceRoutes,
+      },
+    ],
+  },
+  {
+    path: 'assistance',
+    loadComponent: layout,
+    children: [
+      {
+        path: '',
+        loadChildren: interventionRoutes,
       },
     ],
   },
