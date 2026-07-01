@@ -156,6 +156,22 @@ export class ExpertAssistanceOverviewView implements OnInit {
     this.router.navigate([route]);
   }
 
+  /** Opens the case detail for a request from the history table. */
+  protected openCase(request: InterventionRequest): void {
+    if (request.referenceCode) {
+      this.router.navigate(['/assistance/expert-assistance/case', request.referenceCode]);
+    }
+  }
+
+  /** From the success modal, jumps to the just-created case. */
+  protected viewCreatedCase(): void {
+    const created = this.createdRequest();
+    this.closeModal();
+    if (created?.referenceCode) {
+      this.router.navigate(['/assistance/expert-assistance/case', created.referenceCode]);
+    }
+  }
+
   protected severityClass(severity: AlertSeverity | undefined): string {
     return `severity-${(severity ?? 'Low').toLowerCase()}`;
   }

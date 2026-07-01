@@ -151,7 +151,7 @@
             <span><span class="pill" [class]="statusClass(request.status)">{{ request.statusLabel }}</span></span>
             <span>{{ request.lastUpdateLabel }}</span>
             <span>
-              <button mat-stroked-button type="button" class="ghost-button ghost-button--sm">
+              <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="openCase(request)">
                 {{ request.status === 'PROPOSAL_RECEIVED' ? 'Review proposal' : (request.status === 'DECLINED' ? 'Search again' : 'View case') }}
               </button>
             </span>
@@ -255,7 +255,7 @@
         You'll be notified when the specialist responds. Contact details remain locked until a proposal is accepted.
       </p>
 
-      <button mat-stroked-button type="button" class="ghost-button block" (click)="closeModal()">
+      <button mat-stroked-button type="button" class="ghost-button block" (click)="viewCreatedCase()">
         <mat-icon>visibility</mat-icon> View case
       </button>
       <button mat-stroked-button type="button" class="ghost-button block" (click)="closeModal()">
