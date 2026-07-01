@@ -129,14 +129,14 @@
 
 .section-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: #1f2523;
 }
 
 .section-subtitle {
-  margin: 6px 0 0;
-  font-size: 16px;
+  margin: 4px 0 0;
+  font-size: 14px;
   font-weight: 400;
   color: #828282;
 }
@@ -165,14 +165,13 @@
   gap: 14px;
   padding: 18px;
   border-radius: 14px;
-  background: #f8f4ed;
-  border: 1px solid transparent;
+  background: #ffffff;
+  border: 1px solid #ece6db;
+  box-shadow: 0 12px 30px rgba(31, 37, 35, 0.05);
 }
 
 .specialist-card.is-best {
-  border-color: #57eba1;
-  background: #ffffff;
-  box-shadow: 0 12px 30px rgba(31, 37, 35, 0.06);
+  border-color: #2e4a3a;
 }
 
 .specialist-badges {
@@ -217,7 +216,15 @@
 }
 
 .avail-soon {
-  color: #5b8def;
+  color: #3f6fd0;
+}
+
+.badge.avail-today {
+  background: rgba(87, 235, 161, 0.20);
+}
+
+.badge.avail-soon {
+  background: rgba(91, 141, 239, 0.16);
 }
 
 .specialist-identity {
@@ -300,7 +307,7 @@
 .specialist-tag {
   padding: 5px 12px;
   border-radius: 8px;
-  background: #ffffff;
+  background: #f8f4ed;
   color: #2e4a3a;
   font-size: 12px;
   font-weight: 500;
