@@ -111,7 +111,7 @@ export const routes: Routes = [
   },
   {
     path: 'expense-history',
-    redirectTo: 'billing/expense-history',
+    redirectTo: 'agronomic/expense-history',
     pathMatch: 'full',
   },
   {
