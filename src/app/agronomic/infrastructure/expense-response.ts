@@ -40,7 +40,7 @@ export interface CreateExpenseRequest {
 }
 
 const TYPES: ExpenseType[] = ['CLIMATE_MITIGATION', 'PEST_INTERVENTION'];
-const CATEGORIES: ExpenseCategory[] = ['INPUTS', 'LABOR', 'SPECIALIST'];
+const CATEGORIES: ExpenseCategory[] = ['INPUTS', 'LABOR', 'EQUIPMENT', 'SPECIALIST'];
 const PAYMENT_STATUSES: PaymentStatus[] = ['PAID', 'PENDING'];
 const STATUSES: ExpenseStatus[] = ['REGISTERED', 'ALERT_CONFIRMED'];
 

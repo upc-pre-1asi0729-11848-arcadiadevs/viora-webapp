@@ -4,7 +4,7 @@
  * against a plot (Agronomic bounded context).
  */
 export type ExpenseType = 'CLIMATE_MITIGATION' | 'PEST_INTERVENTION';
-export type ExpenseCategory = 'INPUTS' | 'LABOR' | 'SPECIALIST';
+export type ExpenseCategory = 'INPUTS' | 'LABOR' | 'EQUIPMENT' | 'SPECIALIST';
 export type PaymentStatus = 'PAID' | 'PENDING';
 export type ExpenseStatus = 'REGISTERED' | 'ALERT_CONFIRMED';
 
@@ -40,6 +40,7 @@ const TYPE_LABEL: Record<ExpenseType, string> = {
 const CATEGORY_LABEL: Record<ExpenseCategory, string> = {
   INPUTS: 'Inputs',
   LABOR: 'Labor',
+  EQUIPMENT: 'Equipment',
   SPECIALIST: 'Specialist',
 };
 
