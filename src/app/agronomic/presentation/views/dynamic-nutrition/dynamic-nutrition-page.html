@@ -244,14 +244,20 @@
         </div>
       }
 
-      <div class="exec-actions">
-        <button mat-stroked-button class="ghost-button wide" [disabled]="p.isCertified" (click)="openCertify()">
-          <mat-icon>verified</mat-icon> {{ 'dynamicNutrition.certify' | translate }}
-        </button>
-        <button mat-stroked-button class="ghost-button wide" [disabled]="hasMitigationExpense()" (click)="openExpense()">
-          <mat-icon>save</mat-icon> {{ 'dynamicNutrition.registerExpense' | translate }}
-        </button>
-      </div>
+      @if (!executionClosed()) {
+        <div class="exec-actions">
+          @if (!p.isCertified) {
+            <button mat-stroked-button class="ghost-button wide" (click)="openCertify()">
+              <mat-icon>verified</mat-icon> {{ 'dynamicNutrition.certify' | translate }}
+            </button>
+          }
+          @if (!hasMitigationExpense()) {
+            <button mat-stroked-button class="ghost-button wide" (click)="openExpense()">
+              <mat-icon>save</mat-icon> {{ 'dynamicNutrition.registerExpense' | translate }}
+            </button>
+          }
+        </div>
+      }
     </section>
   }
 
