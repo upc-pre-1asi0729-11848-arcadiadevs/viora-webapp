@@ -83,7 +83,7 @@
               </p>
             </div>
             @if (phase() !== 'awaiting' && phase() !== 'declined') {
-              <span class="tag-blue">Received {{ proposal.receivedDate }}</span>
+              <span class="tag-blue">Received {{ proposal().receivedDate }}</span>
             }
           </div>
 
@@ -104,6 +104,17 @@
                 <mat-icon>close</mat-icon> Decline proposal
               </button>
             </div>
+
+            <!-- Demo aid: there is no specialist-facing app yet, so let the producer
+                 trigger the specialist's proposal to exercise the full case flow. -->
+            <button
+              mat-flat-button
+              type="button"
+              class="primary-button block"
+              [disabled]="store.loading().case"
+              (click)="simulateResponse()">
+              <mat-icon>bolt</mat-icon> Simulate specialist response
+            </button>
           } @else if (phase() === 'declined') {
             <div class="pending-block">
               <span class="pending-icon pending-icon--muted"><mat-icon>search</mat-icon></span>
@@ -119,33 +130,33 @@
             <div class="proposal-rows">
               <div class="proposal-row">
                 <span>Proposed service</span>
-                <strong>{{ proposal.proposedService }}</strong>
+                <strong>{{ proposal().proposedService }}</strong>
               </div>
               <div class="proposal-row">
                 <span>Estimated visit date</span>
-                <strong>{{ proposal.visitDate }}</strong>
+                <strong>{{ proposal().visitDate }}</strong>
               </div>
               <div class="proposal-row">
                 <span>Estimated duration</span>
-                <strong>{{ proposal.duration }}</strong>
+                <strong>{{ proposal().duration }}</strong>
               </div>
               <div class="proposal-row proposal-row--scope">
                 <span>Scope</span>
                 <ul class="scope-list">
-                  @for (item of proposal.scope; track item) {
+                  @for (item of proposal().scope; track item) {
                     <li><mat-icon>check</mat-icon> {{ item }}</li>
                   }
                 </ul>
               </div>
               <div class="proposal-row">
                 <span>Estimated cost</span>
-                <strong class="proposal-cost">{{ proposal.cost }}</strong>
+                <strong class="proposal-cost">{{ proposal().cost }}</strong>
               </div>
             </div>
 
             <div class="notes-box">
               <strong>Notes from specialist</strong>
-              <p>{{ proposal.notes }}</p>
+              <p>{{ proposal().notes }}</p>
             </div>
 
             @if (phase() === 'proposal') {
@@ -159,7 +170,7 @@
               </div>
             } @else {
               <div class="accepted-banner">
-                <mat-icon>check_circle</mat-icon> Proposal accepted · visit scheduled {{ contact.visitScheduled }}
+                <mat-icon>check_circle</mat-icon> Proposal accepted · visit scheduled {{ contact().visitScheduled }}
               </div>
             }
           }
@@ -216,26 +227,26 @@
               <span class="avatar">{{ specialist()?.initials }}</span>
               <div class="identity-text">
                 <span class="specialist-name">{{ specialist()?.name }}</span>
-                <span class="specialist-role">Visit scheduled · {{ contact.visitScheduled }}</span>
+                <span class="specialist-role">Visit scheduled · {{ contact().visitScheduled }}</span>
               </div>
               <span class="pill status-proposal">Accepted</span>
             </div>
 
             <div class="contact-rows">
               <div class="contact-row">
-                <div><span class="contact-label">Phone</span><strong>{{ contact.phone }}</strong></div>
-                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="copy(contact.phone)">
+                <div><span class="contact-label">Phone</span><strong>{{ contact().phone }}</strong></div>
+                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="copy(contact().phone)">
                   <mat-icon>content_copy</mat-icon> Copy
                 </button>
               </div>
               <div class="contact-row">
-                <div><span class="contact-label">Email</span><strong>{{ contact.email }}</strong></div>
-                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="copy(contact.email)">
+                <div><span class="contact-label">Email</span><strong>{{ contact().email }}</strong></div>
+                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="copy(contact().email)">
                   <mat-icon>content_copy</mat-icon> Copy
                 </button>
               </div>
               <div class="contact-row">
-                <div><span class="contact-label">WhatsApp</span><strong>{{ contact.whatsapp }}</strong></div>
+                <div><span class="contact-label">WhatsApp</span><strong>{{ contact().whatsapp }}</strong></div>
                 <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="openWhatsApp()">
                   <mat-icon>chat</mat-icon> Open
                 </button>
@@ -273,7 +284,7 @@
           <mat-card class="section-card">
             <h2 class="section-title">Case timeline</h2>
             <div class="timeline">
-              @for (event of timeline; track event.label) {
+              @for (event of timeline(); track event.label) {
                 <div class="timeline-row">
                   <span class="timeline-dot" [class]="'dot--' + event.tone"></span>
                   <div class="timeline-body">
@@ -311,7 +322,7 @@
         <span>Proposal from</span>
         <div class="field-readonly">
           <span class="avatar avatar--xs">{{ specialist()?.initials }}</span>
-          {{ specialist()?.name }} · {{ proposal.cost }}
+          {{ specialist()?.name }} · {{ proposal().cost }}
         </div>
       </div>
 

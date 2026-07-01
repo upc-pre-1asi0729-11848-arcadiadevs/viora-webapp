@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -18,18 +18,19 @@ import { Alert, AlertSeverity } from '../../../../surveillance/domain/model/aler
 import { InterventionStore } from '../../../application/intervention.store';
 import { SpecialistCandidate } from '../../../domain/model/specialist-candidate.entity';
 import { InterventionRequest } from '../../../domain/model/intervention-request.entity';
+import { ServiceProposal } from '../../../domain/model/service-proposal.entity';
 
 /** Lifecycle phase of the case, derived from the request status. */
 type CasePhase = 'awaiting' | 'proposal' | 'accepted' | 'declined';
 
-/** A single event in the case timeline (presentation). */
+/** A single event in the case timeline. */
 interface CaseTimelineEvent {
   label: string;
   timestamp: string;
   tone: 'done' | 'active' | 'pending';
 }
 
-/** Read-only service proposal submitted by the specialist (presentation). */
+/** View model for the read-only service proposal card. */
 interface ServiceProposalView {
   receivedDate: string;
   proposedService: string;
@@ -40,8 +41,8 @@ interface ServiceProposalView {
   notes: string;
 }
 
-/** Specialist contact details revealed after proposal acceptance (presentation). */
-interface SpecialistContact {
+/** View model for the specialist contact card (revealed after acceptance). */
+interface SpecialistContactView {
   phone: string;
   email: string;
   whatsapp: string;
@@ -64,6 +65,21 @@ export class CaseDetailView implements OnInit {
 
   protected readonly caseCode = signal<string>('');
   protected readonly plots = signal<Plot[]>([]);
+
+  /** Guards the case-artifacts load so it fires once per resolved request. */
+  private loadedCaseId: number | string | null = null;
+
+  constructor() {
+    // The request resolves asynchronously from the store's per-plot history, so
+    // load the case's proposal (and contact, if accepted) once it's available.
+    effect(() => {
+      const request = this.request();
+      if (request && request.id != null && request.id !== this.loadedCaseId) {
+        this.loadedCaseId = request.id;
+        this.store.loadCaseArtifacts(request);
+      }
+    });
+  }
 
   // ----- Decline modal state -----
   protected readonly declineOpen = signal<boolean>(false);
@@ -159,37 +175,62 @@ export class CaseDetailView implements OnInit {
     return `${location} · ${date}`;
   });
 
-  /** Read-only proposal (presentation until a specialist app submits proposals). */
-  protected readonly proposal: ServiceProposalView = {
-    receivedDate: 'May 04, 2026',
-    proposedService: 'Field inspection and phytosanitary evaluation',
-    visitDate: 'May 06, 2026',
-    duration: '2–3 hours',
-    scope: [
-      'Inspect affected zones in Santa Rosa',
-      'Validate symptom report in field',
-      'Review low-vigor areas',
-      'Recommend next technical action',
-    ],
-    cost: 'S/ 280.00',
-    notes:
-      'The initial visit will focus on confirming the probable biological threat and defining whether a technical prescription is required.',
-  };
+  /** Read-only proposal from the backend, shaped for the proposal card. */
+  protected readonly proposal = computed<ServiceProposalView>(() => {
+    const proposal = this.store.activeProposal();
+    const request = this.request();
+    return {
+      receivedDate: ServiceProposal.formatDate(request?.updatedAt ?? request?.createdAt ?? null),
+      proposedService: proposal?.serviceTitle || 'Field inspection and phytosanitary evaluation',
+      visitDate: proposal?.proposedDateLabel ?? '—',
+      duration: proposal?.durationLabel || '—',
+      scope: proposal?.scope ?? [],
+      cost: proposal?.costLabel ?? '—',
+      notes: proposal?.proposalDetails || '',
+    };
+  });
 
-  /** Specialist contact details (presentation; no contact fields on the backend yet). */
-  protected readonly contact: SpecialistContact = {
-    phone: '+51 987 654 321',
-    email: 'valeria.rojas@viora.example',
-    whatsapp: '+51 987 654 321',
-    visitScheduled: 'May 06, 2026',
-  };
+  /** Specialist contact from the backend (populated once the proposal is accepted). */
+  protected readonly contact = computed<SpecialistContactView>(() => {
+    const contact = this.store.activeContact();
+    const proposal = this.store.activeProposal();
+    return {
+      phone: contact?.phone || '—',
+      email: contact?.email || '—',
+      whatsapp: contact?.whatsapp ?? '',
+      visitScheduled: proposal?.proposedDateLabel ?? '—',
+    };
+  });
 
-  /** Case timeline (presentation). */
-  protected readonly timeline: CaseTimelineEvent[] = [
-    { label: 'Proposal received', timestamp: 'May 04, 2026 · 02:30 PM', tone: 'active' },
-    { label: 'Request accepted by specialist', timestamp: 'May 03, 2026 · 11:10 AM', tone: 'done' },
-    { label: 'Request sent', timestamp: 'May 03, 2026 · 10:00 AM', tone: 'pending' },
-  ];
+  /** Case timeline derived from the request lifecycle, newest event first. */
+  protected readonly timeline = computed<CaseTimelineEvent[]>(() => {
+    const request = this.request();
+    if (!request) {
+      return [];
+    }
+
+    const events: CaseTimelineEvent[] = [
+      { label: 'Request sent', timestamp: this.formatDateTime(request.createdAt), tone: 'done' },
+    ];
+
+    if (this.store.activeProposal()) {
+      events.push({
+        label: 'Proposal received',
+        timestamp: this.formatDateTime(request.updatedAt),
+        tone: this.phase() === 'proposal' ? 'active' : 'done',
+      });
+    }
+
+    if (this.phase() === 'accepted') {
+      events.push({
+        label: 'Proposal accepted',
+        timestamp: this.formatDateTime(request.updatedAt),
+        tone: 'active',
+      });
+    }
+
+    return events.reverse();
+  });
 
   ngOnInit(): void {
     this.caseCode.set(this.route.snapshot.paramMap.get('code') ?? '');
@@ -197,10 +238,43 @@ export class CaseDetailView implements OnInit {
       this.surveillance.fetchAlerts(50);
     }
     this.agronomicApi.getPlots().subscribe((plots) => this.plots.set(plots));
+
+    // The case may be opened via a deep link / refresh, or straight from the
+    // success modal before the overview loaded the plot history — in those cases
+    // the store has no requests yet, so pull the full history to resolve it.
+    if (!this.request()) {
+      this.store.loadAllRequests();
+    }
   }
 
   protected refresh(): void {
     this.surveillance.fetchAlerts(50);
+    const request = this.request();
+    if (request) {
+      this.store.loadCaseArtifacts(request);
+    }
+  }
+
+  /** Formats an ISO timestamp as "MMM DD, YYYY · hh:mm AM/PM". */
+  private formatDateTime(raw: string | null): string {
+    if (!raw) {
+      return '—';
+    }
+    const timestamp = Date.parse(raw);
+    if (Number.isNaN(timestamp)) {
+      return '—';
+    }
+    const date = new Date(timestamp);
+    const datePart = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    }).format(date);
+    const timePart = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+    return `${datePart} · ${timePart}`;
   }
 
   protected severityClass(severity: AlertSeverity | undefined): string {
@@ -211,6 +285,17 @@ export class CaseDetailView implements OnInit {
     const code = this.caseCode();
     if (code) {
       this.store.acceptProposal(code);
+    }
+  }
+
+  /**
+   * Simulates the specialist submitting a proposal (no specialist app exists yet),
+   * moving the case from "awaiting" to "proposal received" in-place.
+   */
+  protected simulateResponse(): void {
+    const code = this.caseCode();
+    if (code) {
+      this.store.simulateSpecialistResponse(code);
     }
   }
 
@@ -241,7 +326,10 @@ export class CaseDetailView implements OnInit {
   }
 
   protected openWhatsApp(): void {
-    const number = this.contact.whatsapp.replace(/[^\d]/g, '');
+    const number = this.contact().whatsapp.replace(/[^\d]/g, '');
+    if (!number) {
+      return;
+    }
     window.open(`https://wa.me/${number}`, '_blank');
   }
 
