@@ -14,6 +14,10 @@ const plotCreate = () => import('./views/plot-create/plot-create').then((m) => m
 const plotDetail = () => import('./views/plot-detail/plot-detail').then((m) => m.PlotDetailView);
 const dynamicNutritionPage = () =>
   import('./views/dynamic-nutrition/dynamic-nutrition-page').then((m) => m.DynamicNutritionPage);
+const expenseHistoryOverview = () =>
+  import('./views/expense-history-overview/expense-history-overview').then(
+    (m) => m.ExpenseHistoryOverviewView,
+  );
 
 /**
  * Route tree for agronomic bounded-context views.
@@ -92,6 +96,16 @@ export const agronomicRoutes: Routes = [
       pageTitle: 'Nutrition Plan',
       sectionLabel: 'Dynamic Nutrition',
       subtitle: 'Plan nutrition adjustments with dynamic crop indicators.',
+    },
+  },
+  {
+    path: 'expense-history',
+    title: 'Expense History',
+    loadComponent: expenseHistoryOverview,
+    data: {
+      pageTitle: 'Expense History',
+      sectionLabel: 'Expense History',
+      subtitle: 'Track climate mitigation and phytosanitary intervention costs across your plots.',
     },
   },
   {

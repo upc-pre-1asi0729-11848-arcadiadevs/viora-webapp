@@ -60,7 +60,7 @@ export class DashboardSidebar {
     },
     {
       labelKey: 'sidebar.expenseHistory',
-      route: '/billing/expense-history',
+      route: '/agronomic/expense-history',
       iconPath: '/assets/icons/dashboard/sync-outline.svg',
     },
   ];

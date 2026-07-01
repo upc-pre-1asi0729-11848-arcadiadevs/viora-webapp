@@ -35,6 +35,10 @@ export const environment = {
     specialistCandidates: '/specialist-candidates',
     serviceProposals: '/service-proposals',
     specialists: '/specialists',
+
+    // Billing bounded context (Subscription, Billing & Referral): operational
+    // expenses the producer registers against their plots.
+    expenses: '/expenses',
   },
 
   mapbox: {

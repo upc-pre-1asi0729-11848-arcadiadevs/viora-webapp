@@ -14,8 +14,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
+import { finalize, forkJoin } from 'rxjs';
 
 import { AgronomicStore } from '../../../application/agronomic.store';
+import { ExpenseApiService } from '../../../infrastructure/expense-api.service';
+import { CreateExpenseRequest } from '../../../infrastructure/expense-response';
+import { ExpenseCategory } from '../../../domain/model/expense.entity';
 import { Plot } from '../../../domain/model/plot.entity';
 import { MonitoringSummary } from '../../../domain/model/monitoring-summary.entity';
 import { ChillHourRecord } from '../../../domain/model/chill-hour-record.entity';
@@ -72,6 +76,20 @@ interface ExpenseForm {
 export class DynamicNutritionPage implements OnInit {
   private readonly router = inject(Router);
   protected readonly store = inject(AgronomicStore);
+  private readonly expenseApi = inject(ExpenseApiService);
+
+  /** True while the mitigation-expense declaration is being persisted. */
+  protected readonly expenseSaving = signal<boolean>(false);
+  /** Whether the current plan already has a mitigation expense registered. */
+  protected readonly hasMitigationExpense = signal<boolean>(false);
+  /**
+   * The nutrition intervention is "closed" once its plan is both certified in
+   * field and financially declared. The plan itself stays ACTIVE by design (it
+   * remains the plot's current plan and can be superseded by a new alert).
+   */
+  protected readonly executionClosed = computed<boolean>(
+    () => (this.plan()?.isCertified ?? false) && this.hasMitigationExpense(),
+  );
 
   protected readonly selectedPlotId = signal<string | null>(null);
 
@@ -120,12 +138,42 @@ export class DynamicNutritionPage implements OnInit {
         this.savedExpenseTotal.set(null);
       });
     });
+
+    // Reflect whether the loaded plan already carries a declared mitigation
+    // expense (so the "closed" state survives reloads, not just this session).
+    effect(() => {
+      const plan = this.plan();
+      if (plan?.plotId != null) {
+        const plotId = plan.plotId;
+        const planCode = plan.planCode;
+        untracked(() => this.refreshPlanExpenses(plotId, planCode));
+      } else {
+        this.hasMitigationExpense.set(false);
+      }
+    });
+  }
+
+  /** Loads the plot's expenses and flags whether one is linked to this plan. */
+  private refreshPlanExpenses(plotId: number | string, planCode: string): void {
+    this.expenseApi.getExpenses(plotId).subscribe({
+      next: (expenses) =>
+        this.hasMitigationExpense.set(
+          expenses.some((expense) => expense.linkedActionCode === planCode),
+        ),
+      error: () => this.hasMitigationExpense.set(false),
+    });
   }
 
   ngOnInit(): void {
     if (this.store.plots().length === 0) {
       this.store.fetchPlots();
     }
+  }
+
+  /** Signed, 1-decimal temperature anomaly label (avoids float noise like 5.1999…). */
+  protected formatAnomaly(value: number | null | undefined): string {
+    const rounded = Math.round((value ?? 0) * 10) / 10;
+    return `${rounded > 0 ? '+' : ''}${rounded}`;
   }
 
   // ----- Queries -----
@@ -281,7 +329,10 @@ export class DynamicNutritionPage implements OnInit {
         applicationDate: this.certForm.date,
         applicationTime: this.certForm.time,
         appliedInputs: this.appliedInputNames,
-        doseConfirmation: this.certForm.dose,
+        // Backend expects the DoseConfirmation enum (AS_RECOMMENDED | ADJUSTED),
+        // not the display label — anything other than "as recommended" is ADJUSTED.
+        doseConfirmation:
+          this.certForm.dose === 'Applied as recommended' ? 'AS_RECOMMENDED' : 'ADJUSTED',
         fieldOperator: this.certForm.operator.trim(),
         fieldNotes: this.certForm.notes.trim(),
       },
@@ -324,17 +375,59 @@ export class DynamicNutritionPage implements OnInit {
   }
 
   protected get canSaveExpense(): boolean {
-    return this.expenseTotal > 0;
+    return this.expenseTotal > 0 && !this.expenseSaving();
   }
 
+  /**
+   * Persists the mitigation-expense declaration as real Expense records linked to
+   * this nutrition plan (one per non-zero cost line), so it feeds Expense History.
+   * Input → INPUTS, Labor → LABOR, Equipment → EQUIPMENT; all CLIMATE_MITIGATION.
+   */
   protected submitExpense(): void {
-    if (!this.canSaveExpense) {
+    const plan = this.plan();
+    if (!plan || plan.plotId == null || !this.canSaveExpense) {
       return;
     }
-    // No backend endpoint yet: record the declaration locally so the execution
-    // card reflects it. Ready to swap for a POST when the finance API exists.
-    this.savedExpenseTotal.set(this.expenseTotal);
-    this.closeExpense();
+
+    const receipt = this.expenseForm.code?.trim();
+    const note = this.expenseForm.notes?.trim() || (receipt ? `Receipt: ${receipt}` : undefined);
+
+    const base: Omit<CreateExpenseRequest, 'growerId' | 'category' | 'amount'> = {
+      plotId: plan.plotId,
+      type: 'CLIMATE_MITIGATION',
+      currency: 'PEN',
+      expenseDate: new Date().toISOString().slice(0, 10),
+      paymentStatus: 'PAID',
+      linkedActionCode: plan.planCode,
+      note,
+    };
+
+    const lines: { category: ExpenseCategory; amount: number | null }[] = [
+      { category: 'INPUTS', amount: this.expenseForm.input },
+      { category: 'LABOR', amount: this.expenseForm.labor },
+      { category: 'EQUIPMENT', amount: this.expenseForm.equipment },
+    ];
+
+    const requests = lines
+      .filter((line) => (line.amount ?? 0) > 0)
+      .map((line) => this.expenseApi.createExpense({ ...base, category: line.category, amount: line.amount! }));
+
+    if (requests.length === 0) {
+      return;
+    }
+
+    const declaredTotal = this.expenseTotal;
+    this.expenseSaving.set(true);
+    forkJoin(requests)
+      .pipe(finalize(() => this.expenseSaving.set(false)))
+      .subscribe({
+        next: () => {
+          this.savedExpenseTotal.set(declaredTotal);
+          this.hasMitigationExpense.set(true);
+          this.refreshPlanExpenses(plan.plotId!, plan.planCode);
+          this.closeExpense();
+        },
+      });
   }
 
   // ----- Formatting helpers -----

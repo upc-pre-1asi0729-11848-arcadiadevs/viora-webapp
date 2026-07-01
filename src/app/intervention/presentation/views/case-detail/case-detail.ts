@@ -11,6 +11,7 @@ import {
 } from '../../../../shared/presentation/components/dashboard-header/dashboard-header';
 
 import { AgronomicApiService } from '../../../../agronomic/infrastructure/agronomic-api.service';
+import { ExpenseApiService } from '../../../../agronomic/infrastructure/expense-api.service';
 import { Plot } from '../../../../agronomic/domain/model/plot.entity';
 import { SurveillanceStore } from '../../../../surveillance/application/surveillance.store';
 import { Alert, AlertSeverity } from '../../../../surveillance/domain/model/alert.entity';
@@ -60,6 +61,7 @@ export class CaseDetailView implements OnInit {
   protected readonly store = inject(InterventionStore);
   private readonly surveillance = inject(SurveillanceStore);
   private readonly agronomicApi = inject(AgronomicApiService);
+  private readonly expenseApi = inject(ExpenseApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -284,8 +286,40 @@ export class CaseDetailView implements OnInit {
   protected acceptProposal(): void {
     const code = this.caseCode();
     if (code) {
-      this.store.acceptProposal(code);
+      this.store.acceptProposal(code, (ok) => {
+        if (ok) {
+          this.registerSpecialistExpense();
+        }
+      });
     }
+  }
+
+  /**
+   * Records the accepted proposal's cost as a real specialist expense so it feeds
+   * Expense History (PEST_INTERVENTION / SPECIALIST, flagged ALERT_CONFIRMED and
+   * linked to this case). Best-effort: a failure here doesn't block acceptance.
+   */
+  private registerSpecialistExpense(): void {
+    const request = this.request();
+    const proposal = this.store.activeProposal();
+    if (!request || request.plotId == null || proposal?.amount == null) {
+      return;
+    }
+
+    this.expenseApi
+      .createExpense({
+        plotId: Number(request.plotId),
+        type: 'PEST_INTERVENTION',
+        category: 'SPECIALIST',
+        linkedActionCode: request.referenceCode || undefined,
+        amount: proposal.amount,
+        currency: proposal.currency ?? 'PEN',
+        expenseDate: new Date().toISOString().slice(0, 10),
+        paymentStatus: 'PENDING',
+        note: proposal.serviceTitle || undefined,
+        status: 'ALERT_CONFIRMED',
+      })
+      .subscribe({ error: () => undefined });
   }
 
   /**
