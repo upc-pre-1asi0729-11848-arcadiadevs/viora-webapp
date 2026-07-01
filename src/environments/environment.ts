@@ -26,6 +26,15 @@ export const environment = {
     // IoT devices (real backend): flat aggregate read for the dashboard; writes
     // are nested under the owning plot (/plots/{plotId}/iot-devices).
     iotDevices: '/iot-devices',
+
+    // Intervention bounded context (Expert Assistance). Requests are a real
+    // aggregate (create/list by grower+plot). Specialist candidates now come from
+    // a real seeded catalog + matching policy; service proposals and specialist
+    // profiles/contact are real (contact is gated to accepted requests).
+    interventionRequests: '/intervention-requests',
+    specialistCandidates: '/specialist-candidates',
+    serviceProposals: '/service-proposals',
+    specialists: '/specialists',
   },
 
   mapbox: {
