@@ -6,6 +6,8 @@ import { BaseApi } from '../../shared/infrastructure/base-api';
 
 import { SpecialistCandidate } from '../domain/model/specialist-candidate.entity';
 import { InterventionRequest } from '../domain/model/intervention-request.entity';
+import { ServiceProposal } from '../domain/model/service-proposal.entity';
+import { SpecialistContact } from '../domain/model/specialist-contact.entity';
 import {
   SpecialistCandidateAssembler,
   SpecialistCandidateResource,
@@ -15,6 +17,15 @@ import {
   InterventionRequestAssembler,
   InterventionRequestResource,
 } from './intervention-request-response';
+import {
+  ServiceProposalAssembler,
+  ServiceProposalResource,
+  UpdateServiceProposalStatusRequest,
+} from './service-proposal-response';
+import {
+  SpecialistContactAssembler,
+  SpecialistContactResource,
+} from './specialist-contact-response';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +42,8 @@ import {
 export class InterventionApiService extends BaseApi {
   private readonly requestsEndpoint = this.endpoint(environment.endpoints.interventionRequests);
   private readonly candidatesEndpoint = this.endpoint(environment.endpoints.specialistCandidates);
+  private readonly proposalsEndpoint = this.endpoint(environment.endpoints.serviceProposals);
+  private readonly specialistsEndpoint = this.endpoint(environment.endpoints.specialists);
 
   /**
    * Fetches ranked specialist candidates for an alert.
@@ -56,6 +69,20 @@ export class InterventionApiService extends BaseApi {
     return this.http
       .get<InterventionRequestResource[]>(this.requestsEndpoint.collectionUrl, {
         params: this.queryParams({ growerId: this.defaultUserId, plotId }),
+      })
+      .pipe(map((resources) => InterventionRequestAssembler.toEntitiesFromResources(resources ?? [])));
+  }
+
+  /**
+   * Lists all of the active producer's intervention requests, across every plot.
+   * Used by the case-detail view so a case resolves on a deep link / refresh even
+   * when the per-plot overview list hasn't been loaded yet.
+   * @returns {Observable<InterventionRequest[]>}
+   */
+  getAllRequests(): Observable<InterventionRequest[]> {
+    return this.http
+      .get<InterventionRequestResource[]>(this.requestsEndpoint.collectionUrl, {
+        params: this.queryParams({ growerId: this.defaultUserId }),
       })
       .pipe(map((resources) => InterventionRequestAssembler.toEntitiesFromResources(resources ?? [])));
   }
@@ -88,6 +115,74 @@ export class InterventionApiService extends BaseApi {
 
     return this.http
       .post<InterventionRequestResource>(this.requestsEndpoint.collectionUrl, body)
+      .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Lists the service proposals submitted for an intervention request. A request
+   * has at most one active proposal today (the specialist's response).
+   * @param {number|string} requestId - Request the proposals belong to.
+   * @returns {Observable<ServiceProposal[]>}
+   */
+  getProposalsByRequest(requestId: number | string): Observable<ServiceProposal[]> {
+    return this.http
+      .get<ServiceProposalResource[]>(this.proposalsEndpoint.collectionUrl, {
+        params: this.queryParams({ requestId }),
+      })
+      .pipe(map((resources) => ServiceProposalAssembler.toEntitiesFromResources(resources ?? [])));
+  }
+
+  /**
+   * Accepts or rejects a service proposal. Accepting moves the linked request to
+   * ACCEPTED (unlocking contact); rejecting moves it to DECLINED (search reopens).
+   * @param {number|string} id - Proposal identifier.
+   * @param {'ACCEPTED'|'REJECTED'} status - New proposal status.
+   * @param {string} [reason] - Optional reason (used when rejecting).
+   * @returns {Observable<ServiceProposal>}
+   */
+  updateProposalStatus(
+    id: number | string,
+    status: 'ACCEPTED' | 'REJECTED',
+    reason?: string,
+  ): Observable<ServiceProposal> {
+    const body: UpdateServiceProposalStatusRequest = { status, reason };
+    return this.http
+      .patch<ServiceProposalResource>(this.proposalsEndpoint.resourceUrl(id), body)
+      .pipe(map((resource) => ServiceProposalAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Fetches a specialist's private contact details. The backend returns 403 until
+   * the given request has been accepted for that specialist.
+   * @param {number|string} specialistId - Specialist whose contact is requested.
+   * @param {number|string} requestId - The accepted request unlocking the contact.
+   * @returns {Observable<SpecialistContact>}
+   */
+  getSpecialistContact(
+    specialistId: number | string,
+    requestId: number | string,
+  ): Observable<SpecialistContact> {
+    return this.http
+      .get<SpecialistContactResource>(
+        `${this.specialistsEndpoint.resourceUrl(specialistId)}/contact`,
+        { params: this.queryParams({ requestId }) },
+      )
+      .pipe(map((resource) => SpecialistContactAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
+   * Simulates the specialist responding to a request by submitting a proposal on
+   * their behalf (there is no specialist-facing app yet). Moves the request to
+   * PROPOSAL_RECEIVED so the full case flow can be demoed end-to-end.
+   * @param {number|string} requestId - Request to generate a proposal for.
+   * @returns {Observable<InterventionRequest>}
+   */
+  simulateSpecialistResponse(requestId: number | string): Observable<InterventionRequest> {
+    return this.http
+      .post<InterventionRequestResource>(
+        `${this.requestsEndpoint.resourceUrl(requestId)}/simulate-specialist-response`,
+        {},
+      )
       .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
   }
 }
