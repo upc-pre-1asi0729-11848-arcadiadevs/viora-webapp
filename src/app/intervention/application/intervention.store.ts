@@ -3,35 +3,34 @@
  * Assistance). Coordinates the real intervention-request aggregate (create +
  * per-plot history) and specialist recommendations.
  *
- * Data-source note: the backend `specialist-candidates` matching policy and the
- * request-metrics service are stubs today, so specialists and the request
- * history fall back to presentation datasets (mirroring the surveillance
- * `autonomousDetections` pattern) until those services are implemented. The real
- * endpoints are still called and transparently take over once they return data.
+ * Data-source note: intervention requests, specialist candidates, service
+ * proposals and specialist contact are all served by the real backend. The
+ * presentation specialist dataset is kept only as a fallback for when the
+ * candidates endpoint is unavailable or returns nothing.
  *
  * @module InterventionStore
  */
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { finalize, take } from 'rxjs';
+import { finalize, Observable, take } from 'rxjs';
 
 import { InterventionApiService } from '../infrastructure/intervention-api.service';
 import { CreateInterventionRequestRequest } from '../infrastructure/intervention-request-response';
 import { SpecialistCandidate } from '../domain/model/specialist-candidate.entity';
-import {
-  InterventionRequest,
-  InterventionRequestStatus,
-} from '../domain/model/intervention-request.entity';
+import { ServiceProposal } from '../domain/model/service-proposal.entity';
+import { SpecialistContact } from '../domain/model/specialist-contact.entity';
+import { InterventionRequest } from '../domain/model/intervention-request.entity';
 
 export interface InterventionLoadingState {
   specialists: boolean;
   requests: boolean;
   submitting: boolean;
+  case: boolean;
 }
 
 /**
  * Presentation dataset of recommended specialists, matching the Expert
- * Assistance design. Used until the backend `SpecialistMatchingPolicy` is
- * implemented; real candidates replace it once the endpoint returns a ranked set.
+ * Assistance design. Kept as a fallback for when the real candidates endpoint is
+ * unavailable; a returned ranked set replaces it (mirrors the seeded catalog).
  */
 const PRESENTATION_SPECIALISTS: SpecialistCandidate[] = [
   new SpecialistCandidate({
@@ -80,10 +79,16 @@ export class InterventionStore {
   /** Whether the request history has loaded from the real backend at least once. */
   readonly requestsLoaded = signal<boolean>(false);
 
+  /** The proposal for the case currently open in the case-detail view. */
+  readonly activeProposal = signal<ServiceProposal | null>(null);
+  /** The specialist contact for the open case (only once its proposal is accepted). */
+  readonly activeContact = signal<SpecialistContact | null>(null);
+
   readonly loading = signal<InterventionLoadingState>({
     specialists: false,
     requests: false,
     submitting: false,
+    case: false,
   });
 
   readonly errors = signal<unknown[]>([]);
@@ -126,10 +131,9 @@ export class InterventionStore {
   });
 
   /**
-   * Loads ranked specialists for an alert. The backend matching policy is a stub
-   * that returns a single generic candidate, so its result is only adopted once
-   * it returns a real ranked set (more than one); otherwise the presentation
-   * dataset is kept.
+   * Loads ranked specialists for an alert from the real matching policy. Any
+   * non-empty ranked set replaces the presentation fallback; an empty result
+   * keeps the current list so the UI never blanks out.
    * @param {number|string} alertId
    */
   loadSpecialists(alertId: number | string): void {
@@ -143,7 +147,7 @@ export class InterventionStore {
       )
       .subscribe({
         next: (specialists) => {
-          if (specialists.length > 1) {
+          if (specialists.length > 0) {
             this.specialists.set(specialists);
           }
           this.lastSyncedAt.set(Date.now());
@@ -176,24 +180,129 @@ export class InterventionStore {
       });
   }
 
+  /**
+   * Loads every request for the active producer (all plots). Used by the case
+   * detail so a case resolves even when the per-plot overview list wasn't loaded
+   * first (deep link, page refresh, or jumping straight from the success modal).
+   */
+  loadAllRequests(): void {
+    this.setLoading('requests', true);
+
+    this.interventionApi
+      .getAllRequests()
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('requests', false)),
+      )
+      .subscribe({
+        next: (requests) => {
+          this.requests.set(requests);
+          this.requestsLoaded.set(true);
+          this.lastSyncedAt.set(Date.now());
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
   /** Finds a request by its human-facing reference code (e.g. "REQ-024"). */
   findRequestByCode(code: string): InterventionRequest | null {
     return this.requests().find((request) => request.referenceCode === code) ?? null;
   }
 
   /**
-   * Marks a proposal as accepted for a case, unlocking specialist contact. Applied
-   * locally: the case lifecycle beyond request creation is not persisted yet
-   * (no specialist app submits proposals), so this drives the in-interface update.
-   * @param {string} code the request reference code
+   * Loads the artifacts backing an open case: the specialist's proposal and,
+   * once the proposal is accepted, the unlocked specialist contact. Resets the
+   * previously loaded case first so stale data never leaks between cases.
+   * @param {InterventionRequest} request the request backing the case
    */
-  acceptProposal(code: string): void {
-    this.updateStatus(code, 'ACCEPTED');
+  loadCaseArtifacts(request: InterventionRequest): void {
+    this.activeProposal.set(null);
+    this.activeContact.set(null);
+
+    if (request.id == null) {
+      return;
+    }
+
+    this.setLoading('case', true);
+    this.interventionApi
+      .getProposalsByRequest(request.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('case', false)),
+      )
+      .subscribe({
+        next: (proposals) => {
+          // A request carries at most one active proposal today; prefer the
+          // accepted one, otherwise the latest submitted.
+          const proposal =
+            proposals.find((p) => p.status === 'ACCEPTED') ?? proposals[proposals.length - 1] ?? null;
+          this.activeProposal.set(proposal);
+
+          if (request.status === 'ACCEPTED' && request.specialistId != null) {
+            this.loadContact(request.specialistId, request.id!);
+          }
+        },
+        error: (error) => this.registerError(error),
+      });
   }
 
   /**
-   * Declines the current request on the backend, returning the case to specialist
-   * search, then refreshes the plot history so the status persists on reload.
+   * Fetches the specialist's contact details for an accepted case. The backend
+   * gates this to accepted requests (403 otherwise), so a failure simply leaves
+   * the contact locked.
+   * @param {number|string} specialistId
+   * @param {number|string} requestId
+   */
+  loadContact(specialistId: number | string, requestId: number | string): void {
+    this.interventionApi
+      .getSpecialistContact(specialistId, requestId)
+      .pipe(take(1))
+      .subscribe({
+        next: (contact) => this.activeContact.set(contact),
+        error: () => this.activeContact.set(null),
+      });
+  }
+
+  /**
+   * Accepts the case's proposal on the backend, moving the request to ACCEPTED and
+   * unlocking specialist contact, then refreshes the plot history and contact.
+   * @param {string} code the request reference code
+   * @param {(ok: boolean) => void} [onDone] callback with the outcome
+   */
+  acceptProposal(code: string, onDone?: (ok: boolean) => void): void {
+    const request = this.findRequestByCode(code);
+    const proposal = this.activeProposal();
+    if (!request || proposal?.id == null) {
+      onDone?.(false);
+      return;
+    }
+
+    this.interventionApi
+      .updateProposalStatus(proposal.id, 'ACCEPTED')
+      .pipe(take(1))
+      .subscribe({
+        next: (updated) => {
+          this.activeProposal.set(updated);
+          if (request.plotId != null) {
+            this.loadRequests(request.plotId);
+          }
+          if (request.specialistId != null && request.id != null) {
+            this.loadContact(request.specialistId, request.id);
+          }
+          onDone?.(true);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onDone?.(false);
+        },
+      });
+  }
+
+  /**
+   * Declines the case on the backend and refreshes the plot history so the status
+   * persists on reload. When a proposal has been received it is rejected (which
+   * moves the request to DECLINED); otherwise the pending request itself is
+   * declined. Either way the specialist search reopens.
    * @param {string} code the request reference code
    * @param {string} reason optional reason for declining
    * @param {(ok: boolean) => void} [onDone] callback with the outcome
@@ -205,14 +314,55 @@ export class InterventionStore {
       return;
     }
 
+    const proposal = this.activeProposal();
+    const decline$: Observable<unknown> =
+      proposal?.id != null
+        ? this.interventionApi.updateProposalStatus(proposal.id, 'REJECTED', reason)
+        : this.interventionApi.declineRequest(request.id, reason);
+
+    decline$.pipe(take(1)).subscribe({
+      next: () => {
+        this.activeProposal.set(null);
+        this.activeContact.set(null);
+        if (request.plotId != null) {
+          this.loadRequests(request.plotId);
+        }
+        onDone?.(true);
+      },
+      error: (error) => {
+        this.registerError(error);
+        onDone?.(false);
+      },
+    });
+  }
+
+  /**
+   * Simulates the specialist responding to a pending request (submits a proposal
+   * on their behalf), moving it to PROPOSAL_RECEIVED. Refreshes the plot history
+   * and reloads the case artifacts so the new proposal shows in-place.
+   * @param {string} code the request reference code
+   * @param {(ok: boolean) => void} [onDone] callback with the outcome
+   */
+  simulateSpecialistResponse(code: string, onDone?: (ok: boolean) => void): void {
+    const request = this.findRequestByCode(code);
+    if (!request || request.id == null) {
+      onDone?.(false);
+      return;
+    }
+
+    this.setLoading('case', true);
     this.interventionApi
-      .declineRequest(request.id, reason)
-      .pipe(take(1))
+      .simulateSpecialistResponse(request.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setLoading('case', false)),
+      )
       .subscribe({
-        next: () => {
+        next: (updated) => {
           if (request.plotId != null) {
             this.loadRequests(request.plotId);
           }
+          this.loadCaseArtifacts(updated);
           onDone?.(true);
         },
         error: (error) => {
@@ -220,28 +370,6 @@ export class InterventionStore {
           onDone?.(false);
         },
       });
-  }
-
-  private updateStatus(code: string, status: InterventionRequestStatus): void {
-    this.requests.update((requests) =>
-      requests.map((request) =>
-        request.referenceCode === code
-          ? new InterventionRequest({
-              id: request.id,
-              referenceCode: request.referenceCode,
-              growerId: request.growerId,
-              plotId: request.plotId,
-              specialistId: request.specialistId,
-              alertId: request.alertId,
-              reason: request.reason,
-              message: request.message,
-              status,
-              createdAt: request.createdAt,
-              updatedAt: new Date().toISOString(),
-            })
-          : request,
-      ),
-    );
   }
 
   /**
