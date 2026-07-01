@@ -228,10 +228,10 @@ export class CaseDetailView implements OnInit {
   protected confirmDecline(): void {
     const code = this.caseCode();
     if (code) {
-      this.store.declineProposal(code);
+      this.store.declineProposal(code, this.declineReason());
     }
     this.declineOpen.set(false);
-    this.router.navigate(['/assistance/expert-assistance']);
+    this.backToOverview();
   }
 
   // ----- Contact actions -----
@@ -246,6 +246,10 @@ export class CaseDetailView implements OnInit {
   }
 
   protected backToOverview(): void {
-    this.router.navigate(['/assistance/expert-assistance']);
+    const plotId = this.request()?.plotId ?? null;
+    this.router.navigate(
+      ['/assistance/expert-assistance'],
+      plotId != null ? { queryParams: { plot: plotId } } : {},
+    );
   }
 }

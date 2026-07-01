@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -39,6 +39,7 @@ export class ExpertAssistanceOverviewView implements OnInit {
   private readonly surveillance = inject(SurveillanceStore);
   private readonly agronomicApi = inject(AgronomicApiService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
     { label: 'Expert Assistance', disabled: true },
@@ -123,9 +124,16 @@ export class ExpertAssistanceOverviewView implements OnInit {
   private loadPlots(): void {
     this.agronomicApi.getPlots().subscribe((plots) => {
       this.plots.set(plots);
-      const first = plots.find((plot) => plot.id != null);
-      if (first && first.id != null) {
-        this.selectPlot(first.id);
+
+      // Honor a ?plot= hint (e.g. returning from a case) so the user stays on
+      // the plot they were working with; otherwise default to the first plot.
+      const requestedPlot = this.route.snapshot.queryParamMap.get('plot');
+      const target =
+        plots.find((plot) => requestedPlot != null && String(plot.id) === requestedPlot) ??
+        plots.find((plot) => plot.id != null);
+
+      if (target && target.id != null) {
+        this.selectPlot(target.id);
       }
     });
   }
