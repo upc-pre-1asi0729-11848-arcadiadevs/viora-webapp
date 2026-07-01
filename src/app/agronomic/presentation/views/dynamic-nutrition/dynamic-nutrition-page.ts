@@ -289,7 +289,10 @@ export class DynamicNutritionPage implements OnInit {
         applicationDate: this.certForm.date,
         applicationTime: this.certForm.time,
         appliedInputs: this.appliedInputNames,
-        doseConfirmation: this.certForm.dose,
+        // Backend expects the DoseConfirmation enum (AS_RECOMMENDED | ADJUSTED),
+        // not the display label — anything other than "as recommended" is ADJUSTED.
+        doseConfirmation:
+          this.certForm.dose === 'Applied as recommended' ? 'AS_RECOMMENDED' : 'ADJUSTED',
         fieldOperator: this.certForm.operator.trim(),
         fieldNotes: this.certForm.notes.trim(),
       },
