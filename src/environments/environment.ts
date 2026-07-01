@@ -28,11 +28,13 @@ export const environment = {
     iotDevices: '/iot-devices',
 
     // Intervention bounded context (Expert Assistance). Requests are a real
-    // aggregate (create/list by grower+plot); specialist candidates + metrics
-    // are backend stubs today, so the store supplements them with presentation
-    // data until the matching policy is implemented.
+    // aggregate (create/list by grower+plot). Specialist candidates now come from
+    // a real seeded catalog + matching policy; service proposals and specialist
+    // profiles/contact are real (contact is gated to accepted requests).
     interventionRequests: '/intervention-requests',
     specialistCandidates: '/specialist-candidates',
+    serviceProposals: '/service-proposals',
+    specialists: '/specialists',
   },
 
   mapbox: {
