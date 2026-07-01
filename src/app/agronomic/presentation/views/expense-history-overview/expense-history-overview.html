@@ -1,0 +1,267 @@
+<section class="expense-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    subtitle="Track climate mitigation and phytosanitary intervention costs across your plots."
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Toolbar: plot scope + register expense (no type / campaign selectors) -->
+  <div class="toolbar">
+    <label class="scope-field">
+      <mat-icon>place</mat-icon>
+      <span class="scope-label">Plot:</span>
+      <select [value]="selectedScope()" (change)="onSelectScope($any($event.target).value)">
+        <option value="all">All plots</option>
+        @for (plot of plots(); track plot.id) {
+          <option [value]="plot.id">{{ plot.name }}</option>
+        }
+      </select>
+    </label>
+
+    <button mat-flat-button type="button" class="primary-button" (click)="openRegister()">
+      <mat-icon>add</mat-icon> Register expense
+    </button>
+  </div>
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Total expenses</h2>
+        <span class="kpi-pill kpi-pill--green">Current campaign</span>
+      </div>
+      <span class="kpi-value kpi-value--primary">{{ ExpenseEntity.formatMoney(store.totalExpenses()) }}</span>
+      <p class="kpi-foot">Recorded during the current campaign.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Climate mitigation</h2>
+      </div>
+      <span class="kpi-value kpi-value--blue">{{ ExpenseEntity.formatMoney(store.climateTotal()) }}</span>
+      <p class="kpi-foot">Nutrition and corrective actions linked to phenological risk.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Pest intervention</h2>
+      </div>
+      <span class="kpi-value kpi-value--amber">{{ ExpenseEntity.formatMoney(store.pestTotal()) }}</span>
+      <p class="kpi-foot">Treatment-related costs linked to phytosanitary alerts.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card kpi-card--danger">
+      <div class="kpi-head">
+        <h2>Pending records</h2>
+        @if (store.pendingRecords() > 0) {
+          <span class="kpi-pill kpi-pill--danger">Action required</span>
+        }
+      </div>
+      <span class="kpi-value kpi-value--red">{{ store.pendingRecords() }}</span>
+      <p class="kpi-foot">Certified actions without registered expense yet.</p>
+    </mat-card>
+  </section>
+
+  <!-- Expense records -->
+  <mat-card class="section-card">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title"><mat-icon class="title-icon">description</mat-icon> Expense records</h2>
+        <p class="section-subtitle">
+          Registered costs for {{ scopeLabel() }}, linked to mitigation and intervention actions.
+        </p>
+      </div>
+      <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="exportCsv()">
+        <mat-icon>download</mat-icon> Export
+      </button>
+    </div>
+
+    <div class="records-table">
+      <div class="records-header">
+        <span>Date</span>
+        <span>Plot</span>
+        <span>Type</span>
+        <span>Linked action</span>
+        <span>Category</span>
+        <span>Amount</span>
+        <span>Status</span>
+      </div>
+
+      @if (store.loading().expenses && store.expenses().length === 0) {
+        <div class="records-state">Loading expenses…</div>
+      } @else if (store.expenses().length === 0) {
+        <div class="records-state">No expenses registered for this scope yet.</div>
+      } @else {
+        @for (expense of store.expenses(); track expense.id) {
+          <div class="records-row">
+            <span>{{ expense.dateLabel }}</span>
+            <span>{{ plotName(expense.plotId) }}</span>
+            <span><span class="pill" [class]="expense.typeClass">{{ expense.typeTag }}</span></span>
+            <span class="linked-action">{{ expense.linkedActionCode || '—' }}</span>
+            <span>{{ expense.categoryLabel }}</span>
+            <span class="amount">{{ expense.amountLabel }}</span>
+            <span><span class="pill" [class]="expense.statusClass">{{ expense.statusLabel }}</span></span>
+          </div>
+        }
+      }
+    </div>
+  </mat-card>
+
+  <!-- Bottom grid: financial impact + expense by plot -->
+  <div class="bottom-grid">
+    <mat-card class="section-card">
+      <h2 class="section-title">Financial impact summary</h2>
+
+      <div class="impact-rows">
+        <div class="impact-row">
+          <span class="impact-label"><mat-icon>receipt_long</mat-icon> Campaign expense</span>
+          <strong>{{ ExpenseEntity.formatMoney(store.totalExpenses()) }}</strong>
+        </div>
+        <div class="impact-row">
+          <span class="impact-label"><mat-icon>trending_up</mat-icon> Highest cost driver</span>
+          @if (store.highestCostDriver()) {
+            <span class="pill" [class]="store.highestCostDriver() === 'PEST_INTERVENTION' ? 'type-pest' : 'type-climate'">
+              {{ store.highestCostDriverLabel() }}
+            </span>
+          } @else {
+            <strong>—</strong>
+          }
+        </div>
+        <div class="impact-row">
+          <span class="impact-label"><mat-icon>location_on</mat-icon> Most affected plot</span>
+          <strong>{{ mostAffectedPlotName() }}</strong>
+        </div>
+        <div class="impact-row">
+          <span class="impact-label"><mat-icon>bar_chart</mat-icon> Registered records</span>
+          <strong>{{ store.expenseCount() }}</strong>
+        </div>
+      </div>
+
+      <div class="impact-note">
+        <mat-icon>info</mat-icon>
+        <span>{{ impactNote() }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="section-card">
+      <div class="section-head">
+        <h2 class="section-title">Expense by plot</h2>
+        <span class="kpi-pill kpi-pill--muted">{{ expensesByPlot().length }} {{ expensesByPlot().length === 1 ? 'plot' : 'plots' }}</span>
+      </div>
+
+      @if (expensesByPlot().length === 0) {
+        <div class="records-state">No expenses to break down yet.</div>
+      } @else {
+        <div class="plot-list">
+          @for (group of expensesByPlot(); track group.plotId) {
+            <div class="plot-row">
+              <div class="plot-row-head">
+                <div class="plot-identity">
+                  <span class="plot-name">{{ group.name }}</span>
+                  <span class="plot-caption">{{ group.caption }}</span>
+                </div>
+                <strong class="plot-total">{{ group.totalLabel }}</strong>
+              </div>
+              <div class="plot-bar">
+                <span class="plot-bar-fill" [class]="group.barClass" [style.width.%]="group.barWidth"></span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </mat-card>
+  </div>
+</section>
+
+<!-- Register expense modal -->
+@if (modalOpen()) {
+  <div class="modal-overlay" (click)="closeRegister()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Register expense</h2>
+          <p class="modal-subtitle">Record a mitigation or intervention cost and link it to a plot action.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeRegister()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="modal-grid">
+        <label class="field">
+          <span>Expense type</span>
+          <select [value]="formType()" (change)="formType.set($any($event.target).value)">
+            <option value="CLIMATE_MITIGATION">Climate mitigation</option>
+            <option value="PEST_INTERVENTION">Pest intervention</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Linked plot</span>
+          <select [value]="formPlotId()" (change)="formPlotId.set($any($event.target).value)">
+            @for (plot of plots(); track plot.id) {
+              <option [value]="plot.id">{{ plot.name }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Linked action</span>
+        <input
+          type="text"
+          placeholder="e.g. DN-042, INT-011 (optional)"
+          [value]="formLinkedAction()"
+          (input)="formLinkedAction.set($any($event.target).value)" />
+      </label>
+
+      <div class="modal-grid">
+        <label class="field">
+          <span>Category</span>
+          <select [value]="formCategory()" (change)="formCategory.set($any($event.target).value)">
+            <option value="INPUTS">Inputs</option>
+            <option value="LABOR">Labor</option>
+            <option value="SPECIALIST">Specialist</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Amount (S/)</span>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            [value]="formAmount()"
+            (input)="setAmount($any($event.target).value)" />
+        </label>
+      </div>
+
+      <div class="modal-grid">
+        <label class="field">
+          <span>Date</span>
+          <input type="date" [value]="formDate()" (input)="formDate.set($any($event.target).value)" />
+        </label>
+        <label class="field">
+          <span>Payment status</span>
+          <select [value]="formPayment()" (change)="formPayment.set($any($event.target).value)">
+            <option value="PAID">Paid</option>
+            <option value="PENDING">Pending</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Note (optional)</span>
+        <textarea
+          rows="3"
+          placeholder="Add a short description of the expense, supplier, or field context…"
+          [value]="formNote()"
+          (input)="formNote.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeRegister()">Cancel</button>
+        <button mat-flat-button type="button" class="primary-button" [disabled]="!canSave" (click)="saveExpense()">
+          <mat-icon>save</mat-icon> {{ store.loading().submitting ? 'Saving…' : 'Save expense' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
