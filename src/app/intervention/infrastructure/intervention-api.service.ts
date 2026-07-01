@@ -61,6 +61,18 @@ export class InterventionApiService extends BaseApi {
   }
 
   /**
+   * Declines an intervention request, returning the case to specialist search.
+   * @param {number|string} id - Request identifier.
+   * @param {string} reason - Optional reason for declining.
+   * @returns {Observable<InterventionRequest>}
+   */
+  declineRequest(id: number | string, reason: string): Observable<InterventionRequest> {
+    return this.http
+      .patch<InterventionRequestResource>(this.requestsEndpoint.resourceUrl(id), { reason })
+      .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
+  }
+
+  /**
    * Sends a formal intervention request to a specialist, linked to the plot's
    * active alert. The grower is the active producer. Errors are not swallowed so
    * the modal can surface them.

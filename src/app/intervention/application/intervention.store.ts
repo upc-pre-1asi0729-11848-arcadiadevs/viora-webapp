@@ -67,51 +67,6 @@ const PRESENTATION_SPECIALISTS: SpecialistCandidate[] = [
   }),
 ];
 
-/** Minutes-ago ISO helper for recent presentation timestamps. */
-const minutesAgo = (minutes: number): string =>
-  new Date(Date.now() - minutes * 60000).toISOString();
-
-/**
- * Presentation dataset of the producer's requests for the selected plot, matching
- * the Expert Assistance design. Used until the real `GET /intervention-requests`
- * endpoint is deployed; real requests replace it once the endpoint returns data.
- */
-const PRESENTATION_REQUESTS: InterventionRequest[] = [
-  new InterventionRequest({
-    id: 24,
-    referenceCode: 'REQ-024',
-    plotId: 1,
-    specialistId: 890,
-    alertId: 1,
-    reason: 'Possible Xylella-related pattern detected from symptom report and NDVI variation.',
-    status: 'AWAITING_RESPONSE',
-    createdAt: minutesAgo(45),
-    updatedAt: minutesAgo(10),
-  }),
-  new InterventionRequest({
-    id: 21,
-    referenceCode: 'REQ-021',
-    plotId: 1,
-    specialistId: 891,
-    alertId: 2,
-    reason: 'Leaf symptoms observed on the south block; requesting field inspection.',
-    status: 'PROPOSAL_RECEIVED',
-    createdAt: '2026-05-03T15:00:00Z',
-    updatedAt: '2026-05-04T19:30:00Z',
-  }),
-  new InterventionRequest({
-    id: 18,
-    referenceCode: 'REQ-018',
-    plotId: 1,
-    specialistId: 892,
-    alertId: 3,
-    reason: 'Requesting a second opinion on olive disease assessment.',
-    status: 'DECLINED',
-    createdAt: '2026-04-29T14:00:00Z',
-    updatedAt: '2026-04-29T16:20:00Z',
-  }),
-];
-
 @Injectable({
   providedIn: 'root',
 })
@@ -120,8 +75,8 @@ export class InterventionStore {
 
   /** Recommended specialists for the selected plot's active alert. */
   readonly specialists = signal<SpecialistCandidate[]>(PRESENTATION_SPECIALISTS);
-  /** The producer's intervention requests for the selected plot. */
-  readonly requests = signal<InterventionRequest[]>(PRESENTATION_REQUESTS);
+  /** The producer's intervention requests for the selected plot (from the backend). */
+  readonly requests = signal<InterventionRequest[]>([]);
   /** Whether the request history has loaded from the real backend at least once. */
   readonly requestsLoaded = signal<boolean>(false);
 
@@ -213,9 +168,7 @@ export class InterventionStore {
       )
       .subscribe({
         next: (requests) => {
-          if (requests.length > 0) {
-            this.requests.set(requests);
-          }
+          this.requests.set(requests);
           this.requestsLoaded.set(true);
           this.lastSyncedAt.set(Date.now());
         },
@@ -239,12 +192,34 @@ export class InterventionStore {
   }
 
   /**
-   * Declines the current proposal, returning the case to specialist search. Applied
-   * locally for now; see {@link acceptProposal}.
+   * Declines the current request on the backend, returning the case to specialist
+   * search, then refreshes the plot history so the status persists on reload.
    * @param {string} code the request reference code
+   * @param {string} reason optional reason for declining
+   * @param {(ok: boolean) => void} [onDone] callback with the outcome
    */
-  declineProposal(code: string): void {
-    this.updateStatus(code, 'DECLINED');
+  declineProposal(code: string, reason: string, onDone?: (ok: boolean) => void): void {
+    const request = this.findRequestByCode(code);
+    if (!request || request.id == null) {
+      onDone?.(false);
+      return;
+    }
+
+    this.interventionApi
+      .declineRequest(request.id, reason)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          if (request.plotId != null) {
+            this.loadRequests(request.plotId);
+          }
+          onDone?.(true);
+        },
+        error: (error) => {
+          this.registerError(error);
+          onDone?.(false);
+        },
+      });
   }
 
   private updateStatus(code: string, status: InterventionRequestStatus): void {
