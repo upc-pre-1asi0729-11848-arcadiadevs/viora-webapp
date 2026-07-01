@@ -170,6 +170,12 @@ export class DynamicNutritionPage implements OnInit {
     }
   }
 
+  /** Signed, 1-decimal temperature anomaly label (avoids float noise like 5.1999…). */
+  protected formatAnomaly(value: number | null | undefined): string {
+    const rounded = Math.round((value ?? 0) * 10) / 10;
+    return `${rounded > 0 ? '+' : ''}${rounded}`;
+  }
+
   // ----- Queries -----
 
   protected readonly plan = computed<DynamicNutritionPlan | null>(() =>

@@ -168,7 +168,7 @@
 
         <div class="kv">
           <span><mat-icon class="inline">device_thermostat</mat-icon> {{ 'dynamicNutrition.rationale.anomaly' | translate }}</span>
-          <strong class="accent-orange">{{ (p.rationale?.temperatureAnomaly ?? 0) > 0 ? '+' : '' }}{{ p.rationale?.temperatureAnomaly ?? 0 }}°C</strong>
+          <strong class="accent-orange">{{ formatAnomaly(p.rationale?.temperatureAnomaly) }}°C</strong>
         </div>
 
         <div class="kv">
