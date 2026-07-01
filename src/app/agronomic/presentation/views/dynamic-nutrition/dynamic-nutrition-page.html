@@ -227,21 +227,28 @@
         </div>
         <div class="exec-tile">
           <span class="muted">{{ 'dynamicNutrition.exec.requiredCertification' | translate }}</span>
-          <span class="dot-pending">{{ 'dynamicNutrition.exec.dateAndInputs' | translate }}</span>
+          <span class="dot-{{ p.isCertified ? 'ok' : 'pending' }}">{{ 'dynamicNutrition.exec.dateAndInputs' | translate }}</span>
         </div>
         <div class="exec-tile">
           <span class="muted">{{ 'dynamicNutrition.exec.expenseDeclaration' | translate }}</span>
-          <span class="dot-{{ savedExpenseTotal() != null ? 'ok' : 'pending' }}">
-            {{ savedExpenseTotal() != null ? ('dynamicNutrition.exec.declared' | translate) : ('dynamicNutrition.exec.pending' | translate) }}
+          <span class="dot-{{ hasMitigationExpense() ? 'ok' : 'pending' }}">
+            {{ hasMitigationExpense() ? ('dynamicNutrition.exec.declared' | translate) : ('dynamicNutrition.exec.pending' | translate) }}
           </span>
         </div>
       </div>
 
+      @if (executionClosed()) {
+        <div class="note">
+          <mat-icon class="inline">check_circle</mat-icon>
+          Nutrition intervention closed — application certified and cost declared. It stays the plot's active plan until a new alert supersedes it.
+        </div>
+      }
+
       <div class="exec-actions">
-        <button mat-stroked-button class="ghost-button wide" (click)="openCertify()">
+        <button mat-stroked-button class="ghost-button wide" [disabled]="p.isCertified" (click)="openCertify()">
           <mat-icon>verified</mat-icon> {{ 'dynamicNutrition.certify' | translate }}
         </button>
-        <button mat-stroked-button class="ghost-button wide" (click)="openExpense()">
+        <button mat-stroked-button class="ghost-button wide" [disabled]="hasMitigationExpense()" (click)="openExpense()">
           <mat-icon>save</mat-icon> {{ 'dynamicNutrition.registerExpense' | translate }}
         </button>
       </div>

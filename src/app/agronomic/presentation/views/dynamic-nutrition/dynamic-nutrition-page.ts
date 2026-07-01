@@ -80,6 +80,16 @@ export class DynamicNutritionPage implements OnInit {
 
   /** True while the mitigation-expense declaration is being persisted. */
   protected readonly expenseSaving = signal<boolean>(false);
+  /** Whether the current plan already has a mitigation expense registered. */
+  protected readonly hasMitigationExpense = signal<boolean>(false);
+  /**
+   * The nutrition intervention is "closed" once its plan is both certified in
+   * field and financially declared. The plan itself stays ACTIVE by design (it
+   * remains the plot's current plan and can be superseded by a new alert).
+   */
+  protected readonly executionClosed = computed<boolean>(
+    () => (this.plan()?.isCertified ?? false) && this.hasMitigationExpense(),
+  );
 
   protected readonly selectedPlotId = signal<string | null>(null);
 
@@ -127,6 +137,30 @@ export class DynamicNutritionPage implements OnInit {
         this.store.ensurePlotSummary(id);
         this.savedExpenseTotal.set(null);
       });
+    });
+
+    // Reflect whether the loaded plan already carries a declared mitigation
+    // expense (so the "closed" state survives reloads, not just this session).
+    effect(() => {
+      const plan = this.plan();
+      if (plan?.plotId != null) {
+        const plotId = plan.plotId;
+        const planCode = plan.planCode;
+        untracked(() => this.refreshPlanExpenses(plotId, planCode));
+      } else {
+        this.hasMitigationExpense.set(false);
+      }
+    });
+  }
+
+  /** Loads the plot's expenses and flags whether one is linked to this plan. */
+  private refreshPlanExpenses(plotId: number | string, planCode: string): void {
+    this.expenseApi.getExpenses(plotId).subscribe({
+      next: (expenses) =>
+        this.hasMitigationExpense.set(
+          expenses.some((expense) => expense.linkedActionCode === planCode),
+        ),
+      error: () => this.hasMitigationExpense.set(false),
     });
   }
 
@@ -383,6 +417,8 @@ export class DynamicNutritionPage implements OnInit {
       .subscribe({
         next: () => {
           this.savedExpenseTotal.set(declaredTotal);
+          this.hasMitigationExpense.set(true);
+          this.refreshPlanExpenses(plan.plotId!, plan.planCode);
           this.closeExpense();
         },
       });
