@@ -2,38 +2,60 @@ import { SpecialistAvailability, SpecialistCandidate } from '../domain/model/spe
 
 /**
  * Backend resource shape for `GET /specialist-candidates`. The matching policy
- * is a stub today, so several presentation concepts (role, best-match flag,
- * granular availability) are not yet provided and are defaulted on mapping.
+ * now ranks a real seeded specialist catalog, so it carries the producer-facing
+ * `role` and a granular `availability` enum (plus a convenience `available` flag).
  */
 export interface SpecialistCandidateResource {
   id: number | null;
   name: string | null;
+  role: string | null;
   successRate: number | null;
   caseCount: number | null;
   distanceKm: number | null;
-  experience: string | null;
   tags: string[] | null;
+  availability: string | null;
   available: boolean | null;
 }
 
-export class SpecialistCandidateAssembler {
-  static toEntityFromResource(resource: SpecialistCandidateResource): SpecialistCandidate {
-    const availability: SpecialistAvailability = resource.available ? 'today' : 'unavailable';
+/** Maps the backend availability enum to the local presentation availability. */
+function toAvailability(resource: SpecialistCandidateResource): SpecialistAvailability {
+  switch ((resource.availability ?? '').toUpperCase()) {
+    case 'AVAILABLE_TODAY':
+      return 'today';
+    case 'AVAILABLE_TOMORROW':
+      return 'tomorrow';
+    case 'AVAILABLE_THIS_WEEK':
+      return 'week';
+    case 'UNAVAILABLE':
+      return 'unavailable';
+    default:
+      return resource.available ? 'today' : 'unavailable';
+  }
+}
 
+export class SpecialistCandidateAssembler {
+  static toEntityFromResource(
+    resource: SpecialistCandidateResource,
+    bestMatch = false,
+  ): SpecialistCandidate {
     return new SpecialistCandidate({
       id: resource.id ?? null,
       name: resource.name ?? '',
-      role: 'Phytosanitary specialist',
+      role: resource.role ?? 'Phytosanitary specialist',
       successRate: resource.successRate ?? 0,
       caseCount: resource.caseCount ?? 0,
       distanceKm: resource.distanceKm ?? 0,
       tags: resource.tags ?? [],
-      availability,
-      bestMatch: false,
+      availability: toAvailability(resource),
+      bestMatch,
     });
   }
 
   static toEntitiesFromResources(resources: SpecialistCandidateResource[]): SpecialistCandidate[] {
-    return resources.map((resource) => SpecialistCandidateAssembler.toEntityFromResource(resource));
+    // The backend returns candidates already ranked (availability, then success
+    // rate, then distance), so the first entry is the best match.
+    return resources.map((resource, index) =>
+      SpecialistCandidateAssembler.toEntityFromResource(resource, index === 0),
+    );
   }
 }
