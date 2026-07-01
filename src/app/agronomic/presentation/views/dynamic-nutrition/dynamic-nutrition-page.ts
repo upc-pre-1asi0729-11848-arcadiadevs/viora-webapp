@@ -14,8 +14,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
+import { finalize, forkJoin } from 'rxjs';
 
 import { AgronomicStore } from '../../../application/agronomic.store';
+import { ExpenseApiService } from '../../../infrastructure/expense-api.service';
+import { CreateExpenseRequest } from '../../../infrastructure/expense-response';
+import { ExpenseCategory } from '../../../domain/model/expense.entity';
 import { Plot } from '../../../domain/model/plot.entity';
 import { MonitoringSummary } from '../../../domain/model/monitoring-summary.entity';
 import { ChillHourRecord } from '../../../domain/model/chill-hour-record.entity';
@@ -72,6 +76,10 @@ interface ExpenseForm {
 export class DynamicNutritionPage implements OnInit {
   private readonly router = inject(Router);
   protected readonly store = inject(AgronomicStore);
+  private readonly expenseApi = inject(ExpenseApiService);
+
+  /** True while the mitigation-expense declaration is being persisted. */
+  protected readonly expenseSaving = signal<boolean>(false);
 
   protected readonly selectedPlotId = signal<string | null>(null);
 
@@ -324,17 +332,57 @@ export class DynamicNutritionPage implements OnInit {
   }
 
   protected get canSaveExpense(): boolean {
-    return this.expenseTotal > 0;
+    return this.expenseTotal > 0 && !this.expenseSaving();
   }
 
+  /**
+   * Persists the mitigation-expense declaration as real Expense records linked to
+   * this nutrition plan (one per non-zero cost line), so it feeds Expense History.
+   * Input → INPUTS, Labor → LABOR, Equipment → EQUIPMENT; all CLIMATE_MITIGATION.
+   */
   protected submitExpense(): void {
-    if (!this.canSaveExpense) {
+    const plan = this.plan();
+    if (!plan || plan.plotId == null || !this.canSaveExpense) {
       return;
     }
-    // No backend endpoint yet: record the declaration locally so the execution
-    // card reflects it. Ready to swap for a POST when the finance API exists.
-    this.savedExpenseTotal.set(this.expenseTotal);
-    this.closeExpense();
+
+    const receipt = this.expenseForm.code?.trim();
+    const note = this.expenseForm.notes?.trim() || (receipt ? `Receipt: ${receipt}` : undefined);
+
+    const base: Omit<CreateExpenseRequest, 'growerId' | 'category' | 'amount'> = {
+      plotId: plan.plotId,
+      type: 'CLIMATE_MITIGATION',
+      currency: 'PEN',
+      expenseDate: new Date().toISOString().slice(0, 10),
+      paymentStatus: 'PAID',
+      linkedActionCode: plan.planCode,
+      note,
+    };
+
+    const lines: { category: ExpenseCategory; amount: number | null }[] = [
+      { category: 'INPUTS', amount: this.expenseForm.input },
+      { category: 'LABOR', amount: this.expenseForm.labor },
+      { category: 'EQUIPMENT', amount: this.expenseForm.equipment },
+    ];
+
+    const requests = lines
+      .filter((line) => (line.amount ?? 0) > 0)
+      .map((line) => this.expenseApi.createExpense({ ...base, category: line.category, amount: line.amount! }));
+
+    if (requests.length === 0) {
+      return;
+    }
+
+    const declaredTotal = this.expenseTotal;
+    this.expenseSaving.set(true);
+    forkJoin(requests)
+      .pipe(finalize(() => this.expenseSaving.set(false)))
+      .subscribe({
+        next: () => {
+          this.savedExpenseTotal.set(declaredTotal);
+          this.closeExpense();
+        },
+      });
   }
 
   // ----- Formatting helpers -----
