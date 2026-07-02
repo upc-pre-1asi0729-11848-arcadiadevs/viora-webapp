@@ -36,6 +36,13 @@ export const environment = {
     serviceProposals: '/service-proposals',
     specialists: '/specialists',
 
+    // Interventions (technical-service lifecycle): composed overview + the
+    // prescription/execution/outcome action endpoints.
+    interventions: '/interventions',
+    treatmentPrescriptions: '/treatment-prescriptions',
+    interventionExecutions: '/intervention-executions',
+    interventionOutcomes: '/intervention-outcomes',
+
     // Billing bounded context (Subscription, Billing & Referral): operational
     // expenses the producer registers against their plots.
     expenses: '/expenses',
