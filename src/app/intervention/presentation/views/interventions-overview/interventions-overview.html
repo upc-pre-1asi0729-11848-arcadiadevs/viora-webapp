@@ -23,30 +23,30 @@
   <section class="kpi-grid">
     <mat-card class="kpi-card">
       <div class="kpi-head"><h2>Total interventions</h2></div>
-      <span class="kpi-value kpi-value--primary">{{ store.interventions().length }}</span>
+      <span class="kpi-value kpi-value--primary">{{ totalCount() }}</span>
       <p class="kpi-foot">Accepted cases in the technical-service lifecycle.</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
         <h2>Pending certification</h2>
-        @if (store.pendingCertificationCount() > 0) {
+        @if (pendingCertificationCount() > 0) {
           <span class="kpi-pill kpi-pill--danger">Action required</span>
         }
       </div>
-      <span class="kpi-value kpi-value--red">{{ store.pendingCertificationCount() }}</span>
+      <span class="kpi-value kpi-value--red">{{ pendingCertificationCount() }}</span>
       <p class="kpi-foot">Prescriptions waiting for field application confirmation.</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head"><h2>Recovery monitoring</h2></div>
-      <span class="kpi-value kpi-value--blue">{{ store.recoveryMonitoringCount() }}</span>
+      <span class="kpi-value kpi-value--blue">{{ recoveryMonitoringCount() }}</span>
       <p class="kpi-foot">Post-intervention vigor under observation.</p>
     </mat-card>
 
     <mat-card class="kpi-card kpi-card--amber">
       <div class="kpi-head"><h2>Closure pending</h2></div>
-      <span class="kpi-value kpi-value--amber">{{ store.closurePendingCount() }}</span>
+      <span class="kpi-value kpi-value--amber">{{ closurePendingCount() }}</span>
       <p class="kpi-foot">Cases ready for service evaluation and closure.</p>
     </mat-card>
   </section>

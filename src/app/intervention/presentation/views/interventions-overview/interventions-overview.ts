@@ -77,6 +77,18 @@ export class InterventionsOverviewView implements OnInit {
       .filter((item) => String(item.plotId) === String(this.selectedScope()));
   });
 
+  // KPIs are scoped to the plot filter (consistent with the records table).
+  protected readonly totalCount = computed<number>(() => this.visibleInterventions().length);
+  protected readonly pendingCertificationCount = computed<number>(
+    () => this.visibleInterventions().filter((item) => item.needsCertification).length,
+  );
+  protected readonly recoveryMonitoringCount = computed<number>(
+    () => this.visibleInterventions().filter((item) => item.inRecovery).length,
+  );
+  protected readonly closurePendingCount = computed<number>(
+    () => this.visibleInterventions().filter((item) => item.readyToClose).length,
+  );
+
   protected readonly selected = computed<Intervention | null>(() => this.store.selected());
 
   protected readonly linkedAlert = computed<Alert | null>(() => {
