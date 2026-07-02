@@ -105,6 +105,11 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'interventions',
+    redirectTo: 'assistance/interventions',
+    pathMatch: 'full',
+  },
+  {
     path: 'expert-assistance/request',
     redirectTo: 'assistance/expert-assistance/request',
     pathMatch: 'full',

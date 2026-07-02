@@ -133,6 +133,13 @@
                 <button mat-flat-button type="button" class="primary-button" (click)="runAction(alert)">
                   {{ actionFor(alert).label }}
                 </button>
+                @if (isOpenAlert(alert)) {
+                  <span class="cell-action-secondary">
+                    <button type="button" class="link-action" (click)="resolveAlert(alert)">Resolve</button>
+                    <span class="link-sep">·</span>
+                    <button type="button" class="link-action link-action--muted" (click)="dismissAlert(alert)">Dismiss</button>
+                  </span>
+                }
               </span>
             </div>
           }

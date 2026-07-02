@@ -31,6 +31,7 @@ export class AlertAssembler extends BaseAssembler {
         .map((source) => this.toSource(source))
         .filter((source): source is AlertSource => source !== null),
       plotId: resource?.plotId ?? null,
+      reportId: resource?.reportId ?? null,
       plot: {
         name: resource?.plot?.name ?? '',
         location: resource?.plot?.location ?? '',

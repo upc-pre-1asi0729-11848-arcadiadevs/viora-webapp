@@ -64,6 +64,34 @@ export class SurveillanceApiService extends BaseApi {
   }
 
   /**
+   * Resolves an alert (threat addressed — producer self-service or triggered by a
+   * closed intervention). Backend status RESOLVED.
+   * @param {number|string} id - Alert identifier.
+   * @returns {Observable<void>}
+   */
+  resolveAlert(id: number | string): Observable<void> {
+    const body: UpdateAlertRequest = { status: 'RESOLVED' };
+
+    return this.http
+      .patch<AlertResource>(this.alertsEndpoint.resourceUrl(id), body)
+      .pipe(map(() => undefined));
+  }
+
+  /**
+   * Dismisses an alert (producer ruled it out as a false alarm). Backend status
+   * DISMISSED.
+   * @param {number|string} id - Alert identifier.
+   * @returns {Observable<void>}
+   */
+  dismissAlert(id: number | string): Observable<void> {
+    const body: UpdateAlertRequest = { status: 'DISMISSED' };
+
+    return this.http
+      .patch<AlertResource>(this.alertsEndpoint.resourceUrl(id), body)
+      .pipe(map(() => undefined));
+  }
+
+  /**
    * Fetches the anonymized community-risk snapshot around a plot.
    * @param {number|string} plotId - Reference plot identifier.
    * @param {number} radiusKm - Monitoring radius in kilometers.

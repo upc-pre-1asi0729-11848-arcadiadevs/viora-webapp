@@ -39,6 +39,7 @@ export interface AlertProperties {
   status?: AlertStatus;
   sources?: AlertSource[];
   plotId?: number | null;
+  reportId?: number | null;
   plot?: AlertPlotInfo;
 }
 
@@ -68,6 +69,8 @@ export class Alert {
   readonly status: AlertStatus;
   readonly sources: AlertSource[];
   readonly plotId: number | null;
+  /** The symptom report that originated this alert (null for autonomous alerts). */
+  readonly reportId: number | null;
   readonly plot: AlertPlotInfo;
 
   /**
@@ -90,6 +93,7 @@ export class Alert {
     status = 'Pending',
     sources = [],
     plotId = null,
+    reportId = null,
     plot = {
       name: '',
       location: '',
@@ -104,6 +108,7 @@ export class Alert {
     this.status = status;
     this.sources = sources;
     this.plotId = plotId;
+    this.reportId = reportId;
     this.plot = plot;
   }
 

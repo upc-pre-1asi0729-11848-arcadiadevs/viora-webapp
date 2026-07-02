@@ -120,7 +120,12 @@ export class PestSurveillanceOverviewView implements OnInit {
     return (plot?.polygonCoordinates ?? []) as LngLat[];
   });
 
-  /** Markers placed on the plot map, honoring the active source filter. */
+  /**
+   * Markers placed on the plot map, honoring the active source filter. Only
+   * reports that still represent active risk are shown as signals — a confirmed
+   * report whose alert has been resolved/dismissed (or an archived report) is no
+   * longer an active signal.
+   */
   protected readonly mapMarkers = computed<SurveillanceMapMarker[]>(() => {
     const filter = this.mapFilter();
 
@@ -129,12 +134,16 @@ export class PestSurveillanceOverviewView implements OnInit {
       return [];
     }
 
-    return this.reportsForSelectedPlot().map((report) => ({
-      id: report.code,
-      title: `Manual report · ${report.symptomsLabel || 'symptoms'} · ${report.observedSeverity}`,
-      severity: report.observedSeverity,
-      riskZone: report.riskZone,
-    }));
+    const plotId = this.selectedPlotId();
+    return this.store
+      .activeConfirmedReports()
+      .filter((report) => String(report.plotId) === String(plotId))
+      .map((report) => ({
+        id: report.code,
+        title: `Manual report · ${report.symptomsLabel || 'symptoms'} · ${report.observedSeverity}`,
+        severity: report.observedSeverity,
+        riskZone: report.riskZone,
+      }));
   });
 
   protected readonly activeSignalsCount = computed<number>(() => this.mapMarkers().length);
@@ -168,11 +177,14 @@ export class PestSurveillanceOverviewView implements OnInit {
   ngOnInit(): void {
     this.store.loadPestReports();
     this.store.loadSymptoms();
+    // Active signals depend on which reports still have an OPEN alert.
+    this.store.fetchAlerts(50);
     this.loadPlots();
   }
 
   protected refresh(): void {
     this.store.loadPestReports();
+    this.store.fetchAlerts(50);
     const plotId = this.selectedPlotId();
     if (plotId != null) {
       this.store.loadCommunityRisk(plotId, 5);
@@ -187,6 +199,7 @@ export class PestSurveillanceOverviewView implements OnInit {
       if (first && first.id != null) {
         this.selectedPlotId.set(first.id);
         this.formPlotId.set(first.id);
+        this.store.pestScopePlotId.set(first.id);
         this.store.loadCommunityRisk(first.id, 5);
       }
     });
@@ -194,6 +207,7 @@ export class PestSurveillanceOverviewView implements OnInit {
 
   protected onSelectPlot(plotId: number | string): void {
     this.selectedPlotId.set(plotId);
+    this.store.pestScopePlotId.set(plotId);
     this.store.loadCommunityRisk(plotId, 5);
   }
 

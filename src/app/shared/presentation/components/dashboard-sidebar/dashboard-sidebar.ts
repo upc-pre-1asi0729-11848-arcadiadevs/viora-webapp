@@ -63,6 +63,11 @@ export class DashboardSidebar {
       route: '/agronomic/expense-history',
       iconPath: '/assets/icons/dashboard/sync-outline.svg',
     },
+    {
+      labelKey: 'sidebar.interventions',
+      route: '/assistance/interventions',
+      iconPath: '/assets/icons/dashboard/construct-outline.svg',
+    },
   ];
 
   protected readonly secondaryItems: SidebarItem[] = [
