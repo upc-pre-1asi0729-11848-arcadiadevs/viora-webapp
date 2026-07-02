@@ -187,7 +187,10 @@
             Refer a friend and earn a {{ billing.referralCode().rewardPercent || 20 }}% discount coupon.
           </h3>
 
-          <div class="referral-illustration"><mat-icon>redeem</mat-icon></div>
+          <img
+            class="referral-illustration"
+            src="/assets/images/general/referrals-image.png"
+            alt="Refer a friend to Viora" />
 
           <button type="button" class="referral-code-ticket" (click)="copyReferralCode()">
             <span class="ticket-label">Your referral code</span>

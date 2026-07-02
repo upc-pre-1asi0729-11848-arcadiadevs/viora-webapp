@@ -500,19 +500,10 @@
 }
 
 .referral-illustration {
-  display: grid;
-  place-items: center;
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: #f0ebe3;
-  color: #2e4a3a;
-}
-
-.referral-illustration mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  object-fit: contain;
 }
 
 .referral-code-ticket {
