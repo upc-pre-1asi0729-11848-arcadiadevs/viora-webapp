@@ -173,10 +173,46 @@ export class SurveillanceStore {
 
   // ---- Pest Surveillance derivations ----
 
+  /**
+   * Plot the Pest Surveillance KPIs (risk, probable threat, active signals) are
+   * scoped to. Null = all plots (e.g. dashboard). Set by the pest overview so the
+   * cards reflect only the selected plot, consistent with the map and community
+   * exposure.
+   */
+  readonly pestScopePlotId = signal<number | string | null>(null);
+
   /** Reports whose evaluation confirmed an alert. */
   readonly confirmedReports = computed<PestReport[]>(() =>
     this.pestReports().filter((report) => report.result === 'Alert confirmed'),
   );
+
+  /**
+   * Confirmed reports that still represent active risk — used by the Pest
+   * Surveillance KPIs so they track the alert lifecycle. A report is active when
+   * its originating alert is still open. Linking prefers the strong `reportId`
+   * link; when the alert predates that link (legacy `reportId == null`) it falls
+   * back to "is there an open alert on the same plot". Resolved/dismissed alerts
+   * therefore drop their report out of the active set.
+   */
+  readonly activeConfirmedReports = computed<PestReport[]>(() => {
+    const allAlerts = this.alerts();
+    const scope = this.pestScopePlotId();
+    return this.confirmedReports().filter((report) => {
+      if (scope != null && String(report.plotId) !== String(scope)) {
+        return false;
+      }
+      const linked = allAlerts.filter(
+        (alert) => alert.reportId != null && String(alert.reportId) === String(report.id),
+      );
+      if (linked.length > 0) {
+        return linked.some((alert) => OPEN_STATUSES.has(alert.status));
+      }
+      // Legacy/unlinked alert: fall back to an open alert on the same plot.
+      return this.openAlerts().some(
+        (alert) => report.plotId != null && String(alert.plotId) === String(report.plotId),
+      );
+    });
+  });
 
   /** Community exposure: number of anonymized nearby signals. */
   readonly communityExposureCount = computed<number>(() => this.communityRisk().signals.length);
@@ -191,7 +227,7 @@ export class SurveillanceStore {
       )[0].probableThreat;
     }
 
-    const confirmed = this.confirmedReports();
+    const confirmed = this.activeConfirmedReports();
     return confirmed.length > 0 ? this.threatLabel(confirmed[0].probableThreat) : '—';
   });
 
@@ -201,11 +237,11 @@ export class SurveillanceStore {
    * Not a model output — a UI aggregate until a scoring endpoint exists.
    */
   readonly riskConfidence = computed<number>(() => {
-    const confirmed = this.confirmedReports().length;
+    const confirmed = this.activeConfirmedReports().length;
     const community = this.communityRisk().signals.length;
     const hasSevere =
       this.communityRisk().signals.some((s) => s.severity === 'High' || s.severity === 'Critical') ||
-      this.confirmedReports().some(
+      this.activeConfirmedReports().some(
         (r) => r.observedSeverity === 'High' || r.observedSeverity === 'Critical',
       );
 
@@ -246,6 +282,50 @@ export class SurveillanceStore {
             alerts.map((alert) =>
               String(alert.id) === String(id)
                 ? new Alert({ ...alert, status: 'Under review' })
+                : alert,
+            ),
+          );
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /**
+   * Resolves an alert (threat addressed by the producer) and reflects it locally.
+   * @param {number|string} id
+   */
+  resolveAlert(id: number | string): void {
+    this.surveillanceApi
+      .resolveAlert(id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.alerts.update((alerts) =>
+            alerts.map((alert) =>
+              String(alert.id) === String(id)
+                ? new Alert({ ...alert, status: 'Resolved' })
+                : alert,
+            ),
+          );
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /**
+   * Dismisses an alert (producer ruled it out as a false alarm) and reflects it locally.
+   * @param {number|string} id
+   */
+  dismissAlert(id: number | string): void {
+    this.surveillanceApi
+      .dismissAlert(id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.alerts.update((alerts) =>
+            alerts.map((alert) =>
+              String(alert.id) === String(id)
+                ? new Alert({ ...alert, status: 'Dismissed' })
                 : alert,
             ),
           );

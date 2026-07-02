@@ -66,6 +66,11 @@ export class NavigationSidebarComponent {
       route: '/expense-history',
       iconPath: '/assets/icons/dashboard/sync-outline.svg',
     },
+    {
+      label: 'dashboard.sidebar.interventions',
+      route: '/assistance/interventions',
+      iconPath: '/assets/icons/dashboard/construct-outline.svg',
+    },
   ];
 
   secondaryItems = [

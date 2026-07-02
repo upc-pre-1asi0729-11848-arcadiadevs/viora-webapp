@@ -6,6 +6,10 @@ const expertAssistanceOverview = () =>
   );
 const caseDetail = () =>
   import('./views/case-detail/case-detail').then((m) => m.CaseDetailView);
+const interventionsOverview = () =>
+  import('./views/interventions-overview/interventions-overview').then(
+    (m) => m.InterventionsOverviewView,
+  );
 
 /**
  * Route tree for the intervention bounded-context views (Expert Assistance).
@@ -30,5 +34,10 @@ export const interventionRoutes: Routes = [
     path: 'expert-assistance/case/:code',
     title: 'Case Detail',
     loadComponent: caseDetail,
+  },
+  {
+    path: 'interventions',
+    title: 'Interventions',
+    loadComponent: interventionsOverview,
   },
 ];

@@ -26,6 +26,21 @@ import {
   SpecialistContactAssembler,
   SpecialistContactResource,
 } from './specialist-contact-response';
+import { Intervention } from '../domain/model/intervention-summary.entity';
+import {
+  InterventionSummaryAssembler,
+  InterventionSummaryResource,
+} from './intervention-summary-response';
+import {
+  PrescriptionView,
+  TreatmentPrescriptionAssembler,
+  TreatmentPrescriptionResource,
+} from './treatment-prescription-response';
+import {
+  CertifyApplicationRequest,
+  CloseInterventionRequest,
+  ReportImpactRequest,
+} from './intervention-lifecycle-requests';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +59,10 @@ export class InterventionApiService extends BaseApi {
   private readonly candidatesEndpoint = this.endpoint(environment.endpoints.specialistCandidates);
   private readonly proposalsEndpoint = this.endpoint(environment.endpoints.serviceProposals);
   private readonly specialistsEndpoint = this.endpoint(environment.endpoints.specialists);
+  private readonly interventionsEndpoint = this.endpoint(environment.endpoints.interventions);
+  private readonly prescriptionsEndpoint = this.endpoint(environment.endpoints.treatmentPrescriptions);
+  private readonly executionsEndpoint = this.endpoint(environment.endpoints.interventionExecutions);
+  private readonly outcomesEndpoint = this.endpoint(environment.endpoints.interventionOutcomes);
 
   /**
    * Fetches ranked specialist candidates for an alert.
@@ -184,5 +203,75 @@ export class InterventionApiService extends BaseApi {
         {},
       )
       .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
+  }
+
+  // ----- Interventions (technical-service lifecycle) -----
+
+  /**
+   * Lists the active producer's interventions with their composed lifecycle status.
+   * @returns {Observable<Intervention[]>}
+   */
+  getInterventions(): Observable<Intervention[]> {
+    return this.http
+      .get<InterventionSummaryResource[]>(this.interventionsEndpoint.collectionUrl, {
+        params: this.queryParams({ growerId: this.defaultUserId }),
+      })
+      .pipe(map((resources) => InterventionSummaryAssembler.toEntitiesFromResources(resources ?? [])));
+  }
+
+  /**
+   * Simulates the specialist issuing a technical prescription for an accepted case
+   * (no specialist app yet), moving the intervention to PRESCRIPTION_ISSUED.
+   * @param {number|string} requestId - The accepted intervention request.
+   */
+  simulatePrescription(requestId: number | string): Observable<PrescriptionView> {
+    return this.http
+      .post<TreatmentPrescriptionResource>(
+        `${this.interventionsEndpoint.resourceUrl(requestId)}/simulate-prescription`,
+        {},
+      )
+      .pipe(map((resource) => TreatmentPrescriptionAssembler.toView(resource)));
+  }
+
+  /**
+   * Fetches the technical prescription for the "Prescription summary" card.
+   * @param {number|string} prescriptionId
+   */
+  getPrescription(prescriptionId: number | string): Observable<PrescriptionView> {
+    return this.http
+      .get<TreatmentPrescriptionResource>(this.prescriptionsEndpoint.resourceUrl(prescriptionId))
+      .pipe(map((resource) => TreatmentPrescriptionAssembler.toView(resource)));
+  }
+
+  /** Fetches a specialist's public profile (name/role) for display. */
+  getSpecialistProfile(
+    id: number | string,
+  ): Observable<{ id: number | null; fullName: string; role: string }> {
+    return this.http
+      .get<{ id: number | null; fullName: string | null; role: string | null }>(
+        this.specialistsEndpoint.resourceUrl(id),
+      )
+      .pipe(
+        map((resource) => ({
+          id: resource.id ?? null,
+          fullName: resource.fullName ?? '',
+          role: resource.role ?? '',
+        })),
+      );
+  }
+
+  /** Certifies the field application of a prescription (producer). */
+  certifyApplication(request: CertifyApplicationRequest): Observable<unknown> {
+    return this.http.post(this.executionsEndpoint.collectionUrl, request);
+  }
+
+  /** Reports the intervention impact after the grace period (producer). */
+  reportImpact(request: ReportImpactRequest): Observable<unknown> {
+    return this.http.post(this.outcomesEndpoint.collectionUrl, request);
+  }
+
+  /** Closes the intervention with the service evaluation (producer). */
+  closeIntervention(outcomeId: number | string, request: CloseInterventionRequest): Observable<unknown> {
+    return this.http.patch(`${this.outcomesEndpoint.resourceUrl(outcomeId)}/evaluation`, request);
   }
 }
