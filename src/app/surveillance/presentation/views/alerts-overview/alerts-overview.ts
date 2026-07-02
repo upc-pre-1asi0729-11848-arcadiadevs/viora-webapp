@@ -207,6 +207,25 @@ export class AlertsOverviewView implements OnInit {
     }
   }
 
+  /** Whether the alert is still open (can be resolved/dismissed by the producer). */
+  protected isOpenAlert(alert: Alert): boolean {
+    return alert.status !== 'Resolved' && alert.status !== 'Dismissed';
+  }
+
+  /** Producer self-service: resolves the alert (threat handled without a specialist). */
+  protected resolveAlert(alert: Alert): void {
+    if (alert.id !== null) {
+      this.store.resolveAlert(alert.id);
+    }
+  }
+
+  /** Producer self-service: dismisses the alert (ruled out as a false alarm). */
+  protected dismissAlert(alert: Alert): void {
+    if (alert.id !== null) {
+      this.store.dismissAlert(alert.id);
+    }
+  }
+
   /** Contextual action (label + behavior) for an alert based on its type. */
   protected actionFor(alert: Alert): AlertAction {
     switch (alert.type?.trim().toUpperCase()) {
