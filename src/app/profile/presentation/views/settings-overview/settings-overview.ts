@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,8 @@ import {
   DashboardBreadcrumbItem,
   DashboardHeader,
 } from '../../../../shared/presentation/components/dashboard-header/dashboard-header';
+
+import { AgronomicApiService } from '../../../../agronomic/infrastructure/agronomic-api.service';
 
 import { ProfileStore } from '../../../application/profile.store';
 import { UserProfile } from '../../../domain/model/user-profile.entity';
@@ -28,8 +30,9 @@ interface SettingsTabDef {
   templateUrl: './settings-overview.html',
   styleUrl: './settings-overview.css',
 })
-export class SettingsOverviewView {
+export class SettingsOverviewView implements OnInit {
   protected readonly store = inject(ProfileStore);
+  private readonly agronomicApi = inject(AgronomicApiService);
 
   protected readonly tabs: SettingsTabDef[] = [
     { id: 'profile', label: 'Profile', icon: 'person' },
@@ -59,10 +62,10 @@ export class SettingsOverviewView {
   protected readonly language = signal('');
   protected readonly location = signal('');
   protected readonly specialtyArea = signal('');
-  protected readonly yearsExperience = signal(0);
-  protected readonly focusTags = signal<string[]>([]);
-  protected readonly availableToday = signal(false);
-  protected readonly newTag = signal('');
+
+  // ----- Real farm totals, derived live from My Plots -----
+  protected readonly totalHectares = signal(0);
+  protected readonly plotCount = signal(0);
 
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => {
     const current = this.tabs.find((tab) => tab.id === this.activeTab());
@@ -77,15 +80,24 @@ export class SettingsOverviewView {
     this.store.profile().withChanges({
       fullName: this.fullName(),
       specialtyArea: this.specialtyArea(),
-      yearsExperience: this.yearsExperience(),
-      focusTags: this.focusTags(),
-      availableToday: this.availableToday(),
       location: this.location(),
+      totalHectares: this.totalHectares(),
+      plotCount: this.plotCount(),
     }),
   );
 
   constructor() {
-    this.resetDraft();
+    // Refill the draft whenever a freshly loaded/saved profile arrives. This only
+    // fires on a genuine profile change (load or save result), never mid-edit.
+    effect(() => {
+      const profile = this.store.profile();
+      this.applyDraftFrom(profile);
+    });
+  }
+
+  ngOnInit(): void {
+    this.store.load();
+    this.loadFarmTotals();
   }
 
   protected selectTab(tab: SettingsTab): void {
@@ -94,7 +106,11 @@ export class SettingsOverviewView {
 
   /** Refills the draft signals from the persisted profile (header refresh). */
   protected resetDraft(): void {
-    const profile = this.store.profile();
+    this.store.load();
+    this.loadFarmTotals();
+  }
+
+  private applyDraftFrom(profile: UserProfile): void {
     this.fullName.set(profile.fullName);
     this.email.set(profile.email);
     this.phone.set(profile.phone);
@@ -103,30 +119,15 @@ export class SettingsOverviewView {
     this.language.set(profile.language);
     this.location.set(profile.location);
     this.specialtyArea.set(profile.specialtyArea);
-    this.yearsExperience.set(profile.yearsExperience);
-    this.focusTags.set([...profile.focusTags]);
-    this.availableToday.set(profile.availableToday);
-    this.newTag.set('');
   }
 
-  protected addTag(): void {
-    const tag = this.newTag().trim();
-    if (!tag) {
-      return;
-    }
-    const exists = this.focusTags().some((t) => t.toLowerCase() === tag.toLowerCase());
-    if (!exists) {
-      this.focusTags.update((tags) => [...tags, tag]);
-    }
-    this.newTag.set('');
-  }
-
-  protected removeTag(tag: string): void {
-    this.focusTags.update((tags) => tags.filter((t) => t !== tag));
-  }
-
-  protected toggleAvailability(): void {
-    this.availableToday.update((value) => !value);
+  /** Sums the real My Plots areas so the producer card shows true farm size. */
+  private loadFarmTotals(): void {
+    this.agronomicApi.getPlots().subscribe((plots) => {
+      const hectares = plots.reduce((sum, plot) => sum + (plot.areaSize || 0), 0);
+      this.totalHectares.set(Number(hectares.toFixed(1)));
+      this.plotCount.set(plots.length);
+    });
   }
 
   protected saveChanges(): void {
@@ -139,9 +140,6 @@ export class SettingsOverviewView {
       language: this.language(),
       location: this.location().trim(),
       specialtyArea: this.specialtyArea().trim(),
-      yearsExperience: Number(this.yearsExperience()) || 0,
-      focusTags: this.focusTags(),
-      availableToday: this.availableToday(),
     });
   }
 }

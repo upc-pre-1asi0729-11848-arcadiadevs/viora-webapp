@@ -46,6 +46,10 @@ export const environment = {
     // Billing bounded context (Subscription, Billing & Referral): operational
     // expenses the producer registers against their plots.
     expenses: '/expenses',
+
+    // Profile & Asset Management bounded context: the account holder's profile
+    // (Settings › Profile), addressed by the owning userId.
+    profiles: '/profiles',
   },
 
   mapbox: {

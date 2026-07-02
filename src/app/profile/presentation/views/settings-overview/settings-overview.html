@@ -123,62 +123,22 @@
                 (input)="specialtyArea.set($any($event.target).value)" />
             </label>
             <label class="field">
-              <span>Years farming</span>
+              <span>Location</span>
               <input
-                type="number"
-                min="0"
-                [value]="yearsExperience()"
-                (input)="yearsExperience.set($any($event.target).valueAsNumber)" />
+                type="text"
+                placeholder="e.g. Valle de Ica, Peru"
+                [value]="location()"
+                (input)="location.set($any($event.target).value)" />
             </label>
           </div>
 
-          <label class="field">
-            <span>Location</span>
-            <input
-              type="text"
-              placeholder="e.g. Valle de Ica, Peru"
-              [value]="location()"
-              (input)="location.set($any($event.target).value)" />
-          </label>
-
           <div class="field">
-            <span>Focus tags</span>
-            <div class="tag-list">
-              @for (tag of focusTags(); track tag) {
-                <span class="editable-tag">
-                  {{ tag }}
-                  <button type="button" class="tag-remove" (click)="removeTag(tag)" aria-label="Remove tag">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </span>
-              }
+            <span>Total farmed area</span>
+            <div class="readonly-metric">
+              <mat-icon>eco</mat-icon>
+              <strong>{{ preview().farmSizeLabel }}</strong>
+              <span class="readonly-hint">Summed automatically from your plots in My Plots.</span>
             </div>
-            <div class="tag-add">
-              <input
-                type="text"
-                placeholder="Add a focus tag, e.g. Irrigation planning"
-                [value]="newTag()"
-                (input)="newTag.set($any($event.target).value)"
-                (keydown.enter)="addTag(); $event.preventDefault()" />
-              <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="addTag()">
-                Add
-              </button>
-            </div>
-          </div>
-
-          <div class="toggle-row">
-            <div class="toggle-text">
-              <span class="toggle-title">Show as available today</span>
-              <span class="toggle-sub">Lets specialists know you can respond to their proposals today.</span>
-            </div>
-            <button
-              type="button"
-              class="switch"
-              [class.is-on]="availableToday()"
-              [attr.aria-pressed]="availableToday()"
-              (click)="toggleAvailability()">
-              <span class="switch-knob"></span>
-            </button>
           </div>
         </mat-card>
       </div>
@@ -190,9 +150,6 @@
         <div class="preview-card">
           <div class="preview-badges">
             <span class="badge badge--best"><mat-icon>eco</mat-icon> Producer</span>
-            @if (availableToday()) {
-              <span class="badge avail-today"><i class="dot"></i> Available today</span>
-            }
           </div>
 
           <div class="preview-identity">
@@ -207,21 +164,10 @@
             @if (preview().location) {
               <span><mat-icon>location_on</mat-icon> {{ preview().location }}</span>
             }
-            <span><mat-icon>business_center</mat-icon> {{ preview().experienceLabel }}</span>
-          </div>
-
-          <div class="preview-tags">
-            @for (tag of preview().focusTags; track tag) {
-              <span class="preview-tag">{{ tag }}</span>
-            } @empty {
-              <span class="preview-tag preview-tag--empty">Add focus tags to describe your case</span>
-            }
+            <span><mat-icon>eco</mat-icon> {{ preview().farmSizeLabel }}</span>
           </div>
 
           <div class="preview-foot">
-            <span class="foot-availability" [class.avail-today]="availableToday()">
-              <i class="dot"></i> {{ preview().availabilityLabel }}
-            </span>
             <button mat-flat-button type="button" class="primary-button" disabled>Respond</button>
           </div>
         </div>

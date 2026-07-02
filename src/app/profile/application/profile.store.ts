@@ -3,50 +3,34 @@
  * Management). Owns the account holder's editable profile that backs the
  * Settings screens.
  *
- * Data-source note: the Profile & Asset Management backend (and the IAM guards
- * around it) are not built yet — this is one of the Support bounded contexts
- * still pending. The profile is therefore held locally and persisted to
- * localStorage so edits survive a reload. When the backend lands, `save` and
- * `load` become the only touch points that need to call the real API.
+ * Data-source note: the profile is a REAL backend aggregate served by the Viora
+ * Platform (`GET/PUT /api/v1/profiles/{userId}`). It is seeded server-side for
+ * the active account, so the screen always has real data. Total farmed area is
+ * NOT part of this aggregate — it is derived live from the real My Plots data by
+ * the view (see settings-overview).
  *
  * @module ProfileStore
  */
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { finalize } from 'rxjs';
 
-import { UserProfile, UserProfileProps } from '../domain/model/user-profile.entity';
-
-const STORAGE_KEY = 'viora.profile';
-
-/**
- * Seed profile for the current producer, adapted from the account holder. Used
- * until the real Profile & Asset Management backend is wired.
- */
-const PRODUCER_SEED: UserProfileProps = {
-  id: 1,
-  role: 'producer',
-  fullName: 'Daron Cameloft',
-  email: 'daron.cameloft@viora.farm',
-  phone: '+51 952 481 032',
-  jobTitle: 'Farm Operations Lead',
-  roleLabel: 'Olive producer',
-  timezone: 'America/Lima (GMT-5)',
-  language: 'English',
-  location: 'Valle de Ica, Peru',
-  specialtyArea: 'Olive oil production',
-  yearsExperience: 8,
-  focusTags: ['Xylella monitoring', 'Biological stress', 'Field inspection'],
-  availableToday: true,
-};
+import { UserProfile } from '../domain/model/user-profile.entity';
+import { ProfileApiService } from '../infrastructure/profile-api.service';
+import { UpdateProfileRequest } from '../infrastructure/profile-response';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileStore {
-  private readonly profileSignal = signal<UserProfile>(new UserProfile(PRODUCER_SEED));
+  private readonly api = inject(ProfileApiService);
+
+  private readonly profileSignal = signal<UserProfile>(new UserProfile());
   private readonly savingSignal = signal<boolean>(false);
+  private readonly loadingSignal = signal<boolean>(false);
   private readonly lastSavedAtSignal = signal<Date | null>(null);
 
   /** The current, persisted profile. */
   readonly profile = this.profileSignal.asReadonly();
   readonly saving = this.savingSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
 
   /**
    * Relative caption for the dashboard header. The header already renders the
@@ -60,65 +44,37 @@ export class ProfileStore {
     return this.relativeTime(savedAt);
   });
 
-  constructor() {
-    this.restore();
+  /** Loads the active account holder's profile from the backend. */
+  load(): void {
+    this.loadingSignal.set(true);
+    this.api
+      .getProfile()
+      .pipe(finalize(() => this.loadingSignal.set(false)))
+      .subscribe({
+        next: (profile) => this.profileSignal.set(profile),
+        error: () => {
+          // Leave the current profile in place; the view stays usable and the
+          // user can retry via the header refresh.
+        },
+      });
   }
 
-  /**
-   * Commits the edited profile. Local-only for now (see module note); the async
-   * shape and `saving` flag are kept so the real backend call slots in cleanly.
-   */
-  save(changes: UserProfileProps, onDone?: (saved: UserProfile) => void): void {
+  /** Commits the edited profile to the backend. */
+  save(changes: UpdateProfileRequest, onDone?: (saved: UserProfile) => void): void {
     this.savingSignal.set(true);
-    const updated = this.profileSignal().withChanges(changes);
-
-    // Simulate the round-trip latency of the pending backend so the UI shows a
-    // saving state; replace with the real API call once IAM/Profile ships.
-    setTimeout(() => {
-      this.profileSignal.set(updated);
-      this.lastSavedAtSignal.set(new Date());
-      this.persist(updated);
-      this.savingSignal.set(false);
-      onDone?.(updated);
-    }, 400);
-  }
-
-  private restore(): void {
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const props = JSON.parse(raw) as UserProfileProps;
-        this.profileSignal.set(new UserProfile({ ...PRODUCER_SEED, ...props }));
-      }
-    } catch {
-      // Corrupt payload — fall back to the seed.
-    }
-  }
-
-  private persist(profile: UserProfile): void {
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
-    const props: UserProfileProps = {
-      id: profile.id,
-      role: profile.role,
-      fullName: profile.fullName,
-      email: profile.email,
-      phone: profile.phone,
-      jobTitle: profile.jobTitle,
-      roleLabel: profile.roleLabel,
-      timezone: profile.timezone,
-      language: profile.language,
-      location: profile.location,
-      specialtyArea: profile.specialtyArea,
-      yearsExperience: profile.yearsExperience,
-      focusTags: profile.focusTags,
-      availableToday: profile.availableToday,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(props));
+    this.api
+      .updateProfile(changes)
+      .pipe(finalize(() => this.savingSignal.set(false)))
+      .subscribe({
+        next: (saved) => {
+          this.profileSignal.set(saved);
+          this.lastSavedAtSignal.set(new Date());
+          onDone?.(saved);
+        },
+        error: () => {
+          // Keep the draft so the user can retry; no partial state is committed.
+        },
+      });
   }
 
   private relativeTime(date: Date): string {
