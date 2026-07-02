@@ -22,6 +22,7 @@ export interface AlertResource {
   status?: string;
   sources?: string[];
   plotId?: number;
+  reportId?: number;
   plot?: AlertPlotResource;
 }
 
