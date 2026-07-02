@@ -66,7 +66,7 @@ export class DashboardSidebar {
     {
       labelKey: 'sidebar.interventions',
       route: '/interventions',
-      icon: 'medical_services',
+      iconPath: '/assets/icons/dashboard/construct-outline.svg',
     },
   ];
 
