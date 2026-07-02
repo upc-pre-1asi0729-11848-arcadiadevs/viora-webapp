@@ -173,6 +173,14 @@ export class SurveillanceStore {
 
   // ---- Pest Surveillance derivations ----
 
+  /**
+   * Plot the Pest Surveillance KPIs (risk, probable threat, active signals) are
+   * scoped to. Null = all plots (e.g. dashboard). Set by the pest overview so the
+   * cards reflect only the selected plot, consistent with the map and community
+   * exposure.
+   */
+  readonly pestScopePlotId = signal<number | string | null>(null);
+
   /** Reports whose evaluation confirmed an alert. */
   readonly confirmedReports = computed<PestReport[]>(() =>
     this.pestReports().filter((report) => report.result === 'Alert confirmed'),
@@ -188,7 +196,11 @@ export class SurveillanceStore {
    */
   readonly activeConfirmedReports = computed<PestReport[]>(() => {
     const allAlerts = this.alerts();
+    const scope = this.pestScopePlotId();
     return this.confirmedReports().filter((report) => {
+      if (scope != null && String(report.plotId) !== String(scope)) {
+        return false;
+      }
       const linked = allAlerts.filter(
         (alert) => alert.reportId != null && String(alert.reportId) === String(report.id),
       );

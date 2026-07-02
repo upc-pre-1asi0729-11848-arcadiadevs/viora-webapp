@@ -199,6 +199,7 @@ export class PestSurveillanceOverviewView implements OnInit {
       if (first && first.id != null) {
         this.selectedPlotId.set(first.id);
         this.formPlotId.set(first.id);
+        this.store.pestScopePlotId.set(first.id);
         this.store.loadCommunityRisk(first.id, 5);
       }
     });
@@ -206,6 +207,7 @@ export class PestSurveillanceOverviewView implements OnInit {
 
   protected onSelectPlot(plotId: number | string): void {
     this.selectedPlotId.set(plotId);
+    this.store.pestScopePlotId.set(plotId);
     this.store.loadCommunityRisk(plotId, 5);
   }
 
