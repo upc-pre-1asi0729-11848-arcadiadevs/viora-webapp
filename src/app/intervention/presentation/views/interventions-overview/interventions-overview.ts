@@ -100,6 +100,17 @@ export class InterventionsOverviewView implements OnInit {
 
   protected onSelectScope(value: string): void {
     this.selectedScope.set(value);
+    // Keep the right-hand detail cards consistent with the plot scope: if the
+    // current selection is no longer visible, jump to the first one (or clear).
+    const visible = this.visibleInterventions();
+    const stillVisible = visible.some((item) => item.code === this.store.selectedCode());
+    if (!stillVisible) {
+      if (visible.length > 0) {
+        this.store.select(visible[0].code);
+      } else {
+        this.store.clearSelection();
+      }
+    }
   }
 
   protected selectIntervention(intervention: Intervention): void {

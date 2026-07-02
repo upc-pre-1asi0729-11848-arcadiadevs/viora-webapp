@@ -68,7 +68,7 @@ export class NavigationSidebarComponent {
     },
     {
       label: 'dashboard.sidebar.interventions',
-      route: '/interventions',
+      route: '/assistance/interventions',
       iconPath: '/assets/icons/dashboard/construct-outline.svg',
     },
   ];

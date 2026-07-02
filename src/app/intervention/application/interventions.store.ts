@@ -89,6 +89,12 @@ export class InterventionsStore {
     this.loadPrescriptionFor(this.selected());
   }
 
+  /** Clears the current selection (used when the plot scope has no interventions). */
+  clearSelection(): void {
+    this.selectedCode.set(null);
+    this.prescription.set(null);
+  }
+
   /** Resolves a specialist display name from the loaded profile map. */
   specialistName(specialistId: number | null): string {
     if (specialistId == null) {

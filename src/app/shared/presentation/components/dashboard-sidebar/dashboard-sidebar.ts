@@ -65,7 +65,7 @@ export class DashboardSidebar {
     },
     {
       labelKey: 'sidebar.interventions',
-      route: '/interventions',
+      route: '/assistance/interventions',
       iconPath: '/assets/icons/dashboard/construct-outline.svg',
     },
   ];
