@@ -255,6 +255,50 @@ export class SurveillanceStore {
   }
 
   /**
+   * Resolves an alert (threat addressed by the producer) and reflects it locally.
+   * @param {number|string} id
+   */
+  resolveAlert(id: number | string): void {
+    this.surveillanceApi
+      .resolveAlert(id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.alerts.update((alerts) =>
+            alerts.map((alert) =>
+              String(alert.id) === String(id)
+                ? new Alert({ ...alert, status: 'Resolved' })
+                : alert,
+            ),
+          );
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /**
+   * Dismisses an alert (producer ruled it out as a false alarm) and reflects it locally.
+   * @param {number|string} id
+   */
+  dismissAlert(id: number | string): void {
+    this.surveillanceApi
+      .dismissAlert(id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.alerts.update((alerts) =>
+            alerts.map((alert) =>
+              String(alert.id) === String(id)
+                ? new Alert({ ...alert, status: 'Dismissed' })
+                : alert,
+            ),
+          );
+        },
+        error: (error) => this.registerError(error),
+      });
+  }
+
+  /**
    * Loads the real community-risk snapshot for a plot from the backend.
    * @param {number|string} plotId
    * @param {number} radiusKm
