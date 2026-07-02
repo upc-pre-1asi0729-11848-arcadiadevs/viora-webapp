@@ -178,6 +178,27 @@ export class SurveillanceStore {
     this.pestReports().filter((report) => report.result === 'Alert confirmed'),
   );
 
+  /** Report ids that still carry an OPEN alert (i.e. represent active risk). */
+  readonly openReportIds = computed<Set<number>>(
+    () =>
+      new Set(
+        this.openAlerts()
+          .map((alert) => alert.reportId)
+          .filter((id): id is number => id != null),
+      ),
+  );
+
+  /**
+   * Confirmed reports whose originating alert is still open — the truly "active"
+   * signals. A report drops out here once its alert is resolved or dismissed, so
+   * the Pest Surveillance KPIs reflect the alert lifecycle.
+   */
+  readonly activeConfirmedReports = computed<PestReport[]>(() =>
+    this.confirmedReports().filter(
+      (report) => report.id != null && this.openReportIds().has(report.id),
+    ),
+  );
+
   /** Community exposure: number of anonymized nearby signals. */
   readonly communityExposureCount = computed<number>(() => this.communityRisk().signals.length);
 
@@ -191,7 +212,7 @@ export class SurveillanceStore {
       )[0].probableThreat;
     }
 
-    const confirmed = this.confirmedReports();
+    const confirmed = this.activeConfirmedReports();
     return confirmed.length > 0 ? this.threatLabel(confirmed[0].probableThreat) : '—';
   });
 
@@ -201,11 +222,11 @@ export class SurveillanceStore {
    * Not a model output — a UI aggregate until a scoring endpoint exists.
    */
   readonly riskConfidence = computed<number>(() => {
-    const confirmed = this.confirmedReports().length;
+    const confirmed = this.activeConfirmedReports().length;
     const community = this.communityRisk().signals.length;
     const hasSevere =
       this.communityRisk().signals.some((s) => s.severity === 'High' || s.severity === 'Critical') ||
-      this.confirmedReports().some(
+      this.activeConfirmedReports().some(
         (r) => r.observedSeverity === 'High' || r.observedSeverity === 'Critical',
       );
 
