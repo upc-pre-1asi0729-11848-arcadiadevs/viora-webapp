@@ -12,6 +12,7 @@ import {
 import { AgronomicApiService } from '../../../../agronomic/infrastructure/agronomic-api.service';
 import { Plot } from '../../../../agronomic/domain/model/plot.entity';
 import { SurveillanceStore } from '../../../../surveillance/application/surveillance.store';
+import { SurveillanceApiService } from '../../../../surveillance/infrastructure/surveillance-api.service';
 import { Alert, AlertSeverity } from '../../../../surveillance/domain/model/alert.entity';
 
 import { InterventionsStore } from '../../../application/interventions.store';
@@ -35,6 +36,7 @@ const ALL_PLOTS = 'all';
 export class InterventionsOverviewView implements OnInit {
   protected readonly store = inject(InterventionsStore);
   private readonly surveillance = inject(SurveillanceStore);
+  private readonly surveillanceApi = inject(SurveillanceApiService);
   private readonly agronomicApi = inject(AgronomicApiService);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
@@ -210,6 +212,8 @@ export class InterventionsOverviewView implements OnInit {
     if (item?.interventionOutcomeId == null) {
       return;
     }
+    const alertId = item.alertId;
+    const resolvedTheThreat = this.closeResult() === 'RESOLVED';
     this.store.closeIntervention(
       item.interventionOutcomeId,
       {
@@ -217,7 +221,17 @@ export class InterventionsOverviewView implements OnInit {
         hireAgain: this.closeHire(),
         privateFeedback: this.closeFeedback().trim() || undefined,
       },
-      (ok) => ok && this.modal.set(null),
+      (ok) => {
+        if (!ok) {
+          return;
+        }
+        this.modal.set(null);
+        // Close the loop back to Surveillance: a RESOLVED service resolves the
+        // alert that triggered the whole cycle. Best-effort.
+        if (resolvedTheThreat && alertId != null) {
+          this.surveillanceApi.resolveAlert(alertId).subscribe({ error: () => undefined });
+        }
+      },
     );
   }
 }
