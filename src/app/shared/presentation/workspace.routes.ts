@@ -51,16 +51,6 @@ const workspacePlaceholderRoutes: Routes = [
     },
   },
   {
-    path: 'settings',
-    title: 'Settings',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Settings',
-      sectionLabel: 'Settings',
-      subtitle: 'Configure your dashboard and workspace preferences.',
-    },
-  },
-  {
     path: 'support',
     title: 'Support',
     loadComponent: comingSoonPage,

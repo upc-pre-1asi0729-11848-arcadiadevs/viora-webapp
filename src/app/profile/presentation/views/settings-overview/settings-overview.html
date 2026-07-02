@@ -1,0 +1,255 @@
+<section class="settings-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs()"
+    subtitle="Manage your account, marketplace visibility, and security preferences."
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="resetDraft()" />
+
+  <!-- Section tabs -->
+  <nav class="settings-tabs" role="tablist">
+    @for (tab of tabs; track tab.id) {
+      <button
+        type="button"
+        role="tab"
+        class="settings-tab"
+        [class.is-active]="activeTab() === tab.id"
+        [attr.aria-selected]="activeTab() === tab.id"
+        (click)="selectTab(tab.id)">
+        <mat-icon>{{ tab.icon }}</mat-icon>
+        {{ tab.label }}
+      </button>
+    }
+  </nav>
+
+  <!-- ============ PROFILE ============ -->
+  @if (activeTab() === 'profile') {
+    <div class="profile-grid">
+      <!-- Left column: editable forms -->
+      <div class="editor-column">
+        <!-- Personal information -->
+        <mat-card class="section-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Personal information</h2>
+              <p class="section-subtitle">Your name and contact details as seen by specialists.</p>
+            </div>
+          </div>
+
+          <div class="identity-row">
+            <span class="avatar avatar--lg">{{ preview().initials }}</span>
+            <div class="identity-text">
+              <span class="identity-name">{{ fullName() || 'Your name' }}</span>
+              <span class="identity-role">{{ jobTitle() || 'Job title' }} · {{ store.profile().roleLabel }}</span>
+            </div>
+            <button mat-stroked-button type="button" class="ghost-button ghost-button--sm">
+              <mat-icon>photo_camera</mat-icon> Change photo
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Full name</span>
+              <input type="text" [value]="fullName()" (input)="fullName.set($any($event.target).value)" />
+            </label>
+            <label class="field">
+              <span>Email address</span>
+              <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" />
+            </label>
+            <label class="field">
+              <span>Phone number</span>
+              <input type="tel" [value]="phone()" (input)="phone.set($any($event.target).value)" />
+            </label>
+            <label class="field">
+              <span>Job title</span>
+              <input type="text" [value]="jobTitle()" (input)="jobTitle.set($any($event.target).value)" />
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <label class="field field--inline">
+              <span>Timezone</span>
+              <div class="select-wrap">
+                <select [value]="timezone()" (change)="timezone.set($any($event.target).value)">
+                  @for (tz of timezoneOptions; track tz) {
+                    <option [value]="tz">{{ tz }}</option>
+                  }
+                </select>
+                <mat-icon>expand_more</mat-icon>
+              </div>
+            </label>
+            <label class="field field--inline">
+              <span>Language</span>
+              <div class="select-wrap">
+                <select [value]="language()" (change)="language.set($any($event.target).value)">
+                  @for (lang of languageOptions; track lang) {
+                    <option [value]="lang">{{ lang }}</option>
+                  }
+                </select>
+                <mat-icon>expand_more</mat-icon>
+              </div>
+            </label>
+          </div>
+
+          <div class="card-actions">
+            <button
+              mat-flat-button
+              type="button"
+              class="primary-button"
+              [disabled]="store.saving()"
+              (click)="saveChanges()">
+              {{ store.saving() ? 'Saving…' : 'Save changes' }}
+            </button>
+          </div>
+        </mat-card>
+
+        <!-- Marketplace visibility -->
+        <mat-card class="section-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Marketplace visibility</h2>
+              <p class="section-subtitle">
+                Shown on your profile card when specialists receive your assistance requests.
+              </p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Grove focus</span>
+              <input
+                type="text"
+                placeholder="e.g. Olive oil production"
+                [value]="specialtyArea()"
+                (input)="specialtyArea.set($any($event.target).value)" />
+            </label>
+            <label class="field">
+              <span>Years farming</span>
+              <input
+                type="number"
+                min="0"
+                [value]="yearsExperience()"
+                (input)="yearsExperience.set($any($event.target).valueAsNumber)" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Location</span>
+            <input
+              type="text"
+              placeholder="e.g. Valle de Ica, Peru"
+              [value]="location()"
+              (input)="location.set($any($event.target).value)" />
+          </label>
+
+          <div class="field">
+            <span>Focus tags</span>
+            <div class="tag-list">
+              @for (tag of focusTags(); track tag) {
+                <span class="editable-tag">
+                  {{ tag }}
+                  <button type="button" class="tag-remove" (click)="removeTag(tag)" aria-label="Remove tag">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </span>
+              }
+            </div>
+            <div class="tag-add">
+              <input
+                type="text"
+                placeholder="Add a focus tag, e.g. Irrigation planning"
+                [value]="newTag()"
+                (input)="newTag.set($any($event.target).value)"
+                (keydown.enter)="addTag(); $event.preventDefault()" />
+              <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="addTag()">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <span class="toggle-title">Show as available today</span>
+              <span class="toggle-sub">Lets specialists know you can respond to their proposals today.</span>
+            </div>
+            <button
+              type="button"
+              class="switch"
+              [class.is-on]="availableToday()"
+              [attr.aria-pressed]="availableToday()"
+              (click)="toggleAvailability()">
+              <span class="switch-knob"></span>
+            </button>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Right column: live preview -->
+      <aside class="preview-column">
+        <p class="preview-caption">How specialists see your request</p>
+
+        <div class="preview-card">
+          <div class="preview-badges">
+            <span class="badge badge--best"><mat-icon>eco</mat-icon> Producer</span>
+            @if (availableToday()) {
+              <span class="badge avail-today"><i class="dot"></i> Available today</span>
+            }
+          </div>
+
+          <div class="preview-identity">
+            <span class="avatar">{{ preview().initials }}</span>
+            <div class="identity-text">
+              <span class="preview-name">{{ preview().fullName || 'Your name' }}</span>
+              <span class="preview-role">{{ preview().specialtyArea || 'Grove focus' }}</span>
+            </div>
+          </div>
+
+          <div class="preview-meta">
+            @if (preview().location) {
+              <span><mat-icon>location_on</mat-icon> {{ preview().location }}</span>
+            }
+            <span><mat-icon>business_center</mat-icon> {{ preview().experienceLabel }}</span>
+          </div>
+
+          <div class="preview-tags">
+            @for (tag of preview().focusTags; track tag) {
+              <span class="preview-tag">{{ tag }}</span>
+            } @empty {
+              <span class="preview-tag preview-tag--empty">Add focus tags to describe your case</span>
+            }
+          </div>
+
+          <div class="preview-foot">
+            <span class="foot-availability" [class.avail-today]="availableToday()">
+              <i class="dot"></i> {{ preview().availabilityLabel }}
+            </span>
+            <button mat-flat-button type="button" class="primary-button" disabled>Respond</button>
+          </div>
+        </div>
+
+        <p class="preview-note">
+          <mat-icon>info</mat-icon>
+          This preview updates live as you edit. It is exactly what a specialist sees when you send an assistance
+          request from Expert Assistance.
+        </p>
+      </aside>
+    </div>
+  }
+
+  <!-- ============ REFERRALS ============ -->
+  @if (activeTab() === 'referrals') {
+    <mat-card class="section-card placeholder-card">
+      <span class="placeholder-icon"><mat-icon>card_giftcard</mat-icon></span>
+      <h2 class="section-title">Referrals</h2>
+      <p class="section-subtitle">Invite other producers and track your referral rewards — coming next.</p>
+    </mat-card>
+  }
+
+  <!-- ============ SECURITY ============ -->
+  @if (activeTab() === 'security') {
+    <mat-card class="section-card placeholder-card">
+      <span class="placeholder-icon"><mat-icon>shield</mat-icon></span>
+      <h2 class="section-title">Security</h2>
+      <p class="section-subtitle">Manage your password, sessions, and account protection — coming next.</p>
+    </mat-card>
+  }
+</section>
