@@ -255,6 +255,18 @@
   white-space: nowrap;
 }
 
+/* In the records table the status cell is narrow — let the pill wrap to two
+   lines and stay inside its cell instead of overflowing. */
+.records-row .pill {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.15;
+  min-height: 0;
+  padding: 5px 10px;
+  border-radius: 12px;
+  max-width: 100%;
+}
+
 .status-awaiting { background: #f0ebe3; color: #8c877f; }
 .status-issued { background: rgba(0, 79, 196, 0.12); color: #004fc4; }
 .status-recovery { background: rgba(91, 141, 239, 0.16); color: #3f6fd0; }
