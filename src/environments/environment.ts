@@ -50,6 +50,15 @@ export const environment = {
     // Profile & Asset Management bounded context: the account holder's profile
     // (Settings › Profile), addressed by the owning userId.
     profiles: '/profiles',
+
+    // Subscription, Billing & Referral bounded context (Settings › Referrals):
+    // per-user referral code and the coupons they hold / can redeem.
+    referrals: '/referrals',
+    coupons: '/coupons',
+
+    // IAM (Settings › Security): password change lives under the user resource;
+    // active sessions are nested under the owning user.
+    users: '/users',
   },
 
   mapbox: {

@@ -172,19 +172,262 @@
 
   <!-- ============ REFERRALS ============ -->
   @if (activeTab() === 'referrals') {
-    <mat-card class="section-card placeholder-card">
-      <span class="placeholder-icon"><mat-icon>card_giftcard</mat-icon></span>
-      <h2 class="section-title">Referrals</h2>
-      <p class="section-subtitle">Invite other producers and track your referral rewards — coming next.</p>
+    <mat-card class="section-card">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Referrals</h2>
+          <p class="section-subtitle">Invite others to Viora. Grow the ecosystem together.</p>
+        </div>
+      </div>
+
+      <div class="referral-body">
+        <!-- Left: reward + code -->
+        <div class="referral-left">
+          <h3 class="referral-headline">
+            Refer a friend and earn a {{ billing.referralCode().rewardPercent || 20 }}% discount coupon.
+          </h3>
+
+          <div class="referral-illustration"><mat-icon>redeem</mat-icon></div>
+
+          <button type="button" class="referral-code-ticket" (click)="copyReferralCode()">
+            <span class="ticket-label">Your referral code</span>
+            <span class="ticket-code">{{ billing.referralCode().code || '————' }}</span>
+            <span class="ticket-hint">{{ codeCopied() ? 'Copied!' : 'Tap to copy' }}</span>
+          </button>
+        </div>
+
+        <!-- Right: steps + share -->
+        <div class="referral-right">
+          <div class="referral-step">
+            <span class="step-num">1</span>
+            <span class="step-text">Send an invite to a partner.</span>
+          </div>
+          <div class="referral-step">
+            <span class="step-num">2</span>
+            <span class="step-text">Your partner signs up.</span>
+          </div>
+          <div class="referral-step">
+            <span class="step-num">3</span>
+            <span class="step-text">You will be able to claim your coupon when your partner registers for the first time.</span>
+          </div>
+
+          <button mat-flat-button type="button" class="primary-button block" (click)="shareReferral()">
+            <mat-icon>share</mat-icon> Refer a partner by text, email or more
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="section-card">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Coupons</h2>
+          <p class="section-subtitle">Do you have a coupon?</p>
+        </div>
+      </div>
+
+      <div class="redeem-row">
+        <input
+          type="text"
+          class="redeem-input"
+          placeholder="Enter a coupon code, e.g. WELCOME10"
+          [value]="redeemInput()"
+          (input)="redeemInput.set($any($event.target).value)"
+          (keydown.enter)="redeemCoupon(); $event.preventDefault()" />
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          [disabled]="!redeemInput().trim() || billing.redeeming()"
+          (click)="redeemCoupon()">
+          {{ billing.redeeming() ? 'Redeeming…' : 'Redeem' }}
+        </button>
+      </div>
+      @if (billing.redeemError()) {
+        <p class="field-error">{{ billing.redeemError() }}</p>
+      }
+
+      <div class="coupon-grid">
+        @for (coupon of billing.coupons(); track coupon.id) {
+          <div class="coupon-card">
+            <div class="coupon-head">
+              <mat-icon>redeem</mat-icon>
+              <span class="coupon-kind">coupon</span>
+            </div>
+            <span class="coupon-code">{{ coupon.code }}</span>
+            <span class="coupon-desc">{{ coupon.description }}</span>
+            <div class="coupon-foot">
+              <button mat-flat-button type="button" class="primary-button" (click)="openConditions(coupon)">
+                View conditions
+              </button>
+              @if (coupon.validUntilLabel) {
+                <span class="coupon-valid">{{ coupon.validUntilLabel }}</span>
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="empty-hint">No coupons yet. Redeem a code or refer a partner to earn one.</p>
+        }
+      </div>
     </mat-card>
   }
 
   <!-- ============ SECURITY ============ -->
   @if (activeTab() === 'security') {
-    <mat-card class="section-card placeholder-card">
-      <span class="placeholder-icon"><mat-icon>shield</mat-icon></span>
-      <h2 class="section-title">Security</h2>
-      <p class="section-subtitle">Manage your password, sessions, and account protection — coming next.</p>
+    <mat-card class="section-card">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Password</h2>
+          <p class="section-subtitle">Use at least 8 characters.</p>
+        </div>
+      </div>
+
+      <label class="field">
+        <span>Current password</span>
+        <input
+          type="password"
+          autocomplete="current-password"
+          [value]="currentPassword()"
+          (input)="currentPassword.set($any($event.target).value)" />
+      </label>
+
+      <div class="form-grid">
+        <label class="field">
+          <span>New password</span>
+          <input
+            type="password"
+            autocomplete="new-password"
+            [value]="newPassword()"
+            (input)="newPassword.set($any($event.target).value)" />
+        </label>
+        <label class="field">
+          <span>Confirm new password</span>
+          <input
+            type="password"
+            autocomplete="new-password"
+            [value]="confirmPassword()"
+            (input)="confirmPassword.set($any($event.target).value)" />
+        </label>
+      </div>
+
+      @if (passwordMessage(); as msg) {
+        <p class="field-message" [class.is-ok]="msg.tone === 'ok'" [class.is-error]="msg.tone === 'error'">
+          {{ msg.text }}
+        </p>
+      }
+
+      <div class="card-actions">
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          [disabled]="!canUpdatePassword"
+          (click)="updatePassword()">
+          {{ security.changingPassword() ? 'Updating…' : 'Update password' }}
+        </button>
+      </div>
+    </mat-card>
+
+    <mat-card class="section-card">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Active sessions</h2>
+          <p class="section-subtitle">{{ security.sessions().length }} devices signed in</p>
+        </div>
+      </div>
+
+      <div class="session-list">
+        @if (security.loadingSessions() && security.sessions().length === 0) {
+          <div class="empty-hint">Loading sessions…</div>
+        } @else {
+          @for (session of security.sessions(); track session.id) {
+            <div class="session-row">
+              <span class="session-icon"><mat-icon>{{ session.icon }}</mat-icon></span>
+              <div class="session-text">
+                <span class="session-title">{{ session.title }}</span>
+                <span class="session-sub">{{ session.subtitle }}</span>
+              </div>
+              @if (session.current) {
+                <span class="session-current">This device</span>
+              } @else {
+                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="signOutSession(session.id!)">
+                  Sign out
+                </button>
+              }
+            </div>
+          }
+        }
+      </div>
+    </mat-card>
+
+    <mat-card class="section-card danger-card">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Danger zone</h2>
+          <p class="section-subtitle">
+            Deactivating your account revokes access for you and pauses monitoring on all linked plots.
+          </p>
+        </div>
+      </div>
+
+      @if (accountDeactivated()) {
+        <p class="field-message is-error">Your account has been deactivated.</p>
+      } @else {
+        <button mat-stroked-button type="button" class="danger-button" (click)="openDeactivate()">
+          Deactivate account
+        </button>
+      }
     </mat-card>
   }
 </section>
+
+<!-- View coupon conditions modal -->
+@if (conditionsCoupon(); as coupon) {
+  <div class="modal-overlay" (click)="closeConditions()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ coupon.code }}</h2>
+          <p class="modal-subtitle">{{ coupon.description }}</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeConditions()"><mat-icon>close</mat-icon></button>
+      </div>
+      <p class="modal-body-text">{{ coupon.conditions || 'No additional conditions apply.' }}</p>
+      @if (coupon.validUntilLabel) {
+        <p class="modal-note"><mat-icon>schedule</mat-icon> {{ coupon.validUntilLabel }}</p>
+      }
+      <div class="modal-actions">
+        <button mat-flat-button type="button" class="primary-button" (click)="closeConditions()">Got it</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Deactivate account confirmation modal -->
+@if (deactivateModalOpen()) {
+  <div class="modal-overlay" (click)="closeDeactivate()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Deactivate account</h2>
+          <p class="modal-subtitle">This revokes your access and pauses monitoring on all linked plots.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeDeactivate()"><mat-icon>close</mat-icon></button>
+      </div>
+      <p class="modal-body-text">
+        Are you sure you want to deactivate your account? You won't be able to sign in until it is reactivated.
+      </p>
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDeactivate()">Cancel</button>
+        <button
+          mat-flat-button
+          type="button"
+          class="danger-button"
+          [disabled]="security.deactivating()"
+          (click)="confirmDeactivate()">
+          {{ security.deactivating() ? 'Deactivating…' : 'Deactivate account' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

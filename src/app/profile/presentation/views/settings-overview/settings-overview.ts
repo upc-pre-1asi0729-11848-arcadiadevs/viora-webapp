@@ -14,13 +14,22 @@ import { AgronomicApiService } from '../../../../agronomic/infrastructure/agrono
 import { ProfileStore } from '../../../application/profile.store';
 import { UserProfile } from '../../../domain/model/user-profile.entity';
 
-/** Settings sections. Referrals and Security are wired once their mockups land. */
+import { BillingStore } from '../../../../billing/application/billing.store';
+import { Coupon } from '../../../../billing/domain/model/coupon.entity';
+import { SecurityStore } from '../../../../iam/application/security.store';
+
+/** Settings sections. */
 type SettingsTab = 'profile' | 'referrals' | 'security';
 
 interface SettingsTabDef {
   id: SettingsTab;
   label: string;
   icon: string;
+}
+
+interface PasswordMessage {
+  tone: 'ok' | 'error';
+  text: string;
 }
 
 @Component({
@@ -32,6 +41,8 @@ interface SettingsTabDef {
 })
 export class SettingsOverviewView implements OnInit {
   protected readonly store = inject(ProfileStore);
+  protected readonly billing = inject(BillingStore);
+  protected readonly security = inject(SecurityStore);
   private readonly agronomicApi = inject(AgronomicApiService);
 
   protected readonly tabs: SettingsTabDef[] = [
@@ -41,10 +52,11 @@ export class SettingsOverviewView implements OnInit {
   ];
 
   protected readonly activeTab = signal<SettingsTab>('profile');
+  private readonly loadedTabs = new Set<SettingsTab>();
 
   protected readonly languageOptions = ['English', 'Español', 'Português'];
 
-  // ----- Editable draft, seeded from the persisted profile -----
+  // ----- Profile draft -----
   protected readonly fullName = signal('');
   protected readonly email = signal('');
   protected readonly phone = signal('');
@@ -52,10 +64,21 @@ export class SettingsOverviewView implements OnInit {
   protected readonly language = signal('');
   protected readonly location = signal('');
   protected readonly specialtyArea = signal('');
-
-  // ----- Real farm totals, derived live from My Plots -----
   protected readonly totalHectares = signal(0);
   protected readonly plotCount = signal(0);
+
+  // ----- Referrals -----
+  protected readonly codeCopied = signal(false);
+  protected readonly redeemInput = signal('');
+  protected readonly conditionsCoupon = signal<Coupon | null>(null);
+
+  // ----- Security -----
+  protected readonly currentPassword = signal('');
+  protected readonly newPassword = signal('');
+  protected readonly confirmPassword = signal('');
+  protected readonly passwordMessage = signal<PasswordMessage | null>(null);
+  protected readonly deactivateModalOpen = signal(false);
+  protected readonly accountDeactivated = signal(false);
 
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => {
     const current = this.tabs.find((tab) => tab.id === this.activeTab());
@@ -77,8 +100,7 @@ export class SettingsOverviewView implements OnInit {
   );
 
   constructor() {
-    // Refill the draft whenever a freshly loaded/saved profile arrives. This only
-    // fires on a genuine profile change (load or save result), never mid-edit.
+    // Refill the profile draft whenever a freshly loaded/saved profile arrives.
     effect(() => {
       const profile = this.store.profile();
       this.applyDraftFrom(profile);
@@ -92,12 +114,31 @@ export class SettingsOverviewView implements OnInit {
 
   protected selectTab(tab: SettingsTab): void {
     this.activeTab.set(tab);
+    this.ensureTabData(tab);
   }
 
-  /** Refills the draft signals from the persisted profile (header refresh). */
+  /** Loads a tab's real data on first activation. */
+  private ensureTabData(tab: SettingsTab): void {
+    if (this.loadedTabs.has(tab)) {
+      return;
+    }
+    this.loadedTabs.add(tab);
+    if (tab === 'referrals') {
+      this.billing.load();
+    } else if (tab === 'security') {
+      this.security.loadSessions();
+    }
+  }
+
+  /** Header refresh: reload whatever the active tab shows. */
   protected resetDraft(): void {
     this.store.load();
     this.loadFarmTotals();
+    if (this.activeTab() === 'referrals') {
+      this.billing.load();
+    } else if (this.activeTab() === 'security') {
+      this.security.loadSessions();
+    }
   }
 
   private applyDraftFrom(profile: UserProfile): void {
@@ -110,7 +151,6 @@ export class SettingsOverviewView implements OnInit {
     this.specialtyArea.set(profile.specialtyArea);
   }
 
-  /** Sums the real My Plots areas so the producer card shows true farm size. */
   private loadFarmTotals(): void {
     this.agronomicApi.getPlots().subscribe((plots) => {
       const hectares = plots.reduce((sum, plot) => sum + (plot.areaSize || 0), 0);
@@ -128,6 +168,114 @@ export class SettingsOverviewView implements OnInit {
       language: this.language(),
       location: this.location().trim(),
       specialtyArea: this.specialtyArea().trim(),
+    });
+  }
+
+  // ----- Referrals actions -----
+
+  protected copyReferralCode(): void {
+    const code = this.billing.referralCode().code;
+    if (!code) {
+      return;
+    }
+    navigator.clipboard?.writeText(code).then(() => {
+      this.codeCopied.set(true);
+      setTimeout(() => this.codeCopied.set(false), 2000);
+    });
+  }
+
+  protected shareReferral(): void {
+    const referral = this.billing.referralCode();
+    const shareData = {
+      title: 'Join me on Viora',
+      text: `Use my referral code ${referral.code} to join Viora.`,
+      url: referral.shareLink,
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(referral.shareLink);
+      this.codeCopied.set(true);
+      setTimeout(() => this.codeCopied.set(false), 2000);
+    }
+  }
+
+  protected redeemCoupon(): void {
+    const code = this.redeemInput().trim();
+    if (!code || this.billing.redeeming()) {
+      return;
+    }
+    this.billing.redeem(code, (ok) => {
+      if (ok) {
+        this.redeemInput.set('');
+      }
+    });
+  }
+
+  protected openConditions(coupon: Coupon): void {
+    this.conditionsCoupon.set(coupon);
+  }
+
+  protected closeConditions(): void {
+    this.conditionsCoupon.set(null);
+  }
+
+  // ----- Security actions -----
+
+  protected get canUpdatePassword(): boolean {
+    return (
+      this.currentPassword().length > 0 &&
+      this.newPassword().length >= 8 &&
+      this.newPassword() === this.confirmPassword() &&
+      !this.security.changingPassword()
+    );
+  }
+
+  protected updatePassword(): void {
+    this.passwordMessage.set(null);
+
+    if (this.newPassword().length < 8) {
+      this.passwordMessage.set({ tone: 'error', text: 'New password must be at least 8 characters.' });
+      return;
+    }
+    if (this.newPassword() !== this.confirmPassword()) {
+      this.passwordMessage.set({ tone: 'error', text: 'New password and confirmation do not match.' });
+      return;
+    }
+
+    this.security.changePassword(
+      { currentPassword: this.currentPassword(), newPassword: this.newPassword() },
+      (ok, message) => {
+        if (ok) {
+          this.passwordMessage.set({ tone: 'ok', text: 'Password updated successfully.' });
+          this.currentPassword.set('');
+          this.newPassword.set('');
+          this.confirmPassword.set('');
+        } else {
+          this.passwordMessage.set({ tone: 'error', text: message ?? 'Could not update your password.' });
+        }
+      },
+    );
+  }
+
+  protected signOutSession(sessionId: number | string): void {
+    this.security.revokeSession(sessionId);
+  }
+
+  protected openDeactivate(): void {
+    this.deactivateModalOpen.set(true);
+  }
+
+  protected closeDeactivate(): void {
+    this.deactivateModalOpen.set(false);
+  }
+
+  protected confirmDeactivate(): void {
+    this.security.deactivateAccount((ok) => {
+      if (ok) {
+        this.accountDeactivated.set(true);
+        this.deactivateModalOpen.set(false);
+      }
     });
   }
 }
