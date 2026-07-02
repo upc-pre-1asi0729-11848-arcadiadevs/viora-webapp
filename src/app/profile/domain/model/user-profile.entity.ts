@@ -22,7 +22,6 @@ export interface UserProfileProps {
   jobTitle?: string;
   /** Short role caption for the preview card, e.g. "Olive producer". */
   roleLabel?: string;
-  timezone?: string;
   language?: string;
   /** Location caption surfaced to the other party, e.g. "Valle de Ica, Peru". */
   location?: string;
@@ -45,7 +44,6 @@ export class UserProfile {
   readonly phone: string;
   readonly jobTitle: string;
   readonly roleLabel: string;
-  readonly timezone: string;
   readonly language: string;
   readonly location: string;
   readonly specialtyArea: string;
@@ -60,7 +58,6 @@ export class UserProfile {
     phone = '',
     jobTitle = '',
     roleLabel = '',
-    timezone = 'America/Lima (GMT-5)',
     language = 'English',
     location = '',
     specialtyArea = '',
@@ -74,7 +71,6 @@ export class UserProfile {
     this.phone = phone;
     this.jobTitle = jobTitle;
     this.roleLabel = roleLabel;
-    this.timezone = timezone;
     this.language = language;
     this.location = location;
     this.specialtyArea = specialtyArea;
@@ -117,7 +113,6 @@ export class UserProfile {
       phone: this.phone,
       jobTitle: this.jobTitle,
       roleLabel: this.roleLabel,
-      timezone: this.timezone,
       language: this.language,
       location: this.location,
       specialtyArea: this.specialtyArea,

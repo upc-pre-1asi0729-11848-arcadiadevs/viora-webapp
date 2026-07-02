@@ -9,7 +9,6 @@ export interface ProfileResource {
   email: string | null;
   phone: string | null;
   jobTitle: string | null;
-  timezone: string | null;
   language: string | null;
   location: string | null;
   specialtyArea: string | null;
@@ -21,7 +20,6 @@ export interface UpdateProfileRequest {
   email: string;
   phone: string;
   jobTitle: string;
-  timezone: string;
   language: string;
   location: string;
   specialtyArea: string;
@@ -48,7 +46,6 @@ export class ProfileAssembler {
       phone: resource.phone ?? '',
       jobTitle: resource.jobTitle ?? '',
       roleLabel: ROLE_LABELS[role],
-      timezone: resource.timezone ?? 'America/Lima (GMT-5)',
       language: resource.language ?? 'English',
       location: resource.location ?? '',
       specialtyArea: resource.specialtyArea ?? '',

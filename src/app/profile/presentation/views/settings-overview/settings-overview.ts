@@ -42,15 +42,6 @@ export class SettingsOverviewView implements OnInit {
 
   protected readonly activeTab = signal<SettingsTab>('profile');
 
-  protected readonly timezoneOptions = [
-    'America/Lima (GMT-5)',
-    'America/Bogota (GMT-5)',
-    'America/Santiago (GMT-4)',
-    'America/Sao_Paulo (GMT-3)',
-    'Europe/Madrid (GMT+1)',
-    'UTC (GMT+0)',
-  ];
-
   protected readonly languageOptions = ['English', 'Español', 'Português'];
 
   // ----- Editable draft, seeded from the persisted profile -----
@@ -58,7 +49,6 @@ export class SettingsOverviewView implements OnInit {
   protected readonly email = signal('');
   protected readonly phone = signal('');
   protected readonly jobTitle = signal('');
-  protected readonly timezone = signal('');
   protected readonly language = signal('');
   protected readonly location = signal('');
   protected readonly specialtyArea = signal('');
@@ -115,7 +105,6 @@ export class SettingsOverviewView implements OnInit {
     this.email.set(profile.email);
     this.phone.set(profile.phone);
     this.jobTitle.set(profile.jobTitle);
-    this.timezone.set(profile.timezone);
     this.language.set(profile.language);
     this.location.set(profile.location);
     this.specialtyArea.set(profile.specialtyArea);
@@ -136,7 +125,6 @@ export class SettingsOverviewView implements OnInit {
       email: this.email().trim(),
       phone: this.phone().trim(),
       jobTitle: this.jobTitle().trim(),
-      timezone: this.timezone(),
       language: this.language(),
       location: this.location().trim(),
       specialtyArea: this.specialtyArea().trim(),
