@@ -178,26 +178,29 @@ export class SurveillanceStore {
     this.pestReports().filter((report) => report.result === 'Alert confirmed'),
   );
 
-  /** Report ids that still carry an OPEN alert (i.e. represent active risk). */
-  readonly openReportIds = computed<Set<number>>(
-    () =>
-      new Set(
-        this.openAlerts()
-          .map((alert) => alert.reportId)
-          .filter((id): id is number => id != null),
-      ),
-  );
-
   /**
-   * Confirmed reports whose originating alert is still open — the truly "active"
-   * signals. A report drops out here once its alert is resolved or dismissed, so
-   * the Pest Surveillance KPIs reflect the alert lifecycle.
+   * Confirmed reports that still represent active risk — used by the Pest
+   * Surveillance KPIs so they track the alert lifecycle. A report is active when
+   * its originating alert is still open. Linking prefers the strong `reportId`
+   * link; when the alert predates that link (legacy `reportId == null`) it falls
+   * back to "is there an open alert on the same plot". Resolved/dismissed alerts
+   * therefore drop their report out of the active set.
    */
-  readonly activeConfirmedReports = computed<PestReport[]>(() =>
-    this.confirmedReports().filter(
-      (report) => report.id != null && this.openReportIds().has(report.id),
-    ),
-  );
+  readonly activeConfirmedReports = computed<PestReport[]>(() => {
+    const allAlerts = this.alerts();
+    return this.confirmedReports().filter((report) => {
+      const linked = allAlerts.filter(
+        (alert) => alert.reportId != null && String(alert.reportId) === String(report.id),
+      );
+      if (linked.length > 0) {
+        return linked.some((alert) => OPEN_STATUSES.has(alert.status));
+      }
+      // Legacy/unlinked alert: fall back to an open alert on the same plot.
+      return this.openAlerts().some(
+        (alert) => report.plotId != null && String(alert.plotId) === String(report.plotId),
+      );
+    });
+  });
 
   /** Community exposure: number of anonymized nearby signals. */
   readonly communityExposureCount = computed<number>(() => this.communityRisk().signals.length);
