@@ -1,0 +1,378 @@
+<section class="interventions-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    subtitle="Track technical interventions linked to alerts, proposals and field prescriptions."
+    [updatedLabel]="store.lastSyncLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Toolbar: plot scope -->
+  <div class="toolbar">
+    <label class="scope-field">
+      <mat-icon>place</mat-icon>
+      <span class="scope-label">Plot:</span>
+      <select [value]="selectedScope()" (change)="onSelectScope($any($event.target).value)">
+        <option value="all">All plots</option>
+        @for (plot of plots(); track plot.id) {
+          <option [value]="plot.id">{{ plot.name }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <mat-card class="kpi-card">
+      <div class="kpi-head"><h2>Total interventions</h2></div>
+      <span class="kpi-value kpi-value--primary">{{ store.interventions().length }}</span>
+      <p class="kpi-foot">Accepted cases in the technical-service lifecycle.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head">
+        <h2>Pending certification</h2>
+        @if (store.pendingCertificationCount() > 0) {
+          <span class="kpi-pill kpi-pill--danger">Action required</span>
+        }
+      </div>
+      <span class="kpi-value kpi-value--red">{{ store.pendingCertificationCount() }}</span>
+      <p class="kpi-foot">Prescriptions waiting for field application confirmation.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <div class="kpi-head"><h2>Recovery monitoring</h2></div>
+      <span class="kpi-value kpi-value--blue">{{ store.recoveryMonitoringCount() }}</span>
+      <p class="kpi-foot">Post-intervention vigor under observation.</p>
+    </mat-card>
+
+    <mat-card class="kpi-card kpi-card--amber">
+      <div class="kpi-head"><h2>Closure pending</h2></div>
+      <span class="kpi-value kpi-value--amber">{{ store.closurePendingCount() }}</span>
+      <p class="kpi-foot">Cases ready for service evaluation and closure.</p>
+    </mat-card>
+  </section>
+
+  <div class="detail-grid">
+    <!-- Left: records + prescription summary -->
+    <div class="detail-col">
+      <mat-card class="section-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title"><mat-icon class="title-icon">description</mat-icon> Intervention records</h2>
+            <p class="section-subtitle">Technical interventions linked to alerts, proposals and field prescriptions.</p>
+          </div>
+        </div>
+
+        <div class="records-table">
+          <div class="records-header">
+            <span>ID</span><span>Plot</span><span>Linked alert</span><span>Specialist</span><span>Status</span>
+          </div>
+
+          @if (store.loading().list && store.interventions().length === 0) {
+            <div class="records-state">Loading interventions…</div>
+          } @else if (visibleInterventions().length === 0) {
+            <div class="records-state">No interventions yet. Accept a specialist proposal in Expert Assistance to start one.</div>
+          } @else {
+            @for (item of visibleInterventions(); track item.code) {
+              <button type="button" class="records-row" [class.is-selected]="item.code === store.selectedCode()" (click)="selectIntervention(item)">
+                <span class="record-code">{{ item.code }}</span>
+                <span>{{ plotName(item.plotId) }}</span>
+                <span>{{ item.serviceTitle || 'Assistance case' }}</span>
+                <span>{{ store.specialistName(item.specialistId) }}</span>
+                <span><span class="pill" [class]="item.statusClass">{{ item.statusLabel }}</span></span>
+              </button>
+            }
+          }
+        </div>
+      </mat-card>
+
+      <!-- Prescription summary -->
+      @if (selected() && store.prescription(); as rx) {
+        <mat-card class="section-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Prescription summary</h2>
+              <p class="section-subtitle">Technical prescription issued by the specialist — read-only.</p>
+            </div>
+            <span class="tag-purple">{{ rx.code }}</span>
+          </div>
+
+          <div class="rx-specialist">
+            <span class="avatar avatar--sm">{{ store.specialistName(selected()!.specialistId).slice(0,2).toUpperCase() }}</span>
+            <div class="identity-text">
+              <span class="specialist-name">{{ store.specialistName(selected()!.specialistId) }}</span>
+              <span class="specialist-role">{{ rx.treatment }}</span>
+            </div>
+          </div>
+
+          <ul class="scope-list">
+            @for (item of rx.scope; track item) {
+              <li><mat-icon>check</mat-icon> {{ item }}</li>
+            }
+          </ul>
+
+          @if (rx.products.length > 0) {
+            <div class="rx-products">
+              <strong>Products</strong>
+              <div class="product-tags">
+                @for (product of rx.products; track product) {
+                  <span class="product-tag">{{ product }}</span>
+                }
+              </div>
+            </div>
+          }
+        </mat-card>
+      }
+    </div>
+
+    <!-- Right: selected intervention + recovery -->
+    <div class="detail-col">
+      @if (selected(); as item) {
+        <mat-card class="section-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Selected intervention</h2>
+              <p class="section-subtitle">{{ item.code }} · {{ plotName(item.plotId) }}</p>
+            </div>
+            <span class="pill" [class]="item.statusClass">{{ item.statusLabel }}</span>
+          </div>
+
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span>Linked alert</span>
+              <span>
+                @if (linkedAlert()) {
+                  <span class="pill" [class]="severityClass(linkedAlert()!.severity)">{{ linkedAlert()!.severity }}</span>
+                  {{ linkedAlert()!.typeLabel }}
+                } @else {
+                  {{ item.serviceTitle || 'Assistance case' }}
+                }
+              </span>
+            </div>
+            <div class="detail-row"><span>Specialist</span><strong>{{ store.specialistName(item.specialistId) }}</strong></div>
+            <div class="detail-row"><span>Prescription</span><strong>{{ item.prescriptionCode }}</strong></div>
+            <div class="detail-row"><span>Estimated cost</span><strong>{{ item.amountLabel }}</strong></div>
+          </div>
+
+          <div class="next-note">
+            <mat-icon>info</mat-icon>
+            <span>
+              @switch (nextAction()) {
+                @case ('simulate') { Next: the specialist issues the technical prescription. }
+                @case ('certify') { Next required action: certify the application after field execution. }
+                @case ('impact') { Under recovery monitoring — report the impact after the grace period. }
+                @case ('close') { Ready to close — evaluate the service and finalize. }
+                @default { This intervention is closed. }
+              }
+            </span>
+          </div>
+
+          @switch (nextAction()) {
+            @case ('simulate') {
+              <button mat-flat-button type="button" class="primary-button block" [disabled]="store.loading().action" (click)="simulatePrescription()">
+                <mat-icon>bolt</mat-icon> Simulate specialist prescription
+              </button>
+            }
+            @case ('certify') {
+              <button mat-flat-button type="button" class="primary-button block" (click)="openModal('certify')">
+                <mat-icon>verified</mat-icon> Certify application
+              </button>
+            }
+            @case ('impact') {
+              <button mat-flat-button type="button" class="primary-button block" (click)="openModal('impact')">
+                <mat-icon>eco</mat-icon> Report impact
+              </button>
+            }
+            @case ('close') {
+              <button mat-flat-button type="button" class="primary-button block" (click)="openModal('close')">
+                <mat-icon>task_alt</mat-icon> Close intervention
+              </button>
+            }
+            @default {
+              <div class="closed-banner"><mat-icon>check_circle</mat-icon> Service closed and evaluated.</div>
+            }
+          }
+        </mat-card>
+
+        <!-- Recovery -->
+        @if (item.inRecovery || item.readyToClose || item.isClosed) {
+          <mat-card class="section-card">
+            <div class="section-head">
+              <h2 class="section-title">Post-intervention recovery</h2>
+              <span class="tag-purple">{{ item.prescriptionCode }}</span>
+            </div>
+            <div class="detail-rows">
+              <div class="detail-row"><span>Monitoring period</span><strong>14 days</strong></div>
+              <div class="detail-row">
+                <span>Recovery status</span>
+                <strong class="recovery-ok">{{ item.isClosed ? 'Service closed' : (item.readyToClose ? 'Impact reported' : 'Under observation') }}</strong>
+              </div>
+            </div>
+            <p class="recovery-note">
+              Vegetation vigor is monitored during the grace period. Report the impact once the recovery window completes.
+            </p>
+          </mat-card>
+        }
+      } @else if (!store.loading().list) {
+        <mat-card class="section-card">
+          <div class="records-state">Select an intervention to view its details.</div>
+        </mat-card>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Certify application modal -->
+@if (modal() === 'certify' && selected(); as item) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Certify application</h2>
+          <p class="modal-subtitle">Register the field execution of the technical prescription.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field"><span>Linked intervention</span><div class="field-readonly">{{ item.code }} · {{ plotName(item.plotId) }}</div></div>
+        <div class="field"><span>Prescription</span><div class="field-readonly">{{ item.prescriptionCode }}</div></div>
+      </div>
+
+      <label class="field">
+        <span>Applied area</span>
+        <input type="text" placeholder="e.g. South-west block · 0.6 ha" [value]="certArea()" (input)="certArea.set($any($event.target).value)" />
+      </label>
+
+      <div class="field">
+        <span>Execution status</span>
+        <div class="radio-list">
+          <label class="radio-item" [class.is-active]="certStatus() === 'APPLIED_AS_PRESCRIBED'">
+            <input type="radio" name="certStatus" [checked]="certStatus() === 'APPLIED_AS_PRESCRIBED'" (change)="certStatus.set('APPLIED_AS_PRESCRIBED')" /> Applied as prescribed
+          </label>
+          <label class="radio-item" [class.is-active]="certStatus() === 'PARTIALLY_APPLIED'">
+            <input type="radio" name="certStatus" [checked]="certStatus() === 'PARTIALLY_APPLIED'" (change)="certStatus.set('PARTIALLY_APPLIED')" /> Partially applied
+          </label>
+          <label class="radio-item" [class.is-active]="certStatus() === 'NOT_APPLIED'">
+            <input type="radio" name="certStatus" [checked]="certStatus() === 'NOT_APPLIED'" (change)="certStatus.set('NOT_APPLIED')" /> Not applied
+          </label>
+        </div>
+      </div>
+
+      <label class="field">
+        <span>Field note (optional)</span>
+        <textarea rows="3" placeholder="Describe field conditions or any deviation from the prescription…" [value]="certNote()" (input)="certNote.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-flat-button type="button" class="primary-button" [disabled]="certArea().trim().length === 0 || store.loading().action" (click)="submitCertify()">
+          <mat-icon>verified</mat-icon> {{ store.loading().action ? 'Saving…' : 'Certify application' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Report impact modal -->
+@if (modal() === 'impact' && selected(); as item) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Report intervention impact</h2>
+          <p class="modal-subtitle">Report whether the phytosanitary issue improved after the grace period.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field"><span>Linked intervention</span><div class="field-readonly">{{ item.code }} · {{ plotName(item.plotId) }}</div></div>
+        <div class="field"><span>Grace period</span><div class="field-readonly">14 days completed</div></div>
+      </div>
+
+      <div class="field">
+        <span>Observed result</span>
+        <div class="radio-list">
+          <label class="radio-item" [class.is-active]="impactResult() === 'PEST_PRESSURE_REDUCED'"><input type="radio" name="obs" [checked]="impactResult() === 'PEST_PRESSURE_REDUCED'" (change)="impactResult.set('PEST_PRESSURE_REDUCED')" /> Pest pressure reduced</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'SYMPTOMS_PERSIST'"><input type="radio" name="obs" [checked]="impactResult() === 'SYMPTOMS_PERSIST'" (change)="impactResult.set('SYMPTOMS_PERSIST')" /> Symptoms persist</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'NEW_SYMPTOMS_DETECTED'"><input type="radio" name="obs" [checked]="impactResult() === 'NEW_SYMPTOMS_DETECTED'" (change)="impactResult.set('NEW_SYMPTOMS_DETECTED')" /> New symptoms detected</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'NOT_ENOUGH_EVIDENCE_YET'"><input type="radio" name="obs" [checked]="impactResult() === 'NOT_ENOUGH_EVIDENCE_YET'" (change)="impactResult.set('NOT_ENOUGH_EVIDENCE_YET')" /> Not enough evidence yet</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span>Impact level</span>
+        <div class="segmented">
+          @for (level of ['POSITIVE','PARTIAL','NEGATIVE','INCONCLUSIVE']; track level) {
+            <button type="button" class="seg" [class.is-active]="impactLevel() === level" (click)="impactLevel.set($any(level))">{{ level.charAt(0) + level.slice(1).toLowerCase() }}</button>
+          }
+        </div>
+      </div>
+
+      <label class="field">
+        <span>Producer assessment</span>
+        <textarea rows="3" placeholder="Describe the observed change in the affected area…" [value]="impactAssessment()" (input)="impactAssessment.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-flat-button type="button" class="primary-button" [disabled]="impactAssessment().trim().length === 0 || store.loading().action" (click)="submitImpact()">
+          <mat-icon>send</mat-icon> {{ store.loading().action ? 'Sending…' : 'Submit impact report' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Close intervention modal -->
+@if (modal() === 'close' && selected(); as item) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Close intervention</h2>
+          <p class="modal-subtitle">Finalize the technical service and evaluate your experience with the specialist.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="close-specialist">
+        <span class="avatar avatar--sm">{{ store.specialistName(item.specialistId).slice(0,2).toUpperCase() }}</span>
+        <div class="identity-text">
+          <span class="specialist-name">{{ store.specialistName(item.specialistId) }}</span>
+          <span class="specialist-role">{{ item.code }} · {{ plotName(item.plotId) }}</span>
+        </div>
+        <span class="pill status-ready">Ready to close</span>
+      </div>
+
+      <div class="field">
+        <span>Service result</span>
+        <div class="radio-list">
+          <label class="radio-item" [class.is-active]="closeResult() === 'RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'RESOLVED'" (change)="closeResult.set('RESOLVED')" /> Resolved</label>
+          <label class="radio-item" [class.is-active]="closeResult() === 'PARTIALLY_RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'PARTIALLY_RESOLVED'" (change)="closeResult.set('PARTIALLY_RESOLVED')" /> Partially resolved</label>
+          <label class="radio-item" [class.is-active]="closeResult() === 'NOT_RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'NOT_RESOLVED'" (change)="closeResult.set('NOT_RESOLVED')" /> Not resolved</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span>Would you hire this specialist again?</span>
+        <div class="segmented segmented--two">
+          <button type="button" class="seg" [class.is-active]="closeHire() === 'YES'" (click)="closeHire.set('YES')">Yes</button>
+          <button type="button" class="seg" [class.is-active]="closeHire() === 'NO'" (click)="closeHire.set('NO')">No</button>
+        </div>
+      </div>
+
+      <label class="field">
+        <span>Private feedback (optional)</span>
+        <textarea rows="3" placeholder="Add a short comment about the service quality, punctuality, or technical support…" [value]="closeFeedback()" (input)="closeFeedback.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-flat-button type="button" class="primary-button" [disabled]="store.loading().action" (click)="submitClose()">
+          <mat-icon>task_alt</mat-icon> {{ store.loading().action ? 'Closing…' : 'Close intervention' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
