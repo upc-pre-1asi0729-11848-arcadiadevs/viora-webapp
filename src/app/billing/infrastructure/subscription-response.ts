@@ -51,7 +51,6 @@ export interface CheckoutResource {
 }
 
 export interface CreateCheckoutRequest {
-  userId: number;
   planCode: string;
   interval: PlanInterval;
 }
