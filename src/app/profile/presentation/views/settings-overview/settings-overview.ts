@@ -232,6 +232,9 @@ export class SettingsOverviewView implements OnInit {
     this.selectedCoupon.set(coupon);
     this.conditionsExpanded.set(true);
     this.couponCodeCopied.set(false);
+    this.couponTransform.set('rotateX(0deg) rotateY(0deg)');
+    this.glossX.set('50%');
+    this.glossY.set('-20%');
   }
 
   protected backToCoupons(): void {
@@ -265,11 +268,9 @@ export class SettingsOverviewView implements OnInit {
     this.glossY.set(`${(py * 100).toFixed(1)}%`);
   }
 
-  /** Returns the coupon to rest when the cursor leaves. */
+  /** Returns the coupon to rest and lets the gloss fade out in place. */
   protected onCouponLeave(): void {
     this.couponTransform.set('rotateX(0deg) rotateY(0deg)');
-    this.glossX.set('50%');
-    this.glossY.set('-20%');
   }
 
   // ----- Security actions -----
