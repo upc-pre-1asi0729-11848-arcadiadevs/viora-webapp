@@ -8,6 +8,8 @@ const surveillanceRoutes = () =>
   import('./surveillance/presentation/surveillance.routes').then((m) => m.surveillanceRoutes);
 const interventionRoutes = () =>
   import('./intervention/presentation/intervention.routes').then((m) => m.interventionRoutes);
+const profileRoutes = () =>
+  import('./profile/presentation/profile.routes').then((m) => m.profileRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
 
 /**
@@ -46,6 +48,16 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: interventionRoutes,
+      },
+    ],
+  },
+  {
+    path: 'settings',
+    loadComponent: layout,
+    children: [
+      {
+        path: '',
+        loadChildren: profileRoutes,
       },
     ],
   },
