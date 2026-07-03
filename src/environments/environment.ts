@@ -55,11 +55,13 @@ export const environment = {
     // per-user referral code and the coupons they hold / can redeem.
     referrals: '/referrals',
     coupons: '/coupons',
+    couponRedemptions: '/coupon-redemptions',
 
     // Subscription section (Billing): plan catalog, the user's subscription,
-    // invoices (billing history), payment methods, and MercadoPago checkout.
+    // invoices (billing history), payment methods, and MercadoPago checkouts.
     plans: '/plans',
     subscriptions: '/subscriptions',
+    checkouts: '/checkouts',
     invoices: '/invoices',
     paymentMethods: '/payment-methods',
 
