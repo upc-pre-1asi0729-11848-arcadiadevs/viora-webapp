@@ -41,16 +41,6 @@ const workspacePlaceholderRoutes: Routes = [
     },
   },
   {
-    path: 'billing/subscription',
-    title: 'Subscription',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Subscription',
-      sectionLabel: 'Subscription',
-      subtitle: 'Manage plan details and billing configuration.',
-    },
-  },
-  {
     path: 'support',
     title: 'Support',
     loadComponent: comingSoonPage,

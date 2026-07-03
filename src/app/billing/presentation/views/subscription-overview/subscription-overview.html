@@ -1,0 +1,317 @@
+<section class="subscription-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    subtitle="Manage your plan and review billing history."
+    updatedLabel="Just now"
+    (refresh)="refresh()" />
+
+  @if (paymentResult() === 'approved') {
+    <div class="banner banner--success">
+      <mat-icon>check_circle</mat-icon>
+      Payment approved — your plan is being updated. Refresh in a moment if it isn't reflected yet.
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+    </div>
+  } @else if (paymentResult() === 'pending') {
+    <div class="banner banner--info">
+      <mat-icon>schedule</mat-icon>
+      Payment pending confirmation. Your plan updates as soon as MercadoPago confirms it.
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+    </div>
+  } @else if (paymentResult() === 'failure') {
+    <div class="banner banner--error">
+      <mat-icon>error_outline</mat-icon>
+      The payment could not be completed. No changes were made — you can try again.
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+    </div>
+  }
+
+  @if (store.error()) {
+    <div class="banner banner--error">
+      <mat-icon>error_outline</mat-icon> {{ store.error() }}
+    </div>
+  }
+
+  <div class="subscription-grid">
+    <!-- ============ LEFT COLUMN ============ -->
+    <div class="col">
+      <!-- Current plan -->
+      <mat-card class="section-card">
+        <div class="plan-hero-head">
+          <mat-icon class="hero-icon">diamond</mat-icon>
+          <div>
+            <h2 class="card-title">{{ store.subscription()?.planName || store.currentPlan()?.name || 'Your plan' }}</h2>
+            <p class="hero-sub">{{ store.subscription()?.renewalCaption || 'Manage your subscription' }}</p>
+          </div>
+        </div>
+
+        <div class="hero-divider"></div>
+
+        <div class="hero-price">
+          <span class="money">{{ store.currentPlan()?.priceLabel || store.subscription()?.priceLabel || '—' }}</span>
+          <span class="money-interval">{{ store.currentPlan()?.intervalSuffix || store.subscription()?.intervalSuffix }}</span>
+        </div>
+
+        <div class="usage-list">
+          <div class="usage">
+            <div class="usage-head">
+              <span class="usage-label">Plots monitored</span>
+              <span class="usage-count">{{ plotsUsed() }} of {{ store.currentPlan()?.plotLimit ?? '—' }} used</span>
+            </div>
+            <div class="usage-bar"><span class="usage-fill" [style.width.%]="plotUsagePct()"></span></div>
+          </div>
+          <div class="usage">
+            <div class="usage-head">
+              <span class="usage-label">IoT devices connected</span>
+              <span class="usage-count">{{ iotUsed() }} of {{ store.currentPlan()?.iotLimit ?? '—' }} used</span>
+            </div>
+            <div class="usage-bar"><span class="usage-fill" [style.width.%]="iotUsagePct()"></span></div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button mat-flat-button type="button" class="primary-button" (click)="scrollToPlans()">Change plan</button>
+          @if (annualPlan() && !store.subscription()?.isAnnual) {
+            <button mat-stroked-button type="button" class="ghost-button" (click)="switchToAnnual()">Switch to annual</button>
+          }
+        </div>
+      </mat-card>
+
+      <!-- Available plans -->
+      <mat-card class="section-card" id="available-plans">
+        <div class="section-head">
+          <div>
+            <h2 class="card-title"><mat-icon class="title-icon">star</mat-icon> Available plans</h2>
+            <p class="card-sub">Compare tiers and switch anytime — changes apply at the next billing cycle.</p>
+          </div>
+        </div>
+
+        <div class="plan-grid">
+          @for (plan of store.plans(); track plan.code) {
+            <div class="plan-card" [class.is-current]="isCurrentPlan(plan)">
+              @if (isCurrentPlan(plan)) {
+                <span class="plan-tag">Current plan</span>
+              }
+              <h3 class="plan-name">{{ plan.name }}</h3>
+              <div class="plan-price">
+                <span class="plan-amount">{{ plan.priceLabel }}</span>
+                <span class="plan-interval">{{ plan.intervalSuffix }}</span>
+              </div>
+              <p class="plan-tagline">{{ plan.tagline }}</p>
+
+              <ul class="plan-features">
+                @for (feature of plan.features; track feature) {
+                  <li><mat-icon>check</mat-icon> {{ feature }}</li>
+                }
+              </ul>
+
+              @if (isCurrentPlan(plan)) {
+                <button mat-flat-button type="button" class="plan-btn plan-btn--current" disabled>Current plan</button>
+              } @else {
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="plan-btn plan-btn--switch"
+                  [disabled]="store.checkoutPending() === plan.code"
+                  (click)="openSwitch(plan)">
+                  {{ store.checkoutPending() === plan.code ? 'Opening…' : 'Switch plan' }}
+                </button>
+              }
+            </div>
+          } @empty {
+            <p class="empty-hint">Plans are unavailable right now.</p>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- ============ RIGHT COLUMN ============ -->
+    <div class="col">
+      <!-- Payment method -->
+      <mat-card class="section-card">
+        <div class="section-head">
+          <h2 class="card-title"><mat-icon class="title-icon">credit_card</mat-icon> Payment method</h2>
+        </div>
+
+        @if (store.defaultPaymentMethod(); as method) {
+          <div class="method-row">
+            <span class="method-icon"><mat-icon>credit_card</mat-icon></span>
+            <div class="method-text">
+              <span class="method-name">{{ method.label }}</span>
+              <span class="method-exp">{{ method.expiresLabel }}</span>
+            </div>
+            @if (method.isDefault) {
+              <span class="method-default">default</span>
+            }
+          </div>
+        } @else {
+          <p class="empty-hint">No payment method on file yet.</p>
+        }
+
+        <button mat-stroked-button type="button" class="ghost-button" (click)="openPayment()">
+          Update payment method
+        </button>
+      </mat-card>
+
+      <!-- Next invoice -->
+      <mat-card class="section-card">
+        <div class="section-head">
+          <h2 class="card-title">Next invoice</h2>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Amount due</span>
+          <span class="kv-val">{{ store.currentPlan()?.priceLabel || '—' }}</span>
+        </div>
+        <div class="kv-divider"></div>
+        <div class="kv-row">
+          <span class="kv-key">Billing date</span>
+          <span class="kv-val">{{ store.subscription()?.periodEndLabel || '—' }}</span>
+        </div>
+      </mat-card>
+
+      <!-- Cancel subscription -->
+      <mat-card class="section-card">
+        <div class="section-head">
+          <h2 class="card-title">Cancel subscription</h2>
+        </div>
+        @if (store.subscription()?.isCanceled) {
+          <p class="cancel-note">
+            Your subscription is set to end on {{ store.subscription()?.periodEndLabel }}. You keep access until then.
+          </p>
+        } @else {
+          <p class="cancel-note">
+            You'll lose access to dynamic nutrition, pest surveillance, and expert assistance at the end of the billing period.
+          </p>
+          <button mat-stroked-button type="button" class="ghost-button" (click)="openCancel()">Cancel subscription</button>
+        }
+      </mat-card>
+
+      <!-- Billing history -->
+      <mat-card class="section-card">
+        <div class="section-head">
+          <div>
+            <h2 class="card-title"><mat-icon class="title-icon">description</mat-icon> Billing history</h2>
+            <p class="card-sub">Invoices from the last 6 billing cycles.</p>
+          </div>
+        </div>
+
+        <div class="history-table">
+          <div class="history-header">
+            <span>Date</span>
+            <span>Description</span>
+            <span>Amount</span>
+            <span>Status</span>
+            <span></span>
+          </div>
+          @for (invoice of store.invoices(); track invoice.id) {
+            <div class="history-row">
+              <span>{{ invoice.dateLabel }}</span>
+              <span>{{ invoice.description }}</span>
+              <span>{{ invoice.amountLabel }}</span>
+              <span><span class="pill" [class.pill--paid]="invoice.isPaid">{{ invoice.statusLabel }}</span></span>
+              <span>
+                <button mat-icon-button type="button" class="download-btn" aria-label="Download invoice">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </span>
+            </div>
+          } @empty {
+            <div class="history-state">No invoices yet.</div>
+          }
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</section>
+
+<!-- Confirm plan switch modal -->
+@if (confirmPlan(); as plan) {
+  <div class="modal-overlay" (click)="closeSwitch()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Switch to {{ plan.name }}</h2>
+          <p class="modal-subtitle">Changes apply at your next billing cycle.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeSwitch()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="switch-summary">
+        <div class="summary-row"><span>Plan</span><strong>{{ plan.name }}</strong></div>
+        <div class="summary-row"><span>Price</span><strong>{{ plan.priceLabel }} {{ plan.intervalSuffix }}</strong></div>
+      </div>
+
+      <p class="modal-note">
+        <mat-icon>lock</mat-icon>
+        You'll be redirected to MercadoPago's secure checkout to complete the payment.
+      </p>
+      @if (store.error()) {
+        <p class="field-error">{{ store.error() }}</p>
+      }
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeSwitch()">Cancel</button>
+        <button
+          mat-flat-button
+          type="button"
+          class="primary-button"
+          [disabled]="store.checkoutPending() === plan.code"
+          (click)="confirmSwitch()">
+          {{ store.checkoutPending() === plan.code ? 'Redirecting…' : 'Continue to payment' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Cancel subscription confirmation modal -->
+@if (cancelModalOpen()) {
+  <div class="modal-overlay" (click)="closeCancel()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Cancel subscription</h2>
+          <p class="modal-subtitle">This takes effect at the end of your billing period.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeCancel()"><mat-icon>close</mat-icon></button>
+      </div>
+      <p class="modal-body-text">
+        You'll keep access to {{ store.subscription()?.planName || 'your plan' }} until
+        {{ store.subscription()?.periodEndLabel || 'the period ends' }}, then lose dynamic nutrition, pest
+        surveillance and expert assistance.
+      </p>
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeCancel()">Keep plan</button>
+        <button
+          mat-flat-button
+          type="button"
+          class="danger-button"
+          [disabled]="store.canceling()"
+          (click)="confirmCancel()">
+          {{ store.canceling() ? 'Canceling…' : 'Cancel subscription' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Update payment method modal -->
+@if (paymentModalOpen()) {
+  <div class="modal-overlay" (click)="closePayment()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>Update payment method</h2>
+          <p class="modal-subtitle">Your card is handled securely by MercadoPago.</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closePayment()"><mat-icon>close</mat-icon></button>
+      </div>
+      <p class="modal-body-text">
+        Viora never stores your full card details. Your payment method updates automatically the next time you
+        complete a payment through MercadoPago's secure checkout.
+      </p>
+      <div class="modal-actions">
+        <button mat-flat-button type="button" class="primary-button" (click)="closePayment()">Got it</button>
+      </div>
+    </div>
+  </div>
+}
