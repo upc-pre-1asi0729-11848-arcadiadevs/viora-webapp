@@ -1,0 +1,160 @@
+<section class="support-page">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs()"
+    subtitle="Find answers, reach a specialist, or review your account's legal agreements."
+    updatedLabel="Just now" />
+
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input
+      type="text"
+      placeholder='Search help articles, e.g. "NDVI thresholds" or "invite a teammate"'
+      [value]="search()"
+      (input)="search.set($any($event.target).value); selectTab('faq')" />
+  </div>
+
+  <!-- Top cards -->
+  <div class="top-cards">
+    <mat-card class="top-card">
+      <span class="top-icon"><mat-icon>groups</mat-icon></span>
+      <h2 class="top-title">Expert Assistance</h2>
+      <p class="top-sub">For urgent field issues — routes directly to an on-call specialist.</p>
+      <div class="top-foot">
+        <span class="tag tag--green">Priority</span>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="goToExperts()">Go to Experts</button>
+      </div>
+    </mat-card>
+
+    <mat-card class="top-card">
+      <span class="top-icon"><mat-icon>description</mat-icon></span>
+      <h2 class="top-title">Legal documents</h2>
+      <p class="top-sub">Terms, privacy policy, SLA, and device warranty.</p>
+      <div class="top-foot">
+        <span class="tag tag--muted">{{ legalDocuments.length }} documents</span>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="viewLegal()">View</button>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="support-tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="support-tab"
+      [class.is-active]="activeTab() === 'faq'"
+      (click)="selectTab('faq')">
+      FAQ
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="support-tab"
+      [class.is-active]="activeTab() === 'legal'"
+      (click)="selectTab('legal')">
+      Legal
+    </button>
+  </nav>
+
+  <!-- ============ FAQ ============ -->
+  @if (activeTab() === 'faq') {
+    <div class="faq-grid">
+      <!-- Categories -->
+      <mat-card class="section-card categories-card">
+        <span class="categories-title">CATEGORIES</span>
+        <ul class="category-list">
+          @for (category of categories(); track category.label) {
+            <li>
+              <button
+                type="button"
+                class="category-item"
+                [class.is-active]="isCategoryActive(category.label)"
+                (click)="selectCategory(category.label)">
+                <span class="category-label">{{ category.label }}</span>
+                <span class="category-count">{{ category.count }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </mat-card>
+
+      <!-- Articles -->
+      <mat-card class="section-card articles-card">
+        <div class="articles-head">
+          <h2 class="section-title">{{ currentCategoryLabel() }}</h2>
+          <p class="section-subtitle">{{ filteredArticles().length }} articles</p>
+        </div>
+
+        <div class="article-list">
+          @for (article of filteredArticles(); track article.id) {
+            <div class="article" [class.is-open]="expandedId() === article.id">
+              <button type="button" class="article-head" (click)="toggleArticle(article.id)">
+                <span class="article-q">{{ article.question }}</span>
+                <mat-icon>{{ expandedId() === article.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+              </button>
+              @if (expandedId() === article.id) {
+                <p class="article-answer">{{ article.answer }}</p>
+              }
+            </div>
+          } @empty {
+            <div class="articles-empty">No articles match your search.</div>
+          }
+        </div>
+      </mat-card>
+    </div>
+  }
+
+  <!-- ============ LEGAL ============ -->
+  @if (activeTab() === 'legal') {
+    <div class="legal-grid">
+      @for (doc of legalDocuments; track doc.id) {
+        <mat-card class="section-card legal-card">
+          <div class="legal-head">
+            <span class="legal-icon"><mat-icon>{{ doc.icon }}</mat-icon></span>
+            <div>
+              <h2 class="legal-title">{{ doc.title }}</h2>
+              <p class="legal-summary">{{ doc.summary }}</p>
+            </div>
+          </div>
+          <div class="legal-foot">
+            <button mat-stroked-button type="button" class="ghost-button" (click)="readFullDocument(doc)">
+              Read full document
+            </button>
+            <span class="legal-updated">Last updated {{ doc.lastUpdated }}</span>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</section>
+
+<!-- Legal document reader -->
+@if (openDoc(); as doc) {
+  <div class="modal-overlay" (click)="closeDocument()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ doc.title }}</h2>
+          <p class="modal-subtitle">Last updated {{ doc.lastUpdated }}</p>
+        </div>
+        <button mat-icon-button type="button" (click)="closeDocument()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="doc-body">
+        <p class="doc-intro">{{ doc.intro }}</p>
+        @for (section of doc.sections; track section.heading; let i = $index) {
+          <div class="doc-section">
+            <h3 class="doc-heading">{{ i + 1 }}. {{ section.heading }}</h3>
+            <p class="doc-text">{{ section.body }}</p>
+          </div>
+        }
+        <p class="doc-footnote">This summary is provided for convenience within the Viora app.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button mat-flat-button type="button" class="primary-button" (click)="closeDocument()">Close</button>
+      </div>
+    </div>
+  </div>
+}

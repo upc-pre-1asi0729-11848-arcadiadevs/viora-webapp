@@ -41,16 +41,6 @@ const workspacePlaceholderRoutes: Routes = [
     },
   },
   {
-    path: 'support',
-    title: 'Support',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Support',
-      sectionLabel: 'Support',
-      subtitle: 'Access help resources for the producer dashboard.',
-    },
-  },
-  {
     path: 'profile',
     title: 'Profile',
     loadComponent: comingSoonPage,

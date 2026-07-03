@@ -12,10 +12,15 @@ const profileRoutes = () =>
   import('./profile/presentation/profile.routes').then((m) => m.profileRoutes);
 const billingRoutes = () =>
   import('./billing/presentation/billing.routes').then((m) => m.billingRoutes);
+const supportRoutes = () =>
+  import('./support/presentation/support.routes').then((m) => m.supportRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
 
 /**
- * Root route configuration that composes layout and feature route trees.
+ * Root route configuration. The `layout` (sidebar + content shell) is mounted
+ * ONCE as a shared parent so it is never destroyed when navigating between
+ * sections — this preserves the sidebar's scroll position (e.g. jumping from
+ * Support to Subscription no longer scrolls the sidebar back to the top).
  */
 export const routes: Routes = [
   {
@@ -23,56 +28,8 @@ export const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
-  {
-    path: 'agronomic',
-    loadComponent: layout,
-    children: [
-      {
-        path: '',
-        loadChildren: agronomicRoutes,
-      },
-    ],
-  },
-  {
-    path: 'surveillance',
-    loadComponent: layout,
-    children: [
-      {
-        path: '',
-        loadChildren: surveillanceRoutes,
-      },
-    ],
-  },
-  {
-    path: 'assistance',
-    loadComponent: layout,
-    children: [
-      {
-        path: '',
-        loadChildren: interventionRoutes,
-      },
-    ],
-  },
-  {
-    path: 'settings',
-    loadComponent: layout,
-    children: [
-      {
-        path: '',
-        loadChildren: profileRoutes,
-      },
-    ],
-  },
-  {
-    path: 'billing',
-    loadComponent: layout,
-    children: [
-      {
-        path: '',
-        loadChildren: billingRoutes,
-      },
-    ],
-  },
+
+  // Canonical path aliases (evaluated before the layout parent).
   {
     path: 'plots',
     redirectTo: 'agronomic/plots',
@@ -148,16 +105,43 @@ export const routes: Routes = [
     redirectTo: 'billing/subscription',
     pathMatch: 'full',
   },
+
+  // Single, persistent layout shell hosting every section.
   {
     path: '',
     loadComponent: layout,
     children: [
+      {
+        path: 'agronomic',
+        loadChildren: agronomicRoutes,
+      },
+      {
+        path: 'surveillance',
+        loadChildren: surveillanceRoutes,
+      },
+      {
+        path: 'assistance',
+        loadChildren: interventionRoutes,
+      },
+      {
+        path: 'settings',
+        loadChildren: profileRoutes,
+      },
+      {
+        path: 'billing',
+        loadChildren: billingRoutes,
+      },
+      {
+        path: 'support',
+        loadChildren: supportRoutes,
+      },
       {
         path: '',
         loadChildren: workspaceRoutes,
       },
     ],
   },
+
   {
     path: '**',
     redirectTo: 'dashboard',
