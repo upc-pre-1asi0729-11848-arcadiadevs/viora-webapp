@@ -281,9 +281,17 @@
         </div>
       } @else if (selectedCoupon(); as coupon) {
         <div class="coupon-detail">
+          <div
+            class="coupon-tilt"
+            [style.transform]="couponTransform()"
+            [style.--gx]="glossX()"
+            [style.--gy]="glossY()"
+            (pointermove)="onCouponMove($event)"
+            (pointerleave)="onCouponLeave()">
           <div class="coupon-3d">
             <!-- Front -->
             <div class="coupon-face coupon-front">
+              <span class="cf-gloss"></span>
               <div class="cf-head">
                 <span class="cf-brand">Viora Referrals</span>
                 <span class="cf-type">COUPON<br />TYPE {{ coupon.typeLabel }}</span>
@@ -314,6 +322,7 @@
               </div>
               <span class="cb-leaf"><mat-icon>eco</mat-icon></span>
             </div>
+          </div>
           </div>
 
           <button type="button" class="conditions-toggle" (click)="toggleConditions()">

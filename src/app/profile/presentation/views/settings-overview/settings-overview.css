@@ -506,8 +506,7 @@
   object-fit: contain;
   position: relative;
   z-index: 1;
-  /* Let the illustration dip into the top of the code ticket (per mockup). */
-  margin-bottom: -46px;
+  margin-bottom: -18px;
   pointer-events: none;
 }
 
@@ -732,10 +731,19 @@
   flex-direction: column;
   align-items: center;
   gap: 18px;
-  max-width: 460px;
+  /* Fixed width so collapsing the conditions never shrinks the card. */
+  width: min(460px, 100%);
   margin: 8px auto 0;
   perspective: 1400px;
   animation: coupon-detail-in 0.4s ease-out both;
+}
+
+/* Interactive tilt layer (sticker-like hover); the flip lives on .coupon-3d. */
+.coupon-tilt {
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.18s ease-out;
+  will-change: transform;
 }
 
 @keyframes coupon-detail-in {
@@ -783,6 +791,20 @@
   transform: rotateY(0deg);
   display: flex;
   flex-direction: column;
+}
+
+.cf-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, -20%),
+    rgba(255, 255, 255, 0.24),
+    rgba(255, 255, 255, 0) 42%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .coupon-back {

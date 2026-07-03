@@ -74,6 +74,11 @@ export class SettingsOverviewView implements OnInit {
   protected readonly conditionsExpanded = signal(true);
   protected readonly couponCodeCopied = signal(false);
 
+  // Interactive 3D tilt for the selected coupon (sticker-like hover).
+  protected readonly couponTransform = signal('rotateX(0deg) rotateY(0deg)');
+  protected readonly glossX = signal('50%');
+  protected readonly glossY = signal('-20%');
+
   /** Viora-adapted referral coupon terms (presentation legal copy). */
   protected readonly referralTerms: string[] = [
     'Valid for one subscription discount per completed referral — the invited producer must finish plot onboarding and connect at least one IoT device.',
@@ -245,6 +250,26 @@ export class SettingsOverviewView implements OnInit {
       this.couponCodeCopied.set(true);
       setTimeout(() => this.couponCodeCopied.set(false), 2000);
     });
+  }
+
+  /** Tilts the selected coupon toward the cursor and moves the gloss highlight. */
+  protected onCouponMove(event: PointerEvent): void {
+    const el = event.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
+    const rotY = (px - 0.5) * 16;
+    const rotX = (0.5 - py) * 12;
+    this.couponTransform.set(`rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`);
+    this.glossX.set(`${(px * 100).toFixed(1)}%`);
+    this.glossY.set(`${(py * 100).toFixed(1)}%`);
+  }
+
+  /** Returns the coupon to rest when the cursor leaves. */
+  protected onCouponLeave(): void {
+    this.couponTransform.set('rotateX(0deg) rotateY(0deg)');
+    this.glossX.set('50%');
+    this.glossY.set('-20%');
   }
 
   // ----- Security actions -----
