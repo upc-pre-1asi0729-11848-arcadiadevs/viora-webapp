@@ -50,6 +50,16 @@ const workspacePlaceholderRoutes: Routes = [
       subtitle: 'Manage account details and preferences.',
     },
   },
+  {
+    path: 'specialist',
+    title: 'Specialist Workspace',
+    loadComponent: comingSoonPage,
+    data: {
+      pageTitle: 'Specialist Workspace',
+      sectionLabel: 'Specialist',
+      subtitle: 'Review producer requests, cases, and field interventions — coming soon.',
+    },
+  },
 ];
 
 /**

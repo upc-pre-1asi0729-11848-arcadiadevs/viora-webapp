@@ -40,8 +40,8 @@ export class IamApiService extends BaseApi {
     return this.http.put(`${this.usersEndpoint.resourceUrl(this.defaultUserId)}/password`, request);
   }
 
-  /** Deactivates the active user's account (Danger zone). */
+  /** Deactivates the active user's account (Danger zone) via an active:false state update. */
   deactivateAccount(): Observable<unknown> {
-    return this.http.patch(`${this.usersEndpoint.resourceUrl(this.defaultUserId)}/deactivate`, {});
+    return this.http.patch(this.usersEndpoint.resourceUrl(this.defaultUserId), { active: false });
   }
 }

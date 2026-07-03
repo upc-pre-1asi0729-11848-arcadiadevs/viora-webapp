@@ -1,0 +1,31 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <img src="/assets/icons/dashboard/viora-isotipo-green.png" alt="Viora" />
+      <strong>Viora</strong>
+    </div>
+
+    @switch (state()) {
+      @case ('verifying') {
+        <span class="status-icon is-wait"><mat-icon>hourglass_top</mat-icon></span>
+        <h1 class="auth-title">Verifying your email…</h1>
+        <p class="auth-subtitle">One moment while we confirm your account.</p>
+      }
+      @case ('success') {
+        <span class="status-icon"><mat-icon>check_circle</mat-icon></span>
+        <h1 class="auth-title">Email verified!</h1>
+        <p class="auth-subtitle">Your account is active — taking you to your workspace…</p>
+      }
+      @case ('error') {
+        <span class="status-icon is-error"><mat-icon>link_off</mat-icon></span>
+        <h1 class="auth-title">Verification failed</h1>
+        <p class="auth-subtitle">
+          {{ auth.error() || 'This verification link is invalid, expired or already used.' }}
+        </p>
+        <p class="auth-foot">
+          <a routerLink="/login">Back to sign in</a> — you can resend the email from there.
+        </p>
+      }
+    }
+  </div>
+</section>
