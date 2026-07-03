@@ -56,6 +56,13 @@ export const environment = {
     referrals: '/referrals',
     coupons: '/coupons',
 
+    // Subscription section (Billing): plan catalog, the user's subscription,
+    // invoices (billing history), payment methods, and MercadoPago checkout.
+    plans: '/plans',
+    subscriptions: '/subscriptions',
+    invoices: '/invoices',
+    paymentMethods: '/payment-methods',
+
     // IAM (Settings › Security): password change lives under the user resource;
     // active sessions are nested under the owning user.
     users: '/users',

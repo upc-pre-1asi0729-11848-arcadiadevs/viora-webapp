@@ -10,6 +10,8 @@ const interventionRoutes = () =>
   import('./intervention/presentation/intervention.routes').then((m) => m.interventionRoutes);
 const profileRoutes = () =>
   import('./profile/presentation/profile.routes').then((m) => m.profileRoutes);
+const billingRoutes = () =>
+  import('./billing/presentation/billing.routes').then((m) => m.billingRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
 
 /**
@@ -58,6 +60,16 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: profileRoutes,
+      },
+    ],
+  },
+  {
+    path: 'billing',
+    loadComponent: layout,
+    children: [
+      {
+        path: '',
+        loadChildren: billingRoutes,
       },
     ],
   },
