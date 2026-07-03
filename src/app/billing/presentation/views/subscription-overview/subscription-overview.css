@@ -84,10 +84,33 @@
   color: #d63b3b;
 }
 
+.banner--success {
+  background: rgba(87, 235, 161, 0.16);
+  color: #2e7d55;
+}
+
+.banner--info {
+  background: rgba(91, 141, 239, 0.12);
+  color: #3f6fd0;
+}
+
 .banner mat-icon {
   font-size: 18px;
   width: 18px;
   height: 18px;
+}
+
+.banner-close {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
 }
 
 /* ---------- Current plan hero ---------- */

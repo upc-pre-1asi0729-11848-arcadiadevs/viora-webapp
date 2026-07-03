@@ -5,6 +5,26 @@
     updatedLabel="Just now"
     (refresh)="refresh()" />
 
+  @if (paymentResult() === 'approved') {
+    <div class="banner banner--success">
+      <mat-icon>check_circle</mat-icon>
+      Payment approved — your plan is being updated. Refresh in a moment if it isn't reflected yet.
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+    </div>
+  } @else if (paymentResult() === 'pending') {
+    <div class="banner banner--info">
+      <mat-icon>schedule</mat-icon>
+      Payment pending confirmation. Your plan updates as soon as MercadoPago confirms it.
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+    </div>
+  } @else if (paymentResult() === 'failure') {
+    <div class="banner banner--error">
+      <mat-icon>error_outline</mat-icon>
+      The payment could not be completed. No changes were made — you can try again.
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+    </div>
+  }
+
   @if (store.error()) {
     <div class="banner banner--error">
       <mat-icon>error_outline</mat-icon> {{ store.error() }}

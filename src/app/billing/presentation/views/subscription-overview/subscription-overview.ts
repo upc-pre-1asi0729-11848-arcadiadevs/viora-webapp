@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -24,6 +25,10 @@ import { Plan } from '../../../domain/model/plan.entity';
 export class SubscriptionOverviewView implements OnInit {
   protected readonly store = inject(SubscriptionStore);
   private readonly agronomicApi = inject(AgronomicApiService);
+  private readonly route = inject(ActivatedRoute);
+
+  /** Result banner shown when MercadoPago redirects back after a payment. */
+  protected readonly paymentResult = signal<'approved' | 'pending' | 'failure' | null>(null);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
     { label: 'Subscription', disabled: true },
@@ -57,6 +62,24 @@ export class SubscriptionOverviewView implements OnInit {
   ngOnInit(): void {
     this.store.load();
     this.loadUsage();
+    this.readPaymentReturn();
+  }
+
+  /** Reads MercadoPago's redirect status (approved/pending/failure) if present. */
+  private readPaymentReturn(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const status = params.get('status') ?? params.get('collection_status');
+    if (status === 'approved' || status === 'success') {
+      this.paymentResult.set('approved');
+    } else if (status === 'pending' || status === 'in_process') {
+      this.paymentResult.set('pending');
+    } else if (status === 'failure' || status === 'rejected') {
+      this.paymentResult.set('failure');
+    }
+  }
+
+  protected dismissPaymentResult(): void {
+    this.paymentResult.set(null);
   }
 
   protected refresh(): void {
