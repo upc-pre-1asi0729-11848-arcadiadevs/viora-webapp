@@ -1,0 +1,50 @@
+<section class="auth-shell">
+  <form class="auth-card auth-form" (submit)="submit(); $event.preventDefault()">
+    <div class="auth-brand">
+      <img src="/assets/icons/dashboard/viora-isotipo-green.png" alt="Viora" />
+      <strong>Viora</strong>
+    </div>
+
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-subtitle">Sign in to monitor your groves, alerts and interventions.</p>
+
+    @if (auth.error()) {
+      <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
+    }
+    @if (auth.info()) {
+      <p class="auth-info"><mat-icon>check_circle</mat-icon> {{ auth.info() }}</p>
+    }
+
+    <label class="field">
+      <span>Email</span>
+      <input
+        type="email"
+        autocomplete="email"
+        placeholder="you@yourfarm.com"
+        [value]="email()"
+        (input)="email.set($any($event.target).value)" />
+    </label>
+
+    <label class="field">
+      <span>Password</span>
+      <input
+        type="password"
+        autocomplete="current-password"
+        placeholder="Your password"
+        [value]="password()"
+        (input)="password.set($any($event.target).value)" />
+    </label>
+
+    @if (auth.needsVerification()) {
+      <button type="button" class="auth-link-button" (click)="resend()">
+        Resend the verification email
+      </button>
+    }
+
+    <button type="submit" class="auth-submit" [disabled]="!canSubmit">
+      {{ auth.busy() ? 'Signing in…' : 'Sign in' }}
+    </button>
+
+    <p class="auth-foot">New to Viora? <a routerLink="/register">Create an account</a></p>
+  </form>
+</section>

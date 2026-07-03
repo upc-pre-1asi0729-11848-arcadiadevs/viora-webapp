@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard, guestGuard } from './iam/presentation/auth.guards';
+
 const workspaceRoutes = () =>
   import('./shared/presentation/workspace.routes').then((m) => m.workspaceRoutes);
 const agronomicRoutes = () =>
@@ -15,6 +17,12 @@ const billingRoutes = () =>
 const supportRoutes = () =>
   import('./support/presentation/support.routes').then((m) => m.supportRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
+const loginPage = () =>
+  import('./iam/presentation/views/login-page/login-page').then((m) => m.LoginPage);
+const registerPage = () =>
+  import('./iam/presentation/views/register-page/register-page').then((m) => m.RegisterPage);
+const verifyPage = () =>
+  import('./iam/presentation/views/verify-page/verify-page').then((m) => m.VerifyPage);
 
 /**
  * Root route configuration. The `layout` (sidebar + content shell) is mounted
@@ -27,6 +35,25 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
+  },
+
+  // Authentication screens (outside the layout shell).
+  {
+    path: 'login',
+    title: 'Sign in',
+    canActivate: [guestGuard],
+    loadComponent: loginPage,
+  },
+  {
+    path: 'register',
+    title: 'Create account',
+    canActivate: [guestGuard],
+    loadComponent: registerPage,
+  },
+  {
+    path: 'verify',
+    title: 'Verify email',
+    loadComponent: verifyPage,
   },
 
   // Canonical path aliases (evaluated before the layout parent).
@@ -106,10 +133,11 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  // Single, persistent layout shell hosting every section.
+  // Single, persistent layout shell hosting every section (sign-in required).
   {
     path: '',
     loadComponent: layout,
+    canActivate: [authGuard],
     children: [
       {
         path: 'agronomic',

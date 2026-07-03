@@ -1,0 +1,268 @@
+/* Shared shell for the Login / Register / Verify screens (generic design
+   until dedicated mockups land; tokens follow the Viora design system). */
+:host {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f8f4ed;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+  padding: 36px 34px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 18px 44px rgba(31, 37, 35, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.auth-brand img {
+  width: 34px;
+  height: 34px;
+}
+
+.auth-brand strong {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2523;
+}
+
+.auth-title {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2523;
+}
+
+.auth-subtitle {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #828282;
+  line-height: 1.5;
+}
+
+/* ---------- Fields ---------- */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field > span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333333;
+}
+
+.field input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #e2ddd4;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #333333;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.15s ease;
+}
+
+.field input:focus {
+  border-color: #2e4a3a;
+}
+
+.field input::placeholder {
+  color: #a7a29a;
+}
+
+.field-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #a7a29a;
+}
+
+/* ---------- Role selector ---------- */
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border: 1px solid #e2ddd4;
+  border-radius: 12px;
+  background: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.role-card mat-icon {
+  color: #8c877f;
+}
+
+.role-card strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.role-card span {
+  font-size: 11px;
+  font-weight: 400;
+  color: #828282;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.role-card.is-active {
+  border-color: #2e4a3a;
+  background: #f0f7f4;
+}
+
+.role-card.is-active mat-icon {
+  color: #2e4a3a;
+}
+
+/* ---------- Messages ---------- */
+.auth-error,
+.auth-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.auth-error {
+  background: rgba(255, 92, 92, 0.1);
+  color: #d63b3b;
+}
+
+.auth-info {
+  background: rgba(87, 235, 161, 0.14);
+  color: #2e7d55;
+}
+
+.auth-error mat-icon,
+.auth-info mat-icon {
+  flex: 0 0 auto;
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+}
+
+/* ---------- Buttons & links ---------- */
+.auth-submit {
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #2e4a3a;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.auth-submit:hover {
+  opacity: 0.92;
+}
+
+.auth-submit[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.auth-link-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: #2e4a3a;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.auth-foot {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  color: #6f6a62;
+}
+
+.auth-foot a {
+  color: #2e4a3a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-foot a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Status (verify / register success) ---------- */
+.status-icon {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(87, 235, 161, 0.22);
+  color: #2e7d55;
+}
+
+.status-icon.is-error {
+  background: rgba(255, 92, 92, 0.14);
+  color: #d63b3b;
+}
+
+.status-icon.is-wait {
+  background: #f0ebe3;
+  color: #8c877f;
+}
+
+.status-icon mat-icon {
+  font-size: 30px;
+  width: 30px;
+  height: 30px;
+}

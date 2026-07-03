@@ -1,0 +1,118 @@
+<section class="auth-shell">
+  @if (!submitted()) {
+    <form class="auth-card auth-form" (submit)="submit(); $event.preventDefault()">
+      <div class="auth-brand">
+        <img src="/assets/icons/dashboard/viora-isotipo-green.png" alt="Viora" />
+        <strong>Viora</strong>
+      </div>
+
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Join Viora to monitor groves or assist producers in the field.</p>
+
+      @if (auth.error()) {
+        <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
+      }
+
+      <div class="role-grid">
+        <button
+          type="button"
+          class="role-card"
+          [class.is-active]="role() === 'ROLE_GROWER'"
+          (click)="selectRole('ROLE_GROWER')">
+          <mat-icon>eco</mat-icon>
+          <strong>Producer</strong>
+          <span>Monitor plots, IoT devices and alerts</span>
+        </button>
+        <button
+          type="button"
+          class="role-card"
+          [class.is-active]="role() === 'ROLE_SPECIALIST'"
+          (click)="selectRole('ROLE_SPECIALIST')">
+          <mat-icon>medical_services</mat-icon>
+          <strong>Specialist</strong>
+          <span>Assist producers with field expertise</span>
+        </button>
+      </div>
+
+      <label class="field">
+        <span>Full name</span>
+        <input
+          type="text"
+          autocomplete="name"
+          placeholder="e.g. Maria Torres"
+          [value]="fullName()"
+          (input)="fullName.set($any($event.target).value)" />
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input
+          type="email"
+          autocomplete="email"
+          placeholder="you@yourfarm.com"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)" />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input
+          type="password"
+          autocomplete="new-password"
+          placeholder="At least 8 characters"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)" />
+      </label>
+
+      <label class="field">
+        <span>Confirm password</span>
+        <input
+          type="password"
+          autocomplete="new-password"
+          placeholder="Repeat your password"
+          [value]="confirmPassword()"
+          (input)="confirmPassword.set($any($event.target).value)" />
+        @if (passwordsMismatch) {
+          <span class="field-hint" style="color: #d63b3b">Passwords do not match.</span>
+        }
+      </label>
+
+      <label class="field">
+        <span>Referral code (optional)</span>
+        <input
+          type="text"
+          placeholder="e.g. VIORA-4JYFFQ"
+          [value]="referralCode()"
+          (input)="referralCode.set($any($event.target).value)" />
+        <span class="field-hint">Invited by a partner? Their code rewards them when you join.</span>
+      </label>
+
+      <button type="submit" class="auth-submit" [disabled]="!canSubmit">
+        {{ auth.busy() ? 'Creating account…' : 'Create account' }}
+      </button>
+
+      <p class="auth-foot">Already have an account? <a routerLink="/login">Sign in</a></p>
+    </form>
+  } @else {
+    <div class="auth-card">
+      <span class="status-icon"><mat-icon>mark_email_read</mat-icon></span>
+      <h1 class="auth-title">Check your email</h1>
+      <p class="auth-subtitle">
+        We sent a verification link to <strong>{{ email() }}</strong>. Open it to activate your
+        account — the link expires in 24 hours.
+      </p>
+
+      @if (auth.info()) {
+        <p class="auth-info"><mat-icon>check_circle</mat-icon> {{ auth.info() }}</p>
+      }
+      @if (auth.error()) {
+        <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
+      }
+
+      <button type="button" class="auth-submit" [disabled]="auth.busy()" (click)="resend()">
+        {{ auth.busy() ? 'Sending…' : 'Resend email' }}
+      </button>
+      <p class="auth-foot">Verified already? <a routerLink="/login">Sign in</a></p>
+    </div>
+  }
+</section>
