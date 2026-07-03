@@ -25,6 +25,9 @@ import {
 export class BillingApiService extends BaseApi {
   private readonly referralsEndpoint = this.endpoint(environment.endpoints.referrals);
   private readonly couponsEndpoint = this.endpoint(environment.endpoints.coupons);
+  private readonly couponRedemptionsEndpoint = this.endpoint(
+    environment.endpoints.couponRedemptions,
+  );
 
   /** Fetches (or provisions on first access) the active user's referral code. */
   getReferralCode(): Observable<ReferralCode> {
@@ -45,7 +48,7 @@ export class BillingApiService extends BaseApi {
   /** Redeems a coupon by code for the active user. Errors are surfaced to callers. */
   redeemCoupon(code: string): Observable<Coupon> {
     return this.http
-      .post<CouponResource>(`${this.couponsEndpoint.collectionUrl}/redeem`, {
+      .post<CouponResource>(this.couponRedemptionsEndpoint.collectionUrl, {
         userId: this.defaultUserId,
         code,
       })

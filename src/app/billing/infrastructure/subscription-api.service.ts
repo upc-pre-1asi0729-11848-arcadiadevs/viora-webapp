@@ -32,6 +32,7 @@ import {
 export class SubscriptionApiService extends BaseApi {
   private readonly plansEndpoint = this.endpoint(environment.endpoints.plans);
   private readonly subscriptionsEndpoint = this.endpoint(environment.endpoints.subscriptions);
+  private readonly checkoutsEndpoint = this.endpoint(environment.endpoints.checkouts);
   private readonly invoicesEndpoint = this.endpoint(environment.endpoints.invoices);
   private readonly paymentMethodsEndpoint = this.endpoint(environment.endpoints.paymentMethods);
 
@@ -65,18 +66,19 @@ export class SubscriptionApiService extends BaseApi {
 
   /** Opens a MercadoPago checkout for the target plan; returns the redirect URL. */
   checkout(planCode: string, interval: PlanInterval): Observable<CheckoutResource> {
-    return this.http.post<CheckoutResource>(
-      `${this.subscriptionsEndpoint.resourceUrl(this.defaultUserId)}/checkout`,
-      { planCode, interval },
-    );
+    return this.http.post<CheckoutResource>(this.checkoutsEndpoint.collectionUrl, {
+      userId: this.defaultUserId,
+      planCode,
+      interval,
+    });
   }
 
-  /** Cancels the subscription at period end. */
+  /** Cancels the subscription at period end (a state transition to CANCELED). */
   cancel(): Observable<Subscription> {
     return this.http
-      .post<SubscriptionResource>(
-        `${this.subscriptionsEndpoint.resourceUrl(this.defaultUserId)}/cancel`,
-        {},
+      .patch<SubscriptionResource>(
+        this.subscriptionsEndpoint.resourceUrl(this.defaultUserId),
+        { status: 'CANCELED' },
       )
       .pipe(map((resource) => SubscriptionAssembler.toEntity(resource)));
   }

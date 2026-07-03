@@ -272,6 +272,6 @@ export class InterventionApiService extends BaseApi {
 
   /** Closes the intervention with the service evaluation (producer). */
   closeIntervention(outcomeId: number | string, request: CloseInterventionRequest): Observable<unknown> {
-    return this.http.patch(`${this.outcomesEndpoint.resourceUrl(outcomeId)}/evaluation`, request);
+    return this.http.patch(this.outcomesEndpoint.resourceUrl(outcomeId), request);
   }
 }

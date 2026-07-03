@@ -24,7 +24,7 @@ export interface ReportImpactRequest {
   producerAssessment: string;
 }
 
-/** Body for `PATCH /intervention-outcomes/{id}/evaluation` (close + rate). */
+/** Body for `PATCH /intervention-outcomes/{id}` (close + rate). */
 export interface CloseInterventionRequest {
   serviceResult: ServiceResult;
   hireAgain: HireAgain;

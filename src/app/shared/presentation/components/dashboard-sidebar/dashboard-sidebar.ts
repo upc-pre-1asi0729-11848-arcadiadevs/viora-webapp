@@ -1,7 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+
+import { ActiveSessionService } from '../../../infrastructure/active-session.service';
 
 interface SidebarItem {
   labelKey: string;
@@ -19,7 +21,16 @@ interface SidebarItem {
   styleUrl: './dashboard-sidebar.css',
 })
 export class DashboardSidebar {
+  private readonly session = inject(ActiveSessionService);
+  private readonly router = inject(Router);
+
   protected readonly collapsed = signal<boolean>(false);
+
+  /** Signed-in identity for the footer (name, else email, else a fallback). */
+  protected readonly displayName = computed<string>(() => {
+    const current = this.session.session();
+    return current?.fullName?.trim() || current?.email || 'Viora user';
+  });
 
   protected readonly mainItems: SidebarItem[] = [
     {
@@ -94,5 +105,11 @@ export class DashboardSidebar {
 
   protected getIconMask(iconPath: string): string {
     return `url("${iconPath}")`;
+  }
+
+  /** Ends the session and returns to the login screen. */
+  protected logout(): void {
+    this.session.clear();
+    this.router.navigate(['/login']);
   }
 }
