@@ -25,7 +25,7 @@ export class ProfileApiService extends BaseApi {
    */
   getProfile(): Observable<UserProfile> {
     return this.http
-      .get<ProfileResource>(this.profilesEndpoint.resourceUrl(this.defaultUserId))
+      .get<ProfileResource>(this.profilesEndpoint.resourceUrl('me'))
       .pipe(map((resource) => ProfileAssembler.toEntityFromResource(resource)));
   }
 
@@ -36,7 +36,7 @@ export class ProfileApiService extends BaseApi {
    */
   updateProfile(changes: UpdateProfileRequest): Observable<UserProfile> {
     return this.http
-      .put<ProfileResource>(this.profilesEndpoint.resourceUrl(this.defaultUserId), changes)
+      .put<ProfileResource>(this.profilesEndpoint.resourceUrl('me'), changes)
       .pipe(map((resource) => ProfileAssembler.toEntityFromResource(resource)));
   }
 }
