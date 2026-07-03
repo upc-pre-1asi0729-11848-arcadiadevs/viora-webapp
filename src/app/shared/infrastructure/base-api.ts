@@ -22,11 +22,17 @@ export abstract class BaseApi {
 
   /**
    * Active user identifier sent to the real backend, which requires `userId`
-   * on every request. Sourced from the authenticated session; the configured
-   * default remains only as a fallback for unauthenticated contexts.
+   * on every request. Sourced solely from the authenticated session — there is
+   * no fallback, so an unauthenticated call fails loudly instead of silently
+   * masquerading as another account. Route guards keep authenticated screens
+   * behind a session, so this is only reached with a real user.
    */
   protected get defaultUserId(): number {
-    return this.activeSession.userId ?? environment.defaultUserId;
+    const userId = this.activeSession.userId;
+    if (userId === null) {
+      throw new Error('No authenticated session: a Platform API call requires a signed-in user.');
+    }
+    return userId;
   }
 
   protected endpoint(path: string): BaseApiEndpoint {

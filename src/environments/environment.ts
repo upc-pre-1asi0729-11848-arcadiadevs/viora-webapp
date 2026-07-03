@@ -4,10 +4,6 @@ export const environment = {
   // Real Viora Platform backend (Spring Boot, hosted on Render).
   vioraPlatformApiUrl: 'https://os-viora-platform.onrender.com/api/v1',
 
-  // The real backend requires a userId on every request. Until authentication
-  // is wired, this configurable id acts as the active producer.
-  defaultUserId: 1,
-
   endpoints: {
     // Real backend (agronomic bounded context). Aggregate roots are addressed
     // by their collection/resource URL; projections are requested via the
