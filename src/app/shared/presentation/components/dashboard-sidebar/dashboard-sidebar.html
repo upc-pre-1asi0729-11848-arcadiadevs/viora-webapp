@@ -77,12 +77,17 @@
     @if (!collapsed()) {
       <div class="user-info">
         <span>{{ 'sidebar.welcomeBack' | translate }} 👋</span>
-        <strong>DaronCameloft</strong>
+        <strong>{{ displayName() }}</strong>
       </div>
 
-      <a class="user-action" routerLink="/profile" [attr.aria-label]="'sidebar.openProfile' | translate">
-        ›
-      </a>
+      <button
+        type="button"
+        class="user-logout"
+        title="Log out"
+        aria-label="Log out"
+        (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
     }
   </footer>
 </aside>
