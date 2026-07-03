@@ -12,6 +12,8 @@ const profileRoutes = () =>
   import('./profile/presentation/profile.routes').then((m) => m.profileRoutes);
 const billingRoutes = () =>
   import('./billing/presentation/billing.routes').then((m) => m.billingRoutes);
+const supportRoutes = () =>
+  import('./support/presentation/support.routes').then((m) => m.supportRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
 
 /**
@@ -70,6 +72,16 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: billingRoutes,
+      },
+    ],
+  },
+  {
+    path: 'support',
+    loadComponent: layout,
+    children: [
+      {
+        path: '',
+        loadChildren: supportRoutes,
       },
     ],
   },
