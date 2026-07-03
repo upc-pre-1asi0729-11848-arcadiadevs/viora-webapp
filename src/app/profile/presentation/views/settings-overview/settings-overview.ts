@@ -70,7 +70,18 @@ export class SettingsOverviewView implements OnInit {
   // ----- Referrals -----
   protected readonly codeCopied = signal(false);
   protected readonly redeemInput = signal('');
-  protected readonly conditionsCoupon = signal<Coupon | null>(null);
+  protected readonly selectedCoupon = signal<Coupon | null>(null);
+  protected readonly conditionsExpanded = signal(true);
+  protected readonly couponCodeCopied = signal(false);
+
+  /** Viora-adapted referral coupon terms (presentation legal copy). */
+  protected readonly referralTerms: string[] = [
+    'Valid for one subscription discount per completed referral — the invited producer must finish plot onboarding and connect at least one IoT device.',
+    'The discount applies automatically to your next billing cycle once the referral qualifies.',
+    'You can hold a maximum of 5 active referral coupons per account at any time.',
+    'Not combinable with other Subscription promotions or annual-billing discounts.',
+    'Viora may modify or revoke referral coupons in cases of suspected abuse or fraudulent referrals.',
+  ];
 
   // ----- Security -----
   protected readonly currentPassword = signal('');
@@ -212,12 +223,28 @@ export class SettingsOverviewView implements OnInit {
     });
   }
 
-  protected openConditions(coupon: Coupon): void {
-    this.conditionsCoupon.set(coupon);
+  protected selectCoupon(coupon: Coupon): void {
+    this.selectedCoupon.set(coupon);
+    this.conditionsExpanded.set(true);
+    this.couponCodeCopied.set(false);
   }
 
-  protected closeConditions(): void {
-    this.conditionsCoupon.set(null);
+  protected backToCoupons(): void {
+    this.selectedCoupon.set(null);
+  }
+
+  protected toggleConditions(): void {
+    this.conditionsExpanded.update((v) => !v);
+  }
+
+  protected copyCouponCode(coupon: Coupon): void {
+    if (!coupon.code) {
+      return;
+    }
+    navigator.clipboard?.writeText(coupon.code).then(() => {
+      this.couponCodeCopied.set(true);
+      setTimeout(() => this.couponCodeCopied.set(false), 2000);
+    });
   }
 
   // ----- Security actions -----
