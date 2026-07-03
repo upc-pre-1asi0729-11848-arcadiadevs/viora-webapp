@@ -66,6 +66,10 @@ export const environment = {
     // IAM (Settings › Security): password change lives under the user resource;
     // active sessions are nested under the owning user.
     users: '/users',
+
+    // IAM authentication: sign-in/sign-up by email, email verification and
+    // verification resend.
+    auth: '/auth',
   },
 
   mapbox: {

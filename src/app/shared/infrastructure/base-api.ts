@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { environment } from '../../../environments/environment';
 
+import { ActiveSessionService } from './active-session.service';
 import { BaseApiEndpoint } from './base-api-endpoint';
 import {
   CollectionResponse,
@@ -17,12 +18,16 @@ export type ApiQueryParams = Record<
 export abstract class BaseApi {
   protected readonly http = inject(HttpClient);
   protected readonly baseUrl = environment.vioraPlatformApiUrl;
+  private readonly activeSession = inject(ActiveSessionService);
 
   /**
    * Active user identifier sent to the real backend, which requires `userId`
-   * on every request. Sourced from configuration until authentication exists.
+   * on every request. Sourced from the authenticated session; the configured
+   * default remains only as a fallback for unauthenticated contexts.
    */
-  protected readonly defaultUserId = environment.defaultUserId;
+  protected get defaultUserId(): number {
+    return this.activeSession.userId ?? environment.defaultUserId;
+  }
 
   protected endpoint(path: string): BaseApiEndpoint {
     return new BaseApiEndpoint(this.baseUrl, path);
