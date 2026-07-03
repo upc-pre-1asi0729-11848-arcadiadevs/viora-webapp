@@ -39,14 +39,6 @@ export abstract class BaseApi {
     return new BaseApiEndpoint(this.baseUrl, path);
   }
 
-  /**
-   * Merges the active `userId` into a set of query params, letting callers
-   * override it when needed.
-   */
-  protected withUserId(params: ApiQueryParams = {}): ApiQueryParams {
-    return { userId: this.defaultUserId, ...params };
-  }
-
   protected queryParams(params: ApiQueryParams = {}): HttpParams {
     let httpParams = new HttpParams();
 
