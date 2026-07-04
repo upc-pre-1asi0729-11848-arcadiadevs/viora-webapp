@@ -12,7 +12,7 @@
       </div>
 
       <a class="login-back-link" href="https://viora-website.vercel.app/">
-        Back to website
+        {{ 'auth.backToWebsite' | translate }}
         <mat-icon aria-hidden="true">arrow_forward</mat-icon>
       </a>
 
@@ -22,9 +22,9 @@
       </div>
 
       <div class="login-story-copy">
-        <span>Satellite monitoring</span>
-        <h2>Every hectare, under control.</h2>
-        <p>Track NDVI, climate signals and field alerts from one calm workspace.</p>
+        <span>{{ 'auth.story.eyebrow' | translate }}</span>
+        <h2>{{ 'auth.story.title' | translate }}</h2>
+        <p>{{ 'auth.story.description' | translate }}</p>
         <div class="login-story-dots" aria-label="Carousel images">
           @for (slide of carouselSlides; track slide.src; let index = $index) {
             <button
@@ -45,8 +45,8 @@
       </div>
 
       <div class="login-heading">
-        <h1 class="auth-title">Welcome back</h1>
-        <p class="auth-subtitle">Sign in to monitor your groves, alerts and interventions.</p>
+        <h1 class="auth-title">{{ 'auth.login.title' | translate }}</h1>
+        <p class="auth-subtitle">{{ 'auth.login.subtitle' | translate }}</p>
       </div>
 
       @if (auth.error()) {
@@ -57,36 +57,36 @@
       }
 
       <label class="field">
-        <span>Email</span>
+        <span>{{ 'auth.fields.email' | translate }}</span>
         <input
           type="email"
           autocomplete="email"
-          placeholder="you@yourfarm.com"
+          [placeholder]="'auth.fields.emailPlaceholder' | translate"
           [value]="email()"
           (input)="email.set($any($event.target).value)" />
       </label>
 
       <label class="field">
-        <span>Password</span>
+        <span>{{ 'auth.fields.password' | translate }}</span>
         <input
           type="password"
           autocomplete="current-password"
-          placeholder="Your password"
+          [placeholder]="'auth.fields.passwordPlaceholder' | translate"
           [value]="password()"
           (input)="password.set($any($event.target).value)" />
       </label>
 
       @if (auth.needsVerification()) {
         <button type="button" class="auth-link-button" (click)="resend()">
-          Resend the verification email
+          {{ 'auth.login.resend' | translate }}
         </button>
       }
 
       <button type="submit" class="auth-submit" [disabled]="!canSubmit">
-        {{ auth.busy() ? 'Signing in...' : 'Sign in' }}
+        {{ (auth.busy() ? 'auth.login.signingIn' : 'auth.login.signIn') | translate }}
       </button>
 
-      <p class="auth-foot">New to Viora? <a routerLink="/register">Create an account</a></p>
+      <p class="auth-foot">{{ 'auth.login.foot' | translate }} <a routerLink="/register">{{ 'auth.login.createAccount' | translate }}</a></p>
     </form>
   </div>
 </section>

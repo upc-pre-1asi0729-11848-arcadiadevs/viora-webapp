@@ -1,4 +1,252 @@
 {
+  "auth": {
+    "backToWebsite": "Volver al sitio web",
+    "story": {
+      "eyebrow": "Monitoreo satelital",
+      "title": "Cada hectárea, bajo control.",
+      "description": "Monitorea NDVI, señales climáticas y alertas de campo desde un solo espacio de trabajo."
+    },
+    "fields": {
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@tufinca.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "ej. María Torres",
+      "newPasswordPlaceholder": "Al menos 8 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite tu contraseña",
+      "passwordsMismatch": "Las contraseñas no coinciden.",
+      "referralCode": "Código de referido (opcional)",
+      "referralCodePlaceholder": "ej. VIORA-4JYFFQ",
+      "referralHint": "¿Te invitó un socio? Su código lo recompensa cuando te unes."
+    },
+    "roles": {
+      "producer": "Productor",
+      "specialist": "Especialista"
+    },
+    "login": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión para monitorear tus cultivos, alertas e intervenciones.",
+      "resend": "Reenviar el correo de verificación",
+      "signingIn": "Iniciando sesión...",
+      "signIn": "Iniciar sesión",
+      "foot": "¿Nuevo en Viora?",
+      "createAccount": "Crear una cuenta"
+    },
+    "register": {
+      "storyEyebrow": "Elige tu espacio de trabajo",
+      "storyTitle": "Construye la cuenta de campo adecuada.",
+      "storyDescription": "Los productores monitorean parcelas y dispositivos. Los especialistas apoyan a los equipos con experiencia de campo, diagnósticos e intervenciones.",
+      "title": "Crea tu cuenta",
+      "subtitle": "Únete a Viora como Productor o Especialista.",
+      "producerDescription": "Monitorea parcelas, dispositivos IoT y alertas",
+      "specialistDescription": "Apoya a los productores con experiencia de campo",
+      "creating": "Creando cuenta...",
+      "createAccount": "Crear cuenta",
+      "foot": "¿Ya tienes una cuenta?",
+      "signIn": "Iniciar sesión",
+      "success": {
+        "title": "Revisa tu correo",
+        "sentToPrefix": "Enviamos un enlace de verificación a",
+        "sentToSuffix": "Ábrelo para activar tu cuenta; el enlace expira en 24 horas.",
+        "sending": "Enviando...",
+        "resend": "Reenviar correo",
+        "foot": "¿Ya verificaste?",
+        "signIn": "Iniciar sesión"
+      }
+    },
+    "verify": {
+      "verifyingTitle": "Verificando tu correo…",
+      "verifyingSubtitle": "Un momento mientras confirmamos tu cuenta.",
+      "successTitle": "¡Correo verificado!",
+      "successSubtitle": "Tu cuenta está activa — llevándote a tu espacio de trabajo…",
+      "errorTitle": "Verificación fallida",
+      "errorSubtitle": "Este enlace de verificación es inválido, expiró o ya fue usado.",
+      "backToSignIn": "Volver a iniciar sesión",
+      "errorFootSuffix": "— puedes reenviar el correo desde ahí."
+    }
+  },
+  "settingsPage": {
+    "headerSubtitle": "Administra tu cuenta, visibilidad en el marketplace y preferencias de seguridad.",
+    "breadcrumb": "Configuración",
+    "tabs": {
+      "profile": "Perfil",
+      "referrals": "Referidos",
+      "security": "Seguridad"
+    },
+    "profile": {
+      "personalTitle": "Información personal",
+      "personalSubtitle": "Tu nombre y datos de contacto tal como los ven los especialistas.",
+      "yourName": "Tu nombre",
+      "jobTitleFallback": "Cargo",
+      "uploading": "Subiendo…",
+      "changePhoto": "Cambiar foto",
+      "fullName": "Nombre completo",
+      "emailAddress": "Correo electrónico",
+      "phoneNumber": "Número de teléfono",
+      "jobTitle": "Cargo",
+      "language": "Idioma",
+      "saving": "Guardando…",
+      "saveChanges": "Guardar cambios",
+      "marketplaceTitle": "Visibilidad en el marketplace",
+      "marketplaceSubtitle": "Se muestra en tu tarjeta de perfil cuando los especialistas reciben tus solicitudes de asistencia.",
+      "groveFocus": "Enfoque del cultivo",
+      "groveFocusPlaceholder": "ej. Producción de aceite de oliva",
+      "location": "Ubicación",
+      "locationPlaceholder": "ej. Valle de Ica, Perú",
+      "totalArea": "Área total cultivada",
+      "totalAreaHint": "Sumada automáticamente desde tus parcelas en Mis Parcelas.",
+      "previewCaption": "Cómo ven los especialistas tu solicitud",
+      "respond": "Responder",
+      "previewNote": "Esta vista previa se actualiza en vivo mientras editas. Es exactamente lo que ve un especialista cuando envías una solicitud de asistencia desde Asistencia Experta."
+    },
+    "referrals": {
+      "title": "Referidos",
+      "subtitle": "Invita a otros a Viora. Hagamos crecer el ecosistema juntos.",
+      "headline": "Refiere a un amigo y gana un cupón de {{percent}}% de descuento.",
+      "illustrationAlt": "Refiere a un amigo a Viora",
+      "yourCode": "Tu código de referido",
+      "copied": "¡Copiado!",
+      "tapToCopy": "Toca para copiar",
+      "step1": "Envía una invitación a un socio.",
+      "step2": "Tu socio se registra.",
+      "step3": "Podrás reclamar tu cupón cuando tu socio se registre por primera vez.",
+      "shareButton": "Refiere a un socio por mensaje, correo o más"
+    },
+    "coupons": {
+      "title": "Cupones",
+      "subtitleDetail": "Detalles y condiciones del cupón.",
+      "subtitlePrompt": "¿Tienes un cupón?",
+      "back": "Volver",
+      "redeemPlaceholder": "Ingresa un código de cupón, ej. WELCOME10",
+      "redeeming": "Canjeando…",
+      "redeem": "Canjear",
+      "kind": "cupón",
+      "viewConditions": "Ver condiciones",
+      "empty": "Aún no tienes cupones. Canjea un código o refiere a un socio para ganar uno.",
+      "copyCode": "Copiar código",
+      "codeCopied": "Copiado",
+      "validUntil": "Válido hasta {{date}} o mientras haya créditos.",
+      "validWhileCredits": "Válido mientras haya créditos.",
+      "termsTitle": "Términos y condiciones"
+    },
+    "referralTerms": {
+      "one": "Válido para un descuento de suscripción por referido completado — el productor invitado debe terminar el onboarding de parcelas y conectar al menos un dispositivo IoT.",
+      "two": "El descuento se aplica automáticamente a tu próximo ciclo de facturación una vez que el referido califica.",
+      "three": "Puedes tener un máximo de 5 cupones de referido activos por cuenta a la vez.",
+      "four": "No combinable con otras promociones de suscripción o descuentos de facturación anual.",
+      "five": "Viora puede modificar o revocar cupones de referido en casos de sospecha de abuso o referidos fraudulentos."
+    },
+    "security": {
+      "passwordTitle": "Contraseña",
+      "passwordSubtitle": "Usa al menos 8 caracteres.",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmNewPassword": "Confirmar nueva contraseña",
+      "updating": "Actualizando…",
+      "updatePassword": "Actualizar contraseña",
+      "sessionsTitle": "Sesiones activas",
+      "devicesSignedIn": "{{count}} dispositivos con sesión iniciada",
+      "loadingSessions": "Cargando sesiones…",
+      "thisDevice": "Este dispositivo",
+      "signOut": "Cerrar sesión",
+      "dangerTitle": "Zona de peligro",
+      "dangerSubtitle": "Eliminar tu cuenta borra permanentemente tu perfil y acceso. Esto no se puede deshacer.",
+      "deleteAccount": "Eliminar cuenta"
+    },
+    "deleteModal": {
+      "title": "Eliminar cuenta",
+      "subtitle": "Esto elimina permanentemente tu cuenta y perfil.",
+      "body": "¿Seguro que deseas eliminar permanentemente tu cuenta? Tu perfil y acceso serán eliminados y esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "confirm": "Eliminar cuenta"
+    }
+  },
+  "subscriptionPage": {
+    "headerSubtitle": "Administra tu plan y revisa el historial de facturación.",
+    "justNow": "Justo ahora",
+    "breadcrumb": {
+      "subscription": "Suscripción",
+      "overview": "Resumen"
+    },
+    "banner": {
+      "approved": "Pago aprobado — tu plan se está actualizando. Recarga en un momento si aún no se refleja.",
+      "pending": "Pago pendiente de confirmación. Tu plan se actualiza en cuanto MercadoPago lo confirme.",
+      "failure": "No se pudo completar el pago. No se hicieron cambios — puedes intentarlo de nuevo."
+    },
+    "currentPlan": {
+      "fallbackName": "Tu plan",
+      "fallbackCaption": "Administra tu suscripción",
+      "plotsMonitored": "Parcelas monitoreadas",
+      "iotConnected": "Dispositivos IoT conectados",
+      "usedOf": "{{used}} de {{limit}} usados",
+      "changePlan": "Cambiar plan",
+      "switchToAnnual": "Cambiar a anual"
+    },
+    "plans": {
+      "title": "Planes disponibles",
+      "subtitle": "Compara niveles y cambia cuando quieras — los cambios aplican en el próximo ciclo de facturación.",
+      "currentTag": "Plan actual",
+      "currentButton": "Plan actual",
+      "opening": "Abriendo…",
+      "switchPlan": "Cambiar plan",
+      "unavailable": "Los planes no están disponibles en este momento."
+    },
+    "payment": {
+      "title": "Método de pago",
+      "default": "predeterminado",
+      "none": "Aún no hay un método de pago registrado.",
+      "update": "Actualizar método de pago"
+    },
+    "nextInvoice": {
+      "title": "Próxima factura",
+      "amountDue": "Monto a pagar",
+      "billingDate": "Fecha de facturación"
+    },
+    "cancel": {
+      "title": "Cancelar suscripción",
+      "canceledNote": "Tu suscripción terminará el {{date}}. Mantienes el acceso hasta entonces.",
+      "activeNote": "Perderás el acceso a nutrición dinámica, vigilancia de plagas y asistencia experta al final del período de facturación.",
+      "button": "Cancelar suscripción"
+    },
+    "history": {
+      "title": "Historial de facturación",
+      "subtitle": "Facturas de los últimos 6 ciclos de facturación.",
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Monto",
+      "status": "Estado",
+      "empty": "Aún no hay facturas."
+    },
+    "switchModal": {
+      "title": "Cambiar a {{name}}",
+      "subtitle": "Los cambios aplican en tu próximo ciclo de facturación.",
+      "plan": "Plan",
+      "price": "Precio",
+      "note": "Serás redirigido al checkout seguro de MercadoPago para completar el pago.",
+      "cancel": "Cancelar",
+      "redirecting": "Redirigiendo…",
+      "continue": "Continuar al pago"
+    },
+    "cancelModal": {
+      "title": "Cancelar suscripción",
+      "subtitle": "Esto se aplica al final de tu período de facturación.",
+      "bodyPrefix": "Mantendrás el acceso a",
+      "bodyMiddle": "hasta",
+      "bodySuffix": ", luego perderás nutrición dinámica, vigilancia de plagas y asistencia experta.",
+      "keepPlan": "Mantener plan",
+      "canceling": "Cancelando…",
+      "confirm": "Cancelar suscripción"
+    },
+    "paymentModal": {
+      "title": "Actualizar método de pago",
+      "subtitle": "Tu tarjeta se maneja de forma segura con MercadoPago.",
+      "body": "Viora nunca almacena los datos completos de tu tarjeta. Tu método de pago se actualiza automáticamente la próxima vez que completes un pago a través del checkout seguro de MercadoPago.",
+      "gotIt": "Entendido"
+    }
+  },
   "myPlots": {
     "overview": "Resumen",
     "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",

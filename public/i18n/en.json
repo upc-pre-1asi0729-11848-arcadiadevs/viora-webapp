@@ -1,4 +1,252 @@
 {
+  "auth": {
+    "backToWebsite": "Back to website",
+    "story": {
+      "eyebrow": "Satellite monitoring",
+      "title": "Every hectare, under control.",
+      "description": "Track NDVI, climate signals and field alerts from one calm workspace."
+    },
+    "fields": {
+      "email": "Email",
+      "emailPlaceholder": "you@yourfarm.com",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "e.g. Maria Torres",
+      "newPasswordPlaceholder": "At least 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "passwordsMismatch": "Passwords do not match.",
+      "referralCode": "Referral code (optional)",
+      "referralCodePlaceholder": "e.g. VIORA-4JYFFQ",
+      "referralHint": "Invited by a partner? Their code rewards them when you join."
+    },
+    "roles": {
+      "producer": "Producer",
+      "specialist": "Specialist"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to monitor your groves, alerts and interventions.",
+      "resend": "Resend the verification email",
+      "signingIn": "Signing in...",
+      "signIn": "Sign in",
+      "foot": "New to Viora?",
+      "createAccount": "Create an account"
+    },
+    "register": {
+      "storyEyebrow": "Choose your workspace",
+      "storyTitle": "Build the right field account.",
+      "storyDescription": "Producers monitor plots and devices. Specialists support teams with field expertise, diagnostics and interventions.",
+      "title": "Create your account",
+      "subtitle": "Join Viora as a Producer or Specialist.",
+      "producerDescription": "Monitor plots, IoT devices and alerts",
+      "specialistDescription": "Assist producers with field expertise",
+      "creating": "Creating account...",
+      "createAccount": "Create account",
+      "foot": "Already have an account?",
+      "signIn": "Sign in",
+      "success": {
+        "title": "Check your email",
+        "sentToPrefix": "We sent a verification link to",
+        "sentToSuffix": "Open it to activate your account; the link expires in 24 hours.",
+        "sending": "Sending...",
+        "resend": "Resend email",
+        "foot": "Verified already?",
+        "signIn": "Sign in"
+      }
+    },
+    "verify": {
+      "verifyingTitle": "Verifying your email…",
+      "verifyingSubtitle": "One moment while we confirm your account.",
+      "successTitle": "Email verified!",
+      "successSubtitle": "Your account is active — taking you to your workspace…",
+      "errorTitle": "Verification failed",
+      "errorSubtitle": "This verification link is invalid, expired or already used.",
+      "backToSignIn": "Back to sign in",
+      "errorFootSuffix": "— you can resend the email from there."
+    }
+  },
+  "settingsPage": {
+    "headerSubtitle": "Manage your account, marketplace visibility, and security preferences.",
+    "breadcrumb": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "referrals": "Referrals",
+      "security": "Security"
+    },
+    "profile": {
+      "personalTitle": "Personal information",
+      "personalSubtitle": "Your name and contact details as seen by specialists.",
+      "yourName": "Your name",
+      "jobTitleFallback": "Job title",
+      "uploading": "Uploading…",
+      "changePhoto": "Change photo",
+      "fullName": "Full name",
+      "emailAddress": "Email address",
+      "phoneNumber": "Phone number",
+      "jobTitle": "Job title",
+      "language": "Language",
+      "saving": "Saving…",
+      "saveChanges": "Save changes",
+      "marketplaceTitle": "Marketplace visibility",
+      "marketplaceSubtitle": "Shown on your profile card when specialists receive your assistance requests.",
+      "groveFocus": "Grove focus",
+      "groveFocusPlaceholder": "e.g. Olive oil production",
+      "location": "Location",
+      "locationPlaceholder": "e.g. Valle de Ica, Peru",
+      "totalArea": "Total farmed area",
+      "totalAreaHint": "Summed automatically from your plots in My Plots.",
+      "previewCaption": "How specialists see your request",
+      "respond": "Respond",
+      "previewNote": "This preview updates live as you edit. It is exactly what a specialist sees when you send an assistance request from Expert Assistance."
+    },
+    "referrals": {
+      "title": "Referrals",
+      "subtitle": "Invite others to Viora. Grow the ecosystem together.",
+      "headline": "Refer a friend and earn a {{percent}}% discount coupon.",
+      "illustrationAlt": "Refer a friend to Viora",
+      "yourCode": "Your referral code",
+      "copied": "Copied!",
+      "tapToCopy": "Tap to copy",
+      "step1": "Send an invite to a partner.",
+      "step2": "Your partner signs up.",
+      "step3": "You will be able to claim your coupon when your partner registers for the first time.",
+      "shareButton": "Refer a partner by text, email or more"
+    },
+    "coupons": {
+      "title": "Coupons",
+      "subtitleDetail": "Coupon details and conditions.",
+      "subtitlePrompt": "Do you have a coupon?",
+      "back": "Back",
+      "redeemPlaceholder": "Enter a coupon code, e.g. WELCOME10",
+      "redeeming": "Redeeming…",
+      "redeem": "Redeem",
+      "kind": "coupon",
+      "viewConditions": "View conditions",
+      "empty": "No coupons yet. Redeem a code or refer a partner to earn one.",
+      "copyCode": "Copy code",
+      "codeCopied": "Copied",
+      "validUntil": "Valid until {{date}} or while credits last.",
+      "validWhileCredits": "Valid while credits last.",
+      "termsTitle": "Terms & conditions"
+    },
+    "referralTerms": {
+      "one": "Valid for one subscription discount per completed referral — the invited producer must finish plot onboarding and connect at least one IoT device.",
+      "two": "The discount applies automatically to your next billing cycle once the referral qualifies.",
+      "three": "You can hold a maximum of 5 active referral coupons per account at any time.",
+      "four": "Not combinable with other Subscription promotions or annual-billing discounts.",
+      "five": "Viora may modify or revoke referral coupons in cases of suspected abuse or fraudulent referrals."
+    },
+    "security": {
+      "passwordTitle": "Password",
+      "passwordSubtitle": "Use at least 8 characters.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "updating": "Updating…",
+      "updatePassword": "Update password",
+      "sessionsTitle": "Active sessions",
+      "devicesSignedIn": "{{count}} devices signed in",
+      "loadingSessions": "Loading sessions…",
+      "thisDevice": "This device",
+      "signOut": "Sign out",
+      "dangerTitle": "Danger zone",
+      "dangerSubtitle": "Deleting your account permanently removes your profile and access. This cannot be undone.",
+      "deleteAccount": "Delete account"
+    },
+    "deleteModal": {
+      "title": "Delete account",
+      "subtitle": "This permanently deletes your account and profile.",
+      "body": "Are you sure you want to permanently delete your account? Your profile and access will be removed and this action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "confirm": "Delete account"
+    }
+  },
+  "subscriptionPage": {
+    "headerSubtitle": "Manage your plan and review billing history.",
+    "justNow": "Just now",
+    "breadcrumb": {
+      "subscription": "Subscription",
+      "overview": "Overview"
+    },
+    "banner": {
+      "approved": "Payment approved — your plan is being updated. Refresh in a moment if it isn't reflected yet.",
+      "pending": "Payment pending confirmation. Your plan updates as soon as MercadoPago confirms it.",
+      "failure": "The payment could not be completed. No changes were made — you can try again."
+    },
+    "currentPlan": {
+      "fallbackName": "Your plan",
+      "fallbackCaption": "Manage your subscription",
+      "plotsMonitored": "Plots monitored",
+      "iotConnected": "IoT devices connected",
+      "usedOf": "{{used}} of {{limit}} used",
+      "changePlan": "Change plan",
+      "switchToAnnual": "Switch to annual"
+    },
+    "plans": {
+      "title": "Available plans",
+      "subtitle": "Compare tiers and switch anytime — changes apply at the next billing cycle.",
+      "currentTag": "Current plan",
+      "currentButton": "Current plan",
+      "opening": "Opening…",
+      "switchPlan": "Switch plan",
+      "unavailable": "Plans are unavailable right now."
+    },
+    "payment": {
+      "title": "Payment method",
+      "default": "default",
+      "none": "No payment method on file yet.",
+      "update": "Update payment method"
+    },
+    "nextInvoice": {
+      "title": "Next invoice",
+      "amountDue": "Amount due",
+      "billingDate": "Billing date"
+    },
+    "cancel": {
+      "title": "Cancel subscription",
+      "canceledNote": "Your subscription is set to end on {{date}}. You keep access until then.",
+      "activeNote": "You'll lose access to dynamic nutrition, pest surveillance, and expert assistance at the end of the billing period.",
+      "button": "Cancel subscription"
+    },
+    "history": {
+      "title": "Billing history",
+      "subtitle": "Invoices from the last 6 billing cycles.",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "empty": "No invoices yet."
+    },
+    "switchModal": {
+      "title": "Switch to {{name}}",
+      "subtitle": "Changes apply at your next billing cycle.",
+      "plan": "Plan",
+      "price": "Price",
+      "note": "You'll be redirected to MercadoPago's secure checkout to complete the payment.",
+      "cancel": "Cancel",
+      "redirecting": "Redirecting…",
+      "continue": "Continue to payment"
+    },
+    "cancelModal": {
+      "title": "Cancel subscription",
+      "subtitle": "This takes effect at the end of your billing period.",
+      "bodyPrefix": "You'll keep access to",
+      "bodyMiddle": "until",
+      "bodySuffix": ", then lose dynamic nutrition, pest surveillance and expert assistance.",
+      "keepPlan": "Keep plan",
+      "canceling": "Canceling…",
+      "confirm": "Cancel subscription"
+    },
+    "paymentModal": {
+      "title": "Update payment method",
+      "subtitle": "Your card is handled securely by MercadoPago.",
+      "body": "Viora never stores your full card details. Your payment method updates automatically the next time you complete a payment through MercadoPago's secure checkout.",
+      "gotIt": "Got it"
+    }
+  },
   "myPlots": {
     "overview": "Overview",
     "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",

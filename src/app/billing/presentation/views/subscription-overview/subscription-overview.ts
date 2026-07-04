@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -18,7 +19,7 @@ import { Plan } from '../../../domain/model/plan.entity';
 @Component({
   selector: 'app-subscription-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
   templateUrl: './subscription-overview.html',
   styleUrl: './subscription-overview.css',
 })
@@ -31,8 +32,8 @@ export class SubscriptionOverviewView implements OnInit {
   protected readonly paymentResult = signal<'approved' | 'pending' | 'failure' | null>(null);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
-    { label: 'Subscription', disabled: true },
-    { label: 'Overview', disabled: true },
+    { label: 'Subscription', labelKey: 'subscriptionPage.breadcrumb.subscription', disabled: true },
+    { label: 'Overview', labelKey: 'subscriptionPage.breadcrumb.overview', disabled: true },
   ];
 
   // Real usage, derived from My Plots / IoT devices.
