@@ -1,7 +1,7 @@
 <section class="interventions-page">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs"
-    subtitle="Track technical interventions linked to alerts, proposals and field prescriptions."
+    [subtitle]="'interventions.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
     (refresh)="refresh()" />
 
@@ -9,9 +9,9 @@
   <div class="toolbar">
     <label class="scope-field">
       <mat-icon>place</mat-icon>
-      <span class="scope-label">Plot:</span>
+      <span class="scope-label">{{ 'interventions.plotLabel' | translate }}</span>
       <select [value]="selectedScope()" (change)="onSelectScope($any($event.target).value)">
-        <option value="all">All plots</option>
+        <option value="all">{{ 'interventions.allPlots' | translate }}</option>
         @for (plot of plots(); track plot.id) {
           <option [value]="plot.id">{{ plot.name }}</option>
         }
@@ -22,32 +22,32 @@
   <!-- KPI cards -->
   <section class="kpi-grid">
     <mat-card class="kpi-card">
-      <div class="kpi-head"><h2>Total interventions</h2></div>
+      <div class="kpi-head"><h2>{{ 'interventions.kpi.totalTitle' | translate }}</h2></div>
       <span class="kpi-value kpi-value--primary">{{ totalCount() }}</span>
-      <p class="kpi-foot">Accepted cases in the technical-service lifecycle.</p>
+      <p class="kpi-foot">{{ 'interventions.kpi.totalFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Pending certification</h2>
+        <h2>{{ 'interventions.kpi.pendingCertTitle' | translate }}</h2>
         @if (pendingCertificationCount() > 0) {
-          <span class="kpi-pill kpi-pill--danger">Action required</span>
+          <span class="kpi-pill kpi-pill--danger">{{ 'interventions.kpi.actionRequired' | translate }}</span>
         }
       </div>
       <span class="kpi-value kpi-value--red">{{ pendingCertificationCount() }}</span>
-      <p class="kpi-foot">Prescriptions waiting for field application confirmation.</p>
+      <p class="kpi-foot">{{ 'interventions.kpi.pendingCertFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
-      <div class="kpi-head"><h2>Recovery monitoring</h2></div>
+      <div class="kpi-head"><h2>{{ 'interventions.kpi.recoveryTitle' | translate }}</h2></div>
       <span class="kpi-value kpi-value--blue">{{ recoveryMonitoringCount() }}</span>
-      <p class="kpi-foot">Post-intervention vigor under observation.</p>
+      <p class="kpi-foot">{{ 'interventions.kpi.recoveryFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card kpi-card--amber">
-      <div class="kpi-head"><h2>Closure pending</h2></div>
+      <div class="kpi-head"><h2>{{ 'interventions.kpi.closureTitle' | translate }}</h2></div>
       <span class="kpi-value kpi-value--amber">{{ closurePendingCount() }}</span>
-      <p class="kpi-foot">Cases ready for service evaluation and closure.</p>
+      <p class="kpi-foot">{{ 'interventions.kpi.closureFoot' | translate }}</p>
     </mat-card>
   </section>
 
@@ -57,26 +57,26 @@
       <mat-card class="section-card">
         <div class="section-head">
           <div>
-            <h2 class="section-title"><mat-icon class="title-icon">description</mat-icon> Intervention records</h2>
-            <p class="section-subtitle">Technical interventions linked to alerts, proposals and field prescriptions.</p>
+            <h2 class="section-title"><mat-icon class="title-icon">description</mat-icon> {{ 'interventions.records.title' | translate }}</h2>
+            <p class="section-subtitle">{{ 'interventions.records.subtitle' | translate }}</p>
           </div>
         </div>
 
         <div class="records-table">
           <div class="records-header">
-            <span>ID</span><span>Plot</span><span>Linked alert</span><span>Specialist</span><span>Status</span>
+            <span>{{ 'interventions.records.colId' | translate }}</span><span>{{ 'interventions.records.colPlot' | translate }}</span><span>{{ 'interventions.records.colAlert' | translate }}</span><span>{{ 'interventions.records.colSpecialist' | translate }}</span><span>{{ 'interventions.records.colStatus' | translate }}</span>
           </div>
 
           @if (store.loading().list && store.interventions().length === 0) {
-            <div class="records-state">Loading interventions…</div>
+            <div class="records-state">{{ 'interventions.records.loading' | translate }}</div>
           } @else if (visibleInterventions().length === 0) {
-            <div class="records-state">No interventions yet. Accept a specialist proposal in Expert Assistance to start one.</div>
+            <div class="records-state">{{ 'interventions.records.empty' | translate }}</div>
           } @else {
             @for (item of visibleInterventions(); track item.code) {
               <button type="button" class="records-row" [class.is-selected]="item.code === store.selectedCode()" (click)="selectIntervention(item)">
                 <span class="record-code">{{ item.code }}</span>
                 <span>{{ plotName(item.plotId) }}</span>
-                <span>{{ item.serviceTitle || 'Assistance case' }}</span>
+                <span>{{ item.serviceTitle || ('interventions.records.assistanceCase' | translate) }}</span>
                 <span>{{ store.specialistName(item.specialistId) }}</span>
                 <span><span class="pill" [class]="item.statusClass">{{ item.statusLabel }}</span></span>
               </button>
@@ -90,8 +90,8 @@
         <mat-card class="section-card">
           <div class="section-head">
             <div>
-              <h2 class="section-title">Prescription summary</h2>
-              <p class="section-subtitle">Technical prescription issued by the specialist — read-only.</p>
+              <h2 class="section-title">{{ 'interventions.rx.title' | translate }}</h2>
+              <p class="section-subtitle">{{ 'interventions.rx.subtitle' | translate }}</p>
             </div>
             <span class="tag-purple">{{ rx.code }}</span>
           </div>
@@ -112,7 +112,7 @@
 
           @if (rx.products.length > 0) {
             <div class="rx-products">
-              <strong>Products</strong>
+              <strong>{{ 'interventions.rx.products' | translate }}</strong>
               <div class="product-tags">
                 @for (product of rx.products; track product) {
                   <span class="product-tag">{{ product }}</span>
@@ -130,7 +130,7 @@
         <mat-card class="section-card">
           <div class="section-head">
             <div>
-              <h2 class="section-title">Selected intervention</h2>
+              <h2 class="section-title">{{ 'interventions.selected.title' | translate }}</h2>
               <p class="section-subtitle">{{ item.code }} · {{ plotName(item.plotId) }}</p>
             </div>
             <span class="pill" [class]="item.statusClass">{{ item.statusLabel }}</span>
@@ -138,30 +138,30 @@
 
           <div class="detail-rows">
             <div class="detail-row">
-              <span>Linked alert</span>
+              <span>{{ 'interventions.selected.linkedAlert' | translate }}</span>
               <span>
                 @if (linkedAlert()) {
                   <span class="pill" [class]="severityClass(linkedAlert()!.severity)">{{ linkedAlert()!.severity }}</span>
                   {{ linkedAlert()!.typeLabel }}
                 } @else {
-                  {{ item.serviceTitle || 'Assistance case' }}
+                  {{ item.serviceTitle || ('interventions.records.assistanceCase' | translate) }}
                 }
               </span>
             </div>
-            <div class="detail-row"><span>Specialist</span><strong>{{ store.specialistName(item.specialistId) }}</strong></div>
-            <div class="detail-row"><span>Prescription</span><strong>{{ item.prescriptionCode }}</strong></div>
-            <div class="detail-row"><span>Estimated cost</span><strong>{{ item.amountLabel }}</strong></div>
+            <div class="detail-row"><span>{{ 'interventions.selected.specialist' | translate }}</span><strong>{{ store.specialistName(item.specialistId) }}</strong></div>
+            <div class="detail-row"><span>{{ 'interventions.selected.prescription' | translate }}</span><strong>{{ item.prescriptionCode }}</strong></div>
+            <div class="detail-row"><span>{{ 'interventions.selected.estimatedCost' | translate }}</span><strong>{{ item.amountLabel }}</strong></div>
           </div>
 
           <div class="next-note">
             <mat-icon>info</mat-icon>
             <span>
               @switch (nextAction()) {
-                @case ('simulate') { Next: the specialist issues the technical prescription. }
-                @case ('certify') { Next required action: certify the application after field execution. }
-                @case ('impact') { Under recovery monitoring — report the impact after the grace period. }
-                @case ('close') { Ready to close — evaluate the service and finalize. }
-                @default { This intervention is closed. }
+                @case ('simulate') { {{ 'interventions.next.simulate' | translate }} }
+                @case ('certify') { {{ 'interventions.next.certify' | translate }} }
+                @case ('impact') { {{ 'interventions.next.impact' | translate }} }
+                @case ('close') { {{ 'interventions.next.close' | translate }} }
+                @default { {{ 'interventions.next.closed' | translate }} }
               }
             </span>
           </div>
@@ -169,26 +169,26 @@
           @switch (nextAction()) {
             @case ('simulate') {
               <button mat-flat-button type="button" class="primary-button block" [disabled]="store.loading().action" (click)="simulatePrescription()">
-                <mat-icon>bolt</mat-icon> Simulate specialist prescription
+                <mat-icon>bolt</mat-icon> {{ 'interventions.action.simulate' | translate }}
               </button>
             }
             @case ('certify') {
               <button mat-flat-button type="button" class="primary-button block" (click)="openModal('certify')">
-                <mat-icon>verified</mat-icon> Certify application
+                <mat-icon>verified</mat-icon> {{ 'interventions.action.certify' | translate }}
               </button>
             }
             @case ('impact') {
               <button mat-flat-button type="button" class="primary-button block" (click)="openModal('impact')">
-                <mat-icon>eco</mat-icon> Report impact
+                <mat-icon>eco</mat-icon> {{ 'interventions.action.impact' | translate }}
               </button>
             }
             @case ('close') {
               <button mat-flat-button type="button" class="primary-button block" (click)="openModal('close')">
-                <mat-icon>task_alt</mat-icon> Close intervention
+                <mat-icon>task_alt</mat-icon> {{ 'interventions.action.close' | translate }}
               </button>
             }
             @default {
-              <div class="closed-banner"><mat-icon>check_circle</mat-icon> Service closed and evaluated.</div>
+              <div class="closed-banner"><mat-icon>check_circle</mat-icon> {{ 'interventions.action.closedBanner' | translate }}</div>
             }
           }
         </mat-card>
@@ -197,24 +197,24 @@
         @if (item.inRecovery || item.readyToClose || item.isClosed) {
           <mat-card class="section-card">
             <div class="section-head">
-              <h2 class="section-title">Post-intervention recovery</h2>
+              <h2 class="section-title">{{ 'interventions.recovery.title' | translate }}</h2>
               <span class="tag-purple">{{ item.prescriptionCode }}</span>
             </div>
             <div class="detail-rows">
-              <div class="detail-row"><span>Monitoring period</span><strong>14 days</strong></div>
+              <div class="detail-row"><span>{{ 'interventions.recovery.monitoringPeriod' | translate }}</span><strong>{{ 'interventions.recovery.days14' | translate }}</strong></div>
               <div class="detail-row">
-                <span>Recovery status</span>
-                <strong class="recovery-ok">{{ item.isClosed ? 'Service closed' : (item.readyToClose ? 'Impact reported' : 'Under observation') }}</strong>
+                <span>{{ 'interventions.recovery.recoveryStatus' | translate }}</span>
+                <strong class="recovery-ok">{{ (item.isClosed ? 'interventions.recovery.serviceClosed' : (item.readyToClose ? 'interventions.recovery.impactReported' : 'interventions.recovery.underObservation')) | translate }}</strong>
               </div>
             </div>
             <p class="recovery-note">
-              Vegetation vigor is monitored during the grace period. Report the impact once the recovery window completes.
+              {{ 'interventions.recovery.note' | translate }}
             </p>
           </mat-card>
         }
       } @else if (!store.loading().list) {
         <mat-card class="section-card">
-          <div class="records-state">Select an intervention to view its details.</div>
+          <div class="records-state">{{ 'interventions.selected.selectHint' | translate }}</div>
         </mat-card>
       }
     </div>
@@ -227,46 +227,46 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Certify application</h2>
-          <p class="modal-subtitle">Register the field execution of the technical prescription.</p>
+          <h2>{{ 'interventions.certifyModal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'interventions.certifyModal.subtitle' | translate }}</p>
         </div>
         <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
       </div>
 
       <div class="modal-grid">
-        <div class="field"><span>Linked intervention</span><div class="field-readonly">{{ item.code }} · {{ plotName(item.plotId) }}</div></div>
-        <div class="field"><span>Prescription</span><div class="field-readonly">{{ item.prescriptionCode }}</div></div>
+        <div class="field"><span>{{ 'interventions.certifyModal.linkedIntervention' | translate }}</span><div class="field-readonly">{{ item.code }} · {{ plotName(item.plotId) }}</div></div>
+        <div class="field"><span>{{ 'interventions.certifyModal.prescription' | translate }}</span><div class="field-readonly">{{ item.prescriptionCode }}</div></div>
       </div>
 
       <label class="field">
-        <span>Applied area</span>
-        <input type="text" placeholder="e.g. South-west block · 0.6 ha" [value]="certArea()" (input)="certArea.set($any($event.target).value)" />
+        <span>{{ 'interventions.certifyModal.appliedArea' | translate }}</span>
+        <input type="text" [placeholder]="'interventions.certifyModal.appliedAreaPlaceholder' | translate" [value]="certArea()" (input)="certArea.set($any($event.target).value)" />
       </label>
 
       <div class="field">
-        <span>Execution status</span>
+        <span>{{ 'interventions.certifyModal.executionStatus' | translate }}</span>
         <div class="radio-list">
           <label class="radio-item" [class.is-active]="certStatus() === 'APPLIED_AS_PRESCRIBED'">
-            <input type="radio" name="certStatus" [checked]="certStatus() === 'APPLIED_AS_PRESCRIBED'" (change)="certStatus.set('APPLIED_AS_PRESCRIBED')" /> Applied as prescribed
+            <input type="radio" name="certStatus" [checked]="certStatus() === 'APPLIED_AS_PRESCRIBED'" (change)="certStatus.set('APPLIED_AS_PRESCRIBED')" /> {{ 'interventions.certifyModal.appliedAsPrescribed' | translate }}
           </label>
           <label class="radio-item" [class.is-active]="certStatus() === 'PARTIALLY_APPLIED'">
-            <input type="radio" name="certStatus" [checked]="certStatus() === 'PARTIALLY_APPLIED'" (change)="certStatus.set('PARTIALLY_APPLIED')" /> Partially applied
+            <input type="radio" name="certStatus" [checked]="certStatus() === 'PARTIALLY_APPLIED'" (change)="certStatus.set('PARTIALLY_APPLIED')" /> {{ 'interventions.certifyModal.partiallyApplied' | translate }}
           </label>
           <label class="radio-item" [class.is-active]="certStatus() === 'NOT_APPLIED'">
-            <input type="radio" name="certStatus" [checked]="certStatus() === 'NOT_APPLIED'" (change)="certStatus.set('NOT_APPLIED')" /> Not applied
+            <input type="radio" name="certStatus" [checked]="certStatus() === 'NOT_APPLIED'" (change)="certStatus.set('NOT_APPLIED')" /> {{ 'interventions.certifyModal.notApplied' | translate }}
           </label>
         </div>
       </div>
 
       <label class="field">
-        <span>Field note (optional)</span>
-        <textarea rows="3" placeholder="Describe field conditions or any deviation from the prescription…" [value]="certNote()" (input)="certNote.set($any($event.target).value)"></textarea>
+        <span>{{ 'interventions.certifyModal.fieldNote' | translate }}</span>
+        <textarea rows="3" [placeholder]="'interventions.certifyModal.fieldNotePlaceholder' | translate" [value]="certNote()" (input)="certNote.set($any($event.target).value)"></textarea>
       </label>
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">{{ 'interventions.certifyModal.cancel' | translate }}</button>
         <button mat-flat-button type="button" class="primary-button" [disabled]="certArea().trim().length === 0 || store.loading().action" (click)="submitCertify()">
-          <mat-icon>verified</mat-icon> {{ store.loading().action ? 'Saving…' : 'Certify application' }}
+          <mat-icon>verified</mat-icon> {{ (store.loading().action ? 'interventions.certifyModal.saving' : 'interventions.certifyModal.certify') | translate }}
         </button>
       </div>
     </div>
@@ -279,29 +279,29 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Report intervention impact</h2>
-          <p class="modal-subtitle">Report whether the phytosanitary issue improved after the grace period.</p>
+          <h2>{{ 'interventions.impactModal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'interventions.impactModal.subtitle' | translate }}</p>
         </div>
         <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
       </div>
 
       <div class="modal-grid">
-        <div class="field"><span>Linked intervention</span><div class="field-readonly">{{ item.code }} · {{ plotName(item.plotId) }}</div></div>
-        <div class="field"><span>Grace period</span><div class="field-readonly">14 days completed</div></div>
+        <div class="field"><span>{{ 'interventions.impactModal.linkedIntervention' | translate }}</span><div class="field-readonly">{{ item.code }} · {{ plotName(item.plotId) }}</div></div>
+        <div class="field"><span>{{ 'interventions.impactModal.gracePeriod' | translate }}</span><div class="field-readonly">{{ 'interventions.impactModal.days14Completed' | translate }}</div></div>
       </div>
 
       <div class="field">
-        <span>Observed result</span>
+        <span>{{ 'interventions.impactModal.observedResult' | translate }}</span>
         <div class="radio-list">
-          <label class="radio-item" [class.is-active]="impactResult() === 'PEST_PRESSURE_REDUCED'"><input type="radio" name="obs" [checked]="impactResult() === 'PEST_PRESSURE_REDUCED'" (change)="impactResult.set('PEST_PRESSURE_REDUCED')" /> Pest pressure reduced</label>
-          <label class="radio-item" [class.is-active]="impactResult() === 'SYMPTOMS_PERSIST'"><input type="radio" name="obs" [checked]="impactResult() === 'SYMPTOMS_PERSIST'" (change)="impactResult.set('SYMPTOMS_PERSIST')" /> Symptoms persist</label>
-          <label class="radio-item" [class.is-active]="impactResult() === 'NEW_SYMPTOMS_DETECTED'"><input type="radio" name="obs" [checked]="impactResult() === 'NEW_SYMPTOMS_DETECTED'" (change)="impactResult.set('NEW_SYMPTOMS_DETECTED')" /> New symptoms detected</label>
-          <label class="radio-item" [class.is-active]="impactResult() === 'NOT_ENOUGH_EVIDENCE_YET'"><input type="radio" name="obs" [checked]="impactResult() === 'NOT_ENOUGH_EVIDENCE_YET'" (change)="impactResult.set('NOT_ENOUGH_EVIDENCE_YET')" /> Not enough evidence yet</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'PEST_PRESSURE_REDUCED'"><input type="radio" name="obs" [checked]="impactResult() === 'PEST_PRESSURE_REDUCED'" (change)="impactResult.set('PEST_PRESSURE_REDUCED')" /> {{ 'interventions.impactModal.pestReduced' | translate }}</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'SYMPTOMS_PERSIST'"><input type="radio" name="obs" [checked]="impactResult() === 'SYMPTOMS_PERSIST'" (change)="impactResult.set('SYMPTOMS_PERSIST')" /> {{ 'interventions.impactModal.symptomsPersist' | translate }}</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'NEW_SYMPTOMS_DETECTED'"><input type="radio" name="obs" [checked]="impactResult() === 'NEW_SYMPTOMS_DETECTED'" (change)="impactResult.set('NEW_SYMPTOMS_DETECTED')" /> {{ 'interventions.impactModal.newSymptoms' | translate }}</label>
+          <label class="radio-item" [class.is-active]="impactResult() === 'NOT_ENOUGH_EVIDENCE_YET'"><input type="radio" name="obs" [checked]="impactResult() === 'NOT_ENOUGH_EVIDENCE_YET'" (change)="impactResult.set('NOT_ENOUGH_EVIDENCE_YET')" /> {{ 'interventions.impactModal.notEnoughEvidence' | translate }}</label>
         </div>
       </div>
 
       <div class="field">
-        <span>Impact level</span>
+        <span>{{ 'interventions.impactModal.impactLevel' | translate }}</span>
         <div class="segmented">
           @for (level of ['POSITIVE','PARTIAL','NEGATIVE','INCONCLUSIVE']; track level) {
             <button type="button" class="seg" [class.is-active]="impactLevel() === level" (click)="impactLevel.set($any(level))">{{ level.charAt(0) + level.slice(1).toLowerCase() }}</button>
@@ -310,14 +310,14 @@
       </div>
 
       <label class="field">
-        <span>Producer assessment</span>
-        <textarea rows="3" placeholder="Describe the observed change in the affected area…" [value]="impactAssessment()" (input)="impactAssessment.set($any($event.target).value)"></textarea>
+        <span>{{ 'interventions.impactModal.producerAssessment' | translate }}</span>
+        <textarea rows="3" [placeholder]="'interventions.impactModal.assessmentPlaceholder' | translate" [value]="impactAssessment()" (input)="impactAssessment.set($any($event.target).value)"></textarea>
       </label>
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">{{ 'interventions.impactModal.cancel' | translate }}</button>
         <button mat-flat-button type="button" class="primary-button" [disabled]="impactAssessment().trim().length === 0 || store.loading().action" (click)="submitImpact()">
-          <mat-icon>send</mat-icon> {{ store.loading().action ? 'Sending…' : 'Submit impact report' }}
+          <mat-icon>send</mat-icon> {{ (store.loading().action ? 'interventions.impactModal.sending' : 'interventions.impactModal.submit') | translate }}
         </button>
       </div>
     </div>
@@ -330,8 +330,8 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Close intervention</h2>
-          <p class="modal-subtitle">Finalize the technical service and evaluate your experience with the specialist.</p>
+          <h2>{{ 'interventions.closeModal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'interventions.closeModal.subtitle' | translate }}</p>
         </div>
         <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
       </div>
@@ -342,35 +342,35 @@
           <span class="specialist-name">{{ store.specialistName(item.specialistId) }}</span>
           <span class="specialist-role">{{ item.code }} · {{ plotName(item.plotId) }}</span>
         </div>
-        <span class="pill status-ready">Ready to close</span>
+        <span class="pill status-ready">{{ 'interventions.closeModal.readyToClose' | translate }}</span>
       </div>
 
       <div class="field">
-        <span>Service result</span>
+        <span>{{ 'interventions.closeModal.serviceResult' | translate }}</span>
         <div class="radio-list">
-          <label class="radio-item" [class.is-active]="closeResult() === 'RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'RESOLVED'" (change)="closeResult.set('RESOLVED')" /> Resolved</label>
-          <label class="radio-item" [class.is-active]="closeResult() === 'PARTIALLY_RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'PARTIALLY_RESOLVED'" (change)="closeResult.set('PARTIALLY_RESOLVED')" /> Partially resolved</label>
-          <label class="radio-item" [class.is-active]="closeResult() === 'NOT_RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'NOT_RESOLVED'" (change)="closeResult.set('NOT_RESOLVED')" /> Not resolved</label>
+          <label class="radio-item" [class.is-active]="closeResult() === 'RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'RESOLVED'" (change)="closeResult.set('RESOLVED')" /> {{ 'interventions.closeModal.resolved' | translate }}</label>
+          <label class="radio-item" [class.is-active]="closeResult() === 'PARTIALLY_RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'PARTIALLY_RESOLVED'" (change)="closeResult.set('PARTIALLY_RESOLVED')" /> {{ 'interventions.closeModal.partiallyResolved' | translate }}</label>
+          <label class="radio-item" [class.is-active]="closeResult() === 'NOT_RESOLVED'"><input type="radio" name="svc" [checked]="closeResult() === 'NOT_RESOLVED'" (change)="closeResult.set('NOT_RESOLVED')" /> {{ 'interventions.closeModal.notResolved' | translate }}</label>
         </div>
       </div>
 
       <div class="field">
-        <span>Would you hire this specialist again?</span>
+        <span>{{ 'interventions.closeModal.hireAgain' | translate }}</span>
         <div class="segmented segmented--two">
-          <button type="button" class="seg" [class.is-active]="closeHire() === 'YES'" (click)="closeHire.set('YES')">Yes</button>
-          <button type="button" class="seg" [class.is-active]="closeHire() === 'NO'" (click)="closeHire.set('NO')">No</button>
+          <button type="button" class="seg" [class.is-active]="closeHire() === 'YES'" (click)="closeHire.set('YES')">{{ 'interventions.closeModal.yes' | translate }}</button>
+          <button type="button" class="seg" [class.is-active]="closeHire() === 'NO'" (click)="closeHire.set('NO')">{{ 'interventions.closeModal.no' | translate }}</button>
         </div>
       </div>
 
       <label class="field">
-        <span>Private feedback (optional)</span>
-        <textarea rows="3" placeholder="Add a short comment about the service quality, punctuality, or technical support…" [value]="closeFeedback()" (input)="closeFeedback.set($any($event.target).value)"></textarea>
+        <span>{{ 'interventions.closeModal.feedback' | translate }}</span>
+        <textarea rows="3" [placeholder]="'interventions.closeModal.feedbackPlaceholder' | translate" [value]="closeFeedback()" (input)="closeFeedback.set($any($event.target).value)"></textarea>
       </label>
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">{{ 'interventions.closeModal.cancel' | translate }}</button>
         <button mat-flat-button type="button" class="primary-button" [disabled]="store.loading().action" (click)="submitClose()">
-          <mat-icon>task_alt</mat-icon> {{ store.loading().action ? 'Closing…' : 'Close intervention' }}
+          <mat-icon>task_alt</mat-icon> {{ (store.loading().action ? 'interventions.closeModal.closing' : 'interventions.closeModal.close') | translate }}
         </button>
       </div>
     </div>

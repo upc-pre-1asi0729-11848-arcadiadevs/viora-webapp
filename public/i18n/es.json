@@ -247,6 +247,281 @@
       "gotIt": "Entendido"
     }
   },
+  "assistance": {
+    "headerSubtitle": "Encuentra especialistas fitosanitarios disponibles cerca de tus alertas activas y gestiona las solicitudes de asistencia.",
+    "breadcrumb": {
+      "expertAssistance": "Asistencia Experta",
+      "overview": "Resumen"
+    },
+    "kpi": {
+      "activeCaseTitle": "Caso de asistencia activo",
+      "noActiveCase": "Sin caso activo",
+      "selectPlotHint": "Selecciona una parcela para ver su caso activo.",
+      "specialistsTitle": "Especialistas disponibles",
+      "within15km": "En 15 km",
+      "nearby": "{{count}} cercanos",
+      "specialistsFoot": "Candidatos ordenados por distancia y disponibilidad.",
+      "requestStatusTitle": "Estado de la solicitud",
+      "pending": "Pendiente",
+      "pendingCount": "{{count}} pendientes",
+      "requestStatusFoot": "Esperando respuesta del especialista.",
+      "contactTitle": "Acceso de contacto",
+      "proposalRequired": "Requiere propuesta",
+      "locked": "Bloqueado",
+      "contactFoot": "Los datos de contacto se desbloquean tras aceptar una propuesta."
+    },
+    "recommended": {
+      "title": "Especialistas recomendados",
+      "subtitle": "Candidatos disponibles cerca de {{plot}} para la alerta seleccionada.",
+      "yourPlot": "tu parcela",
+      "candidates": "{{count}} candidatos",
+      "bestMatch": "Mejor coincidencia",
+      "request": "Solicitar"
+    },
+    "requests": {
+      "title": "Mis solicitudes de asistencia",
+      "subtitle": "Sigue las solicitudes de esta parcela y su estado actual.",
+      "pendingResponse": "{{count}} esperando respuesta",
+      "colRequest": "Solicitud",
+      "colSpecialist": "Especialista",
+      "colStatus": "Estado",
+      "colLastUpdate": "Última actualización",
+      "colAction": "Acción",
+      "loading": "Cargando solicitudes…",
+      "empty": "Aún no hay solicitudes de asistencia para esta parcela.",
+      "reviewProposal": "Revisar propuesta",
+      "searchAgain": "Buscar de nuevo",
+      "viewCase": "Ver caso"
+    },
+    "modal": {
+      "title": "Solicitar asistencia experta",
+      "subtitle": "Envía una solicitud formal de intervención vinculada a la alerta seleccionada.",
+      "plot": "Parcela",
+      "relatedAlert": "Alerta relacionada",
+      "noActiveAlert": "Sin alerta activa",
+      "reason": "Motivo de la solicitud",
+      "message": "Mensaje al especialista (opcional)",
+      "messagePlaceholder": "Describe qué necesitas que el especialista evalúe durante la visita de campo…",
+      "cancel": "Cancelar",
+      "sending": "Enviando…",
+      "send": "Enviar solicitud"
+    },
+    "success": {
+      "title": "Solicitud enviada con éxito",
+      "textPrefix": "Tu solicitud de intervención fue enviada a",
+      "textSuffix": "La solicitud está pendiente de respuesta del especialista.",
+      "requestId": "ID de solicitud",
+      "specialist": "Especialista",
+      "plot": "Parcela",
+      "status": "Estado",
+      "note": "Se te notificará cuando el especialista responda. Los datos de contacto permanecen bloqueados hasta que se acepte una propuesta.",
+      "viewCase": "Ver caso",
+      "back": "Volver a asistencia experta"
+    }
+  },
+  "caseDetail": {
+    "headerSubtitle": "Sigue este caso de asistencia y coordina la visita de campo con el especialista.",
+    "notFound": "Caso no encontrado. Puede haber sido cerrado o reasignado.",
+    "backToAssistance": "Volver a asistencia experta",
+    "breadcrumb": {
+      "caseDetail": "Detalle del caso"
+    },
+    "kpi": {
+      "statusTitle": "Estado del caso",
+      "accepted": "Aceptado",
+      "declined": "Rechazado",
+      "pending": "Pendiente",
+      "specialistTitle": "Especialista",
+      "linkedAlertTitle": "Alerta vinculada",
+      "pestReport": "Reporte de síntoma de plaga",
+      "contactTitle": "Acceso de contacto",
+      "unlocked": "Desbloqueado",
+      "locked": "Bloqueado",
+      "contactAvailable": "El contacto directo ya está disponible abajo.",
+      "acceptToUnlock": "Acepta la propuesta para desbloquear el contacto directo."
+    },
+    "proposal": {
+      "title": "Propuesta de servicio",
+      "awaitingSub": "Esperando que el especialista envíe una propuesta.",
+      "readonlySub": "Propuesta de solo lectura enviada por el especialista.",
+      "received": "Recibida {{date}}",
+      "pendingTitle": "Propuesta pendiente",
+      "pendingText": "{{name}} recibió tu solicitud y está preparando una propuesta de servicio. Se te notificará cuando esté lista.",
+      "accept": "Aceptar propuesta",
+      "decline": "Rechazar propuesta",
+      "simulate": "Simular respuesta del especialista",
+      "declinedTitle": "Propuesta rechazada",
+      "declinedText": "La búsqueda de especialistas se reactivó para esta alerta. Elige otro especialista para continuar.",
+      "findAnother": "Buscar otro especialista",
+      "proposedService": "Servicio propuesto",
+      "visitDate": "Fecha estimada de visita",
+      "duration": "Duración estimada",
+      "scope": "Alcance",
+      "cost": "Costo estimado",
+      "notesTitle": "Notas del especialista",
+      "acceptedBanner": "Propuesta aceptada · visita agendada {{date}}"
+    },
+    "specialistProfile": {
+      "title": "Perfil del especialista",
+      "viewFull": "Ver perfil completo",
+      "available": "Disponible",
+      "successRate": "Tasa de éxito",
+      "casesHandled": "Casos atendidos",
+      "distance": "Distancia"
+    },
+    "contact": {
+      "unlockedTitle": "Contacto desbloqueado",
+      "unlockedSubtitle": "La propuesta fue aceptada. Coordina la visita de campo directamente con el especialista.",
+      "visitScheduled": "Visita agendada · {{date}}",
+      "accepted": "Aceptado",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "whatsapp": "WhatsApp",
+      "copy": "Copiar",
+      "open": "Abrir",
+      "infoNote": "Los datos de contacto solo son visibles para ti y permanecerán accesibles durante el caso.",
+      "openWhatsApp": "Abrir WhatsApp",
+      "backToCase": "Volver al detalle del caso",
+      "lockedHeaderTitle": "Contactar al especialista",
+      "lockedTitle": "Datos de contacto bloqueados",
+      "lockedText": "Los datos de contacto estarán disponibles tras aceptar la propuesta.",
+      "lockedButton": "Contactar al especialista"
+    },
+    "timeline": {
+      "title": "Cronología del caso"
+    },
+    "declineModal": {
+      "title": "Rechazar propuesta",
+      "subtitle": "Esto cancelará la propuesta actual y te devolverá a la búsqueda de especialistas.",
+      "warning": "Rechazar esta propuesta reactivará la búsqueda de especialistas para esta alerta. Se notificará al especialista.",
+      "proposalFrom": "Propuesta de",
+      "reason": "Motivo del rechazo (opcional)",
+      "reasonPlaceholder": "ej. Presupuesto muy alto, prefería otra disponibilidad…",
+      "cancel": "Cancelar",
+      "decline": "Rechazar propuesta"
+    }
+  },
+  "interventions": {
+    "headerSubtitle": "Sigue las intervenciones técnicas vinculadas a alertas, propuestas y prescripciones de campo.",
+    "breadcrumb": {
+      "interventions": "Intervenciones",
+      "overview": "Resumen"
+    },
+    "plotLabel": "Parcela:",
+    "allPlots": "Todas las parcelas",
+    "kpi": {
+      "totalTitle": "Total de intervenciones",
+      "totalFoot": "Casos aceptados en el ciclo de servicio técnico.",
+      "pendingCertTitle": "Certificación pendiente",
+      "actionRequired": "Acción requerida",
+      "pendingCertFoot": "Prescripciones esperando confirmación de aplicación en campo.",
+      "recoveryTitle": "Monitoreo de recuperación",
+      "recoveryFoot": "Vigor posterior a la intervención bajo observación.",
+      "closureTitle": "Cierre pendiente",
+      "closureFoot": "Casos listos para evaluación de servicio y cierre."
+    },
+    "records": {
+      "title": "Registros de intervención",
+      "subtitle": "Intervenciones técnicas vinculadas a alertas, propuestas y prescripciones de campo.",
+      "colId": "ID",
+      "colPlot": "Parcela",
+      "colAlert": "Alerta vinculada",
+      "colSpecialist": "Especialista",
+      "colStatus": "Estado",
+      "loading": "Cargando intervenciones…",
+      "empty": "Aún no hay intervenciones. Acepta una propuesta de especialista en Asistencia Experta para iniciar una.",
+      "assistanceCase": "Caso de asistencia"
+    },
+    "rx": {
+      "title": "Resumen de prescripción",
+      "subtitle": "Prescripción técnica emitida por el especialista — solo lectura.",
+      "products": "Productos"
+    },
+    "selected": {
+      "title": "Intervención seleccionada",
+      "linkedAlert": "Alerta vinculada",
+      "specialist": "Especialista",
+      "prescription": "Prescripción",
+      "estimatedCost": "Costo estimado",
+      "selectHint": "Selecciona una intervención para ver sus detalles."
+    },
+    "next": {
+      "simulate": "Siguiente: el especialista emite la prescripción técnica.",
+      "certify": "Próxima acción requerida: certifica la aplicación tras la ejecución en campo.",
+      "impact": "En monitoreo de recuperación — reporta el impacto tras el período de gracia.",
+      "close": "Listo para cerrar — evalúa el servicio y finaliza.",
+      "closed": "Esta intervención está cerrada."
+    },
+    "action": {
+      "simulate": "Simular prescripción del especialista",
+      "certify": "Certificar aplicación",
+      "impact": "Reportar impacto",
+      "close": "Cerrar intervención",
+      "closedBanner": "Servicio cerrado y evaluado."
+    },
+    "recovery": {
+      "title": "Recuperación posterior a la intervención",
+      "monitoringPeriod": "Período de monitoreo",
+      "days14": "14 días",
+      "recoveryStatus": "Estado de recuperación",
+      "serviceClosed": "Servicio cerrado",
+      "impactReported": "Impacto reportado",
+      "underObservation": "Bajo observación",
+      "note": "El vigor de la vegetación se monitorea durante el período de gracia. Reporta el impacto cuando se complete la ventana de recuperación."
+    },
+    "certifyModal": {
+      "title": "Certificar aplicación",
+      "subtitle": "Registra la ejecución en campo de la prescripción técnica.",
+      "linkedIntervention": "Intervención vinculada",
+      "prescription": "Prescripción",
+      "appliedArea": "Área aplicada",
+      "appliedAreaPlaceholder": "ej. Bloque suroeste · 0.6 ha",
+      "executionStatus": "Estado de ejecución",
+      "appliedAsPrescribed": "Aplicado según prescripción",
+      "partiallyApplied": "Aplicado parcialmente",
+      "notApplied": "No aplicado",
+      "fieldNote": "Nota de campo (opcional)",
+      "fieldNotePlaceholder": "Describe las condiciones del campo o cualquier desviación de la prescripción…",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "certify": "Certificar aplicación"
+    },
+    "impactModal": {
+      "title": "Reportar impacto de la intervención",
+      "subtitle": "Reporta si el problema fitosanitario mejoró después del período de gracia.",
+      "linkedIntervention": "Intervención vinculada",
+      "gracePeriod": "Período de gracia",
+      "days14Completed": "14 días completados",
+      "observedResult": "Resultado observado",
+      "pestReduced": "Presión de plaga reducida",
+      "symptomsPersist": "Los síntomas persisten",
+      "newSymptoms": "Nuevos síntomas detectados",
+      "notEnoughEvidence": "Aún no hay suficiente evidencia",
+      "impactLevel": "Nivel de impacto",
+      "producerAssessment": "Evaluación del productor",
+      "assessmentPlaceholder": "Describe el cambio observado en el área afectada…",
+      "cancel": "Cancelar",
+      "sending": "Enviando…",
+      "submit": "Enviar reporte de impacto"
+    },
+    "closeModal": {
+      "title": "Cerrar intervención",
+      "subtitle": "Finaliza el servicio técnico y evalúa tu experiencia con el especialista.",
+      "readyToClose": "Listo para cerrar",
+      "serviceResult": "Resultado del servicio",
+      "resolved": "Resuelto",
+      "partiallyResolved": "Parcialmente resuelto",
+      "notResolved": "No resuelto",
+      "hireAgain": "¿Contratarías a este especialista de nuevo?",
+      "yes": "Sí",
+      "no": "No",
+      "feedback": "Comentario privado (opcional)",
+      "feedbackPlaceholder": "Agrega un breve comentario sobre la calidad del servicio, puntualidad o soporte técnico…",
+      "cancel": "Cancelar",
+      "closing": "Cerrando…",
+      "close": "Cerrar intervención"
+    }
+  },
   "myPlots": {
     "overview": "Resumen",
     "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",

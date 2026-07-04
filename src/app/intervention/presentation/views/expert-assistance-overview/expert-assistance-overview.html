@@ -1,7 +1,7 @@
 <section class="assistance-page">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs"
-    subtitle="Find available phytosanitary specialists near your active alerts and manage assistance requests."
+    [subtitle]="'assistance.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
     (refresh)="refresh()" />
 
@@ -16,45 +16,45 @@
   <section class="kpi-grid">
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Active assistance case</h2>
+        <h2>{{ 'assistance.kpi.activeCaseTitle' | translate }}</h2>
         @if (activeAlert()) {
           <span class="pill" [class]="severityClass(activeAlert()!.severity)">{{ activeAlert()!.severity }}</span>
         }
       </div>
-      <span class="case-title">{{ activeAlert()?.typeLabel ?? 'No active case' }}</span>
+      <span class="case-title">{{ activeAlert()?.typeLabel ?? ('assistance.kpi.noActiveCase' | translate) }}</span>
       <p class="case-location">
         <mat-icon>location_on</mat-icon>
-        {{ plotSummary() || 'Select a plot to view its active case.' }}
+        {{ plotSummary() || ('assistance.kpi.selectPlotHint' | translate) }}
       </p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Available specialists</h2>
-        <span class="kpi-pill kpi-pill--muted">Within 15 km</span>
+        <h2>{{ 'assistance.kpi.specialistsTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--muted">{{ 'assistance.kpi.within15km' | translate }}</span>
       </div>
-      <span class="kpi-value">{{ store.availableSpecialistsCount() }} nearby</span>
-      <p class="kpi-foot">Candidates ranked by distance and availability.</p>
+      <span class="kpi-value">{{ 'assistance.kpi.nearby' | translate: { count: store.availableSpecialistsCount() } }}</span>
+      <p class="kpi-foot">{{ 'assistance.kpi.specialistsFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Request status</h2>
+        <h2>{{ 'assistance.kpi.requestStatusTitle' | translate }}</h2>
         @if (store.pendingRequestsCount() > 0) {
-          <span class="kpi-pill kpi-pill--soft">Pending</span>
+          <span class="kpi-pill kpi-pill--soft">{{ 'assistance.kpi.pending' | translate }}</span>
         }
       </div>
-      <span class="kpi-value">{{ store.pendingRequestsCount() }} pending</span>
-      <p class="kpi-foot">Waiting for specialist response.</p>
+      <span class="kpi-value">{{ 'assistance.kpi.pendingCount' | translate: { count: store.pendingRequestsCount() } }}</span>
+      <p class="kpi-foot">{{ 'assistance.kpi.requestStatusFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Contact access</h2>
-        <span class="kpi-pill kpi-pill--muted">Proposal required</span>
+        <h2>{{ 'assistance.kpi.contactTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--muted">{{ 'assistance.kpi.proposalRequired' | translate }}</span>
       </div>
-      <span class="kpi-value kpi-value--lock"><mat-icon>lock</mat-icon> Locked</span>
-      <p class="kpi-foot">Contact details unlock after proposal acceptance.</p>
+      <span class="kpi-value kpi-value--lock"><mat-icon>lock</mat-icon> {{ 'assistance.kpi.locked' | translate }}</span>
+      <p class="kpi-foot">{{ 'assistance.kpi.contactFoot' | translate }}</p>
     </mat-card>
   </section>
 
@@ -62,12 +62,12 @@
   <mat-card class="section-card">
     <div class="section-head">
       <div>
-        <h2 class="section-title">Recommended specialists</h2>
+        <h2 class="section-title">{{ 'assistance.recommended.title' | translate }}</h2>
         <p class="section-subtitle">
-          Available candidates near {{ selectedPlot()?.name ?? 'your plot' }} for the selected alert.
+          {{ 'assistance.recommended.subtitle' | translate: { plot: selectedPlot()?.name ?? ('assistance.recommended.yourPlot' | translate) } }}
         </p>
       </div>
-      <span class="tag-green">{{ store.availableSpecialistsCount() }} candidates</span>
+      <span class="tag-green">{{ 'assistance.recommended.candidates' | translate: { count: store.availableSpecialistsCount() } }}</span>
     </div>
 
     <div class="specialist-grid">
@@ -75,7 +75,7 @@
         <div class="specialist-card" [class.is-best]="specialist.bestMatch">
           <div class="specialist-badges">
             @if (specialist.bestMatch) {
-              <span class="badge badge--best"><mat-icon>star</mat-icon> Best match</span>
+              <span class="badge badge--best"><mat-icon>star</mat-icon> {{ 'assistance.recommended.bestMatch' | translate }}</span>
             }
             <span class="badge" [class]="availabilityClass(specialist)">
               <i class="dot"></i> {{ specialist.availabilityLabel }}
@@ -110,7 +110,7 @@
               <i class="dot"></i> {{ specialist.availabilityLabel }}
             </span>
             <button mat-flat-button type="button" class="primary-button" (click)="openRequest(specialist)">
-              <mat-icon>send</mat-icon> Request
+              <mat-icon>send</mat-icon> {{ 'assistance.recommended.request' | translate }}
             </button>
           </div>
         </div>
@@ -122,27 +122,27 @@
   <mat-card class="section-card">
     <div class="section-head">
       <div>
-        <h2 class="section-title">My assistance requests</h2>
-        <p class="section-subtitle">Track requests for this plot and their current status.</p>
+        <h2 class="section-title">{{ 'assistance.requests.title' | translate }}</h2>
+        <p class="section-subtitle">{{ 'assistance.requests.subtitle' | translate }}</p>
       </div>
       @if (store.pendingRequestsCount() > 0) {
-        <span class="kpi-pill kpi-pill--soft">{{ store.pendingRequestsCount() }} pending response</span>
+        <span class="kpi-pill kpi-pill--soft">{{ 'assistance.requests.pendingResponse' | translate: { count: store.pendingRequestsCount() } }}</span>
       }
     </div>
 
     <div class="requests-table">
       <div class="requests-header">
-        <span>Request</span>
-        <span>Specialist</span>
-        <span>Status</span>
-        <span>Last update</span>
-        <span>Action</span>
+        <span>{{ 'assistance.requests.colRequest' | translate }}</span>
+        <span>{{ 'assistance.requests.colSpecialist' | translate }}</span>
+        <span>{{ 'assistance.requests.colStatus' | translate }}</span>
+        <span>{{ 'assistance.requests.colLastUpdate' | translate }}</span>
+        <span>{{ 'assistance.requests.colAction' | translate }}</span>
       </div>
 
       @if (store.loading().requests && store.requests().length === 0) {
-        <div class="requests-state">Loading requests…</div>
+        <div class="requests-state">{{ 'assistance.requests.loading' | translate }}</div>
       } @else if (store.requests().length === 0) {
-        <div class="requests-state">No assistance requests for this plot yet.</div>
+        <div class="requests-state">{{ 'assistance.requests.empty' | translate }}</div>
       } @else {
         @for (request of store.requests(); track request.id) {
           <div class="requests-row">
@@ -152,7 +152,7 @@
             <span>{{ request.lastUpdateLabel }}</span>
             <span>
               <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="openCase(request)">
-                {{ request.status === 'PROPOSAL_RECEIVED' ? 'Review proposal' : (request.status === 'DECLINED' ? 'Search again' : 'View case') }}
+                {{ (request.status === 'PROPOSAL_RECEIVED' ? 'assistance.requests.reviewProposal' : (request.status === 'DECLINED' ? 'assistance.requests.searchAgain' : 'assistance.requests.viewCase')) | translate }}
               </button>
             </span>
           </div>
@@ -168,8 +168,8 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Request expert assistance</h2>
-          <p class="modal-subtitle">Send a formal intervention request linked to the selected alert.</p>
+          <h2>{{ 'assistance.modal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'assistance.modal.subtitle' | translate }}</p>
         </div>
         <button mat-icon-button type="button" (click)="closeModal()"><mat-icon>close</mat-icon></button>
       </div>
@@ -189,40 +189,40 @@
 
       <div class="modal-grid">
         <div class="field">
-          <span>Plot</span>
+          <span>{{ 'assistance.modal.plot' | translate }}</span>
           <div class="field-readonly">{{ plotSummary() || '—' }}</div>
         </div>
         <div class="field">
-          <span>Related alert</span>
+          <span>{{ 'assistance.modal.relatedAlert' | translate }}</span>
           <div class="field-readonly">
             @if (activeAlert()) {
               <span class="pill" [class]="severityClass(activeAlert()!.severity)">{{ activeAlert()!.severity }}</span>
               {{ activeAlert()!.typeLabel }}
             } @else {
-              No active alert
+              {{ 'assistance.modal.noActiveAlert' | translate }}
             }
           </div>
         </div>
       </div>
 
       <label class="field">
-        <span>Reason for request</span>
+        <span>{{ 'assistance.modal.reason' | translate }}</span>
         <textarea rows="2" [value]="formReason()" (input)="formReason.set($any($event.target).value)"></textarea>
       </label>
 
       <label class="field">
-        <span>Message to specialist (optional)</span>
+        <span>{{ 'assistance.modal.message' | translate }}</span>
         <textarea
           rows="3"
-          placeholder="Describe what you need the specialist to evaluate during the field visit…"
+          [placeholder]="'assistance.modal.messagePlaceholder' | translate"
           [value]="formMessage()"
           (input)="formMessage.set($any($event.target).value)"></textarea>
       </label>
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeModal()">{{ 'assistance.modal.cancel' | translate }}</button>
         <button mat-flat-button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submitRequest()">
-          <mat-icon>send</mat-icon> {{ store.loading().submitting ? 'Sending…' : 'Send request' }}
+          <mat-icon>send</mat-icon> {{ (store.loading().submitting ? 'assistance.modal.sending' : 'assistance.modal.send') | translate }}
         </button>
       </div>
     </div>
@@ -234,32 +234,32 @@
   <div class="modal-overlay" (click)="closeModal()">
     <div class="modal modal--success" (click)="$event.stopPropagation()">
       <span class="success-icon"><mat-icon>check_circle</mat-icon></span>
-      <h2>Request sent successfully</h2>
+      <h2>{{ 'assistance.success.title' | translate }}</h2>
       <p class="success-text">
-        Your intervention request was sent to <strong>{{ modalSpecialist()?.name }}</strong>.
-        The request is now pending specialist response.
+        {{ 'assistance.success.textPrefix' | translate }} <strong>{{ modalSpecialist()?.name }}</strong>.
+        {{ 'assistance.success.textSuffix' | translate }}
       </p>
 
       <div class="success-summary">
-        <div class="summary-row"><span>Request ID</span><strong>{{ createdRequest()!.referenceCode || '—' }}</strong></div>
-        <div class="summary-row"><span>Specialist</span><strong>{{ modalSpecialist()?.name }}</strong></div>
-        <div class="summary-row"><span>Plot</span><strong>{{ selectedPlot()?.name ?? '—' }}</strong></div>
+        <div class="summary-row"><span>{{ 'assistance.success.requestId' | translate }}</span><strong>{{ createdRequest()!.referenceCode || '—' }}</strong></div>
+        <div class="summary-row"><span>{{ 'assistance.success.specialist' | translate }}</span><strong>{{ modalSpecialist()?.name }}</strong></div>
+        <div class="summary-row"><span>{{ 'assistance.success.plot' | translate }}</span><strong>{{ selectedPlot()?.name ?? '—' }}</strong></div>
         <div class="summary-row">
-          <span>Status</span>
+          <span>{{ 'assistance.success.status' | translate }}</span>
           <span class="pill status-pending">{{ createdRequest()!.statusLabel }}</span>
         </div>
       </div>
 
       <p class="success-note">
         <mat-icon>info</mat-icon>
-        You'll be notified when the specialist responds. Contact details remain locked until a proposal is accepted.
+        {{ 'assistance.success.note' | translate }}
       </p>
 
       <button mat-stroked-button type="button" class="ghost-button block" (click)="viewCreatedCase()">
-        <mat-icon>visibility</mat-icon> View case
+        <mat-icon>visibility</mat-icon> {{ 'assistance.success.viewCase' | translate }}
       </button>
       <button mat-stroked-button type="button" class="ghost-button block" (click)="closeModal()">
-        <mat-icon>arrow_back</mat-icon> Back to expert assistance
+        <mat-icon>arrow_back</mat-icon> {{ 'assistance.success.back' | translate }}
       </button>
     </div>
   </div>
