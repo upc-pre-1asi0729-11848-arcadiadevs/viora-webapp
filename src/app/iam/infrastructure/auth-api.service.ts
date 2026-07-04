@@ -42,7 +42,7 @@ export class AuthApiService extends BaseApi {
   /** Consumes the emailed verification token; returns the identity + JWT. */
   verify(token: string): Observable<AuthenticatedUserResource> {
     return this.http.post<AuthenticatedUserResource>(
-      `${this.authEndpoint.collectionUrl}/verify`,
+      `${this.authEndpoint.collectionUrl}/verifications`,
       { token },
     );
   }
@@ -50,7 +50,7 @@ export class AuthApiService extends BaseApi {
   /** Re-sends the verification email for an unverified account. */
   resendVerification(email: string): Observable<RegisteredUserResource> {
     return this.http.post<RegisteredUserResource>(
-      `${this.authEndpoint.collectionUrl}/resend-verification`,
+      `${this.authEndpoint.collectionUrl}/verification-requests`,
       { email },
     );
   }
