@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import type {
   LngLatLike,
@@ -7,6 +7,7 @@ import type {
 } from 'mapbox-gl';
 
 import { environment } from '../../../environments/environment';
+import { ActiveSessionService } from './active-session.service';
 
 export interface CreateMapInstanceOptions
   extends Omit<MapboxOptions, 'style' | 'accessToken'> {
@@ -21,6 +22,7 @@ export interface CreateMapInstanceOptions
 })
 export class MapboxService {
   private readonly defaultStyle = 'mapbox://styles/mapbox/satellite-v9';
+  private readonly activeSession = inject(ActiveSessionService);
 
   constructor() {
     mapboxgl.accessToken = environment.mapbox.accessToken;
@@ -38,6 +40,19 @@ export class MapboxService {
       style: options.style ?? this.defaultStyle,
       zoom: options.zoom ?? 14,
       center: options.center ?? [0, 0],
+      // Mapbox fetches raster tiles itself, outside Angular's HttpClient, so the
+      // auth interceptor never sees them. Platform-served tiles (NDVI proxy)
+      // need the bearer token attached here or the secured API returns 401.
+      transformRequest: (url: string) => {
+        const token = this.activeSession.token;
+        if (token && url.startsWith(environment.vioraPlatformApiUrl)) {
+          return {
+            url,
+            headers: { Authorization: `Bearer ${token}` }
+          };
+        }
+        return { url };
+      },
       ...options
     });
 
