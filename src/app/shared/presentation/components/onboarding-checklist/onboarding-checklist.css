@@ -1,0 +1,261 @@
+:host {
+  position: fixed;
+  right: 28px;
+  bottom: 24px;
+  z-index: 140;
+  font-family: 'Poppins', sans-serif;
+}
+
+.onboarding-card {
+  width: min(360px, calc(100vw - 56px));
+  padding: 22px;
+  border: 1px solid rgba(46, 74, 58, 0.08);
+  border-radius: 18px;
+  background: #ffffff;
+  color: #17211c;
+  box-shadow: 0 22px 56px rgba(31, 37, 35, 0.18);
+}
+
+.onboarding-card.is-complete {
+  border-color: rgba(46, 74, 58, 0.18);
+}
+
+.onboarding-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #8a9c92;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0;
+  color: #101815;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #7d8d84;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: #f4f0e8;
+  color: #17211c;
+}
+
+.icon-button mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.progress-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eee6d8;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #214a38;
+  transition: width 180ms ease;
+}
+
+.progress-label {
+  color: #7d8d84;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.step-list {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-button {
+  width: 100%;
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 32px 1fr 20px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.step-button:hover:not(:disabled),
+.step-button.is-active {
+  background: #f7f2ea;
+  border-color: rgba(46, 74, 58, 0.08);
+}
+
+.step-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.step-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.step-marker {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cfd8d1;
+  border-radius: 999px;
+  color: #506158;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step-button.is-complete .step-marker {
+  border-color: #214a38;
+  background: #214a38;
+  color: #ffffff;
+}
+
+.step-marker mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}
+
+.step-copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.step-copy strong {
+  color: #121a16;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.step-copy span {
+  color: #718177;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.step-arrow {
+  color: #7d8d84;
+  font-size: 20px;
+}
+
+.primary-action,
+.onboarding-launcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  background: #214a38;
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(33, 74, 56, 0.18);
+}
+
+.primary-action {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 13px;
+  font-size: 14px;
+}
+
+.primary-action:hover,
+.onboarding-launcher:hover {
+  background: #173629;
+}
+
+.primary-action mat-icon,
+.onboarding-launcher mat-icon {
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+}
+
+.onboarding-launcher {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  :host {
+    right: 16px;
+    bottom: 16px;
+    left: 96px;
+  }
+
+  .onboarding-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  :host {
+    left: 90px;
+  }
+
+  .onboarding-card {
+    padding: 18px;
+  }
+
+  .step-button {
+    grid-template-columns: 30px 1fr;
+  }
+
+  .step-arrow {
+    display: none;
+  }
+}

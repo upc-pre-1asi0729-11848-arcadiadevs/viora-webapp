@@ -29,6 +29,7 @@ import {
   DashboardToolbar,
   DashboardToolbarViewOption
 } from '../../components/dashboard-toolbar/dashboard-toolbar';
+import { DashboardCoachmarks } from '../../components/dashboard-coachmarks/dashboard-coachmarks';
 
 @Component({
   selector: 'app-producer-dashboard',
@@ -48,6 +49,7 @@ import {
     RecommendedActionsCard,
     DashboardHeader,
     DashboardToolbar,
+    DashboardCoachmarks,
     TranslatePipe
   ],
   templateUrl: './producer-dashboard.html',

@@ -1396,5 +1396,61 @@
       "critical": "Crítico",
       "inactive": "Inactivo"
     }
+  },
+  "onboardingChecklist": {
+    "eyebrow": "Guia de configuracion",
+    "title": "Empieza con Viora",
+    "progress": "{{done}} / {{total}}",
+    "launcher": "Setup {{done}}/{{total}}",
+    "steps": {
+      "plot": {
+        "title": "Registra tu primera parcela",
+        "description": "Dibuja el limite de tu campo para iniciar el monitoreo."
+      },
+      "dashboard": {
+        "title": "Vuelve al Dashboard",
+        "description": "Revisa la salud de tu parcela y el resumen climatico."
+      },
+      "expert": {
+        "title": "Visita Asistencia Experta",
+        "description": "Ubica donde solicitar apoyo de especialistas."
+      }
+    },
+    "actions": {
+      "continue": "Continuar setup",
+      "finish": "Finalizar setup",
+      "minimize": "Minimizar onboarding",
+      "open": "Abrir guia de setup"
+    }
+  },
+  "dashboardCoachmarks": {
+    "steps": {
+      "overall": {
+        "title": "Salud general de parcelas",
+        "description": "Resume el estado general de tus parcelas registradas para detectar rapido si la finca esta estable o requiere revision."
+      },
+      "ndvi": {
+        "title": "Estado NDVI",
+        "description": "Muestra el vigor vegetal desde imagenes satelitales. Ayuda a notar senales de estres antes de que sean visibles en campo."
+      },
+      "chill": {
+        "title": "Acumulacion de frio",
+        "description": "Sigue el progreso de horas frias de la campana, util para entender riesgo de floracion y desarrollo estacional."
+      },
+      "yield": {
+        "title": "Pronostico de rendimiento",
+        "description": "Estima la proyeccion productiva y el riesgo para conectar las senales de monitoreo con el desempeno esperado de cosecha."
+      },
+      "plotOverview": {
+        "title": "Vista de parcela",
+        "description": "Es el area principal de trabajo de la parcela seleccionada: mapa, salud, riesgo fenologico, ultimo NDVI y acciones recomendadas."
+      }
+    },
+    "actions": {
+      "back": "Atras",
+      "next": "Siguiente",
+      "done": "Listo",
+      "skip": "Saltar tour del dashboard"
+    }
   }
 }

@@ -1396,5 +1396,61 @@
       "critical": "Critical",
       "inactive": "Inactive"
     }
+  },
+  "onboardingChecklist": {
+    "eyebrow": "Setup guide",
+    "title": "Get started with Viora",
+    "progress": "{{done}} / {{total}}",
+    "launcher": "Setup {{done}}/{{total}}",
+    "steps": {
+      "plot": {
+        "title": "Register your first plot",
+        "description": "Draw your field boundary so monitoring can start."
+      },
+      "dashboard": {
+        "title": "Return to Dashboard",
+        "description": "Review your plot health and climate overview."
+      },
+      "expert": {
+        "title": "Visit Expert Assistance",
+        "description": "Know where to request specialist support."
+      }
+    },
+    "actions": {
+      "continue": "Continue setup",
+      "finish": "Finish setup",
+      "minimize": "Minimize onboarding",
+      "open": "Open setup guide"
+    }
+  },
+  "dashboardCoachmarks": {
+    "steps": {
+      "overall": {
+        "title": "Overall plot health",
+        "description": "This summarizes the general condition of your registered plots so you can quickly spot whether the farm is stable or needs review."
+      },
+      "ndvi": {
+        "title": "NDVI status",
+        "description": "This card shows vegetation vigor from satellite imagery. It helps you notice stress signals before they become visible in the field."
+      },
+      "chill": {
+        "title": "Chill accumulation",
+        "description": "This tracks cold-hour progress for the campaign, useful for understanding flowering risk and seasonal development."
+      },
+      "yield": {
+        "title": "Yield forecast",
+        "description": "This estimates production outlook and risk so you can connect monitoring signals with expected harvest performance."
+      },
+      "plotOverview": {
+        "title": "Plot overview",
+        "description": "This is the main working area for your selected plot: map, health status, phenological risk, latest NDVI, and recommended actions."
+      }
+    },
+    "actions": {
+      "back": "Back",
+      "next": "Next",
+      "done": "Done",
+      "skip": "Skip dashboard tour"
+    }
   }
 }
