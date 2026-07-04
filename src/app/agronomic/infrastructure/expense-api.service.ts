@@ -29,7 +29,7 @@ export class ExpenseApiService extends BaseApi {
   getExpenses(plotId?: number | string | null): Observable<Expense[]> {
     return this.http
       .get<ExpenseResource[]>(this.expensesEndpoint.collectionUrl, {
-        params: this.queryParams({ growerId: this.defaultUserId, plotId }),
+        params: this.queryParams({ plotId }),
       })
       .pipe(map((resources) => ExpenseAssembler.toEntitiesFromResources(resources ?? [])));
   }
@@ -39,13 +39,8 @@ export class ExpenseApiService extends BaseApi {
    * @returns {Observable<Expense>}
    */
   createExpense(request: Omit<CreateExpenseRequest, 'growerId'>): Observable<Expense> {
-    const body: CreateExpenseRequest = {
-      growerId: Number(this.defaultUserId),
-      ...request,
-    };
-
     return this.http
-      .post<ExpenseResource>(this.expensesEndpoint.collectionUrl, body)
+      .post<ExpenseResource>(this.expensesEndpoint.collectionUrl, request)
       .pipe(map((resource) => ExpenseAssembler.toEntityFromResource(resource)));
   }
 }
