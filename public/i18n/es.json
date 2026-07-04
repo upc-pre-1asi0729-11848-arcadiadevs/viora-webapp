@@ -676,6 +676,117 @@
       "submit": "Enviar reporte"
     }
   },
+  "supportPage": {
+    "headerSubtitle": "Encuentra respuestas, contacta a un especialista o revisa los acuerdos legales de tu cuenta.",
+    "breadcrumb": {
+      "support": "Soporte",
+      "overview": "Resumen"
+    },
+    "searchPlaceholder": "Busca artículos de ayuda, ej. \"umbrales NDVI\" o \"invitar a un compañero\"",
+    "expert": {
+      "title": "Asistencia Experta",
+      "subtitle": "Para problemas urgentes de campo — te conecta directamente con un especialista de guardia.",
+      "priority": "Prioridad",
+      "button": "Ir a Expertos"
+    },
+    "legal": {
+      "title": "Documentos legales",
+      "subtitle": "Términos, política de privacidad, SLA y garantía de dispositivos.",
+      "count": "{{count}} documentos",
+      "view": "Ver"
+    },
+    "tabs": {
+      "faq": "Preguntas frecuentes",
+      "legal": "Legal"
+    },
+    "categories": "CATEGORÍAS",
+    "articlesCount": "{{count}} artículos",
+    "noArticles": "Ningún artículo coincide con tu búsqueda.",
+    "readFull": "Leer documento completo",
+    "lastUpdated": "Última actualización {{date}}",
+    "footnote": "Este resumen se proporciona por conveniencia dentro de la app Viora.",
+    "close": "Cerrar"
+  },
+  "quickActions": {
+    "title": "Acciones rápidas",
+    "viewPlot": "Ver detalles de la parcela",
+    "reportSymptoms": "Reportar síntomas",
+    "openNutrition": "Abrir plan de nutrición",
+    "requestExpert": "Solicitar experto"
+  },
+  "expensePage": {
+    "headerSubtitle": "Sigue los costos de mitigación climática e intervención fitosanitaria en tus parcelas.",
+    "breadcrumb": {
+      "expenseHistory": "Historial de gastos",
+      "overview": "Resumen"
+    },
+    "plotLabel": "Parcela:",
+    "allPlots": "Todas las parcelas",
+    "registerExpense": "Registrar gasto",
+    "kpi": {
+      "totalTitle": "Gastos totales",
+      "currentCampaign": "Campaña actual",
+      "totalFoot": "Registrados durante la campaña actual.",
+      "climateTitle": "Mitigación climática",
+      "climateFoot": "Nutrición y acciones correctivas vinculadas al riesgo fenológico.",
+      "pestTitle": "Intervención de plagas",
+      "pestFoot": "Costos de tratamiento vinculados a alertas fitosanitarias.",
+      "pendingTitle": "Registros pendientes",
+      "actionRequired": "Acción requerida",
+      "pendingFoot": "Acciones certificadas sin gasto registrado aún."
+    },
+    "records": {
+      "title": "Registros de gastos",
+      "subtitle": "Costos registrados para {{scope}}, vinculados a acciones de mitigación e intervención.",
+      "export": "Exportar",
+      "colDate": "Fecha",
+      "colPlot": "Parcela",
+      "colType": "Tipo",
+      "colLinkedAction": "Acción vinculada",
+      "colCategory": "Categoría",
+      "colAmount": "Monto",
+      "colStatus": "Estado",
+      "loading": "Cargando gastos…",
+      "empty": "Aún no hay gastos registrados para este alcance."
+    },
+    "impact": {
+      "title": "Resumen de impacto financiero",
+      "campaignExpense": "Gasto de campaña",
+      "highestDriver": "Mayor generador de costo",
+      "mostAffected": "Parcela más afectada",
+      "registeredRecords": "Registros registrados"
+    },
+    "byPlot": {
+      "title": "Gasto por parcela",
+      "plot": "parcela",
+      "plots": "parcelas",
+      "empty": "Aún no hay gastos para desglosar."
+    },
+    "modal": {
+      "title": "Registrar gasto",
+      "subtitle": "Registra un costo de mitigación o intervención y vincúlalo a una acción de parcela.",
+      "expenseType": "Tipo de gasto",
+      "climateMitigation": "Mitigación climática",
+      "pestIntervention": "Intervención de plagas",
+      "linkedPlot": "Parcela vinculada",
+      "linkedAction": "Acción vinculada",
+      "linkedActionPlaceholder": "ej. DN-042, INT-011 (opcional)",
+      "category": "Categoría",
+      "inputs": "Insumos",
+      "labor": "Mano de obra",
+      "specialist": "Especialista",
+      "amount": "Monto (S/)",
+      "date": "Fecha",
+      "paymentStatus": "Estado de pago",
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "note": "Nota (opcional)",
+      "notePlaceholder": "Agrega una breve descripción del gasto, proveedor o contexto de campo…",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "save": "Guardar gasto"
+    }
+  },
   "myPlots": {
     "overview": "Resumen",
     "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",

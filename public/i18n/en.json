@@ -676,6 +676,117 @@
       "submit": "Submit report"
     }
   },
+  "supportPage": {
+    "headerSubtitle": "Find answers, reach a specialist, or review your account's legal agreements.",
+    "breadcrumb": {
+      "support": "Support",
+      "overview": "Overview"
+    },
+    "searchPlaceholder": "Search help articles, e.g. \"NDVI thresholds\" or \"invite a teammate\"",
+    "expert": {
+      "title": "Expert Assistance",
+      "subtitle": "For urgent field issues — routes directly to an on-call specialist.",
+      "priority": "Priority",
+      "button": "Go to Experts"
+    },
+    "legal": {
+      "title": "Legal documents",
+      "subtitle": "Terms, privacy policy, SLA, and device warranty.",
+      "count": "{{count}} documents",
+      "view": "View"
+    },
+    "tabs": {
+      "faq": "FAQ",
+      "legal": "Legal"
+    },
+    "categories": "CATEGORIES",
+    "articlesCount": "{{count}} articles",
+    "noArticles": "No articles match your search.",
+    "readFull": "Read full document",
+    "lastUpdated": "Last updated {{date}}",
+    "footnote": "This summary is provided for convenience within the Viora app.",
+    "close": "Close"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "viewPlot": "View plot details",
+    "reportSymptoms": "Report symptoms",
+    "openNutrition": "Open nutrition plan",
+    "requestExpert": "Request expert"
+  },
+  "expensePage": {
+    "headerSubtitle": "Track climate mitigation and phytosanitary intervention costs across your plots.",
+    "breadcrumb": {
+      "expenseHistory": "Expense History",
+      "overview": "Overview"
+    },
+    "plotLabel": "Plot:",
+    "allPlots": "All plots",
+    "registerExpense": "Register expense",
+    "kpi": {
+      "totalTitle": "Total expenses",
+      "currentCampaign": "Current campaign",
+      "totalFoot": "Recorded during the current campaign.",
+      "climateTitle": "Climate mitigation",
+      "climateFoot": "Nutrition and corrective actions linked to phenological risk.",
+      "pestTitle": "Pest intervention",
+      "pestFoot": "Treatment-related costs linked to phytosanitary alerts.",
+      "pendingTitle": "Pending records",
+      "actionRequired": "Action required",
+      "pendingFoot": "Certified actions without registered expense yet."
+    },
+    "records": {
+      "title": "Expense records",
+      "subtitle": "Registered costs for {{scope}}, linked to mitigation and intervention actions.",
+      "export": "Export",
+      "colDate": "Date",
+      "colPlot": "Plot",
+      "colType": "Type",
+      "colLinkedAction": "Linked action",
+      "colCategory": "Category",
+      "colAmount": "Amount",
+      "colStatus": "Status",
+      "loading": "Loading expenses…",
+      "empty": "No expenses registered for this scope yet."
+    },
+    "impact": {
+      "title": "Financial impact summary",
+      "campaignExpense": "Campaign expense",
+      "highestDriver": "Highest cost driver",
+      "mostAffected": "Most affected plot",
+      "registeredRecords": "Registered records"
+    },
+    "byPlot": {
+      "title": "Expense by plot",
+      "plot": "plot",
+      "plots": "plots",
+      "empty": "No expenses to break down yet."
+    },
+    "modal": {
+      "title": "Register expense",
+      "subtitle": "Record a mitigation or intervention cost and link it to a plot action.",
+      "expenseType": "Expense type",
+      "climateMitigation": "Climate mitigation",
+      "pestIntervention": "Pest intervention",
+      "linkedPlot": "Linked plot",
+      "linkedAction": "Linked action",
+      "linkedActionPlaceholder": "e.g. DN-042, INT-011 (optional)",
+      "category": "Category",
+      "inputs": "Inputs",
+      "labor": "Labor",
+      "specialist": "Specialist",
+      "amount": "Amount (S/)",
+      "date": "Date",
+      "paymentStatus": "Payment status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "note": "Note (optional)",
+      "notePlaceholder": "Add a short description of the expense, supplier, or field context…",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "save": "Save expense"
+    }
+  },
   "myPlots": {
     "overview": "Overview",
     "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",
