@@ -17,10 +17,12 @@ import { finalize } from 'rxjs';
 import { UserProfile } from '../domain/model/user-profile.entity';
 import { ProfileApiService } from '../infrastructure/profile-api.service';
 import { UpdateProfileRequest } from '../infrastructure/profile-response';
+import { ActiveSessionService } from '../../shared/infrastructure/active-session.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileStore {
   private readonly api = inject(ProfileApiService);
+  private readonly session = inject(ActiveSessionService);
 
   private readonly profileSignal = signal<UserProfile>(new UserProfile());
   private readonly savingSignal = signal<boolean>(false);
@@ -69,6 +71,11 @@ export class ProfileStore {
         next: (saved) => {
           this.profileSignal.set(saved);
           this.lastSavedAtSignal.set(new Date());
+          // Keep the sidebar/header identity in sync with the saved profile.
+          this.session.updateIdentity({
+            fullName: saved.fullName,
+            photoUrl: saved.photoUrl,
+          });
           onDone?.(saved);
         },
         error: () => {

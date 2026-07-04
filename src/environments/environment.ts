@@ -70,6 +70,14 @@ export const environment = {
     auth: '/auth',
   },
 
+  // Cloudinary unsigned upload for profile photos. Create an *unsigned* upload
+  // preset in your Cloudinary console and set both values (real values live in
+  // environment.development.ts, which is gitignored).
+  cloudinary: {
+    cloudName: 'YOUR_CLOUDINARY_CLOUD_NAME',
+    uploadPreset: 'YOUR_UNSIGNED_UPLOAD_PRESET',
+  },
+
   mapbox: {
 
     accessToken:

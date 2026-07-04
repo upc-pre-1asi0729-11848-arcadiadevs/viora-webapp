@@ -32,6 +32,11 @@ export class DashboardSidebar {
     return current?.fullName?.trim() || current?.email || 'Viora user';
   });
 
+  /** The signed-in user's avatar, or the packaged generic photo. */
+  protected readonly avatarUrl = computed<string>(
+    () => this.session.session()?.photoUrl?.trim() || '/assets/images/dashboard/generic-user.jpg',
+  );
+
   protected readonly mainItems: SidebarItem[] = [
     {
       labelKey: 'sidebar.dashboard',

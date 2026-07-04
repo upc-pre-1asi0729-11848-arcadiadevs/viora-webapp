@@ -19,12 +19,12 @@ export class SecurityStore {
   private readonly sessionsSignal = signal<UserSession[]>([]);
   private readonly loadingSessionsSignal = signal<boolean>(false);
   private readonly changingPasswordSignal = signal<boolean>(false);
-  private readonly deactivatingSignal = signal<boolean>(false);
+  private readonly deletingSignal = signal<boolean>(false);
 
   readonly sessions = this.sessionsSignal.asReadonly();
   readonly loadingSessions = this.loadingSessionsSignal.asReadonly();
   readonly changingPassword = this.changingPasswordSignal.asReadonly();
-  readonly deactivating = this.deactivatingSignal.asReadonly();
+  readonly deleting = this.deletingSignal.asReadonly();
 
   /** Loads the active user's sessions. */
   loadSessions(): void {
@@ -65,12 +65,12 @@ export class SecurityStore {
       });
   }
 
-  /** Deactivates the account; reports completion to the caller. */
-  deactivateAccount(onDone?: (ok: boolean) => void): void {
-    this.deactivatingSignal.set(true);
+  /** Permanently deletes the account; reports completion to the caller. */
+  deleteAccount(onDone?: (ok: boolean) => void): void {
+    this.deletingSignal.set(true);
     this.api
-      .deactivateAccount()
-      .pipe(finalize(() => this.deactivatingSignal.set(false)))
+      .deleteAccount()
+      .pipe(finalize(() => this.deletingSignal.set(false)))
       .subscribe({
         next: () => onDone?.(true),
         error: () => onDone?.(false),
