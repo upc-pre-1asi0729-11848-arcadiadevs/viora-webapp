@@ -126,6 +126,11 @@
   font-weight: 600;
 }
 
+/* When the avatar is a real photo, cover the circle instead of centering text. */
+img.avatar {
+  object-fit: cover;
+}
+
 .avatar--lg {
   width: 52px;
   height: 52px;

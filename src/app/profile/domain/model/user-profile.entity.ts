@@ -27,6 +27,8 @@ export interface UserProfileProps {
   location?: string;
   /** Grove/crop focus (producer) or specialty area (specialist). */
   specialtyArea?: string;
+  /** Cloudinary avatar URL; empty means the generic photo is shown. */
+  photoUrl?: string;
   /**
    * Total farmed area (hectares) across the account's plots. Display-only —
    * derived live from the real My Plots data, never persisted on the profile.
@@ -47,6 +49,7 @@ export class UserProfile {
   readonly language: string;
   readonly location: string;
   readonly specialtyArea: string;
+  readonly photoUrl: string;
   readonly totalHectares: number;
   readonly plotCount: number;
 
@@ -61,6 +64,7 @@ export class UserProfile {
     language = 'English',
     location = '',
     specialtyArea = '',
+    photoUrl = '',
     totalHectares = 0,
     plotCount = 0,
   }: UserProfileProps = {}) {
@@ -74,6 +78,7 @@ export class UserProfile {
     this.language = language;
     this.location = location;
     this.specialtyArea = specialtyArea;
+    this.photoUrl = photoUrl;
     this.totalHectares = totalHectares;
     this.plotCount = plotCount;
   }
@@ -87,6 +92,11 @@ export class UserProfile {
     const first = parts[0][0] ?? '';
     const last = parts.length > 1 ? parts[parts.length - 1][0] ?? '' : '';
     return `${first}${last}`.toUpperCase();
+  }
+
+  /** Cloudinary photo, or the packaged generic avatar for accounts with none. */
+  get avatarUrl(): string {
+    return this.photoUrl?.trim() || '/assets/images/dashboard/generic-user.jpg';
   }
 
   /** "Job title · role" line shown under the name in the editor header. */
@@ -116,6 +126,7 @@ export class UserProfile {
       language: this.language,
       location: this.location,
       specialtyArea: this.specialtyArea,
+      photoUrl: this.photoUrl,
       totalHectares: this.totalHectares,
       plotCount: this.plotCount,
       ...changes,

@@ -36,15 +36,30 @@
           </div>
 
           <div class="identity-row">
-            <span class="avatar avatar--lg">{{ preview().initials }}</span>
+            <img class="avatar avatar--lg" [src]="preview().avatarUrl" alt="Profile photo" />
             <div class="identity-text">
               <span class="identity-name">{{ fullName() || 'Your name' }}</span>
               <span class="identity-role">{{ jobTitle() || 'Job title' }} · {{ store.profile().roleLabel }}</span>
             </div>
-            <button mat-stroked-button type="button" class="ghost-button ghost-button--sm">
-              <mat-icon>photo_camera</mat-icon> Change photo
+            <input
+              #photoInput
+              type="file"
+              accept="image/*"
+              hidden
+              (change)="onPhotoSelected($event)" />
+            <button
+              mat-stroked-button
+              type="button"
+              class="ghost-button ghost-button--sm"
+              [disabled]="photoUploadDisabled"
+              (click)="photoInput.click()">
+              <mat-icon>photo_camera</mat-icon>
+              {{ uploadingPhoto() ? 'Uploading…' : 'Change photo' }}
             </button>
           </div>
+          @if (photoError()) {
+            <p class="field-message is-error">{{ photoError() }}</p>
+          }
 
           <div class="form-grid">
             <label class="field">
@@ -142,7 +157,7 @@
           </div>
 
           <div class="preview-identity">
-            <span class="avatar">{{ preview().initials }}</span>
+            <img class="avatar" [src]="preview().avatarUrl" alt="Profile photo" />
             <div class="identity-text">
               <span class="preview-name">{{ preview().fullName || 'Your name' }}</span>
               <span class="preview-role">{{ preview().specialtyArea || 'Grove focus' }}</span>
@@ -437,45 +452,42 @@
         <div>
           <h2 class="section-title">Danger zone</h2>
           <p class="section-subtitle">
-            Deactivating your account revokes access for you and pauses monitoring on all linked plots.
+            Deleting your account permanently removes your profile and access. This cannot be undone.
           </p>
         </div>
       </div>
 
-      @if (accountDeactivated()) {
-        <p class="field-message is-error">Your account has been deactivated.</p>
-      } @else {
-        <button mat-stroked-button type="button" class="danger-button" (click)="openDeactivate()">
-          Deactivate account
-        </button>
-      }
+      <button mat-stroked-button type="button" class="danger-button" (click)="openDelete()">
+        Delete account
+      </button>
     </mat-card>
   }
 </section>
 
-<!-- Deactivate account confirmation modal -->
-@if (deactivateModalOpen()) {
-  <div class="modal-overlay" (click)="closeDeactivate()">
+<!-- Delete account confirmation modal -->
+@if (deleteModalOpen()) {
+  <div class="modal-overlay" (click)="closeDelete()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Deactivate account</h2>
-          <p class="modal-subtitle">This revokes your access and pauses monitoring on all linked plots.</p>
+          <h2>Delete account</h2>
+          <p class="modal-subtitle">This permanently deletes your account and profile.</p>
         </div>
-        <button mat-icon-button type="button" (click)="closeDeactivate()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button type="button" (click)="closeDelete()"><mat-icon>close</mat-icon></button>
       </div>
       <p class="modal-body-text">
-        Are you sure you want to deactivate your account? You won't be able to sign in until it is reactivated.
+        Are you sure you want to permanently delete your account? Your profile and access will be
+        removed and this action cannot be undone.
       </p>
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDeactivate()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDelete()">Cancel</button>
         <button
           mat-flat-button
           type="button"
           class="danger-button"
-          [disabled]="security.deactivating()"
-          (click)="confirmDeactivate()">
-          {{ security.deactivating() ? 'Deactivating…' : 'Deactivate account' }}
+          [disabled]="security.deleting()"
+          (click)="confirmDelete()">
+          {{ security.deleting() ? 'Deleting…' : 'Delete account' }}
         </button>
       </div>
     </div>

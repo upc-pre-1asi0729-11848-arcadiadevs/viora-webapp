@@ -12,9 +12,10 @@ export interface ProfileResource {
   language: string | null;
   location: string | null;
   specialtyArea: string | null;
+  photoUrl: string | null;
 }
 
-/** Request body for `PUT /profiles/{userId}` (owning user is in the path). */
+/** Request body for `PUT /profiles/me` (owning user comes from the token). */
 export interface UpdateProfileRequest {
   fullName: string;
   email: string;
@@ -23,6 +24,7 @@ export interface UpdateProfileRequest {
   language: string;
   location: string;
   specialtyArea: string;
+  photoUrl: string;
 }
 
 /** Producer-facing caption for the backend role enum. */
@@ -49,6 +51,7 @@ export class ProfileAssembler {
       language: resource.language ?? 'English',
       location: resource.location ?? '',
       specialtyArea: resource.specialtyArea ?? '',
+      photoUrl: resource.photoUrl ?? '',
     });
   }
 }

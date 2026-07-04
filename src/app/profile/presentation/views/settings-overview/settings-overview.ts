@@ -1,8 +1,12 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+
+import { ActiveSessionService } from '../../../../shared/infrastructure/active-session.service';
+import { CloudinaryService } from '../../../../shared/infrastructure/cloudinary.service';
 
 import {
   DashboardBreadcrumbItem,
@@ -44,6 +48,9 @@ export class SettingsOverviewView implements OnInit {
   protected readonly billing = inject(BillingStore);
   protected readonly security = inject(SecurityStore);
   private readonly agronomicApi = inject(AgronomicApiService);
+  private readonly cloudinary = inject(CloudinaryService);
+  private readonly session = inject(ActiveSessionService);
+  private readonly router = inject(Router);
 
   protected readonly tabs: SettingsTabDef[] = [
     { id: 'profile', label: 'Profile', icon: 'person' },
@@ -64,6 +71,9 @@ export class SettingsOverviewView implements OnInit {
   protected readonly language = signal('');
   protected readonly location = signal('');
   protected readonly specialtyArea = signal('');
+  protected readonly photoUrl = signal('');
+  protected readonly uploadingPhoto = signal(false);
+  protected readonly photoError = signal<string | null>(null);
   protected readonly totalHectares = signal(0);
   protected readonly plotCount = signal(0);
 
@@ -93,8 +103,8 @@ export class SettingsOverviewView implements OnInit {
   protected readonly newPassword = signal('');
   protected readonly confirmPassword = signal('');
   protected readonly passwordMessage = signal<PasswordMessage | null>(null);
-  protected readonly deactivateModalOpen = signal(false);
-  protected readonly accountDeactivated = signal(false);
+  protected readonly deleteModalOpen = signal(false);
+  protected readonly accountDeleted = signal(false);
 
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => {
     const current = this.tabs.find((tab) => tab.id === this.activeTab());
@@ -110,6 +120,7 @@ export class SettingsOverviewView implements OnInit {
       fullName: this.fullName(),
       specialtyArea: this.specialtyArea(),
       location: this.location(),
+      photoUrl: this.photoUrl(),
       totalHectares: this.totalHectares(),
       plotCount: this.plotCount(),
     }),
@@ -165,6 +176,7 @@ export class SettingsOverviewView implements OnInit {
     this.language.set(profile.language);
     this.location.set(profile.location);
     this.specialtyArea.set(profile.specialtyArea);
+    this.photoUrl.set(profile.photoUrl);
   }
 
   private loadFarmTotals(): void {
@@ -184,6 +196,51 @@ export class SettingsOverviewView implements OnInit {
       language: this.language(),
       location: this.location().trim(),
       specialtyArea: this.specialtyArea().trim(),
+      photoUrl: this.photoUrl(),
+    });
+  }
+
+  /** True while Cloudinary is not configured, disabling the change-photo button. */
+  protected get photoUploadDisabled(): boolean {
+    return this.uploadingPhoto() || !this.cloudinary.isConfigured;
+  }
+
+  /**
+   * Uploads the chosen image to Cloudinary and persists the returned URL on the
+   * profile, so the new avatar shows everywhere immediately.
+   */
+  protected onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ''; // allow re-selecting the same file later
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      this.photoError.set('Please choose an image file.');
+      return;
+    }
+    if (!this.cloudinary.isConfigured) {
+      this.photoError.set('Photo upload is not configured yet.');
+      return;
+    }
+
+    this.photoError.set(null);
+    this.uploadingPhoto.set(true);
+    this.cloudinary.uploadImage(file).subscribe({
+      next: (url) => {
+        this.uploadingPhoto.set(false);
+        if (!url) {
+          this.photoError.set('Upload failed. Please try again.');
+          return;
+        }
+        this.photoUrl.set(url);
+        this.saveChanges();
+      },
+      error: () => {
+        this.uploadingPhoto.set(false);
+        this.photoError.set('Could not upload the photo. Please try again.');
+      },
     });
   }
 
@@ -315,19 +372,22 @@ export class SettingsOverviewView implements OnInit {
     this.security.revokeSession(sessionId);
   }
 
-  protected openDeactivate(): void {
-    this.deactivateModalOpen.set(true);
+  protected openDelete(): void {
+    this.deleteModalOpen.set(true);
   }
 
-  protected closeDeactivate(): void {
-    this.deactivateModalOpen.set(false);
+  protected closeDelete(): void {
+    this.deleteModalOpen.set(false);
   }
 
-  protected confirmDeactivate(): void {
-    this.security.deactivateAccount((ok) => {
+  protected confirmDelete(): void {
+    this.security.deleteAccount((ok) => {
       if (ok) {
-        this.accountDeactivated.set(true);
-        this.deactivateModalOpen.set(false);
+        this.accountDeleted.set(true);
+        this.deleteModalOpen.set(false);
+        // The account is gone: end the session and return to the login screen.
+        this.session.clear();
+        void this.router.navigate(['/login']);
       }
     });
   }
