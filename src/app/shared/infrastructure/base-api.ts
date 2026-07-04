@@ -17,13 +17,24 @@ export type ApiQueryParams = Record<
 
 /**
  * Base for Platform API gateways. The auth interceptor attaches the JWT to
- * Platform calls; endpoints that still require an explicit current-user id can
- * source it from the active session without changing feature-store logic.
+ * Platform calls; current-user resources are addressed by the signed-in user's
+ * id in the PATH (e.g. `/profiles/{userId}`), sourced from the active session.
+ * Backend JWT-derived identity (Phase B) is still deferred, so the id must
+ * travel in the URL — not as a query param, which the backend ignores.
  */
 export abstract class BaseApi {
   protected readonly http = inject(HttpClient);
   private readonly activeSession = inject(ActiveSessionService);
   protected readonly baseUrl = environment.vioraPlatformApiUrl;
+
+  /**
+   * The signed-in user's id for current-user resource paths. These gateways run
+   * only on authenticated screens; `''` keeps the type total for a stray
+   * unauthenticated call (guards prevent it from firing in practice).
+   */
+  protected get currentUserId(): number | string {
+    return this.activeSession.userId ?? '';
+  }
 
   protected endpoint(path: string): BaseApiEndpoint {
     return new BaseApiEndpoint(this.baseUrl, path);
@@ -39,13 +50,6 @@ export abstract class BaseApi {
     });
 
     return httpParams;
-  }
-
-  protected currentUserParams(params: ApiQueryParams = {}): HttpParams {
-    return this.queryParams({
-      userId: this.activeSession.userId,
-      ...params,
-    });
   }
 
   protected collectionFrom<TResource, TKey extends string>(
