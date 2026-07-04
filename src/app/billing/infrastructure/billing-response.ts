@@ -18,9 +18,8 @@ export interface CouponResource {
   conditions: string | null;
 }
 
-/** Request body for `POST /coupon-redemptions`. */
+/** Request body for `POST /coupon-redemptions` (the user comes from the token). */
 export interface RedeemCouponRequest {
-  userId: number | string;
   code: string;
 }
 

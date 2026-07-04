@@ -20,7 +20,7 @@ export class IamApiService extends BaseApi {
   private readonly usersEndpoint = this.endpoint(environment.endpoints.users);
 
   private sessionsUrl(): string {
-    return `${this.usersEndpoint.resourceUrl(this.defaultUserId)}/sessions`;
+    return `${this.usersEndpoint.resourceUrl('me')}/sessions`;
   }
 
   /** Lists the active user's signed-in sessions. */
@@ -37,11 +37,11 @@ export class IamApiService extends BaseApi {
 
   /** Changes the active user's password. Errors are surfaced to callers. */
   changePassword(request: ChangePasswordRequest): Observable<unknown> {
-    return this.http.put(`${this.usersEndpoint.resourceUrl(this.defaultUserId)}/password`, request);
+    return this.http.put(`${this.usersEndpoint.resourceUrl('me')}/password`, request);
   }
 
   /** Deactivates the active user's account (Danger zone) via an active:false state update. */
   deactivateAccount(): Observable<unknown> {
-    return this.http.patch(this.usersEndpoint.resourceUrl(this.defaultUserId), { active: false });
+    return this.http.patch(this.usersEndpoint.resourceUrl('me'), { active: false });
   }
 }

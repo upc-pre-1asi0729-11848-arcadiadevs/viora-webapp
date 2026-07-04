@@ -45,7 +45,7 @@ export class SurveillanceApiService extends BaseApi {
   getAlerts(limit = 50): Observable<Alert[]> {
     return this.http
       .get<AlertResource[]>(this.alertsEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId({ sort: 'recent', limit })),
+        params: this.queryParams({ sort: 'recent', limit }),
       })
       .pipe(map((resources) => AlertAssembler.toEntitiesFromResources(resources ?? [])));
   }
@@ -111,9 +111,7 @@ export class SurveillanceApiService extends BaseApi {
    */
   getPestReports(): Observable<PestReport[]> {
     return this.http
-      .get<PestSightingReportResource[]>(this.pestReportsEndpoint.collectionUrl, {
-        params: this.queryParams({ reporterUserId: this.defaultUserId }),
-      })
+      .get<PestSightingReportResource[]>(this.pestReportsEndpoint.collectionUrl)
       .pipe(map((resources) => PestReportAssembler.toEntitiesFromResources(resources ?? [])));
   }
 
@@ -126,13 +124,8 @@ export class SurveillanceApiService extends BaseApi {
   createPestReport(
     request: Omit<CreatePestSightingReportRequest, 'reporterUserId'>,
   ): Observable<PestReport> {
-    const body: CreatePestSightingReportRequest = {
-      reporterUserId: Number(this.defaultUserId),
-      ...request,
-    };
-
     return this.http
-      .post<PestSightingReportResource>(this.pestReportsEndpoint.collectionUrl, body)
+      .post<PestSightingReportResource>(this.pestReportsEndpoint.collectionUrl, request)
       .pipe(map((resource) => PestReportAssembler.toEntityFromResource(resource)));
   }
 

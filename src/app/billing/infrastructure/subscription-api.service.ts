@@ -44,30 +44,25 @@ export class SubscriptionApiService extends BaseApi {
 
   getSubscription(): Observable<Subscription> {
     return this.http
-      .get<SubscriptionResource>(this.subscriptionsEndpoint.resourceUrl(this.defaultUserId))
+      .get<SubscriptionResource>(this.subscriptionsEndpoint.resourceUrl('me'))
       .pipe(map((resource) => SubscriptionAssembler.toEntity(resource)));
   }
 
   getInvoices(): Observable<Invoice[]> {
     return this.http
-      .get<InvoiceResource[]>(this.invoicesEndpoint.collectionUrl, {
-        params: this.queryParams({ userId: this.defaultUserId }),
-      })
+      .get<InvoiceResource[]>(this.invoicesEndpoint.collectionUrl)
       .pipe(map((resources) => InvoiceAssembler.toEntities(resources ?? [])));
   }
 
   getPaymentMethods(): Observable<PaymentMethod[]> {
     return this.http
-      .get<PaymentMethodResource[]>(this.paymentMethodsEndpoint.collectionUrl, {
-        params: this.queryParams({ userId: this.defaultUserId }),
-      })
+      .get<PaymentMethodResource[]>(this.paymentMethodsEndpoint.collectionUrl)
       .pipe(map((resources) => PaymentMethodAssembler.toEntities(resources ?? [])));
   }
 
   /** Opens a MercadoPago checkout for the target plan; returns the redirect URL. */
   checkout(planCode: string, interval: PlanInterval): Observable<CheckoutResource> {
     return this.http.post<CheckoutResource>(this.checkoutsEndpoint.collectionUrl, {
-      userId: this.defaultUserId,
       planCode,
       interval,
     });
@@ -77,7 +72,7 @@ export class SubscriptionApiService extends BaseApi {
   cancel(): Observable<Subscription> {
     return this.http
       .patch<SubscriptionResource>(
-        this.subscriptionsEndpoint.resourceUrl(this.defaultUserId),
+        this.subscriptionsEndpoint.resourceUrl('me'),
         { status: 'CANCELED' },
       )
       .pipe(map((resource) => SubscriptionAssembler.toEntity(resource)));
