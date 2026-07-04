@@ -400,12 +400,15 @@
     "overallHealth": {
       "title": "Salud general de parcelas",
       "status": "Estado",
-      "waiting": "Esperando resumen de la finca"
+      "waiting": "Esperando resumen de la finca",
+      "noData": "Sin datos",
+      "empty": "0 parcelas registradas"
     },
     "ndvi": {
       "title": "Estado NDVI",
       "fromLastUpdate": "desde la última actualización",
-      "loading": "Cargando registros NDVI"
+      "loading": "Cargando registros NDVI",
+      "empty": "Aparece cuando una parcela reporte datos"
     },
     "chill": {
       "title": "Acumulación de frío",
@@ -413,13 +416,15 @@
       "disclaimerZero": "El frío se acumula solo durante las horas frías de la temporada de dormancia; los periodos cálidos no suman.",
       "remaining": "{{remaining}} para alcanzar el requerimiento.",
       "requirementMet": "Requerimiento de frío de dormancia cumplido.",
-      "loading": "Cargando acumulación de frío"
+      "loading": "Cargando acumulación de frío",
+      "empty": "Aparece cuando una parcela reporte datos"
     },
     "yield": {
       "title": "Pronóstico de rendimiento",
       "alternateBearing": "Riesgo de vecería",
       "campaign": "Estimado para la campaña actual",
-      "loading": "Cargando pronóstico de rendimiento"
+      "loading": "Cargando pronóstico de rendimiento",
+      "empty": "Aparece cuando una parcela reporte datos"
     },
     "phenological": {
       "title": "Riesgo fenológico",
@@ -459,6 +464,11 @@
     "lastUpdate": "Última actualización registrada",
     "recommendedAction": "Acción recomendada",
     "loading": "Cargando vista de parcela...",
+    "empty": {
+      "title": "Aún no has registrado ninguna parcela",
+      "description": "Agrega tu primera finca para empezar a monitorear NDVI, acumulación de frío y lecturas de dispositivos IoT.",
+      "cta": "Agrega tu primera parcela"
+    },
     "recommendations": {
       "waiting": "Esperando datos de la parcela",
       "inspect": "Priorizar inspección de campo y plan de mitigación",
@@ -493,7 +503,8 @@
     "temperatureAnomaly": "Anomalía de temperatura",
     "climateRisk": "Riesgo climático",
     "loading": "Cargando resumen del clima",
-    "selectPlotPrompt": "Selecciona una parcela específica para ver su resumen del clima."
+    "selectPlotPrompt": "Selecciona una parcela específica para ver su resumen del clima.",
+    "empty": "Agrega una parcela para ver su resumen del clima."
   },
   "dataFreshness": {
     "title": "Frescura de datos",
@@ -517,7 +528,8 @@
     "selectTimeRange": "Seleccionar rango de tiempo para análisis",
     "currentValue": "Valor actual",
     "observation": "Observación",
-    "loading": "Cargando análisis de tendencia"
+    "loading": "Cargando análisis de tendencia",
+    "empty": "Aún no hay estadísticas agronómicas — se completará cuando agregues una parcela."
   },
   "alerts": {
     "title": "Alertas recientes",
@@ -527,7 +539,8 @@
     "severity": "Severidad",
     "date": "Fecha",
     "status": "Estado",
-    "loading": "Cargando alertas recientes"
+    "loading": "Cargando alertas recientes",
+    "empty": "Sin alertas aún — aparecerán cuando tus parcelas empiecen a reportar datos."
   },
   "recommended": {
     "title": "Acciones recomendadas",

@@ -33,6 +33,9 @@
         }
       </footer>
     }
+  } @else if (store.hasNoPlots()) {
+    <strong class="main-value">—</strong>
+    <p class="empty-state">{{ 'cards.chill.empty' | translate }}</p>
   } @else {
     <div class="empty-state">{{ 'cards.chill.loading' | translate }}</div>
   }

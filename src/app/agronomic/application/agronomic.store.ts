@@ -290,6 +290,15 @@ export class AgronomicStore {
 
   readonly plotsCount = computed<number>(() => (this.plotsLoaded() ? this.plots().length : 0));
 
+  /**
+   * True once the plots request has resolved AND the account owns no plots.
+   * Cards use this as the single source of truth to switch from their loading
+   * placeholder to a real empty state, so a brand-new account never sits on
+   * "Loading…" forever. While `plotsLoaded()` is still false this stays false,
+   * keeping the loading placeholder during the genuine in-flight window.
+   */
+  readonly hasNoPlots = computed<boolean>(() => this.plotsLoaded() && this.plots().length === 0);
+
   readonly hasErrors = computed<boolean>(() => this.errors().length > 0);
 
   /**

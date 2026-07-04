@@ -400,12 +400,15 @@
     "overallHealth": {
       "title": "Overall Plot Health",
       "status": "Status",
-      "waiting": "Waiting for farm summary"
+      "waiting": "Waiting for farm summary",
+      "noData": "No data",
+      "empty": "0 plots registered"
     },
     "ndvi": {
       "title": "NDVI Status",
       "fromLastUpdate": "from last update",
-      "loading": "Loading NDVI records"
+      "loading": "Loading NDVI records",
+      "empty": "Appears once a plot reports data"
     },
     "chill": {
       "title": "Chill Accumulation",
@@ -413,13 +416,15 @@
       "disclaimerZero": "Chill builds up only during the cold hours of the dormancy season; warm periods add none.",
       "remaining": "{{remaining}} to reach the requirement.",
       "requirementMet": "Dormancy chill requirement met.",
-      "loading": "Loading chill accumulation"
+      "loading": "Loading chill accumulation",
+      "empty": "Appears once a plot reports data"
     },
     "yield": {
       "title": "Yield Forecast",
       "alternateBearing": "Risk of alternate bearing",
       "campaign": "Estimated for current campaign",
-      "loading": "Loading yield forecast"
+      "loading": "Loading yield forecast",
+      "empty": "Appears once a plot reports data"
     },
     "phenological": {
       "title": "Phenological Risk",
@@ -459,6 +464,11 @@
     "lastUpdate": "Last recorded update",
     "recommendedAction": "Recommended action",
     "loading": "Loading plot overview...",
+    "empty": {
+      "title": "You haven't registered any plots yet",
+      "description": "Add your first finca to start tracking NDVI, chill accumulation, and IoT device readings.",
+      "cta": "Add your first plot"
+    },
     "recommendations": {
       "waiting": "Waiting for plot data",
       "inspect": "Prioritize field inspection and mitigation plan",
@@ -493,7 +503,8 @@
     "temperatureAnomaly": "Temperature anomaly",
     "climateRisk": "Climate risk",
     "loading": "Loading weather summary",
-    "selectPlotPrompt": "Select a specific plot to see its weather summary."
+    "selectPlotPrompt": "Select a specific plot to see its weather summary.",
+    "empty": "Add a plot to see its weather summary."
   },
   "dataFreshness": {
     "title": "Data Freshness",
@@ -517,7 +528,8 @@
     "selectTimeRange": "Select trend analysis time range",
     "currentValue": "Current value",
     "observation": "Observation",
-    "loading": "Loading trend analysis"
+    "loading": "Loading trend analysis",
+    "empty": "No agronomic statistics recorded yet — this fills in once a plot is added."
   },
   "alerts": {
     "title": "Recent Alerts",
@@ -527,7 +539,8 @@
     "severity": "Severity",
     "date": "Date",
     "status": "Status",
-    "loading": "Loading recent alerts"
+    "loading": "Loading recent alerts",
+    "empty": "No alerts yet — alerts appear once your plots start reporting data."
   },
   "recommended": {
     "title": "Recommended Actions",
