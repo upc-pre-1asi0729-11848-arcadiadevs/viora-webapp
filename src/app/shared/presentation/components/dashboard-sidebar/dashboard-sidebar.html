@@ -77,7 +77,7 @@
     @if (!collapsed()) {
       <div class="user-info">
         <span>{{ 'sidebar.welcomeBack' | translate }} 👋</span>
-        <strong>{{ displayName() }}</strong>
+        <strong [title]="displayName()">{{ displayName() }}</strong>
       </div>
 
       <button

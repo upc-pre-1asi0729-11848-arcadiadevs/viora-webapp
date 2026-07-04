@@ -193,8 +193,10 @@
 }
 
 .user-info {
+  flex: 1;
   min-width: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
 }
 
@@ -203,6 +205,9 @@
   font-size: 12px;
   font-weight: 500;
   font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-info strong {
@@ -210,6 +215,9 @@
   font-size: 14px;
   font-weight: 500;
   font-family: 'Poppins', sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -222,6 +230,7 @@
 }
 
 .user-logout {
+  flex-shrink: 0;
   margin-left: auto;
   display: grid;
   place-items: center;
