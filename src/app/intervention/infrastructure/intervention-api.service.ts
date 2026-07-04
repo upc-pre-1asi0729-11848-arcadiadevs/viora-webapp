@@ -87,7 +87,7 @@ export class InterventionApiService extends BaseApi {
   getRequestsByPlot(plotId: number | string): Observable<InterventionRequest[]> {
     return this.http
       .get<InterventionRequestResource[]>(this.requestsEndpoint.collectionUrl, {
-        params: this.queryParams({ growerId: this.defaultUserId, plotId }),
+        params: this.queryParams({ plotId }),
       })
       .pipe(map((resources) => InterventionRequestAssembler.toEntitiesFromResources(resources ?? [])));
   }
@@ -101,7 +101,7 @@ export class InterventionApiService extends BaseApi {
   getAllRequests(): Observable<InterventionRequest[]> {
     return this.http
       .get<InterventionRequestResource[]>(this.requestsEndpoint.collectionUrl, {
-        params: this.queryParams({ growerId: this.defaultUserId }),
+        params: this.queryParams(),
       })
       .pipe(map((resources) => InterventionRequestAssembler.toEntitiesFromResources(resources ?? [])));
   }
@@ -127,13 +127,8 @@ export class InterventionApiService extends BaseApi {
   createRequest(
     request: Omit<CreateInterventionRequestRequest, 'growerId'>,
   ): Observable<InterventionRequest> {
-    const body: CreateInterventionRequestRequest = {
-      growerId: Number(this.defaultUserId),
-      ...request,
-    };
-
     return this.http
-      .post<InterventionRequestResource>(this.requestsEndpoint.collectionUrl, body)
+      .post<InterventionRequestResource>(this.requestsEndpoint.collectionUrl, request)
       .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
   }
 
@@ -214,7 +209,7 @@ export class InterventionApiService extends BaseApi {
   getInterventions(): Observable<Intervention[]> {
     return this.http
       .get<InterventionSummaryResource[]>(this.interventionsEndpoint.collectionUrl, {
-        params: this.queryParams({ growerId: this.defaultUserId }),
+        params: this.queryParams(),
       })
       .pipe(map((resources) => InterventionSummaryAssembler.toEntitiesFromResources(resources ?? [])));
   }
