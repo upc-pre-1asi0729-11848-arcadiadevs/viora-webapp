@@ -522,6 +522,160 @@
       "close": "Cerrar intervención"
     }
   },
+  "alertsPage": {
+    "headerSubtitle": "Monitorea alertas activas, prioriza riesgos críticos y revisa amenazas comunitarias cercanas en tus parcelas.",
+    "breadcrumb": {
+      "alerts": "Alertas",
+      "overview": "Resumen"
+    },
+    "kpi": {
+      "activeTitle": "Alertas activas",
+      "activePill": "Alertas activas",
+      "activeCaption": "{{high}} de alta prioridad / {{critical}} críticas",
+      "criticalTitle": "Riesgo crítico",
+      "critical": "Críticas",
+      "immediate": "Requiere atención inmediata",
+      "noCritical": "Sin riesgos críticos",
+      "affectedTitle": "Parcelas afectadas",
+      "plots": "parcelas",
+      "recommendedTitle": "Acciones recomendadas",
+      "pending": "pendientes",
+      "reviewActions": "Revisar acciones"
+    },
+    "list": {
+      "title": "Lista de alertas",
+      "reportSymptoms": "Reportar síntomas",
+      "search": "Buscar",
+      "colType": "Tipo de alerta",
+      "colPlot": "Parcela",
+      "colSource": "Fuente",
+      "colSeverity": "Severidad",
+      "colDate": "Fecha",
+      "colStatus": "Estado",
+      "colAction": "Acción",
+      "loading": "Cargando alertas…",
+      "empty": "No se encontraron alertas.",
+      "resolve": "Resolver",
+      "dismiss": "Descartar"
+    },
+    "community": {
+      "title": "Riesgo comunitario",
+      "subtitle": "Difusión comunitaria preventiva y monitoreo de riesgos cercanos",
+      "noPlot": "Ninguna parcela seleccionada",
+      "riskRadius": "Radio de riesgo: {{km}}km",
+      "mapTitle": "Mapa de riesgo comunitario",
+      "mapSubtitle": "Señales cercanas anonimizadas detectadas alrededor de {{plot}} dentro de un radio de monitoreo de {{km}} km.",
+      "signalsTitle": "Señales de riesgo cercanas",
+      "within": "En un radio de {{km}}k",
+      "distanceFrom": "{{km}} km de {{plot}}"
+    },
+    "threat": {
+      "probable": "Amenaza probable",
+      "severity": "Severidad",
+      "approxDistance": "Distancia aprox.",
+      "geoRadius": "Radio geográfico"
+    },
+    "recommendation": {
+      "title": "Recomendación preventiva"
+    },
+    "quickActions": {
+      "title": "Acciones rápidas",
+      "viewPlot": "Ver detalles de la parcela",
+      "reportSymptoms": "Reportar síntomas",
+      "openNutrition": "Abrir plan de nutrición",
+      "requestExpert": "Solicitar experto"
+    },
+    "error": "Algo salió mal al cargar las alertas."
+  },
+  "pestPage": {
+    "headerSubtitle": "Monitorea señales de riesgo biológico, reportes de síntomas y detecciones autónomas de plagas en tus parcelas.",
+    "breadcrumb": {
+      "pestSurveillance": "Vigilancia de plagas",
+      "overview": "Resumen"
+    },
+    "kpi": {
+      "surveillanceTitle": "Estado de vigilancia",
+      "active": "Activa",
+      "surveillanceCaption": "Se están evaluando el satélite, los reportes manuales y las señales comunitarias.",
+      "plotsMonitored": "{{count}} parcelas monitoreadas",
+      "threatTitle": "Amenaza probable",
+      "underObservation": "Bajo observación",
+      "threatCaption": "Detectada a partir de señales de bajo vigor y reportes de síntomas recientes.",
+      "confidenceTitle": "Confianza del riesgo",
+      "mediumHigh": "Media-alta",
+      "confidenceCaption": "Calculada a partir de síntomas, variación de NDVI y señales cercanas.",
+      "exposureTitle": "Exposición comunitaria",
+      "radius": "radio de {{km}} km",
+      "signals": "{{count}} señales",
+      "exposureCaption": "Parcelas cercanas muestran patrones de riesgo relacionados dentro del radio de monitoreo.",
+      "viewCommunity": "Ver riesgo comunitario"
+    },
+    "mapFilters": {
+      "all": "Todas las señales",
+      "manual": "Manual",
+      "satellite": "Satélite",
+      "community": "Comunidad",
+      "autonomous": "Autónomas"
+    },
+    "map": {
+      "title": "Mapa de vigilancia",
+      "subtitle": "Señales de riesgo de reportes manuales, indicadores satelitales y actividad comunitaria.",
+      "activeSignals": "{{count}} señales activas",
+      "legendManual": "Reporte manual",
+      "legendSatellite": "Señal satelital",
+      "legendCommunity": "Señal comunitaria"
+    },
+    "history": {
+      "title": "Historial de reportes de síntomas",
+      "subtitle": "Reportes enviados por ti en todas las parcelas.",
+      "createReport": "Crear nuevo reporte",
+      "colId": "ID de reporte",
+      "colPlot": "Parcela",
+      "colSymptoms": "Síntomas",
+      "colResult": "Resultado",
+      "loading": "Cargando reportes…",
+      "empty": "Aún no se han enviado reportes."
+    },
+    "risk": {
+      "title": "Evaluación de riesgo actual",
+      "subtitle": "Análisis del sistema basado en los indicadores disponibles.",
+      "underObservation": "Bajo observación",
+      "probablePattern": "Patrón probable",
+      "patternValue": "Posible patrón de {{threat}}",
+      "status": "Estado",
+      "estimatedRisk": "Riesgo estimado",
+      "mediumHigh": "Media-alta",
+      "lowMedium": "Baja-media",
+      "mainEvidence": "Evidencia principal",
+      "confirmedReports": "Reportes de síntomas confirmados",
+      "totalReports": "Total de reportes de síntomas enviados",
+      "nearbySignals": "Señales comunitarias cercanas",
+      "nextStepTitle": "Próximo paso recomendado",
+      "nextStepText": "Inspecciona las hojas y monitorea las zonas de bajo vigor antes de solicitar una intervención de un especialista.",
+      "reportSymptoms": "Reportar síntomas",
+      "viewAlerts": "Ver alertas relacionadas",
+      "requestExpert": "Solicitar experto"
+    },
+    "autonomous": {
+      "title": "Detecciones autónomas",
+      "subtitle": "Señales detectadas sin reportes manuales de síntomas.",
+      "preview": "Vista previa",
+      "note": "Las detecciones automáticas aparecerán aquí cuando el monitoreo agronómico emita eventos de riesgo."
+    },
+    "error": "Algo salió mal al cargar los datos de vigilancia.",
+    "form": {
+      "title": "Reportar síntomas",
+      "plot": "Parcela",
+      "riskZone": "Zona de riesgo",
+      "observedSeverity": "Severidad observada",
+      "symptoms": "Síntomas",
+      "noCatalog": "No hay catálogo de síntomas disponible.",
+      "notes": "Notas (opcional)",
+      "cancel": "Cancelar",
+      "submitting": "Enviando…",
+      "submit": "Enviar reporte"
+    }
+  },
   "myPlots": {
     "overview": "Resumen",
     "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",

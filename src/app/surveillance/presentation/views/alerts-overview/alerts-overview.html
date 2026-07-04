@@ -1,7 +1,7 @@
 <section class="alerts-page">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs"
-    subtitle="Monitor active alerts, prioritize critical risks, and review nearby community threats across your plots."
+    [subtitle]="'alertsPage.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
     (refresh)="refresh()" />
 
@@ -9,35 +9,35 @@
   <section class="kpi-grid">
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Active Alerts</h2>
+        <h2>{{ 'alertsPage.kpi.activeTitle' | translate }}</h2>
       </div>
       <div class="kpi-main">
         <span class="kpi-number">{{ store.activeAlertsCount() }}</span>
-        <span class="kpi-pill kpi-pill--green">Active alerts</span>
+        <span class="kpi-pill kpi-pill--green">{{ 'alertsPage.kpi.activePill' | translate }}</span>
       </div>
       <p class="kpi-caption">
-        {{ store.highPriorityCount() }} high priority / {{ store.criticalCount() }} critical
+        {{ 'alertsPage.kpi.activeCaption' | translate: { high: store.highPriorityCount(), critical: store.criticalCount() } }}
       </p>
     </mat-card>
 
     <mat-card class="kpi-card">
-      <div class="kpi-head"><h2>Critical Risk</h2></div>
+      <div class="kpi-head"><h2>{{ 'alertsPage.kpi.criticalTitle' | translate }}</h2></div>
       <div class="kpi-main">
         <span class="kpi-number">{{ store.criticalCount() }}</span>
-        <span class="kpi-unit">Critical</span>
+        <span class="kpi-unit">{{ 'alertsPage.kpi.critical' | translate }}</span>
       </div>
       @if (store.criticalCount() > 0) {
-        <span class="kpi-pill kpi-pill--red">Immediate attention required</span>
+        <span class="kpi-pill kpi-pill--red">{{ 'alertsPage.kpi.immediate' | translate }}</span>
       } @else {
-        <span class="kpi-pill kpi-pill--muted">No critical risks</span>
+        <span class="kpi-pill kpi-pill--muted">{{ 'alertsPage.kpi.noCritical' | translate }}</span>
       }
     </mat-card>
 
     <mat-card class="kpi-card">
-      <div class="kpi-head"><h2>Affected Plots</h2></div>
+      <div class="kpi-head"><h2>{{ 'alertsPage.kpi.affectedTitle' | translate }}</h2></div>
       <div class="kpi-main">
         <span class="kpi-number">{{ store.affectedPlotCount() }}</span>
-        <span class="kpi-unit">plots</span>
+        <span class="kpi-unit">{{ 'alertsPage.kpi.plots' | translate }}</span>
       </div>
       <div class="kpi-chips">
         @for (name of store.affectedPlotNames(); track name) {
@@ -47,13 +47,13 @@
     </mat-card>
 
     <mat-card class="kpi-card">
-      <div class="kpi-head"><h2>Recommended Actions</h2></div>
+      <div class="kpi-head"><h2>{{ 'alertsPage.kpi.recommendedTitle' | translate }}</h2></div>
       <div class="kpi-main">
         <span class="kpi-number">{{ store.recommendedActionsCount() }}</span>
-        <span class="kpi-unit">pending</span>
+        <span class="kpi-unit">{{ 'alertsPage.kpi.pending' | translate }}</span>
       </div>
       <button mat-flat-button type="button" class="primary-button" (click)="goToPage(1)">
-        Review actions
+        {{ 'alertsPage.kpi.reviewActions' | translate }}
       </button>
     </mat-card>
   </section>
@@ -61,7 +61,7 @@
   <!-- Alerts list -->
   <mat-card class="list-card">
     <div class="list-header">
-      <h2>Alerts List</h2>
+      <h2>{{ 'alertsPage.list.title' | translate }}</h2>
       <div class="list-actions">
         <button
           mat-flat-button
@@ -69,13 +69,13 @@
           class="primary-button"
           (click)="navigateTo('/surveillance/pest-surveillance/report-symptoms')">
           <mat-icon>pest_control</mat-icon>
-          Report symptoms
+          {{ 'alertsPage.list.reportSymptoms' | translate }}
         </button>
         <div class="search-box">
           <mat-icon>search</mat-icon>
           <input
             type="text"
-            placeholder="Search"
+            [placeholder]="'alertsPage.list.search' | translate"
             [value]="searchTerm()"
             (input)="onSearch($any($event.target).value)" />
         </div>
@@ -88,19 +88,19 @@
     <div class="table-scroll">
       <div class="alerts-table">
         <div class="table-header">
-          <span>Alert type</span>
-          <span>Plot</span>
-          <span>Source</span>
-          <span>Severity</span>
-          <span>Date</span>
-          <span>Status</span>
-          <span>Action</span>
+          <span>{{ 'alertsPage.list.colType' | translate }}</span>
+          <span>{{ 'alertsPage.list.colPlot' | translate }}</span>
+          <span>{{ 'alertsPage.list.colSource' | translate }}</span>
+          <span>{{ 'alertsPage.list.colSeverity' | translate }}</span>
+          <span>{{ 'alertsPage.list.colDate' | translate }}</span>
+          <span>{{ 'alertsPage.list.colStatus' | translate }}</span>
+          <span>{{ 'alertsPage.list.colAction' | translate }}</span>
         </div>
 
         @if (isLoading() && store.alerts().length === 0) {
-          <div class="table-state">Loading alerts…</div>
+          <div class="table-state">{{ 'alertsPage.list.loading' | translate }}</div>
         } @else if (pagedAlerts().length === 0) {
-          <div class="table-state">No alerts found.</div>
+          <div class="table-state">{{ 'alertsPage.list.empty' | translate }}</div>
         } @else {
           @for (alert of pagedAlerts(); track alert.id) {
             <div class="alert-row">
@@ -135,9 +135,9 @@
                 </button>
                 @if (isOpenAlert(alert)) {
                   <span class="cell-action-secondary">
-                    <button type="button" class="link-action" (click)="resolveAlert(alert)">Resolve</button>
+                    <button type="button" class="link-action" (click)="resolveAlert(alert)">{{ 'alertsPage.list.resolve' | translate }}</button>
                     <span class="link-sep">·</span>
-                    <button type="button" class="link-action link-action--muted" (click)="dismissAlert(alert)">Dismiss</button>
+                    <button type="button" class="link-action link-action--muted" (click)="dismissAlert(alert)">{{ 'alertsPage.list.dismiss' | translate }}</button>
                   </span>
                 }
               </span>
@@ -183,8 +183,8 @@
   <!-- Community Risk -->
   <section class="community-header">
     <div>
-      <h2>Community Risk</h2>
-      <p>Preventive community diffusion and nearby risk monitoring</p>
+      <h2>{{ 'alertsPage.community.title' | translate }}</h2>
+      <p>{{ 'alertsPage.community.subtitle' | translate }}</p>
     </div>
     <div class="community-controls">
       @if (plots().length > 0) {
@@ -197,14 +197,14 @@
           }
         </select>
       } @else {
-        <span class="control-chip">{{ store.communityRisk().plotName || 'No plot selected' }}</span>
+        <span class="control-chip">{{ store.communityRisk().plotName || ('alertsPage.community.noPlot' | translate) }}</span>
       }
       <select
         class="control-chip control-select"
         [value]="riskRadiusKm()"
         (change)="onSelectRadius(+$any($event.target).value)">
         @for (km of radiusOptions; track km) {
-          <option [value]="km">Risk radius: {{ km }}km</option>
+          <option [value]="km">{{ 'alertsPage.community.riskRadius' | translate: { km: km } }}</option>
         }
       </select>
     </div>
@@ -212,10 +212,9 @@
 
   <section class="community-grid">
     <mat-card class="map-card">
-      <h3>Community Risk Map</h3>
+      <h3>{{ 'alertsPage.community.mapTitle' | translate }}</h3>
       <p class="map-subtitle">
-        Anonymized nearby signals detected around {{ store.communityRisk().plotName }} within a
-        {{ store.communityRisk().radiusKm }} km monitoring radius.
+        {{ 'alertsPage.community.mapSubtitle' | translate: { plot: store.communityRisk().plotName, km: store.communityRisk().radiusKm } }}
       </p>
 
       <app-community-risk-map
@@ -228,8 +227,8 @@
       <div class="signals-head">
         <mat-icon>notifications</mat-icon>
         <div>
-          <h3>Nearby Risk Signals</h3>
-          <span>Within {{ store.communityRisk().radiusKm }}k radius</span>
+          <h3>{{ 'alertsPage.community.signalsTitle' | translate }}</h3>
+          <span>{{ 'alertsPage.community.within' | translate: { km: store.communityRisk().radiusKm } }}</span>
         </div>
       </div>
 
@@ -243,7 +242,7 @@
             <span class="signal-icon"><mat-icon>pest_control</mat-icon></span>
             <span class="signal-body">
               <strong>{{ signal.title }}</strong>
-              <span>{{ signal.distanceKm }} km from {{ store.communityRisk().plotName }}</span>
+              <span>{{ 'alertsPage.community.distanceFrom' | translate: { km: signal.distanceKm, plot: store.communityRisk().plotName } }}</span>
             </span>
             <span class="pill" [class]="severityClass(signal.severity)">{{ signal.severity }}</span>
             <mat-icon class="signal-caret">chevron_right</mat-icon>
@@ -258,7 +257,7 @@
     <mat-card class="threat-card">
       <span class="threat-icon threat-icon--green"><mat-icon>pest_control</mat-icon></span>
       <div>
-        <span class="threat-label">Probable threat</span>
+        <span class="threat-label">{{ 'alertsPage.threat.probable' | translate }}</span>
         <strong>{{ store.selectedSignal()?.probableThreat ?? '—' }}</strong>
       </div>
     </mat-card>
@@ -266,7 +265,7 @@
     <mat-card class="threat-card">
       <span class="threat-icon threat-icon--orange"><mat-icon>shield</mat-icon></span>
       <div>
-        <span class="threat-label">Severity</span>
+        <span class="threat-label">{{ 'alertsPage.threat.severity' | translate }}</span>
         <strong class="threat-severity">{{ store.selectedSignal()?.severity ?? '—' }}</strong>
       </div>
     </mat-card>
@@ -274,7 +273,7 @@
     <mat-card class="threat-card">
       <span class="threat-icon threat-icon--sand"><mat-icon>straighten</mat-icon></span>
       <div>
-        <span class="threat-label">Approx distance</span>
+        <span class="threat-label">{{ 'alertsPage.threat.approxDistance' | translate }}</span>
         <strong>{{ store.selectedSignal()?.distanceKm ?? '—' }} km</strong>
       </div>
     </mat-card>
@@ -282,7 +281,7 @@
     <mat-card class="threat-card">
       <span class="threat-icon threat-icon--gray"><mat-icon>my_location</mat-icon></span>
       <div>
-        <span class="threat-label">Geographic radius</span>
+        <span class="threat-label">{{ 'alertsPage.threat.geoRadius' | translate }}</span>
         <strong>{{ store.communityRisk().radiusKm }} km</strong>
       </div>
     </mat-card>
@@ -291,7 +290,7 @@
   <!-- Recommendations + quick actions -->
   <section class="bottom-grid">
     <mat-card class="recommendation-card">
-      <h3>Preventive Recommendation</h3>
+      <h3>{{ 'alertsPage.recommendation.title' | translate }}</h3>
       <ul class="recommendation-list">
         @for (item of store.communityRisk().preventiveRecommendations; track item) {
           <li><mat-icon>check_circle</mat-icon> {{ item }}</li>
@@ -300,28 +299,28 @@
     </mat-card>
 
     <mat-card class="quick-actions-card">
-      <h3>Quick Actions</h3>
+      <h3>{{ 'alertsPage.quickActions.title' | translate }}</h3>
       <div class="quick-actions-grid">
         <button type="button" class="quick-action" (click)="navigateTo('/agronomic/plots')">
-          <mat-icon>description</mat-icon> View plot details
+          <mat-icon>description</mat-icon> {{ 'alertsPage.quickActions.viewPlot' | translate }}
         </button>
         <button
           type="button"
           class="quick-action"
           (click)="navigateTo('/surveillance/pest-surveillance/report-symptoms')">
-          <mat-icon>pest_control</mat-icon> Report symptoms
+          <mat-icon>pest_control</mat-icon> {{ 'alertsPage.quickActions.reportSymptoms' | translate }}
         </button>
         <button
           type="button"
           class="quick-action"
           (click)="navigateTo('/agronomic/dynamic-nutrition')">
-          <mat-icon>eco</mat-icon> Open nutrition plan
+          <mat-icon>eco</mat-icon> {{ 'alertsPage.quickActions.openNutrition' | translate }}
         </button>
         <button
           type="button"
           class="quick-action"
           (click)="navigateTo('/assistance/expert-assistance/request')">
-          <mat-icon>groups</mat-icon> Request expert
+          <mat-icon>groups</mat-icon> {{ 'alertsPage.quickActions.requestExpert' | translate }}
         </button>
       </div>
     </mat-card>
@@ -329,7 +328,7 @@
 
   @if (store.errors().length > 0) {
     <section class="error-box">
-      <strong>Something went wrong loading alerts.</strong>
+      <strong>{{ 'alertsPage.error' | translate }}</strong>
     </section>
   }
 </section>

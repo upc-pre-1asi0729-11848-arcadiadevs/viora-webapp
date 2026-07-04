@@ -522,6 +522,160 @@
       "close": "Close intervention"
     }
   },
+  "alertsPage": {
+    "headerSubtitle": "Monitor active alerts, prioritize critical risks, and review nearby community threats across your plots.",
+    "breadcrumb": {
+      "alerts": "Alerts",
+      "overview": "Overview"
+    },
+    "kpi": {
+      "activeTitle": "Active Alerts",
+      "activePill": "Active alerts",
+      "activeCaption": "{{high}} high priority / {{critical}} critical",
+      "criticalTitle": "Critical Risk",
+      "critical": "Critical",
+      "immediate": "Immediate attention required",
+      "noCritical": "No critical risks",
+      "affectedTitle": "Affected Plots",
+      "plots": "plots",
+      "recommendedTitle": "Recommended Actions",
+      "pending": "pending",
+      "reviewActions": "Review actions"
+    },
+    "list": {
+      "title": "Alerts List",
+      "reportSymptoms": "Report symptoms",
+      "search": "Search",
+      "colType": "Alert type",
+      "colPlot": "Plot",
+      "colSource": "Source",
+      "colSeverity": "Severity",
+      "colDate": "Date",
+      "colStatus": "Status",
+      "colAction": "Action",
+      "loading": "Loading alerts…",
+      "empty": "No alerts found.",
+      "resolve": "Resolve",
+      "dismiss": "Dismiss"
+    },
+    "community": {
+      "title": "Community Risk",
+      "subtitle": "Preventive community diffusion and nearby risk monitoring",
+      "noPlot": "No plot selected",
+      "riskRadius": "Risk radius: {{km}}km",
+      "mapTitle": "Community Risk Map",
+      "mapSubtitle": "Anonymized nearby signals detected around {{plot}} within a {{km}} km monitoring radius.",
+      "signalsTitle": "Nearby Risk Signals",
+      "within": "Within {{km}}k radius",
+      "distanceFrom": "{{km}} km from {{plot}}"
+    },
+    "threat": {
+      "probable": "Probable threat",
+      "severity": "Severity",
+      "approxDistance": "Approx distance",
+      "geoRadius": "Geographic radius"
+    },
+    "recommendation": {
+      "title": "Preventive Recommendation"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "viewPlot": "View plot details",
+      "reportSymptoms": "Report symptoms",
+      "openNutrition": "Open nutrition plan",
+      "requestExpert": "Request expert"
+    },
+    "error": "Something went wrong loading alerts."
+  },
+  "pestPage": {
+    "headerSubtitle": "Monitor biological risk signals, symptom reports, and autonomous pest-related detections across your plots.",
+    "breadcrumb": {
+      "pestSurveillance": "Pest Surveillance",
+      "overview": "Overview"
+    },
+    "kpi": {
+      "surveillanceTitle": "Surveillance status",
+      "active": "Active",
+      "surveillanceCaption": "Satellite, manual reports, and community signals are being evaluated.",
+      "plotsMonitored": "{{count}} plots monitored",
+      "threatTitle": "Probable threat",
+      "underObservation": "Under observation",
+      "threatCaption": "Detected from low-vigor signals and recent symptom reports.",
+      "confidenceTitle": "Risk confidence",
+      "mediumHigh": "Medium-high",
+      "confidenceCaption": "Calculated from symptoms, NDVI variation, and nearby signals.",
+      "exposureTitle": "Community exposure",
+      "radius": "{{km}} km radius",
+      "signals": "{{count}} signals",
+      "exposureCaption": "Nearby plots show related risk patterns within the monitoring radius.",
+      "viewCommunity": "View community risk"
+    },
+    "mapFilters": {
+      "all": "All signals",
+      "manual": "Manual",
+      "satellite": "Satellite",
+      "community": "Community",
+      "autonomous": "Autonomous"
+    },
+    "map": {
+      "title": "Surveillance map",
+      "subtitle": "Risk signals from manual reports, satellite indicators, and community activity.",
+      "activeSignals": "{{count}} active signals",
+      "legendManual": "Manual report",
+      "legendSatellite": "Satellite signal",
+      "legendCommunity": "Community signal"
+    },
+    "history": {
+      "title": "Symptom report history",
+      "subtitle": "Reports submitted by you across all plots.",
+      "createReport": "Create new report",
+      "colId": "Report ID",
+      "colPlot": "Plot",
+      "colSymptoms": "Symptoms",
+      "colResult": "Result",
+      "loading": "Loading reports…",
+      "empty": "No reports submitted yet."
+    },
+    "risk": {
+      "title": "Current risk evaluation",
+      "subtitle": "System analysis based on available indicators.",
+      "underObservation": "Under observation",
+      "probablePattern": "Probable pattern",
+      "patternValue": "Possible {{threat}} pattern",
+      "status": "Status",
+      "estimatedRisk": "Estimated risk",
+      "mediumHigh": "Medium-high",
+      "lowMedium": "Low-medium",
+      "mainEvidence": "Main evidence",
+      "confirmedReports": "Confirmed symptom reports",
+      "totalReports": "Total symptom reports submitted",
+      "nearbySignals": "Nearby community signals",
+      "nextStepTitle": "Recommended next step",
+      "nextStepText": "Inspect leaves and monitor low-vigor zones before requesting a specialist intervention.",
+      "reportSymptoms": "Report symptoms",
+      "viewAlerts": "View related alerts",
+      "requestExpert": "Request expert"
+    },
+    "autonomous": {
+      "title": "Autonomous detections",
+      "subtitle": "Signals detected without manual symptom reports.",
+      "preview": "Preview",
+      "note": "Automatic detections will populate here once agronomic monitoring emits risk events."
+    },
+    "error": "Something went wrong loading surveillance data.",
+    "form": {
+      "title": "Report symptoms",
+      "plot": "Plot",
+      "riskZone": "Risk zone",
+      "observedSeverity": "Observed severity",
+      "symptoms": "Symptoms",
+      "noCatalog": "No symptom catalog available.",
+      "notes": "Notes (optional)",
+      "cancel": "Cancel",
+      "submitting": "Submitting…",
+      "submit": "Submit report"
+    }
+  },
   "myPlots": {
     "overview": "Overview",
     "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",
