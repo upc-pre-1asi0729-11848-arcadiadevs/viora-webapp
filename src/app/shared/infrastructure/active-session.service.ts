@@ -7,6 +7,8 @@ export interface SessionData {
   email: string;
   fullName: string;
   role: string;
+  /** Cloudinary avatar URL; optional, refreshed when the profile is edited. */
+  photoUrl?: string;
 }
 
 const STORAGE_KEY = 'viora.session';
@@ -30,6 +32,24 @@ export class ActiveSessionService {
   /** The signed-in user's id, or null when signed out. */
   get userId(): number | null {
     return this.sessionSignal()?.userId ?? null;
+  }
+
+  /**
+   * Patches the in-session identity (name/photo) after a profile edit so the
+   * sidebar and header reflect the change without re-authenticating.
+   */
+  updateIdentity(changes: Partial<Pick<SessionData, 'fullName' | 'photoUrl'>>): void {
+    const current = this.sessionSignal();
+    if (!current) {
+      return;
+    }
+    const next: SessionData = { ...current, ...changes };
+    this.sessionSignal.set(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Storage unavailable — the in-memory session still updates.
+    }
   }
 
   /** The bearer token, or null when signed out. */
