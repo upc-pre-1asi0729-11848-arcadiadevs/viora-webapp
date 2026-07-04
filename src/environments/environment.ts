@@ -70,12 +70,12 @@ export const environment = {
     auth: '/auth',
   },
 
-  // Cloudinary unsigned upload for profile photos. Create an *unsigned* upload
-  // preset in your Cloudinary console and set both values (real values live in
-  // environment.development.ts, which is gitignored).
+  // Cloudinary unsigned upload for profile photos. The cloud name and unsigned
+  // preset are public (they travel in the browser on every unsigned upload), so
+  // they live here in the committed env that the production build uses.
   cloudinary: {
-    cloudName: 'YOUR_CLOUDINARY_CLOUD_NAME',
-    uploadPreset: 'YOUR_UNSIGNED_UPLOAD_PRESET',
+    cloudName: 'dk4qjvqgo',
+    uploadPreset: 'viora_profile_unsigned',
   },
 
   mapbox: {
