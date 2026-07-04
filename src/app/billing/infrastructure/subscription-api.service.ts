@@ -44,7 +44,9 @@ export class SubscriptionApiService extends BaseApi {
 
   getSubscription(): Observable<Subscription> {
     return this.http
-      .get<SubscriptionResource>(this.subscriptionsEndpoint.resourceUrl('me'))
+      .get<SubscriptionResource>(this.subscriptionsEndpoint.resourceUrl('me'), {
+        params: this.currentUserParams(),
+      })
       .pipe(map((resource) => SubscriptionAssembler.toEntity(resource)));
   }
 
@@ -74,6 +76,7 @@ export class SubscriptionApiService extends BaseApi {
       .patch<SubscriptionResource>(
         this.subscriptionsEndpoint.resourceUrl('me'),
         { status: 'CANCELED' },
+        { params: this.currentUserParams() },
       )
       .pipe(map((resource) => SubscriptionAssembler.toEntity(resource)));
   }

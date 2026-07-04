@@ -9,8 +9,7 @@ import { ProfileAssembler, ProfileResource, UpdateProfileRequest } from './profi
 
 /**
  * Infrastructure gateway for the Profile bounded context (Profile & Asset
- * Management), served by the real Viora Platform backend. The account holder's
- * profile is a real aggregate addressed by the owning `userId`.
+ * Management), served by the real Viora Platform backend.
  *
  * @class ProfileApiService
  * @extends BaseApi
@@ -25,7 +24,9 @@ export class ProfileApiService extends BaseApi {
    */
   getProfile(): Observable<UserProfile> {
     return this.http
-      .get<ProfileResource>(this.profilesEndpoint.resourceUrl('me'))
+      .get<ProfileResource>(this.profilesEndpoint.resourceUrl('me'), {
+        params: this.currentUserParams(),
+      })
       .pipe(map((resource) => ProfileAssembler.toEntityFromResource(resource)));
   }
 
@@ -36,7 +37,9 @@ export class ProfileApiService extends BaseApi {
    */
   updateProfile(changes: UpdateProfileRequest): Observable<UserProfile> {
     return this.http
-      .put<ProfileResource>(this.profilesEndpoint.resourceUrl('me'), changes)
+      .put<ProfileResource>(this.profilesEndpoint.resourceUrl('me'), changes, {
+        params: this.currentUserParams(),
+      })
       .pipe(map((resource) => ProfileAssembler.toEntityFromResource(resource)));
   }
 }

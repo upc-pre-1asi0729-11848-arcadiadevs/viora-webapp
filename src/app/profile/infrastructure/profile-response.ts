@@ -15,7 +15,7 @@ export interface ProfileResource {
   photoUrl: string | null;
 }
 
-/** Request body for `PUT /profiles/me` (owning user comes from the token). */
+/** Request body for `PUT /profiles/me`; the owning user id travels as a query param. */
 export interface UpdateProfileRequest {
   fullName: string;
   email: string;

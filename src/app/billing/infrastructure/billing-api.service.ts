@@ -32,7 +32,9 @@ export class BillingApiService extends BaseApi {
   /** Fetches (or provisions on first access) the active user's referral code. */
   getReferralCode(): Observable<ReferralCode> {
     return this.http
-      .get<ReferralCodeResource>(this.referralsEndpoint.resourceUrl('me'))
+      .get<ReferralCodeResource>(this.referralsEndpoint.resourceUrl('me'), {
+        params: this.currentUserParams(),
+      })
       .pipe(map((resource) => ReferralCodeAssembler.toEntityFromResource(resource)));
   }
 
