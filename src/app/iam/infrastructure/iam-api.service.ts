@@ -26,22 +26,30 @@ export class IamApiService extends BaseApi {
   /** Lists the active user's signed-in sessions. */
   getSessions(): Observable<UserSession[]> {
     return this.http
-      .get<UserSessionResource[]>(this.sessionsUrl())
+      .get<UserSessionResource[]>(this.sessionsUrl(), {
+        params: this.currentUserParams(),
+      })
       .pipe(map((resources) => UserSessionAssembler.toEntitiesFromResources(resources ?? [])));
   }
 
   /** Revokes (signs out) a session. Errors are surfaced to callers. */
   revokeSession(sessionId: number | string): Observable<unknown> {
-    return this.http.delete(`${this.sessionsUrl()}/${sessionId}`);
+    return this.http.delete(`${this.sessionsUrl()}/${sessionId}`, {
+      params: this.currentUserParams(),
+    });
   }
 
   /** Changes the active user's password. Errors are surfaced to callers. */
   changePassword(request: ChangePasswordRequest): Observable<unknown> {
-    return this.http.put(`${this.usersEndpoint.resourceUrl('me')}/password`, request);
+    return this.http.put(`${this.usersEndpoint.resourceUrl('me')}/password`, request, {
+      params: this.currentUserParams(),
+    });
   }
 
   /** Permanently deletes the active user's account (Danger zone). */
   deleteAccount(): Observable<unknown> {
-    return this.http.delete(this.usersEndpoint.resourceUrl('me'));
+    return this.http.delete(this.usersEndpoint.resourceUrl('me'), {
+      params: this.currentUserParams(),
+    });
   }
 }

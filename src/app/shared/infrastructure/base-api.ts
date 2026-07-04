@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { environment } from '../../../environments/environment';
 
+import { ActiveSessionService } from './active-session.service';
 import { BaseApiEndpoint } from './base-api-endpoint';
 import {
   CollectionResponse,
@@ -15,12 +16,13 @@ export type ApiQueryParams = Record<
 >;
 
 /**
- * Base for Platform API gateways. Identity is no longer sent by the client: the
- * backend derives the user from the JWT (the auth interceptor attaches it), so
- * requests carry no userId. Current-user resources are addressed as `/me`.
+ * Base for Platform API gateways. The auth interceptor attaches the JWT to
+ * Platform calls; endpoints that still require an explicit current-user id can
+ * source it from the active session without changing feature-store logic.
  */
 export abstract class BaseApi {
   protected readonly http = inject(HttpClient);
+  private readonly activeSession = inject(ActiveSessionService);
   protected readonly baseUrl = environment.vioraPlatformApiUrl;
 
   protected endpoint(path: string): BaseApiEndpoint {
@@ -37,6 +39,13 @@ export abstract class BaseApi {
     });
 
     return httpParams;
+  }
+
+  protected currentUserParams(params: ApiQueryParams = {}): HttpParams {
+    return this.queryParams({
+      userId: this.activeSession.userId,
+      ...params,
+    });
   }
 
   protected collectionFrom<TResource, TKey extends string>(
