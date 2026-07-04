@@ -1,50 +1,92 @@
-<section class="auth-shell">
-  <form class="auth-card auth-form" (submit)="submit(); $event.preventDefault()">
-    <div class="auth-brand">
-      <img src="/assets/icons/dashboard/viora-isotipo-green.png" alt="Viora" />
-      <strong>Viora</strong>
-    </div>
+<section class="auth-shell login-shell">
+  <div class="login-backdrop" aria-hidden="true">
+    <img [src]="carouselSlides[activeSlide()].src" alt="" />
+  </div>
 
-    <h1 class="auth-title">Welcome back</h1>
-    <p class="auth-subtitle">Sign in to monitor your groves, alerts and interventions.</p>
+  <div class="login-stage">
+    <aside class="login-story" aria-label="Viora monitoring highlights">
+      <div class="login-story-slide" aria-hidden="true">
+        @for (slide of carouselSlides; track slide.src; let index = $index) {
+          <img [src]="slide.src" alt="" [class.is-active]="activeSlide() === index" />
+        }
+      </div>
 
-    @if (auth.error()) {
-      <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
-    }
-    @if (auth.info()) {
-      <p class="auth-info"><mat-icon>check_circle</mat-icon> {{ auth.info() }}</p>
-    }
+      <a class="login-back-link" href="https://viora-website.vercel.app/">
+        Back to website
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+      </a>
 
-    <label class="field">
-      <span>Email</span>
-      <input
-        type="email"
-        autocomplete="email"
-        placeholder="you@yourfarm.com"
-        [value]="email()"
-        (input)="email.set($any($event.target).value)" />
-    </label>
+      <div class="login-story-brand">
+        <img src="/assets/icons/dashboard/viora-isotipo-white.png" alt="" />
+        <strong>Viora</strong>
+      </div>
 
-    <label class="field">
-      <span>Password</span>
-      <input
-        type="password"
-        autocomplete="current-password"
-        placeholder="Your password"
-        [value]="password()"
-        (input)="password.set($any($event.target).value)" />
-    </label>
+      <div class="login-story-copy">
+        <span>Satellite monitoring</span>
+        <h2>Every hectare, under control.</h2>
+        <p>Track NDVI, climate signals and field alerts from one calm workspace.</p>
+        <div class="login-story-dots" aria-label="Carousel images">
+          @for (slide of carouselSlides; track slide.src; let index = $index) {
+            <button
+              type="button"
+              [class.is-active]="activeSlide() === index"
+              [attr.aria-label]="'Show ' + slide.label"
+              [attr.aria-pressed]="activeSlide() === index"
+              (click)="selectSlide(index)"></button>
+          }
+        </div>
+      </div>
+    </aside>
 
-    @if (auth.needsVerification()) {
-      <button type="button" class="auth-link-button" (click)="resend()">
-        Resend the verification email
+    <form class="auth-card auth-form login-card" (submit)="submit(); $event.preventDefault()">
+      <div class="auth-brand login-card-brand">
+        <img src="/assets/icons/dashboard/viora-isotipo-green.png" alt="Viora" />
+        <strong>Viora</strong>
+      </div>
+
+      <div class="login-heading">
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-subtitle">Sign in to monitor your groves, alerts and interventions.</p>
+      </div>
+
+      @if (auth.error()) {
+        <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
+      }
+      @if (auth.info()) {
+        <p class="auth-info"><mat-icon>check_circle</mat-icon> {{ auth.info() }}</p>
+      }
+
+      <label class="field">
+        <span>Email</span>
+        <input
+          type="email"
+          autocomplete="email"
+          placeholder="you@yourfarm.com"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)" />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input
+          type="password"
+          autocomplete="current-password"
+          placeholder="Your password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)" />
+      </label>
+
+      @if (auth.needsVerification()) {
+        <button type="button" class="auth-link-button" (click)="resend()">
+          Resend the verification email
+        </button>
+      }
+
+      <button type="submit" class="auth-submit" [disabled]="!canSubmit">
+        {{ auth.busy() ? 'Signing in...' : 'Sign in' }}
       </button>
-    }
 
-    <button type="submit" class="auth-submit" [disabled]="!canSubmit">
-      {{ auth.busy() ? 'Signing in…' : 'Sign in' }}
-    </button>
-
-    <p class="auth-foot">New to Viora? <a routerLink="/register">Create an account</a></p>
-  </form>
+      <p class="auth-foot">New to Viora? <a routerLink="/register">Create an account</a></p>
+    </form>
+  </div>
 </section>
