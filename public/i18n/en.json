@@ -787,6 +787,14 @@
       "save": "Save expense"
     }
   },
+  "maps": {
+    "unavailable": "Map unavailable",
+    "noNearbySignals": "No nearby signals within radius",
+    "noRiskSignals": "No risk signals on this plot",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
   "myPlots": {
     "overview": "Overview",
     "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",
@@ -991,6 +999,7 @@
   "common": {
     "updated": "Updated",
     "loading": "Loading",
+    "inProgress": "In progress",
     "risk": "Risk",
     "backToDashboard": "Back to dashboard",
     "back": "Back",

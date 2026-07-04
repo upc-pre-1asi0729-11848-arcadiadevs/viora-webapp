@@ -787,6 +787,14 @@
       "save": "Guardar gasto"
     }
   },
+  "maps": {
+    "unavailable": "Mapa no disponible",
+    "noNearbySignals": "No hay señales cercanas dentro del radio",
+    "noRiskSignals": "No hay señales de riesgo en esta parcela",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja"
+  },
   "myPlots": {
     "overview": "Resumen",
     "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",
@@ -991,6 +999,7 @@
   "common": {
     "updated": "Actualizado",
     "loading": "Cargando",
+    "inProgress": "En progreso",
     "risk": "Riesgo",
     "backToDashboard": "Volver al dashboard",
     "back": "Atrás",
