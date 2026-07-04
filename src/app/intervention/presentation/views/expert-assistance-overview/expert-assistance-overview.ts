@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -30,7 +31,7 @@ type ModalStep = 'form' | 'success' | null;
 @Component({
   selector: 'app-expert-assistance-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, DashboardToolbar],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, DashboardToolbar, TranslatePipe],
   templateUrl: './expert-assistance-overview.html',
   styleUrl: './expert-assistance-overview.css',
 })
@@ -42,8 +43,8 @@ export class ExpertAssistanceOverviewView implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
-    { label: 'Expert Assistance', disabled: true },
-    { label: 'Overview', disabled: true },
+    { label: 'Expert Assistance', labelKey: 'assistance.breadcrumb.expertAssistance', disabled: true },
+    { label: 'Overview', labelKey: 'assistance.breadcrumb.overview', disabled: true },
   ];
 
   protected readonly plots = signal<Plot[]>([]);

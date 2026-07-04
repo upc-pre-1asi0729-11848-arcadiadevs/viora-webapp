@@ -233,6 +233,69 @@
   color: #8a8f8b;
 }
 
+/* No-plots onboarding CTA — the dashboard's primary "create your first plot"
+   entry point, so it reads as an invitation rather than a broken/empty widget. */
+.empty-state.onboarding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  gap: 6px;
+}
+
+.empty-icon-shell {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: #efe9df;
+}
+
+.empty-icon-shell img {
+  width: 26px;
+  height: 26px;
+  opacity: 0.7;
+}
+
+.empty-title {
+  margin: 0;
+  color: #1F2C26;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.empty-description {
+  max-width: 320px;
+  margin: 0;
+  color: #8a8f8b;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.empty-cta {
+  margin-top: 14px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  background: #1F3D2B;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.empty-cta:hover {
+  background: #2E4A3A;
+}
+
 @media (max-width: 1100px) {
   .plot-overview-card {
     height: auto;

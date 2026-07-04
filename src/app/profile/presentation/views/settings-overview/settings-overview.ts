@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { ActiveSessionService } from '../../../../shared/infrastructure/active-session.service';
 import { CloudinaryService } from '../../../../shared/infrastructure/cloudinary.service';
@@ -27,7 +28,7 @@ type SettingsTab = 'profile' | 'referrals' | 'security';
 
 interface SettingsTabDef {
   id: SettingsTab;
-  label: string;
+  labelKey: string;
   icon: string;
 }
 
@@ -39,7 +40,7 @@ interface PasswordMessage {
 @Component({
   selector: 'app-settings-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
   templateUrl: './settings-overview.html',
   styleUrl: './settings-overview.css',
 })
@@ -53,15 +54,15 @@ export class SettingsOverviewView implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly tabs: SettingsTabDef[] = [
-    { id: 'profile', label: 'Profile', icon: 'person' },
-    { id: 'referrals', label: 'Referrals', icon: 'card_giftcard' },
-    { id: 'security', label: 'Security', icon: 'shield' },
+    { id: 'profile', labelKey: 'settingsPage.tabs.profile', icon: 'person' },
+    { id: 'referrals', labelKey: 'settingsPage.tabs.referrals', icon: 'card_giftcard' },
+    { id: 'security', labelKey: 'settingsPage.tabs.security', icon: 'shield' },
   ];
 
   protected readonly activeTab = signal<SettingsTab>('profile');
   private readonly loadedTabs = new Set<SettingsTab>();
 
-  protected readonly languageOptions = ['English', 'Español', 'Português'];
+  protected readonly languageOptions = ['English', 'Español'];
 
   // ----- Profile draft -----
   protected readonly fullName = signal('');
@@ -91,11 +92,11 @@ export class SettingsOverviewView implements OnInit {
 
   /** Viora-adapted referral coupon terms (presentation legal copy). */
   protected readonly referralTerms: string[] = [
-    'Valid for one subscription discount per completed referral — the invited producer must finish plot onboarding and connect at least one IoT device.',
-    'The discount applies automatically to your next billing cycle once the referral qualifies.',
-    'You can hold a maximum of 5 active referral coupons per account at any time.',
-    'Not combinable with other Subscription promotions or annual-billing discounts.',
-    'Viora may modify or revoke referral coupons in cases of suspected abuse or fraudulent referrals.',
+    'settingsPage.referralTerms.one',
+    'settingsPage.referralTerms.two',
+    'settingsPage.referralTerms.three',
+    'settingsPage.referralTerms.four',
+    'settingsPage.referralTerms.five',
   ];
 
   // ----- Security -----
@@ -109,8 +110,8 @@ export class SettingsOverviewView implements OnInit {
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => {
     const current = this.tabs.find((tab) => tab.id === this.activeTab());
     return [
-      { label: 'Settings', disabled: true },
-      { label: current?.label ?? 'Profile', disabled: true },
+      { label: 'Settings', labelKey: 'settingsPage.breadcrumb', disabled: true },
+      { label: 'Profile', labelKey: current?.labelKey ?? 'settingsPage.tabs.profile', disabled: true },
     ];
   });
 

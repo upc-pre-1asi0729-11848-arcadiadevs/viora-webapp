@@ -78,6 +78,18 @@ h2 {
   font-size: 12px;
 }
 
+/* Placeholder metric for the no-plots empty state — a muted dash that keeps the
+   card's visual rhythm while it waits for its first plot to report data. */
+.empty-value {
+  display: block;
+  margin: 4px 0 12px;
+  color: #1F2C26;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1;
+}
+
 ::ng-deep mat-progress-bar {
   height: 8px !important;
   border-radius: 4px !important;

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -53,7 +54,7 @@ interface SpecialistContactView {
 @Component({
   selector: 'app-case-detail',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
   templateUrl: './case-detail.html',
   styleUrl: './case-detail.css',
 })
@@ -93,8 +94,8 @@ export class CaseDetailView implements OnInit {
   );
 
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => [
-    { label: 'Expert Assistance', route: '/assistance/expert-assistance' },
-    { label: 'Case Detail', disabled: true },
+    { label: 'Expert Assistance', labelKey: 'assistance.breadcrumb.expertAssistance', route: '/assistance/expert-assistance' },
+    { label: 'Case Detail', labelKey: 'caseDetail.breadcrumb.caseDetail', disabled: true },
     { label: this.caseCode() || '—', disabled: true },
   ]);
 

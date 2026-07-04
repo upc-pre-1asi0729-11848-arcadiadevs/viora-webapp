@@ -8,22 +8,22 @@
     @switch (state()) {
       @case ('verifying') {
         <span class="status-icon is-wait"><mat-icon>hourglass_top</mat-icon></span>
-        <h1 class="auth-title">Verifying your email…</h1>
-        <p class="auth-subtitle">One moment while we confirm your account.</p>
+        <h1 class="auth-title">{{ 'auth.verify.verifyingTitle' | translate }}</h1>
+        <p class="auth-subtitle">{{ 'auth.verify.verifyingSubtitle' | translate }}</p>
       }
       @case ('success') {
         <span class="status-icon"><mat-icon>check_circle</mat-icon></span>
-        <h1 class="auth-title">Email verified!</h1>
-        <p class="auth-subtitle">Your account is active — taking you to your workspace…</p>
+        <h1 class="auth-title">{{ 'auth.verify.successTitle' | translate }}</h1>
+        <p class="auth-subtitle">{{ 'auth.verify.successSubtitle' | translate }}</p>
       }
       @case ('error') {
         <span class="status-icon is-error"><mat-icon>link_off</mat-icon></span>
-        <h1 class="auth-title">Verification failed</h1>
+        <h1 class="auth-title">{{ 'auth.verify.errorTitle' | translate }}</h1>
         <p class="auth-subtitle">
-          {{ auth.error() || 'This verification link is invalid, expired or already used.' }}
+          {{ auth.error() || ('auth.verify.errorSubtitle' | translate) }}
         </p>
         <p class="auth-foot">
-          <a routerLink="/login">Back to sign in</a> — you can resend the email from there.
+          <a routerLink="/login">{{ 'auth.verify.backToSignIn' | translate }}</a> {{ 'auth.verify.errorFootSuffix' | translate }}
         </p>
       }
     }

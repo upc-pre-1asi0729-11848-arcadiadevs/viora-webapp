@@ -4,6 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -41,7 +42,7 @@ const ALL_PLOTS = 'all';
 @Component({
   selector: 'app-expense-history-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
   templateUrl: './expense-history-overview.html',
   styleUrl: './expense-history-overview.css',
 })
@@ -51,8 +52,8 @@ export class ExpenseHistoryOverviewView implements OnInit {
   private readonly interventionApi = inject(InterventionApiService);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
-    { label: 'Expense History', disabled: true },
-    { label: 'Overview', disabled: true },
+    { label: 'Expense History', labelKey: 'expensePage.breadcrumb.expenseHistory', disabled: true },
+    { label: 'Overview', labelKey: 'expensePage.breadcrumb.overview', disabled: true },
   ];
 
   protected readonly plots = signal<Plot[]>([]);

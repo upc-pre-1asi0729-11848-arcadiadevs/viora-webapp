@@ -21,6 +21,9 @@
         <span>{{ record.ndviChangeValueLabel }} {{ 'cards.ndvi.fromLastUpdate' | translate }}</span>
       </footer>
     }
+  } @else if (store.hasNoPlots()) {
+    <strong class="empty-value">—</strong>
+    <p class="empty-state">{{ 'cards.ndvi.empty' | translate }}</p>
   } @else {
     <div class="empty-state">{{ 'cards.ndvi.loading' | translate }}</div>
   }

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import type { Map as MapboxMap, Marker } from 'mapbox-gl';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { environment } from '../../../../../environments/environment';
 import { AlertSeverity } from '../../../domain/model/alert.entity';
@@ -37,7 +38,7 @@ const BOUNDARY_SOURCE = 'surveillance-plot-boundary';
 @Component({
   selector: 'app-surveillance-map',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './surveillance-map.html',
   styleUrl: './surveillance-map.css',
 })

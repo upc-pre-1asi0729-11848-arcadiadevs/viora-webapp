@@ -12,10 +12,10 @@
     (viewChange)="onDashboardViewChange($event)" />
 
   <section class="kpi-grid">
-    <app-overall-plot-health-card />
-    <app-ndvi-status-card />
-    <app-chill-accumulation-card />
-    <app-yield-forecast-card />
+    <app-overall-plot-health-card data-onboarding-target="overall-health" />
+    <app-ndvi-status-card data-onboarding-target="ndvi-status" />
+    <app-chill-accumulation-card data-onboarding-target="chill-accumulation" />
+    <app-yield-forecast-card data-onboarding-target="yield-forecast" />
   </section>
 
   <section class="iot-grid">
@@ -38,6 +38,7 @@
   <section class="lower-grid">
     <app-plot-overview-widget
       id="plot-overview-section"
+      data-onboarding-target="plot-overview"
       class="scroll-target" />
 
     <app-weather-summary-card
@@ -51,5 +52,7 @@
   </section>
 
   <app-trend-analysis-card />
+
+  <app-dashboard-coachmarks />
 
 </section>

@@ -3,6 +3,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -29,7 +30,7 @@ const ALL_PLOTS = 'all';
 @Component({
   selector: 'app-interventions-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
   templateUrl: './interventions-overview.html',
   styleUrl: './interventions-overview.css',
 })
@@ -40,8 +41,8 @@ export class InterventionsOverviewView implements OnInit {
   private readonly agronomicApi = inject(AgronomicApiService);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
-    { label: 'Interventions', disabled: true },
-    { label: 'Overview', disabled: true },
+    { label: 'Interventions', labelKey: 'interventions.breadcrumb.interventions', disabled: true },
+    { label: 'Overview', labelKey: 'interventions.breadcrumb.overview', disabled: true },
   ];
 
   protected readonly plots = signal<Plot[]>([]);

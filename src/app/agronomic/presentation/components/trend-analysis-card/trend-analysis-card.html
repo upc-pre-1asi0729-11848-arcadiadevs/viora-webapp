@@ -51,6 +51,10 @@
       <span>{{ 'trend.observation' | translate }}: {{ statistics.observation }}</span>
       <span class="status">{{ statistics.trendLabel }}</span>
     </footer>
+  } @else if (store.hasNoPlots()) {
+    <section class="empty-state">
+      {{ 'trend.empty' | translate }}
+    </section>
   } @else {
     <section class="empty-state">
       {{ 'trend.loading' | translate }}

@@ -18,6 +18,9 @@
     } @else {
       <p>{{ forecast.description }}</p>
     }
+  } @else if (store.hasNoPlots()) {
+    <strong class="main-value">—</strong>
+    <p class="empty-state">{{ 'cards.yield.empty' | translate }}</p>
   } @else {
     <div class="empty-state">{{ 'cards.yield.loading' | translate }}</div>
   }

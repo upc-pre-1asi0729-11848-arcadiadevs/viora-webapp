@@ -9,6 +9,9 @@
     <div class="card-footer">
       {{ plot.name }} / {{ plot.areaSizeLabel }}
     </div>
+  } @else if (store.hasNoPlots()) {
+    <span class="status-pill muted">{{ 'cards.overallHealth.noData' | translate }}</span>
+    <div class="card-footer">{{ 'cards.overallHealth.empty' | translate }}</div>
   } @else if (store.overallPlotHealth(); as health) {
     <span [class]="'status-pill ' + statusClass(health.status)">{{ health.status }}</span>
     <div class="card-footer">

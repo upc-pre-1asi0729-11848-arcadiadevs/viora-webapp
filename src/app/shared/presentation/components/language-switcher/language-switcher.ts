@@ -17,7 +17,7 @@ export class LanguageSwitcher {
     },
     {
       value: 'es',
-      label: 'Espanol'
+      label: 'Español'
     }
   ];
 

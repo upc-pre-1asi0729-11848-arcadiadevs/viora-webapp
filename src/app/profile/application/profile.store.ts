@@ -53,7 +53,14 @@ export class ProfileStore {
       .getProfile()
       .pipe(finalize(() => this.loadingSignal.set(false)))
       .subscribe({
-        next: (profile) => this.profileSignal.set(profile),
+        next: (profile) => {
+          this.profileSignal.set(profile);
+          // Sign-in only carries name/email/role, not the avatar, so a fresh
+          // login starts with no photo in the session and the sidebar shows the
+          // generic one. Hydrate the session avatar from the loaded profile so
+          // the toolbar reflects the saved photo without visiting Settings.
+          this.session.updateIdentity({ photoUrl: profile.photoUrl });
+        },
         error: () => {
           // Leave the current profile in place; the view stays usable and the
           // user can retry via the header refresh.

@@ -5,6 +5,7 @@ import { take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -31,7 +32,7 @@ interface AlertAction {
 @Component({
   selector: 'app-alerts-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, CommunityRiskMap],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, CommunityRiskMap, TranslatePipe],
   templateUrl: './alerts-overview.html',
   styleUrl: './alerts-overview.css',
 })
@@ -49,8 +50,8 @@ export class AlertsOverviewView implements OnInit {
   protected readonly radiusOptions = [5, 10, 25];
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
-    { label: 'Alerts', disabled: true },
-    { label: 'Overview', disabled: true },
+    { label: 'Alerts', labelKey: 'alertsPage.breadcrumb.alerts', disabled: true },
+    { label: 'Overview', labelKey: 'alertsPage.breadcrumb.overview', disabled: true },
   ];
 
   protected readonly pageSize = 6;

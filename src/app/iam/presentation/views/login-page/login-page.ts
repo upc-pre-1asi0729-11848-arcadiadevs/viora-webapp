@@ -2,13 +2,14 @@ import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuthStore } from '../../../application/auth.store';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [MatIconModule, RouterLink],
+  imports: [MatIconModule, RouterLink, TranslatePipe],
   templateUrl: './login-page.html',
   styleUrls: ['../auth-pages.css'],
 })
