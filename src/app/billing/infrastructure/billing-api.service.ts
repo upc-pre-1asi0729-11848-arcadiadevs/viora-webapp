@@ -32,26 +32,21 @@ export class BillingApiService extends BaseApi {
   /** Fetches (or provisions on first access) the active user's referral code. */
   getReferralCode(): Observable<ReferralCode> {
     return this.http
-      .get<ReferralCodeResource>(this.referralsEndpoint.resourceUrl(this.defaultUserId))
+      .get<ReferralCodeResource>(this.referralsEndpoint.resourceUrl('me'))
       .pipe(map((resource) => ReferralCodeAssembler.toEntityFromResource(resource)));
   }
 
   /** Lists the coupons the active user holds. */
   getCoupons(): Observable<Coupon[]> {
     return this.http
-      .get<CouponResource[]>(this.couponsEndpoint.collectionUrl, {
-        params: this.queryParams({ userId: this.defaultUserId }),
-      })
+      .get<CouponResource[]>(this.couponsEndpoint.collectionUrl)
       .pipe(map((resources) => CouponAssembler.toEntitiesFromResources(resources ?? [])));
   }
 
   /** Redeems a coupon by code for the active user. Errors are surfaced to callers. */
   redeemCoupon(code: string): Observable<Coupon> {
     return this.http
-      .post<CouponResource>(this.couponRedemptionsEndpoint.collectionUrl, {
-        userId: this.defaultUserId,
-        code,
-      })
+      .post<CouponResource>(this.couponRedemptionsEndpoint.collectionUrl, { code })
       .pipe(map((resource) => CouponAssembler.toEntityFromResource(resource)));
   }
 }

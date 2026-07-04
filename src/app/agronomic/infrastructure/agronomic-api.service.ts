@@ -109,7 +109,7 @@ export class AgronomicApiService extends BaseApi {
   getPlots(): Observable<Plot[]> {
     return this.http
       .get<PlotResource[]>(this.plotsEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId({ includeCurrentImagery: true })),
+        params: this.queryParams({ includeCurrentImagery: true }),
       })
       .pipe(
         map((resources) => PlotAssembler.toEntitiesFromResources(resources ?? [])),
@@ -124,7 +124,7 @@ export class AgronomicApiService extends BaseApi {
   getMyPlotsOverview(): Observable<MyPlotsOverview | null> {
     return this.http
       .get<MyPlotsOverviewResource>(this.plotsEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId({ view: 'overview' })),
+        params: this.queryParams({ view: 'overview' }),
       })
       .pipe(
         map((resource) => MyPlotsOverviewAssembler.toEntityFromResource(resource)),
@@ -139,13 +139,8 @@ export class AgronomicApiService extends BaseApi {
    * @returns {Observable<PlotRegistration>}
    */
   createPlot(request: Omit<CreatePlotResource, 'userId'>): Observable<PlotRegistration> {
-    const body: CreatePlotResource = {
-      userId: Number(this.defaultUserId),
-      ...request,
-    };
-
     return this.http
-      .post<PlotRegistrationResource>(this.plotsEndpoint.collectionUrl, body)
+      .post<PlotRegistrationResource>(this.plotsEndpoint.collectionUrl, request)
       .pipe(map((resource) => PlotRegistrationAssembler.toEntityFromResource(resource)));
   }
 
@@ -169,7 +164,7 @@ export class AgronomicApiService extends BaseApi {
   getCurrentMonitoringSummary(): Observable<MonitoringSummary | null> {
     return this.http
       .get<MonitoringSummaryResource>(this.monitoringSummariesEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId()),
+        params: this.queryParams(),
       })
       .pipe(
         map((resource) => MonitoringSummaryAssembler.toEntityFromResource(resource)),
@@ -184,7 +179,7 @@ export class AgronomicApiService extends BaseApi {
   getPlotDetail(plotId: number | string): Observable<PlotDetail | null> {
     return this.http
       .get<PlotDetailResource>(this.plotsEndpoint.resourceUrl(plotId), {
-        params: this.queryParams(this.withUserId({ view: 'detail' })),
+        params: this.queryParams({ view: 'detail' }),
       })
       .pipe(
         map((resource) => PlotDetailAssembler.toEntityFromResource(resource)),
@@ -210,7 +205,7 @@ export class AgronomicApiService extends BaseApi {
   ingestStatistics(): Observable<void> {
     return this.http
       .post<unknown>(this.statisticsEndpoint.collectionUrl, null, {
-        params: this.queryParams(this.withUserId()),
+        params: this.queryParams(),
       })
       .pipe(
         map(() => undefined),
@@ -225,7 +220,7 @@ export class AgronomicApiService extends BaseApi {
   getPlotMonitoringSummary(plotId: number | string): Observable<MonitoringSummary | null> {
     return this.http
       .get<PlotMonitoringSummaryResource>(this.plotsEndpoint.resourceUrl(plotId), {
-        params: this.queryParams(this.withUserId({ view: 'monitoring' })),
+        params: this.queryParams({ view: 'monitoring' }),
       })
       .pipe(
         map((resource) => PlotMonitoringSummaryAssembler.toEntityFromResource(resource)),
@@ -241,10 +236,10 @@ export class AgronomicApiService extends BaseApi {
     plotId: number | string,
     timeRange: SeriesTimeRange,
   ): Observable<AgronomicStatistics | null> {
-    const params: ApiQueryParams = this.withUserId({
+    const params: ApiQueryParams = {
       view: 'series',
       timeRange: this.toBackendTimeRange(timeRange),
-    });
+    };
 
     if (plotId !== 'all') {
       params['plotId'] = plotId;
@@ -267,7 +262,7 @@ export class AgronomicApiService extends BaseApi {
   getPlotWeatherForecast(plotId: number | string): Observable<WeatherSummary | null> {
     return this.http
       .get<PlotWeatherForecastResource>(this.plotsEndpoint.resourceUrl(plotId), {
-        params: this.queryParams(this.withUserId({ view: 'weather' })),
+        params: this.queryParams({ view: 'weather' }),
       })
       .pipe(
         map((resource) => PlotWeatherForecastAssembler.toEntityFromResource(resource)),
@@ -283,7 +278,7 @@ export class AgronomicApiService extends BaseApi {
   getIotDevices(): Observable<IotDevice[]> {
     return this.http
       .get<IotDeviceResource[]>(this.iotDevicesEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId()),
+        params: this.queryParams(),
       })
       .pipe(
         map((resources) => IotDeviceAssembler.toEntitiesFromResources(resources ?? [])),
@@ -345,7 +340,7 @@ export class AgronomicApiService extends BaseApi {
   getActiveNutritionPlan(plotId: number | string): Observable<DynamicNutritionPlan | null> {
     return this.http
       .get<DynamicNutritionPlanResource[]>(this.nutritionPlansEndpoint.collectionUrl, {
-        params: this.queryParams(this.withUserId({ plotId, status: 'ACTIVE' })),
+        params: this.queryParams({ plotId, status: 'ACTIVE' }),
       })
       .pipe(
         map((resources) => DynamicNutritionPlanAssembler.toEntityFromResource(resources?.[0])),
@@ -361,7 +356,7 @@ export class AgronomicApiService extends BaseApi {
   generateNutritionPlan(plotId: number | string): Observable<DynamicNutritionPlan | null> {
     return this.http
       .post<DynamicNutritionPlanResource>(this.nutritionPlansEndpoint.collectionUrl, null, {
-        params: this.queryParams(this.withUserId({ plotId })),
+        params: this.queryParams({ plotId }),
       })
       .pipe(map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)));
   }
@@ -378,7 +373,7 @@ export class AgronomicApiService extends BaseApi {
       .patch<DynamicNutritionPlanResource>(
         this.nutritionPlansEndpoint.resourceUrl(planId),
         certification,
-        { params: this.queryParams(this.withUserId()) },
+        { params: this.queryParams() },
       )
       .pipe(map((resource) => DynamicNutritionPlanAssembler.toEntityFromResource(resource)));
   }
