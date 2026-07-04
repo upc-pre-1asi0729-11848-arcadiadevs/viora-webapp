@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -48,6 +49,7 @@ interface AutonomousDetection {
     DashboardHeader,
     DashboardToolbar,
     SurveillanceMap,
+    TranslatePipe,
   ],
   templateUrl: './pest-surveillance-overview.html',
   styleUrl: './pest-surveillance-overview.css',
@@ -58,20 +60,20 @@ export class PestSurveillanceOverviewView implements OnInit {
   private readonly agronomicApi = inject(AgronomicApiService);
 
   protected readonly breadcrumbs: DashboardBreadcrumbItem[] = [
-    { label: 'Pest Surveillance', disabled: true },
-    { label: 'Overview', disabled: true },
+    { label: 'Pest Surveillance', labelKey: 'pestPage.breadcrumb.pestSurveillance', disabled: true },
+    { label: 'Overview', labelKey: 'pestPage.breadcrumb.overview', disabled: true },
   ];
 
   protected readonly plots = signal<Plot[]>([]);
   protected readonly selectedPlotId = signal<number | string | null>(null);
 
   protected readonly mapFilter = signal<MapFilter>('all');
-  protected readonly mapFilters: { id: MapFilter; label: string }[] = [
-    { id: 'all', label: 'All signals' },
-    { id: 'manual', label: 'Manual' },
-    { id: 'satellite', label: 'Satellite' },
-    { id: 'community', label: 'Community' },
-    { id: 'autonomous', label: 'Autonomous' },
+  protected readonly mapFilters: { id: MapFilter; labelKey: string }[] = [
+    { id: 'all', labelKey: 'pestPage.mapFilters.all' },
+    { id: 'manual', labelKey: 'pestPage.mapFilters.manual' },
+    { id: 'satellite', labelKey: 'pestPage.mapFilters.satellite' },
+    { id: 'community', labelKey: 'pestPage.mapFilters.community' },
+    { id: 'autonomous', labelKey: 'pestPage.mapFilters.autonomous' },
   ];
 
   protected readonly riskZones: RiskZone[] = ['FULL_PLOT', 'PARTIAL_PLOT', 'EDGES'];

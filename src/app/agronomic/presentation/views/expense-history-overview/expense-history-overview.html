@@ -1,7 +1,7 @@
 <section class="expense-page">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs"
-    subtitle="Track climate mitigation and phytosanitary intervention costs across your plots."
+    [subtitle]="'expensePage.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
     (refresh)="refresh()" />
 
@@ -9,9 +9,9 @@
   <div class="toolbar">
     <label class="scope-field">
       <mat-icon>place</mat-icon>
-      <span class="scope-label">Plot:</span>
+      <span class="scope-label">{{ 'expensePage.plotLabel' | translate }}</span>
       <select [value]="selectedScope()" (change)="onSelectScope($any($event.target).value)">
-        <option value="all">All plots</option>
+        <option value="all">{{ 'expensePage.allPlots' | translate }}</option>
         @for (plot of plots(); track plot.id) {
           <option [value]="plot.id">{{ plot.name }}</option>
         }
@@ -19,7 +19,7 @@
     </label>
 
     <button mat-flat-button type="button" class="primary-button" (click)="openRegister()">
-      <mat-icon>add</mat-icon> Register expense
+      <mat-icon>add</mat-icon> {{ 'expensePage.registerExpense' | translate }}
     </button>
   </div>
 
@@ -27,38 +27,38 @@
   <section class="kpi-grid">
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Total expenses</h2>
-        <span class="kpi-pill kpi-pill--green">Current campaign</span>
+        <h2>{{ 'expensePage.kpi.totalTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--green">{{ 'expensePage.kpi.currentCampaign' | translate }}</span>
       </div>
       <span class="kpi-value kpi-value--primary">{{ ExpenseEntity.formatMoney(store.totalExpenses()) }}</span>
-      <p class="kpi-foot">Recorded during the current campaign.</p>
+      <p class="kpi-foot">{{ 'expensePage.kpi.totalFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Climate mitigation</h2>
+        <h2>{{ 'expensePage.kpi.climateTitle' | translate }}</h2>
       </div>
       <span class="kpi-value kpi-value--blue">{{ ExpenseEntity.formatMoney(store.climateTotal()) }}</span>
-      <p class="kpi-foot">Nutrition and corrective actions linked to phenological risk.</p>
+      <p class="kpi-foot">{{ 'expensePage.kpi.climateFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Pest intervention</h2>
+        <h2>{{ 'expensePage.kpi.pestTitle' | translate }}</h2>
       </div>
       <span class="kpi-value kpi-value--amber">{{ ExpenseEntity.formatMoney(store.pestTotal()) }}</span>
-      <p class="kpi-foot">Treatment-related costs linked to phytosanitary alerts.</p>
+      <p class="kpi-foot">{{ 'expensePage.kpi.pestFoot' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card kpi-card--danger">
       <div class="kpi-head">
-        <h2>Pending records</h2>
+        <h2>{{ 'expensePage.kpi.pendingTitle' | translate }}</h2>
         @if (store.pendingRecords() > 0) {
-          <span class="kpi-pill kpi-pill--danger">Action required</span>
+          <span class="kpi-pill kpi-pill--danger">{{ 'expensePage.kpi.actionRequired' | translate }}</span>
         }
       </div>
       <span class="kpi-value kpi-value--red">{{ store.pendingRecords() }}</span>
-      <p class="kpi-foot">Certified actions without registered expense yet.</p>
+      <p class="kpi-foot">{{ 'expensePage.kpi.pendingFoot' | translate }}</p>
     </mat-card>
   </section>
 
@@ -66,31 +66,31 @@
   <mat-card class="section-card">
     <div class="section-head">
       <div>
-        <h2 class="section-title"><mat-icon class="title-icon">description</mat-icon> Expense records</h2>
+        <h2 class="section-title"><mat-icon class="title-icon">description</mat-icon> {{ 'expensePage.records.title' | translate }}</h2>
         <p class="section-subtitle">
-          Registered costs for {{ scopeLabel() }}, linked to mitigation and intervention actions.
+          {{ 'expensePage.records.subtitle' | translate: { scope: scopeLabel() } }}
         </p>
       </div>
       <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="exportCsv()">
-        <mat-icon>download</mat-icon> Export
+        <mat-icon>download</mat-icon> {{ 'expensePage.records.export' | translate }}
       </button>
     </div>
 
     <div class="records-table">
       <div class="records-header">
-        <span>Date</span>
-        <span>Plot</span>
-        <span>Type</span>
-        <span>Linked action</span>
-        <span>Category</span>
-        <span>Amount</span>
-        <span>Status</span>
+        <span>{{ 'expensePage.records.colDate' | translate }}</span>
+        <span>{{ 'expensePage.records.colPlot' | translate }}</span>
+        <span>{{ 'expensePage.records.colType' | translate }}</span>
+        <span>{{ 'expensePage.records.colLinkedAction' | translate }}</span>
+        <span>{{ 'expensePage.records.colCategory' | translate }}</span>
+        <span>{{ 'expensePage.records.colAmount' | translate }}</span>
+        <span>{{ 'expensePage.records.colStatus' | translate }}</span>
       </div>
 
       @if (store.loading().expenses && store.expenses().length === 0) {
-        <div class="records-state">Loading expenses…</div>
+        <div class="records-state">{{ 'expensePage.records.loading' | translate }}</div>
       } @else if (store.expenses().length === 0) {
-        <div class="records-state">No expenses registered for this scope yet.</div>
+        <div class="records-state">{{ 'expensePage.records.empty' | translate }}</div>
       } @else {
         @for (expense of store.expenses(); track expense.id) {
           <div class="records-row">
@@ -110,15 +110,15 @@
   <!-- Bottom grid: financial impact + expense by plot -->
   <div class="bottom-grid">
     <mat-card class="section-card">
-      <h2 class="section-title">Financial impact summary</h2>
+      <h2 class="section-title">{{ 'expensePage.impact.title' | translate }}</h2>
 
       <div class="impact-rows">
         <div class="impact-row">
-          <span class="impact-label"><mat-icon>receipt_long</mat-icon> Campaign expense</span>
+          <span class="impact-label"><mat-icon>receipt_long</mat-icon> {{ 'expensePage.impact.campaignExpense' | translate }}</span>
           <strong>{{ ExpenseEntity.formatMoney(store.totalExpenses()) }}</strong>
         </div>
         <div class="impact-row">
-          <span class="impact-label"><mat-icon>trending_up</mat-icon> Highest cost driver</span>
+          <span class="impact-label"><mat-icon>trending_up</mat-icon> {{ 'expensePage.impact.highestDriver' | translate }}</span>
           @if (store.highestCostDriver()) {
             <span class="pill" [class]="store.highestCostDriver() === 'PEST_INTERVENTION' ? 'type-pest' : 'type-climate'">
               {{ store.highestCostDriverLabel() }}
@@ -128,11 +128,11 @@
           }
         </div>
         <div class="impact-row">
-          <span class="impact-label"><mat-icon>location_on</mat-icon> Most affected plot</span>
+          <span class="impact-label"><mat-icon>location_on</mat-icon> {{ 'expensePage.impact.mostAffected' | translate }}</span>
           <strong>{{ mostAffectedPlotName() }}</strong>
         </div>
         <div class="impact-row">
-          <span class="impact-label"><mat-icon>bar_chart</mat-icon> Registered records</span>
+          <span class="impact-label"><mat-icon>bar_chart</mat-icon> {{ 'expensePage.impact.registeredRecords' | translate }}</span>
           <strong>{{ store.expenseCount() }}</strong>
         </div>
       </div>
@@ -145,12 +145,12 @@
 
     <mat-card class="section-card">
       <div class="section-head">
-        <h2 class="section-title">Expense by plot</h2>
-        <span class="kpi-pill kpi-pill--muted">{{ expensesByPlot().length }} {{ expensesByPlot().length === 1 ? 'plot' : 'plots' }}</span>
+        <h2 class="section-title">{{ 'expensePage.byPlot.title' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--muted">{{ expensesByPlot().length }} {{ (expensesByPlot().length === 1 ? 'expensePage.byPlot.plot' : 'expensePage.byPlot.plots') | translate }}</span>
       </div>
 
       @if (expensesByPlot().length === 0) {
-        <div class="records-state">No expenses to break down yet.</div>
+        <div class="records-state">{{ 'expensePage.byPlot.empty' | translate }}</div>
       } @else {
         <div class="plot-list">
           @for (group of expensesByPlot(); track group.plotId) {
@@ -179,22 +179,22 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Register expense</h2>
-          <p class="modal-subtitle">Record a mitigation or intervention cost and link it to a plot action.</p>
+          <h2>{{ 'expensePage.modal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'expensePage.modal.subtitle' | translate }}</p>
         </div>
         <button mat-icon-button type="button" (click)="closeRegister()"><mat-icon>close</mat-icon></button>
       </div>
 
       <div class="modal-grid">
         <label class="field">
-          <span>Expense type</span>
+          <span>{{ 'expensePage.modal.expenseType' | translate }}</span>
           <select [value]="formType()" (change)="formType.set($any($event.target).value)">
-            <option value="CLIMATE_MITIGATION">Climate mitigation</option>
-            <option value="PEST_INTERVENTION">Pest intervention</option>
+            <option value="CLIMATE_MITIGATION">{{ 'expensePage.modal.climateMitigation' | translate }}</option>
+            <option value="PEST_INTERVENTION">{{ 'expensePage.modal.pestIntervention' | translate }}</option>
           </select>
         </label>
         <label class="field">
-          <span>Linked plot</span>
+          <span>{{ 'expensePage.modal.linkedPlot' | translate }}</span>
           <select [value]="formPlotId()" (change)="formPlotId.set($any($event.target).value)">
             @for (plot of plots(); track plot.id) {
               <option [value]="plot.id">{{ plot.name }}</option>
@@ -204,25 +204,25 @@
       </div>
 
       <label class="field">
-        <span>Linked action</span>
+        <span>{{ 'expensePage.modal.linkedAction' | translate }}</span>
         <input
           type="text"
-          placeholder="e.g. DN-042, INT-011 (optional)"
+          [placeholder]="'expensePage.modal.linkedActionPlaceholder' | translate"
           [value]="formLinkedAction()"
           (input)="formLinkedAction.set($any($event.target).value)" />
       </label>
 
       <div class="modal-grid">
         <label class="field">
-          <span>Category</span>
+          <span>{{ 'expensePage.modal.category' | translate }}</span>
           <select [value]="formCategory()" (change)="formCategory.set($any($event.target).value)">
-            <option value="INPUTS">Inputs</option>
-            <option value="LABOR">Labor</option>
-            <option value="SPECIALIST">Specialist</option>
+            <option value="INPUTS">{{ 'expensePage.modal.inputs' | translate }}</option>
+            <option value="LABOR">{{ 'expensePage.modal.labor' | translate }}</option>
+            <option value="SPECIALIST">{{ 'expensePage.modal.specialist' | translate }}</option>
           </select>
         </label>
         <label class="field">
-          <span>Amount (S/)</span>
+          <span>{{ 'expensePage.modal.amount' | translate }}</span>
           <input
             type="number"
             min="0"
@@ -235,31 +235,31 @@
 
       <div class="modal-grid">
         <label class="field">
-          <span>Date</span>
+          <span>{{ 'expensePage.modal.date' | translate }}</span>
           <input type="date" [value]="formDate()" (input)="formDate.set($any($event.target).value)" />
         </label>
         <label class="field">
-          <span>Payment status</span>
+          <span>{{ 'expensePage.modal.paymentStatus' | translate }}</span>
           <select [value]="formPayment()" (change)="formPayment.set($any($event.target).value)">
-            <option value="PAID">Paid</option>
-            <option value="PENDING">Pending</option>
+            <option value="PAID">{{ 'expensePage.modal.paid' | translate }}</option>
+            <option value="PENDING">{{ 'expensePage.modal.pending' | translate }}</option>
           </select>
         </label>
       </div>
 
       <label class="field">
-        <span>Note (optional)</span>
+        <span>{{ 'expensePage.modal.note' | translate }}</span>
         <textarea
           rows="3"
-          placeholder="Add a short description of the expense, supplier, or field context…"
+          [placeholder]="'expensePage.modal.notePlaceholder' | translate"
           [value]="formNote()"
           (input)="formNote.set($any($event.target).value)"></textarea>
       </label>
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeRegister()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeRegister()">{{ 'expensePage.modal.cancel' | translate }}</button>
         <button mat-flat-button type="button" class="primary-button" [disabled]="!canSave" (click)="saveExpense()">
-          <mat-icon>save</mat-icon> {{ store.loading().submitting ? 'Saving…' : 'Save expense' }}
+          <mat-icon>save</mat-icon> {{ (store.loading().submitting ? 'expensePage.modal.saving' : 'expensePage.modal.save') | translate }}
         </button>
       </div>
     </div>

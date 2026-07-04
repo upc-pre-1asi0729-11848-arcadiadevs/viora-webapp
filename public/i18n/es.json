@@ -1,4 +1,800 @@
 {
+  "auth": {
+    "backToWebsite": "Volver al sitio web",
+    "story": {
+      "eyebrow": "Monitoreo satelital",
+      "title": "Cada hectárea, bajo control.",
+      "description": "Monitorea NDVI, señales climáticas y alertas de campo desde un solo espacio de trabajo."
+    },
+    "fields": {
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@tufinca.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "ej. María Torres",
+      "newPasswordPlaceholder": "Al menos 8 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite tu contraseña",
+      "passwordsMismatch": "Las contraseñas no coinciden.",
+      "referralCode": "Código de referido (opcional)",
+      "referralCodePlaceholder": "ej. VIORA-4JYFFQ",
+      "referralHint": "¿Te invitó un socio? Su código lo recompensa cuando te unes."
+    },
+    "roles": {
+      "producer": "Productor",
+      "specialist": "Especialista"
+    },
+    "login": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión para monitorear tus cultivos, alertas e intervenciones.",
+      "resend": "Reenviar el correo de verificación",
+      "signingIn": "Iniciando sesión...",
+      "signIn": "Iniciar sesión",
+      "foot": "¿Nuevo en Viora?",
+      "createAccount": "Crear una cuenta"
+    },
+    "register": {
+      "storyEyebrow": "Elige tu espacio de trabajo",
+      "storyTitle": "Construye la cuenta de campo adecuada.",
+      "storyDescription": "Los productores monitorean parcelas y dispositivos. Los especialistas apoyan a los equipos con experiencia de campo, diagnósticos e intervenciones.",
+      "title": "Crea tu cuenta",
+      "subtitle": "Únete a Viora como Productor o Especialista.",
+      "producerDescription": "Monitorea parcelas, dispositivos IoT y alertas",
+      "specialistDescription": "Apoya a los productores con experiencia de campo",
+      "creating": "Creando cuenta...",
+      "createAccount": "Crear cuenta",
+      "foot": "¿Ya tienes una cuenta?",
+      "signIn": "Iniciar sesión",
+      "success": {
+        "title": "Revisa tu correo",
+        "sentToPrefix": "Enviamos un enlace de verificación a",
+        "sentToSuffix": "Ábrelo para activar tu cuenta; el enlace expira en 24 horas.",
+        "sending": "Enviando...",
+        "resend": "Reenviar correo",
+        "foot": "¿Ya verificaste?",
+        "signIn": "Iniciar sesión"
+      }
+    },
+    "verify": {
+      "verifyingTitle": "Verificando tu correo…",
+      "verifyingSubtitle": "Un momento mientras confirmamos tu cuenta.",
+      "successTitle": "¡Correo verificado!",
+      "successSubtitle": "Tu cuenta está activa — llevándote a tu espacio de trabajo…",
+      "errorTitle": "Verificación fallida",
+      "errorSubtitle": "Este enlace de verificación es inválido, expiró o ya fue usado.",
+      "backToSignIn": "Volver a iniciar sesión",
+      "errorFootSuffix": "— puedes reenviar el correo desde ahí."
+    }
+  },
+  "settingsPage": {
+    "headerSubtitle": "Administra tu cuenta, visibilidad en el marketplace y preferencias de seguridad.",
+    "breadcrumb": "Configuración",
+    "tabs": {
+      "profile": "Perfil",
+      "referrals": "Referidos",
+      "security": "Seguridad"
+    },
+    "profile": {
+      "personalTitle": "Información personal",
+      "personalSubtitle": "Tu nombre y datos de contacto tal como los ven los especialistas.",
+      "yourName": "Tu nombre",
+      "jobTitleFallback": "Cargo",
+      "uploading": "Subiendo…",
+      "changePhoto": "Cambiar foto",
+      "fullName": "Nombre completo",
+      "emailAddress": "Correo electrónico",
+      "phoneNumber": "Número de teléfono",
+      "jobTitle": "Cargo",
+      "language": "Idioma",
+      "saving": "Guardando…",
+      "saveChanges": "Guardar cambios",
+      "marketplaceTitle": "Visibilidad en el marketplace",
+      "marketplaceSubtitle": "Se muestra en tu tarjeta de perfil cuando los especialistas reciben tus solicitudes de asistencia.",
+      "groveFocus": "Enfoque del cultivo",
+      "groveFocusPlaceholder": "ej. Producción de aceite de oliva",
+      "location": "Ubicación",
+      "locationPlaceholder": "ej. Valle de Ica, Perú",
+      "totalArea": "Área total cultivada",
+      "totalAreaHint": "Sumada automáticamente desde tus parcelas en Mis Parcelas.",
+      "previewCaption": "Cómo ven los especialistas tu solicitud",
+      "respond": "Responder",
+      "previewNote": "Esta vista previa se actualiza en vivo mientras editas. Es exactamente lo que ve un especialista cuando envías una solicitud de asistencia desde Asistencia Experta."
+    },
+    "referrals": {
+      "title": "Referidos",
+      "subtitle": "Invita a otros a Viora. Hagamos crecer el ecosistema juntos.",
+      "headline": "Refiere a un amigo y gana un cupón de {{percent}}% de descuento.",
+      "illustrationAlt": "Refiere a un amigo a Viora",
+      "yourCode": "Tu código de referido",
+      "copied": "¡Copiado!",
+      "tapToCopy": "Toca para copiar",
+      "step1": "Envía una invitación a un socio.",
+      "step2": "Tu socio se registra.",
+      "step3": "Podrás reclamar tu cupón cuando tu socio se registre por primera vez.",
+      "shareButton": "Refiere a un socio por mensaje, correo o más"
+    },
+    "coupons": {
+      "title": "Cupones",
+      "subtitleDetail": "Detalles y condiciones del cupón.",
+      "subtitlePrompt": "¿Tienes un cupón?",
+      "back": "Volver",
+      "redeemPlaceholder": "Ingresa un código de cupón, ej. WELCOME10",
+      "redeeming": "Canjeando…",
+      "redeem": "Canjear",
+      "kind": "cupón",
+      "viewConditions": "Ver condiciones",
+      "empty": "Aún no tienes cupones. Canjea un código o refiere a un socio para ganar uno.",
+      "copyCode": "Copiar código",
+      "codeCopied": "Copiado",
+      "validUntil": "Válido hasta {{date}} o mientras haya créditos.",
+      "validWhileCredits": "Válido mientras haya créditos.",
+      "termsTitle": "Términos y condiciones"
+    },
+    "referralTerms": {
+      "one": "Válido para un descuento de suscripción por referido completado — el productor invitado debe terminar el onboarding de parcelas y conectar al menos un dispositivo IoT.",
+      "two": "El descuento se aplica automáticamente a tu próximo ciclo de facturación una vez que el referido califica.",
+      "three": "Puedes tener un máximo de 5 cupones de referido activos por cuenta a la vez.",
+      "four": "No combinable con otras promociones de suscripción o descuentos de facturación anual.",
+      "five": "Viora puede modificar o revocar cupones de referido en casos de sospecha de abuso o referidos fraudulentos."
+    },
+    "security": {
+      "passwordTitle": "Contraseña",
+      "passwordSubtitle": "Usa al menos 8 caracteres.",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmNewPassword": "Confirmar nueva contraseña",
+      "updating": "Actualizando…",
+      "updatePassword": "Actualizar contraseña",
+      "sessionsTitle": "Sesiones activas",
+      "devicesSignedIn": "{{count}} dispositivos con sesión iniciada",
+      "loadingSessions": "Cargando sesiones…",
+      "thisDevice": "Este dispositivo",
+      "signOut": "Cerrar sesión",
+      "dangerTitle": "Zona de peligro",
+      "dangerSubtitle": "Eliminar tu cuenta borra permanentemente tu perfil y acceso. Esto no se puede deshacer.",
+      "deleteAccount": "Eliminar cuenta"
+    },
+    "deleteModal": {
+      "title": "Eliminar cuenta",
+      "subtitle": "Esto elimina permanentemente tu cuenta y perfil.",
+      "body": "¿Seguro que deseas eliminar permanentemente tu cuenta? Tu perfil y acceso serán eliminados y esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "confirm": "Eliminar cuenta"
+    }
+  },
+  "subscriptionPage": {
+    "headerSubtitle": "Administra tu plan y revisa el historial de facturación.",
+    "justNow": "Justo ahora",
+    "breadcrumb": {
+      "subscription": "Suscripción",
+      "overview": "Resumen"
+    },
+    "banner": {
+      "approved": "Pago aprobado — tu plan se está actualizando. Recarga en un momento si aún no se refleja.",
+      "pending": "Pago pendiente de confirmación. Tu plan se actualiza en cuanto MercadoPago lo confirme.",
+      "failure": "No se pudo completar el pago. No se hicieron cambios — puedes intentarlo de nuevo."
+    },
+    "currentPlan": {
+      "fallbackName": "Tu plan",
+      "fallbackCaption": "Administra tu suscripción",
+      "plotsMonitored": "Parcelas monitoreadas",
+      "iotConnected": "Dispositivos IoT conectados",
+      "usedOf": "{{used}} de {{limit}} usados",
+      "changePlan": "Cambiar plan",
+      "switchToAnnual": "Cambiar a anual"
+    },
+    "plans": {
+      "title": "Planes disponibles",
+      "subtitle": "Compara niveles y cambia cuando quieras — los cambios aplican en el próximo ciclo de facturación.",
+      "currentTag": "Plan actual",
+      "currentButton": "Plan actual",
+      "opening": "Abriendo…",
+      "switchPlan": "Cambiar plan",
+      "unavailable": "Los planes no están disponibles en este momento."
+    },
+    "payment": {
+      "title": "Método de pago",
+      "default": "predeterminado",
+      "none": "Aún no hay un método de pago registrado.",
+      "update": "Actualizar método de pago"
+    },
+    "nextInvoice": {
+      "title": "Próxima factura",
+      "amountDue": "Monto a pagar",
+      "billingDate": "Fecha de facturación"
+    },
+    "cancel": {
+      "title": "Cancelar suscripción",
+      "canceledNote": "Tu suscripción terminará el {{date}}. Mantienes el acceso hasta entonces.",
+      "activeNote": "Perderás el acceso a nutrición dinámica, vigilancia de plagas y asistencia experta al final del período de facturación.",
+      "button": "Cancelar suscripción"
+    },
+    "history": {
+      "title": "Historial de facturación",
+      "subtitle": "Facturas de los últimos 6 ciclos de facturación.",
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Monto",
+      "status": "Estado",
+      "empty": "Aún no hay facturas."
+    },
+    "switchModal": {
+      "title": "Cambiar a {{name}}",
+      "subtitle": "Los cambios aplican en tu próximo ciclo de facturación.",
+      "plan": "Plan",
+      "price": "Precio",
+      "note": "Serás redirigido al checkout seguro de MercadoPago para completar el pago.",
+      "cancel": "Cancelar",
+      "redirecting": "Redirigiendo…",
+      "continue": "Continuar al pago"
+    },
+    "cancelModal": {
+      "title": "Cancelar suscripción",
+      "subtitle": "Esto se aplica al final de tu período de facturación.",
+      "bodyPrefix": "Mantendrás el acceso a",
+      "bodyMiddle": "hasta",
+      "bodySuffix": ", luego perderás nutrición dinámica, vigilancia de plagas y asistencia experta.",
+      "keepPlan": "Mantener plan",
+      "canceling": "Cancelando…",
+      "confirm": "Cancelar suscripción"
+    },
+    "paymentModal": {
+      "title": "Actualizar método de pago",
+      "subtitle": "Tu tarjeta se maneja de forma segura con MercadoPago.",
+      "body": "Viora nunca almacena los datos completos de tu tarjeta. Tu método de pago se actualiza automáticamente la próxima vez que completes un pago a través del checkout seguro de MercadoPago.",
+      "gotIt": "Entendido"
+    }
+  },
+  "assistance": {
+    "headerSubtitle": "Encuentra especialistas fitosanitarios disponibles cerca de tus alertas activas y gestiona las solicitudes de asistencia.",
+    "breadcrumb": {
+      "expertAssistance": "Asistencia Experta",
+      "overview": "Resumen"
+    },
+    "kpi": {
+      "activeCaseTitle": "Caso de asistencia activo",
+      "noActiveCase": "Sin caso activo",
+      "selectPlotHint": "Selecciona una parcela para ver su caso activo.",
+      "specialistsTitle": "Especialistas disponibles",
+      "within15km": "En 15 km",
+      "nearby": "{{count}} cercanos",
+      "specialistsFoot": "Candidatos ordenados por distancia y disponibilidad.",
+      "requestStatusTitle": "Estado de la solicitud",
+      "pending": "Pendiente",
+      "pendingCount": "{{count}} pendientes",
+      "requestStatusFoot": "Esperando respuesta del especialista.",
+      "contactTitle": "Acceso de contacto",
+      "proposalRequired": "Requiere propuesta",
+      "locked": "Bloqueado",
+      "contactFoot": "Los datos de contacto se desbloquean tras aceptar una propuesta."
+    },
+    "recommended": {
+      "title": "Especialistas recomendados",
+      "subtitle": "Candidatos disponibles cerca de {{plot}} para la alerta seleccionada.",
+      "yourPlot": "tu parcela",
+      "candidates": "{{count}} candidatos",
+      "bestMatch": "Mejor coincidencia",
+      "request": "Solicitar"
+    },
+    "requests": {
+      "title": "Mis solicitudes de asistencia",
+      "subtitle": "Sigue las solicitudes de esta parcela y su estado actual.",
+      "pendingResponse": "{{count}} esperando respuesta",
+      "colRequest": "Solicitud",
+      "colSpecialist": "Especialista",
+      "colStatus": "Estado",
+      "colLastUpdate": "Última actualización",
+      "colAction": "Acción",
+      "loading": "Cargando solicitudes…",
+      "empty": "Aún no hay solicitudes de asistencia para esta parcela.",
+      "reviewProposal": "Revisar propuesta",
+      "searchAgain": "Buscar de nuevo",
+      "viewCase": "Ver caso"
+    },
+    "modal": {
+      "title": "Solicitar asistencia experta",
+      "subtitle": "Envía una solicitud formal de intervención vinculada a la alerta seleccionada.",
+      "plot": "Parcela",
+      "relatedAlert": "Alerta relacionada",
+      "noActiveAlert": "Sin alerta activa",
+      "reason": "Motivo de la solicitud",
+      "message": "Mensaje al especialista (opcional)",
+      "messagePlaceholder": "Describe qué necesitas que el especialista evalúe durante la visita de campo…",
+      "cancel": "Cancelar",
+      "sending": "Enviando…",
+      "send": "Enviar solicitud"
+    },
+    "success": {
+      "title": "Solicitud enviada con éxito",
+      "textPrefix": "Tu solicitud de intervención fue enviada a",
+      "textSuffix": "La solicitud está pendiente de respuesta del especialista.",
+      "requestId": "ID de solicitud",
+      "specialist": "Especialista",
+      "plot": "Parcela",
+      "status": "Estado",
+      "note": "Se te notificará cuando el especialista responda. Los datos de contacto permanecen bloqueados hasta que se acepte una propuesta.",
+      "viewCase": "Ver caso",
+      "back": "Volver a asistencia experta"
+    }
+  },
+  "caseDetail": {
+    "headerSubtitle": "Sigue este caso de asistencia y coordina la visita de campo con el especialista.",
+    "notFound": "Caso no encontrado. Puede haber sido cerrado o reasignado.",
+    "backToAssistance": "Volver a asistencia experta",
+    "breadcrumb": {
+      "caseDetail": "Detalle del caso"
+    },
+    "kpi": {
+      "statusTitle": "Estado del caso",
+      "accepted": "Aceptado",
+      "declined": "Rechazado",
+      "pending": "Pendiente",
+      "specialistTitle": "Especialista",
+      "linkedAlertTitle": "Alerta vinculada",
+      "pestReport": "Reporte de síntoma de plaga",
+      "contactTitle": "Acceso de contacto",
+      "unlocked": "Desbloqueado",
+      "locked": "Bloqueado",
+      "contactAvailable": "El contacto directo ya está disponible abajo.",
+      "acceptToUnlock": "Acepta la propuesta para desbloquear el contacto directo."
+    },
+    "proposal": {
+      "title": "Propuesta de servicio",
+      "awaitingSub": "Esperando que el especialista envíe una propuesta.",
+      "readonlySub": "Propuesta de solo lectura enviada por el especialista.",
+      "received": "Recibida {{date}}",
+      "pendingTitle": "Propuesta pendiente",
+      "pendingText": "{{name}} recibió tu solicitud y está preparando una propuesta de servicio. Se te notificará cuando esté lista.",
+      "accept": "Aceptar propuesta",
+      "decline": "Rechazar propuesta",
+      "simulate": "Simular respuesta del especialista",
+      "declinedTitle": "Propuesta rechazada",
+      "declinedText": "La búsqueda de especialistas se reactivó para esta alerta. Elige otro especialista para continuar.",
+      "findAnother": "Buscar otro especialista",
+      "proposedService": "Servicio propuesto",
+      "visitDate": "Fecha estimada de visita",
+      "duration": "Duración estimada",
+      "scope": "Alcance",
+      "cost": "Costo estimado",
+      "notesTitle": "Notas del especialista",
+      "acceptedBanner": "Propuesta aceptada · visita agendada {{date}}"
+    },
+    "specialistProfile": {
+      "title": "Perfil del especialista",
+      "viewFull": "Ver perfil completo",
+      "available": "Disponible",
+      "successRate": "Tasa de éxito",
+      "casesHandled": "Casos atendidos",
+      "distance": "Distancia"
+    },
+    "contact": {
+      "unlockedTitle": "Contacto desbloqueado",
+      "unlockedSubtitle": "La propuesta fue aceptada. Coordina la visita de campo directamente con el especialista.",
+      "visitScheduled": "Visita agendada · {{date}}",
+      "accepted": "Aceptado",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "whatsapp": "WhatsApp",
+      "copy": "Copiar",
+      "open": "Abrir",
+      "infoNote": "Los datos de contacto solo son visibles para ti y permanecerán accesibles durante el caso.",
+      "openWhatsApp": "Abrir WhatsApp",
+      "backToCase": "Volver al detalle del caso",
+      "lockedHeaderTitle": "Contactar al especialista",
+      "lockedTitle": "Datos de contacto bloqueados",
+      "lockedText": "Los datos de contacto estarán disponibles tras aceptar la propuesta.",
+      "lockedButton": "Contactar al especialista"
+    },
+    "timeline": {
+      "title": "Cronología del caso"
+    },
+    "declineModal": {
+      "title": "Rechazar propuesta",
+      "subtitle": "Esto cancelará la propuesta actual y te devolverá a la búsqueda de especialistas.",
+      "warning": "Rechazar esta propuesta reactivará la búsqueda de especialistas para esta alerta. Se notificará al especialista.",
+      "proposalFrom": "Propuesta de",
+      "reason": "Motivo del rechazo (opcional)",
+      "reasonPlaceholder": "ej. Presupuesto muy alto, prefería otra disponibilidad…",
+      "cancel": "Cancelar",
+      "decline": "Rechazar propuesta"
+    }
+  },
+  "interventions": {
+    "headerSubtitle": "Sigue las intervenciones técnicas vinculadas a alertas, propuestas y prescripciones de campo.",
+    "breadcrumb": {
+      "interventions": "Intervenciones",
+      "overview": "Resumen"
+    },
+    "plotLabel": "Parcela:",
+    "allPlots": "Todas las parcelas",
+    "kpi": {
+      "totalTitle": "Total de intervenciones",
+      "totalFoot": "Casos aceptados en el ciclo de servicio técnico.",
+      "pendingCertTitle": "Certificación pendiente",
+      "actionRequired": "Acción requerida",
+      "pendingCertFoot": "Prescripciones esperando confirmación de aplicación en campo.",
+      "recoveryTitle": "Monitoreo de recuperación",
+      "recoveryFoot": "Vigor posterior a la intervención bajo observación.",
+      "closureTitle": "Cierre pendiente",
+      "closureFoot": "Casos listos para evaluación de servicio y cierre."
+    },
+    "records": {
+      "title": "Registros de intervención",
+      "subtitle": "Intervenciones técnicas vinculadas a alertas, propuestas y prescripciones de campo.",
+      "colId": "ID",
+      "colPlot": "Parcela",
+      "colAlert": "Alerta vinculada",
+      "colSpecialist": "Especialista",
+      "colStatus": "Estado",
+      "loading": "Cargando intervenciones…",
+      "empty": "Aún no hay intervenciones. Acepta una propuesta de especialista en Asistencia Experta para iniciar una.",
+      "assistanceCase": "Caso de asistencia"
+    },
+    "rx": {
+      "title": "Resumen de prescripción",
+      "subtitle": "Prescripción técnica emitida por el especialista — solo lectura.",
+      "products": "Productos"
+    },
+    "selected": {
+      "title": "Intervención seleccionada",
+      "linkedAlert": "Alerta vinculada",
+      "specialist": "Especialista",
+      "prescription": "Prescripción",
+      "estimatedCost": "Costo estimado",
+      "selectHint": "Selecciona una intervención para ver sus detalles."
+    },
+    "next": {
+      "simulate": "Siguiente: el especialista emite la prescripción técnica.",
+      "certify": "Próxima acción requerida: certifica la aplicación tras la ejecución en campo.",
+      "impact": "En monitoreo de recuperación — reporta el impacto tras el período de gracia.",
+      "close": "Listo para cerrar — evalúa el servicio y finaliza.",
+      "closed": "Esta intervención está cerrada."
+    },
+    "action": {
+      "simulate": "Simular prescripción del especialista",
+      "certify": "Certificar aplicación",
+      "impact": "Reportar impacto",
+      "close": "Cerrar intervención",
+      "closedBanner": "Servicio cerrado y evaluado."
+    },
+    "recovery": {
+      "title": "Recuperación posterior a la intervención",
+      "monitoringPeriod": "Período de monitoreo",
+      "days14": "14 días",
+      "recoveryStatus": "Estado de recuperación",
+      "serviceClosed": "Servicio cerrado",
+      "impactReported": "Impacto reportado",
+      "underObservation": "Bajo observación",
+      "note": "El vigor de la vegetación se monitorea durante el período de gracia. Reporta el impacto cuando se complete la ventana de recuperación."
+    },
+    "certifyModal": {
+      "title": "Certificar aplicación",
+      "subtitle": "Registra la ejecución en campo de la prescripción técnica.",
+      "linkedIntervention": "Intervención vinculada",
+      "prescription": "Prescripción",
+      "appliedArea": "Área aplicada",
+      "appliedAreaPlaceholder": "ej. Bloque suroeste · 0.6 ha",
+      "executionStatus": "Estado de ejecución",
+      "appliedAsPrescribed": "Aplicado según prescripción",
+      "partiallyApplied": "Aplicado parcialmente",
+      "notApplied": "No aplicado",
+      "fieldNote": "Nota de campo (opcional)",
+      "fieldNotePlaceholder": "Describe las condiciones del campo o cualquier desviación de la prescripción…",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "certify": "Certificar aplicación"
+    },
+    "impactModal": {
+      "title": "Reportar impacto de la intervención",
+      "subtitle": "Reporta si el problema fitosanitario mejoró después del período de gracia.",
+      "linkedIntervention": "Intervención vinculada",
+      "gracePeriod": "Período de gracia",
+      "days14Completed": "14 días completados",
+      "observedResult": "Resultado observado",
+      "pestReduced": "Presión de plaga reducida",
+      "symptomsPersist": "Los síntomas persisten",
+      "newSymptoms": "Nuevos síntomas detectados",
+      "notEnoughEvidence": "Aún no hay suficiente evidencia",
+      "impactLevel": "Nivel de impacto",
+      "producerAssessment": "Evaluación del productor",
+      "assessmentPlaceholder": "Describe el cambio observado en el área afectada…",
+      "cancel": "Cancelar",
+      "sending": "Enviando…",
+      "submit": "Enviar reporte de impacto"
+    },
+    "closeModal": {
+      "title": "Cerrar intervención",
+      "subtitle": "Finaliza el servicio técnico y evalúa tu experiencia con el especialista.",
+      "readyToClose": "Listo para cerrar",
+      "serviceResult": "Resultado del servicio",
+      "resolved": "Resuelto",
+      "partiallyResolved": "Parcialmente resuelto",
+      "notResolved": "No resuelto",
+      "hireAgain": "¿Contratarías a este especialista de nuevo?",
+      "yes": "Sí",
+      "no": "No",
+      "feedback": "Comentario privado (opcional)",
+      "feedbackPlaceholder": "Agrega un breve comentario sobre la calidad del servicio, puntualidad o soporte técnico…",
+      "cancel": "Cancelar",
+      "closing": "Cerrando…",
+      "close": "Cerrar intervención"
+    }
+  },
+  "alertsPage": {
+    "headerSubtitle": "Monitorea alertas activas, prioriza riesgos críticos y revisa amenazas comunitarias cercanas en tus parcelas.",
+    "breadcrumb": {
+      "alerts": "Alertas",
+      "overview": "Resumen"
+    },
+    "kpi": {
+      "activeTitle": "Alertas activas",
+      "activePill": "Alertas activas",
+      "activeCaption": "{{high}} de alta prioridad / {{critical}} críticas",
+      "criticalTitle": "Riesgo crítico",
+      "critical": "Críticas",
+      "immediate": "Requiere atención inmediata",
+      "noCritical": "Sin riesgos críticos",
+      "affectedTitle": "Parcelas afectadas",
+      "plots": "parcelas",
+      "recommendedTitle": "Acciones recomendadas",
+      "pending": "pendientes",
+      "reviewActions": "Revisar acciones"
+    },
+    "list": {
+      "title": "Lista de alertas",
+      "reportSymptoms": "Reportar síntomas",
+      "search": "Buscar",
+      "colType": "Tipo de alerta",
+      "colPlot": "Parcela",
+      "colSource": "Fuente",
+      "colSeverity": "Severidad",
+      "colDate": "Fecha",
+      "colStatus": "Estado",
+      "colAction": "Acción",
+      "loading": "Cargando alertas…",
+      "empty": "No se encontraron alertas.",
+      "resolve": "Resolver",
+      "dismiss": "Descartar"
+    },
+    "community": {
+      "title": "Riesgo comunitario",
+      "subtitle": "Difusión comunitaria preventiva y monitoreo de riesgos cercanos",
+      "noPlot": "Ninguna parcela seleccionada",
+      "riskRadius": "Radio de riesgo: {{km}}km",
+      "mapTitle": "Mapa de riesgo comunitario",
+      "mapSubtitle": "Señales cercanas anonimizadas detectadas alrededor de {{plot}} dentro de un radio de monitoreo de {{km}} km.",
+      "signalsTitle": "Señales de riesgo cercanas",
+      "within": "En un radio de {{km}}k",
+      "distanceFrom": "{{km}} km de {{plot}}"
+    },
+    "threat": {
+      "probable": "Amenaza probable",
+      "severity": "Severidad",
+      "approxDistance": "Distancia aprox.",
+      "geoRadius": "Radio geográfico"
+    },
+    "recommendation": {
+      "title": "Recomendación preventiva"
+    },
+    "quickActions": {
+      "title": "Acciones rápidas",
+      "viewPlot": "Ver detalles de la parcela",
+      "reportSymptoms": "Reportar síntomas",
+      "openNutrition": "Abrir plan de nutrición",
+      "requestExpert": "Solicitar experto"
+    },
+    "error": "Algo salió mal al cargar las alertas."
+  },
+  "pestPage": {
+    "headerSubtitle": "Monitorea señales de riesgo biológico, reportes de síntomas y detecciones autónomas de plagas en tus parcelas.",
+    "breadcrumb": {
+      "pestSurveillance": "Vigilancia de plagas",
+      "overview": "Resumen"
+    },
+    "kpi": {
+      "surveillanceTitle": "Estado de vigilancia",
+      "active": "Activa",
+      "surveillanceCaption": "Se están evaluando el satélite, los reportes manuales y las señales comunitarias.",
+      "plotsMonitored": "{{count}} parcelas monitoreadas",
+      "threatTitle": "Amenaza probable",
+      "underObservation": "Bajo observación",
+      "threatCaption": "Detectada a partir de señales de bajo vigor y reportes de síntomas recientes.",
+      "confidenceTitle": "Confianza del riesgo",
+      "mediumHigh": "Media-alta",
+      "confidenceCaption": "Calculada a partir de síntomas, variación de NDVI y señales cercanas.",
+      "exposureTitle": "Exposición comunitaria",
+      "radius": "radio de {{km}} km",
+      "signals": "{{count}} señales",
+      "exposureCaption": "Parcelas cercanas muestran patrones de riesgo relacionados dentro del radio de monitoreo.",
+      "viewCommunity": "Ver riesgo comunitario"
+    },
+    "mapFilters": {
+      "all": "Todas las señales",
+      "manual": "Manual",
+      "satellite": "Satélite",
+      "community": "Comunidad",
+      "autonomous": "Autónomas"
+    },
+    "map": {
+      "title": "Mapa de vigilancia",
+      "subtitle": "Señales de riesgo de reportes manuales, indicadores satelitales y actividad comunitaria.",
+      "activeSignals": "{{count}} señales activas",
+      "legendManual": "Reporte manual",
+      "legendSatellite": "Señal satelital",
+      "legendCommunity": "Señal comunitaria"
+    },
+    "history": {
+      "title": "Historial de reportes de síntomas",
+      "subtitle": "Reportes enviados por ti en todas las parcelas.",
+      "createReport": "Crear nuevo reporte",
+      "colId": "ID de reporte",
+      "colPlot": "Parcela",
+      "colSymptoms": "Síntomas",
+      "colResult": "Resultado",
+      "loading": "Cargando reportes…",
+      "empty": "Aún no se han enviado reportes."
+    },
+    "risk": {
+      "title": "Evaluación de riesgo actual",
+      "subtitle": "Análisis del sistema basado en los indicadores disponibles.",
+      "underObservation": "Bajo observación",
+      "probablePattern": "Patrón probable",
+      "patternValue": "Posible patrón de {{threat}}",
+      "status": "Estado",
+      "estimatedRisk": "Riesgo estimado",
+      "mediumHigh": "Media-alta",
+      "lowMedium": "Baja-media",
+      "mainEvidence": "Evidencia principal",
+      "confirmedReports": "Reportes de síntomas confirmados",
+      "totalReports": "Total de reportes de síntomas enviados",
+      "nearbySignals": "Señales comunitarias cercanas",
+      "nextStepTitle": "Próximo paso recomendado",
+      "nextStepText": "Inspecciona las hojas y monitorea las zonas de bajo vigor antes de solicitar una intervención de un especialista.",
+      "reportSymptoms": "Reportar síntomas",
+      "viewAlerts": "Ver alertas relacionadas",
+      "requestExpert": "Solicitar experto"
+    },
+    "autonomous": {
+      "title": "Detecciones autónomas",
+      "subtitle": "Señales detectadas sin reportes manuales de síntomas.",
+      "preview": "Vista previa",
+      "note": "Las detecciones automáticas aparecerán aquí cuando el monitoreo agronómico emita eventos de riesgo."
+    },
+    "error": "Algo salió mal al cargar los datos de vigilancia.",
+    "form": {
+      "title": "Reportar síntomas",
+      "plot": "Parcela",
+      "riskZone": "Zona de riesgo",
+      "observedSeverity": "Severidad observada",
+      "symptoms": "Síntomas",
+      "noCatalog": "No hay catálogo de síntomas disponible.",
+      "notes": "Notas (opcional)",
+      "cancel": "Cancelar",
+      "submitting": "Enviando…",
+      "submit": "Enviar reporte"
+    }
+  },
+  "supportPage": {
+    "headerSubtitle": "Encuentra respuestas, contacta a un especialista o revisa los acuerdos legales de tu cuenta.",
+    "breadcrumb": {
+      "support": "Soporte",
+      "overview": "Resumen"
+    },
+    "searchPlaceholder": "Busca artículos de ayuda, ej. \"umbrales NDVI\" o \"invitar a un compañero\"",
+    "expert": {
+      "title": "Asistencia Experta",
+      "subtitle": "Para problemas urgentes de campo — te conecta directamente con un especialista de guardia.",
+      "priority": "Prioridad",
+      "button": "Ir a Expertos"
+    },
+    "legal": {
+      "title": "Documentos legales",
+      "subtitle": "Términos, política de privacidad, SLA y garantía de dispositivos.",
+      "count": "{{count}} documentos",
+      "view": "Ver"
+    },
+    "tabs": {
+      "faq": "Preguntas frecuentes",
+      "legal": "Legal"
+    },
+    "categories": "CATEGORÍAS",
+    "articlesCount": "{{count}} artículos",
+    "noArticles": "Ningún artículo coincide con tu búsqueda.",
+    "readFull": "Leer documento completo",
+    "lastUpdated": "Última actualización {{date}}",
+    "footnote": "Este resumen se proporciona por conveniencia dentro de la app Viora.",
+    "close": "Cerrar"
+  },
+  "quickActions": {
+    "title": "Acciones rápidas",
+    "viewPlot": "Ver detalles de la parcela",
+    "reportSymptoms": "Reportar síntomas",
+    "openNutrition": "Abrir plan de nutrición",
+    "requestExpert": "Solicitar experto"
+  },
+  "expensePage": {
+    "headerSubtitle": "Sigue los costos de mitigación climática e intervención fitosanitaria en tus parcelas.",
+    "breadcrumb": {
+      "expenseHistory": "Historial de gastos",
+      "overview": "Resumen"
+    },
+    "plotLabel": "Parcela:",
+    "allPlots": "Todas las parcelas",
+    "registerExpense": "Registrar gasto",
+    "kpi": {
+      "totalTitle": "Gastos totales",
+      "currentCampaign": "Campaña actual",
+      "totalFoot": "Registrados durante la campaña actual.",
+      "climateTitle": "Mitigación climática",
+      "climateFoot": "Nutrición y acciones correctivas vinculadas al riesgo fenológico.",
+      "pestTitle": "Intervención de plagas",
+      "pestFoot": "Costos de tratamiento vinculados a alertas fitosanitarias.",
+      "pendingTitle": "Registros pendientes",
+      "actionRequired": "Acción requerida",
+      "pendingFoot": "Acciones certificadas sin gasto registrado aún."
+    },
+    "records": {
+      "title": "Registros de gastos",
+      "subtitle": "Costos registrados para {{scope}}, vinculados a acciones de mitigación e intervención.",
+      "export": "Exportar",
+      "colDate": "Fecha",
+      "colPlot": "Parcela",
+      "colType": "Tipo",
+      "colLinkedAction": "Acción vinculada",
+      "colCategory": "Categoría",
+      "colAmount": "Monto",
+      "colStatus": "Estado",
+      "loading": "Cargando gastos…",
+      "empty": "Aún no hay gastos registrados para este alcance."
+    },
+    "impact": {
+      "title": "Resumen de impacto financiero",
+      "campaignExpense": "Gasto de campaña",
+      "highestDriver": "Mayor generador de costo",
+      "mostAffected": "Parcela más afectada",
+      "registeredRecords": "Registros registrados"
+    },
+    "byPlot": {
+      "title": "Gasto por parcela",
+      "plot": "parcela",
+      "plots": "parcelas",
+      "empty": "Aún no hay gastos para desglosar."
+    },
+    "modal": {
+      "title": "Registrar gasto",
+      "subtitle": "Registra un costo de mitigación o intervención y vincúlalo a una acción de parcela.",
+      "expenseType": "Tipo de gasto",
+      "climateMitigation": "Mitigación climática",
+      "pestIntervention": "Intervención de plagas",
+      "linkedPlot": "Parcela vinculada",
+      "linkedAction": "Acción vinculada",
+      "linkedActionPlaceholder": "ej. DN-042, INT-011 (opcional)",
+      "category": "Categoría",
+      "inputs": "Insumos",
+      "labor": "Mano de obra",
+      "specialist": "Especialista",
+      "amount": "Monto (S/)",
+      "date": "Fecha",
+      "paymentStatus": "Estado de pago",
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "note": "Nota (opcional)",
+      "notePlaceholder": "Agrega una breve descripción del gasto, proveedor o contexto de campo…",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "save": "Guardar gasto"
+    }
+  },
+  "maps": {
+    "unavailable": "Mapa no disponible",
+    "noNearbySignals": "No hay señales cercanas dentro del radio",
+    "noRiskSignals": "No hay señales de riesgo en esta parcela",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja"
+  },
   "myPlots": {
     "overview": "Resumen",
     "subtitle": "Gestiona tus parcelas registradas, límites, estado de monitoreo y dispositivos vinculados.",
@@ -203,6 +999,7 @@
   "common": {
     "updated": "Actualizado",
     "loading": "Cargando",
+    "inProgress": "En progreso",
     "risk": "Riesgo",
     "backToDashboard": "Volver al dashboard",
     "back": "Atrás",
@@ -400,12 +1197,15 @@
     "overallHealth": {
       "title": "Salud general de parcelas",
       "status": "Estado",
-      "waiting": "Esperando resumen de la finca"
+      "waiting": "Esperando resumen de la finca",
+      "noData": "Sin datos",
+      "empty": "0 parcelas registradas"
     },
     "ndvi": {
       "title": "Estado NDVI",
       "fromLastUpdate": "desde la última actualización",
-      "loading": "Cargando registros NDVI"
+      "loading": "Cargando registros NDVI",
+      "empty": "Aparece cuando una parcela reporte datos"
     },
     "chill": {
       "title": "Acumulación de frío",
@@ -413,13 +1213,15 @@
       "disclaimerZero": "El frío se acumula solo durante las horas frías de la temporada de dormancia; los periodos cálidos no suman.",
       "remaining": "{{remaining}} para alcanzar el requerimiento.",
       "requirementMet": "Requerimiento de frío de dormancia cumplido.",
-      "loading": "Cargando acumulación de frío"
+      "loading": "Cargando acumulación de frío",
+      "empty": "Aparece cuando una parcela reporte datos"
     },
     "yield": {
       "title": "Pronóstico de rendimiento",
       "alternateBearing": "Riesgo de vecería",
       "campaign": "Estimado para la campaña actual",
-      "loading": "Cargando pronóstico de rendimiento"
+      "loading": "Cargando pronóstico de rendimiento",
+      "empty": "Aparece cuando una parcela reporte datos"
     },
     "phenological": {
       "title": "Riesgo fenológico",
@@ -459,6 +1261,11 @@
     "lastUpdate": "Última actualización registrada",
     "recommendedAction": "Acción recomendada",
     "loading": "Cargando vista de parcela...",
+    "empty": {
+      "title": "Aún no has registrado ninguna parcela",
+      "description": "Agrega tu primera finca para empezar a monitorear NDVI, acumulación de frío y lecturas de dispositivos IoT.",
+      "cta": "Agrega tu primera parcela"
+    },
     "recommendations": {
       "waiting": "Esperando datos de la parcela",
       "inspect": "Priorizar inspección de campo y plan de mitigación",
@@ -493,7 +1300,8 @@
     "temperatureAnomaly": "Anomalía de temperatura",
     "climateRisk": "Riesgo climático",
     "loading": "Cargando resumen del clima",
-    "selectPlotPrompt": "Selecciona una parcela específica para ver su resumen del clima."
+    "selectPlotPrompt": "Selecciona una parcela específica para ver su resumen del clima.",
+    "empty": "Agrega una parcela para ver su resumen del clima."
   },
   "dataFreshness": {
     "title": "Frescura de datos",
@@ -517,7 +1325,8 @@
     "selectTimeRange": "Seleccionar rango de tiempo para análisis",
     "currentValue": "Valor actual",
     "observation": "Observación",
-    "loading": "Cargando análisis de tendencia"
+    "loading": "Cargando análisis de tendencia",
+    "empty": "Aún no hay estadísticas agronómicas — se completará cuando agregues una parcela."
   },
   "alerts": {
     "title": "Alertas recientes",
@@ -527,7 +1336,8 @@
     "severity": "Severidad",
     "date": "Fecha",
     "status": "Estado",
-    "loading": "Cargando alertas recientes"
+    "loading": "Cargando alertas recientes",
+    "empty": "Sin alertas aún — aparecerán cuando tus parcelas empiecen a reportar datos."
   },
   "recommended": {
     "title": "Acciones recomendadas",
@@ -585,6 +1395,62 @@
       "warning": "Advertencia",
       "critical": "Crítico",
       "inactive": "Inactivo"
+    }
+  },
+  "onboardingChecklist": {
+    "eyebrow": "Guia de configuracion",
+    "title": "Empieza con Viora",
+    "progress": "{{done}} / {{total}}",
+    "launcher": "Setup {{done}}/{{total}}",
+    "steps": {
+      "plot": {
+        "title": "Registra tu primera parcela",
+        "description": "Dibuja el limite de tu campo para iniciar el monitoreo."
+      },
+      "dashboard": {
+        "title": "Vuelve al Dashboard",
+        "description": "Revisa la salud de tu parcela y el resumen climatico."
+      },
+      "expert": {
+        "title": "Visita Asistencia Experta",
+        "description": "Ubica donde solicitar apoyo de especialistas."
+      }
+    },
+    "actions": {
+      "continue": "Continuar setup",
+      "finish": "Finalizar setup",
+      "minimize": "Minimizar onboarding",
+      "open": "Abrir guia de setup"
+    }
+  },
+  "dashboardCoachmarks": {
+    "steps": {
+      "overall": {
+        "title": "Salud general de parcelas",
+        "description": "Resume el estado general de tus parcelas registradas para detectar rapido si la finca esta estable o requiere revision."
+      },
+      "ndvi": {
+        "title": "Estado NDVI",
+        "description": "Muestra el vigor vegetal desde imagenes satelitales. Ayuda a notar senales de estres antes de que sean visibles en campo."
+      },
+      "chill": {
+        "title": "Acumulacion de frio",
+        "description": "Sigue el progreso de horas frias de la campana, util para entender riesgo de floracion y desarrollo estacional."
+      },
+      "yield": {
+        "title": "Pronostico de rendimiento",
+        "description": "Estima la proyeccion productiva y el riesgo para conectar las senales de monitoreo con el desempeno esperado de cosecha."
+      },
+      "plotOverview": {
+        "title": "Vista de parcela",
+        "description": "Es el area principal de trabajo de la parcela seleccionada: mapa, salud, riesgo fenologico, ultimo NDVI y acciones recomendadas."
+      }
+    },
+    "actions": {
+      "back": "Atras",
+      "next": "Siguiente",
+      "done": "Listo",
+      "skip": "Saltar tour del dashboard"
     }
   }
 }

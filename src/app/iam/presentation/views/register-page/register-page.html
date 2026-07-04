@@ -7,28 +7,25 @@
       </div>
 
       <a class="login-back-link register-back-link" href="https://viora-website.vercel.app/">
-        Back to website
+        {{ 'auth.backToWebsite' | translate }}
         <mat-icon aria-hidden="true">arrow_forward</mat-icon>
       </a>
 
       <div class="register-character-wrap" aria-hidden="true">
         <div class="register-character-card is-producer">
           <img src="/assets/images/general/olive-producer-character.png" alt="" />
-          <span>Producer</span>
+          <span>{{ 'auth.roles.producer' | translate }}</span>
         </div>
         <div class="register-character-card is-specialist">
           <img src="/assets/images/general/phytosanitary-specialist-character.png" alt="" />
-          <span>Specialist</span>
+          <span>{{ 'auth.roles.specialist' | translate }}</span>
         </div>
       </div>
 
       <div class="register-story-copy">
-        <span>Choose your workspace</span>
-        <h2>Build the right field account.</h2>
-        <p>
-          Producers monitor plots and devices. Specialists support teams with field expertise,
-          diagnostics and interventions.
-        </p>
+        <span>{{ 'auth.register.storyEyebrow' | translate }}</span>
+        <h2>{{ 'auth.register.storyTitle' | translate }}</h2>
+        <p>{{ 'auth.register.storyDescription' | translate }}</p>
       </div>
     </aside>
 
@@ -40,8 +37,8 @@
         </div>
 
         <div class="register-heading">
-          <h1 class="auth-title">Create your account</h1>
-          <p class="auth-subtitle">Join Viora as a Producer or Specialist.</p>
+          <h1 class="auth-title">{{ 'auth.register.title' | translate }}</h1>
+          <p class="auth-subtitle">{{ 'auth.register.subtitle' | translate }}</p>
         </div>
 
         @if (auth.error()) {
@@ -58,8 +55,8 @@
               <img src="/assets/images/general/olive-producer-character-2.png" alt="" />
             </span>
             <span class="role-copy">
-              <strong>Producer</strong>
-              <span>Monitor plots, IoT devices and alerts</span>
+              <strong>{{ 'auth.roles.producer' | translate }}</strong>
+              <span>{{ 'auth.register.producerDescription' | translate }}</span>
             </span>
           </button>
           <button
@@ -71,29 +68,29 @@
               <img src="/assets/images/general/phytosanitary-specialist-character-2.png" alt="" />
             </span>
             <span class="role-copy">
-              <strong>Specialist</strong>
-              <span>Assist producers with field expertise</span>
+              <strong>{{ 'auth.roles.specialist' | translate }}</strong>
+              <span>{{ 'auth.register.specialistDescription' | translate }}</span>
             </span>
           </button>
         </div>
 
         <div class="register-field-grid">
           <label class="field">
-            <span>Full name</span>
+            <span>{{ 'auth.fields.fullName' | translate }}</span>
             <input
               type="text"
               autocomplete="name"
-              placeholder="e.g. Maria Torres"
+              [placeholder]="'auth.fields.fullNamePlaceholder' | translate"
               [value]="fullName()"
               (input)="fullName.set($any($event.target).value)" />
           </label>
 
           <label class="field">
-            <span>Email</span>
+            <span>{{ 'auth.fields.email' | translate }}</span>
             <input
               type="email"
               autocomplete="email"
-              placeholder="you@yourfarm.com"
+              [placeholder]="'auth.fields.emailPlaceholder' | translate"
               [value]="email()"
               (input)="email.set($any($event.target).value)" />
           </label>
@@ -101,52 +98,52 @@
 
         <div class="register-field-grid">
           <label class="field">
-            <span>Password</span>
+            <span>{{ 'auth.fields.password' | translate }}</span>
             <input
               type="password"
               autocomplete="new-password"
-              placeholder="At least 8 characters"
+              [placeholder]="'auth.fields.newPasswordPlaceholder' | translate"
               [value]="password()"
               (input)="password.set($any($event.target).value)" />
           </label>
 
           <label class="field">
-            <span>Confirm password</span>
+            <span>{{ 'auth.fields.confirmPassword' | translate }}</span>
             <input
               type="password"
               autocomplete="new-password"
-              placeholder="Repeat your password"
+              [placeholder]="'auth.fields.confirmPasswordPlaceholder' | translate"
               [value]="confirmPassword()"
               (input)="confirmPassword.set($any($event.target).value)" />
             @if (passwordsMismatch) {
-              <span class="field-hint field-hint-error">Passwords do not match.</span>
+              <span class="field-hint field-hint-error">{{ 'auth.fields.passwordsMismatch' | translate }}</span>
             }
           </label>
         </div>
 
         <label class="field">
-          <span>Referral code (optional)</span>
+          <span>{{ 'auth.fields.referralCode' | translate }}</span>
           <input
             type="text"
-            placeholder="e.g. VIORA-4JYFFQ"
+            [placeholder]="'auth.fields.referralCodePlaceholder' | translate"
             [value]="referralCode()"
             (input)="referralCode.set($any($event.target).value)" />
-          <span class="field-hint">Invited by a partner? Their code rewards them when you join.</span>
+          <span class="field-hint">{{ 'auth.fields.referralHint' | translate }}</span>
         </label>
 
         <button type="submit" class="auth-submit" [disabled]="!canSubmit">
-          {{ auth.busy() ? 'Creating account...' : 'Create account' }}
+          {{ (auth.busy() ? 'auth.register.creating' : 'auth.register.createAccount') | translate }}
         </button>
 
-        <p class="auth-foot">Already have an account? <a routerLink="/login">Sign in</a></p>
+        <p class="auth-foot">{{ 'auth.register.foot' | translate }} <a routerLink="/login">{{ 'auth.register.signIn' | translate }}</a></p>
       </form>
     } @else {
       <div class="auth-card register-card register-success-card">
         <span class="status-icon"><mat-icon>mark_email_read</mat-icon></span>
-        <h1 class="auth-title">Check your email</h1>
+        <h1 class="auth-title">{{ 'auth.register.success.title' | translate }}</h1>
         <p class="auth-subtitle">
-          We sent a verification link to <strong>{{ email() }}</strong>. Open it to activate your
-          account; the link expires in 24 hours.
+          {{ 'auth.register.success.sentToPrefix' | translate }} <strong>{{ email() }}</strong>.
+          {{ 'auth.register.success.sentToSuffix' | translate }}
         </p>
 
         @if (auth.info()) {
@@ -157,9 +154,9 @@
         }
 
         <button type="button" class="auth-submit" [disabled]="auth.busy()" (click)="resend()">
-          {{ auth.busy() ? 'Sending...' : 'Resend email' }}
+          {{ (auth.busy() ? 'auth.register.success.sending' : 'auth.register.success.resend') | translate }}
         </button>
-        <p class="auth-foot">Verified already? <a routerLink="/login">Sign in</a></p>
+        <p class="auth-foot">{{ 'auth.register.success.foot' | translate }} <a routerLink="/login">{{ 'auth.register.success.signIn' | translate }}</a></p>
       </div>
     }
   </div>

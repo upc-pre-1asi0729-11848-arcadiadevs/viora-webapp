@@ -1,4 +1,800 @@
 {
+  "auth": {
+    "backToWebsite": "Back to website",
+    "story": {
+      "eyebrow": "Satellite monitoring",
+      "title": "Every hectare, under control.",
+      "description": "Track NDVI, climate signals and field alerts from one calm workspace."
+    },
+    "fields": {
+      "email": "Email",
+      "emailPlaceholder": "you@yourfarm.com",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "e.g. Maria Torres",
+      "newPasswordPlaceholder": "At least 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "passwordsMismatch": "Passwords do not match.",
+      "referralCode": "Referral code (optional)",
+      "referralCodePlaceholder": "e.g. VIORA-4JYFFQ",
+      "referralHint": "Invited by a partner? Their code rewards them when you join."
+    },
+    "roles": {
+      "producer": "Producer",
+      "specialist": "Specialist"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to monitor your groves, alerts and interventions.",
+      "resend": "Resend the verification email",
+      "signingIn": "Signing in...",
+      "signIn": "Sign in",
+      "foot": "New to Viora?",
+      "createAccount": "Create an account"
+    },
+    "register": {
+      "storyEyebrow": "Choose your workspace",
+      "storyTitle": "Build the right field account.",
+      "storyDescription": "Producers monitor plots and devices. Specialists support teams with field expertise, diagnostics and interventions.",
+      "title": "Create your account",
+      "subtitle": "Join Viora as a Producer or Specialist.",
+      "producerDescription": "Monitor plots, IoT devices and alerts",
+      "specialistDescription": "Assist producers with field expertise",
+      "creating": "Creating account...",
+      "createAccount": "Create account",
+      "foot": "Already have an account?",
+      "signIn": "Sign in",
+      "success": {
+        "title": "Check your email",
+        "sentToPrefix": "We sent a verification link to",
+        "sentToSuffix": "Open it to activate your account; the link expires in 24 hours.",
+        "sending": "Sending...",
+        "resend": "Resend email",
+        "foot": "Verified already?",
+        "signIn": "Sign in"
+      }
+    },
+    "verify": {
+      "verifyingTitle": "Verifying your email…",
+      "verifyingSubtitle": "One moment while we confirm your account.",
+      "successTitle": "Email verified!",
+      "successSubtitle": "Your account is active — taking you to your workspace…",
+      "errorTitle": "Verification failed",
+      "errorSubtitle": "This verification link is invalid, expired or already used.",
+      "backToSignIn": "Back to sign in",
+      "errorFootSuffix": "— you can resend the email from there."
+    }
+  },
+  "settingsPage": {
+    "headerSubtitle": "Manage your account, marketplace visibility, and security preferences.",
+    "breadcrumb": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "referrals": "Referrals",
+      "security": "Security"
+    },
+    "profile": {
+      "personalTitle": "Personal information",
+      "personalSubtitle": "Your name and contact details as seen by specialists.",
+      "yourName": "Your name",
+      "jobTitleFallback": "Job title",
+      "uploading": "Uploading…",
+      "changePhoto": "Change photo",
+      "fullName": "Full name",
+      "emailAddress": "Email address",
+      "phoneNumber": "Phone number",
+      "jobTitle": "Job title",
+      "language": "Language",
+      "saving": "Saving…",
+      "saveChanges": "Save changes",
+      "marketplaceTitle": "Marketplace visibility",
+      "marketplaceSubtitle": "Shown on your profile card when specialists receive your assistance requests.",
+      "groveFocus": "Grove focus",
+      "groveFocusPlaceholder": "e.g. Olive oil production",
+      "location": "Location",
+      "locationPlaceholder": "e.g. Valle de Ica, Peru",
+      "totalArea": "Total farmed area",
+      "totalAreaHint": "Summed automatically from your plots in My Plots.",
+      "previewCaption": "How specialists see your request",
+      "respond": "Respond",
+      "previewNote": "This preview updates live as you edit. It is exactly what a specialist sees when you send an assistance request from Expert Assistance."
+    },
+    "referrals": {
+      "title": "Referrals",
+      "subtitle": "Invite others to Viora. Grow the ecosystem together.",
+      "headline": "Refer a friend and earn a {{percent}}% discount coupon.",
+      "illustrationAlt": "Refer a friend to Viora",
+      "yourCode": "Your referral code",
+      "copied": "Copied!",
+      "tapToCopy": "Tap to copy",
+      "step1": "Send an invite to a partner.",
+      "step2": "Your partner signs up.",
+      "step3": "You will be able to claim your coupon when your partner registers for the first time.",
+      "shareButton": "Refer a partner by text, email or more"
+    },
+    "coupons": {
+      "title": "Coupons",
+      "subtitleDetail": "Coupon details and conditions.",
+      "subtitlePrompt": "Do you have a coupon?",
+      "back": "Back",
+      "redeemPlaceholder": "Enter a coupon code, e.g. WELCOME10",
+      "redeeming": "Redeeming…",
+      "redeem": "Redeem",
+      "kind": "coupon",
+      "viewConditions": "View conditions",
+      "empty": "No coupons yet. Redeem a code or refer a partner to earn one.",
+      "copyCode": "Copy code",
+      "codeCopied": "Copied",
+      "validUntil": "Valid until {{date}} or while credits last.",
+      "validWhileCredits": "Valid while credits last.",
+      "termsTitle": "Terms & conditions"
+    },
+    "referralTerms": {
+      "one": "Valid for one subscription discount per completed referral — the invited producer must finish plot onboarding and connect at least one IoT device.",
+      "two": "The discount applies automatically to your next billing cycle once the referral qualifies.",
+      "three": "You can hold a maximum of 5 active referral coupons per account at any time.",
+      "four": "Not combinable with other Subscription promotions or annual-billing discounts.",
+      "five": "Viora may modify or revoke referral coupons in cases of suspected abuse or fraudulent referrals."
+    },
+    "security": {
+      "passwordTitle": "Password",
+      "passwordSubtitle": "Use at least 8 characters.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "updating": "Updating…",
+      "updatePassword": "Update password",
+      "sessionsTitle": "Active sessions",
+      "devicesSignedIn": "{{count}} devices signed in",
+      "loadingSessions": "Loading sessions…",
+      "thisDevice": "This device",
+      "signOut": "Sign out",
+      "dangerTitle": "Danger zone",
+      "dangerSubtitle": "Deleting your account permanently removes your profile and access. This cannot be undone.",
+      "deleteAccount": "Delete account"
+    },
+    "deleteModal": {
+      "title": "Delete account",
+      "subtitle": "This permanently deletes your account and profile.",
+      "body": "Are you sure you want to permanently delete your account? Your profile and access will be removed and this action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "confirm": "Delete account"
+    }
+  },
+  "subscriptionPage": {
+    "headerSubtitle": "Manage your plan and review billing history.",
+    "justNow": "Just now",
+    "breadcrumb": {
+      "subscription": "Subscription",
+      "overview": "Overview"
+    },
+    "banner": {
+      "approved": "Payment approved — your plan is being updated. Refresh in a moment if it isn't reflected yet.",
+      "pending": "Payment pending confirmation. Your plan updates as soon as MercadoPago confirms it.",
+      "failure": "The payment could not be completed. No changes were made — you can try again."
+    },
+    "currentPlan": {
+      "fallbackName": "Your plan",
+      "fallbackCaption": "Manage your subscription",
+      "plotsMonitored": "Plots monitored",
+      "iotConnected": "IoT devices connected",
+      "usedOf": "{{used}} of {{limit}} used",
+      "changePlan": "Change plan",
+      "switchToAnnual": "Switch to annual"
+    },
+    "plans": {
+      "title": "Available plans",
+      "subtitle": "Compare tiers and switch anytime — changes apply at the next billing cycle.",
+      "currentTag": "Current plan",
+      "currentButton": "Current plan",
+      "opening": "Opening…",
+      "switchPlan": "Switch plan",
+      "unavailable": "Plans are unavailable right now."
+    },
+    "payment": {
+      "title": "Payment method",
+      "default": "default",
+      "none": "No payment method on file yet.",
+      "update": "Update payment method"
+    },
+    "nextInvoice": {
+      "title": "Next invoice",
+      "amountDue": "Amount due",
+      "billingDate": "Billing date"
+    },
+    "cancel": {
+      "title": "Cancel subscription",
+      "canceledNote": "Your subscription is set to end on {{date}}. You keep access until then.",
+      "activeNote": "You'll lose access to dynamic nutrition, pest surveillance, and expert assistance at the end of the billing period.",
+      "button": "Cancel subscription"
+    },
+    "history": {
+      "title": "Billing history",
+      "subtitle": "Invoices from the last 6 billing cycles.",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "empty": "No invoices yet."
+    },
+    "switchModal": {
+      "title": "Switch to {{name}}",
+      "subtitle": "Changes apply at your next billing cycle.",
+      "plan": "Plan",
+      "price": "Price",
+      "note": "You'll be redirected to MercadoPago's secure checkout to complete the payment.",
+      "cancel": "Cancel",
+      "redirecting": "Redirecting…",
+      "continue": "Continue to payment"
+    },
+    "cancelModal": {
+      "title": "Cancel subscription",
+      "subtitle": "This takes effect at the end of your billing period.",
+      "bodyPrefix": "You'll keep access to",
+      "bodyMiddle": "until",
+      "bodySuffix": ", then lose dynamic nutrition, pest surveillance and expert assistance.",
+      "keepPlan": "Keep plan",
+      "canceling": "Canceling…",
+      "confirm": "Cancel subscription"
+    },
+    "paymentModal": {
+      "title": "Update payment method",
+      "subtitle": "Your card is handled securely by MercadoPago.",
+      "body": "Viora never stores your full card details. Your payment method updates automatically the next time you complete a payment through MercadoPago's secure checkout.",
+      "gotIt": "Got it"
+    }
+  },
+  "assistance": {
+    "headerSubtitle": "Find available phytosanitary specialists near your active alerts and manage assistance requests.",
+    "breadcrumb": {
+      "expertAssistance": "Expert Assistance",
+      "overview": "Overview"
+    },
+    "kpi": {
+      "activeCaseTitle": "Active assistance case",
+      "noActiveCase": "No active case",
+      "selectPlotHint": "Select a plot to view its active case.",
+      "specialistsTitle": "Available specialists",
+      "within15km": "Within 15 km",
+      "nearby": "{{count}} nearby",
+      "specialistsFoot": "Candidates ranked by distance and availability.",
+      "requestStatusTitle": "Request status",
+      "pending": "Pending",
+      "pendingCount": "{{count}} pending",
+      "requestStatusFoot": "Waiting for specialist response.",
+      "contactTitle": "Contact access",
+      "proposalRequired": "Proposal required",
+      "locked": "Locked",
+      "contactFoot": "Contact details unlock after proposal acceptance."
+    },
+    "recommended": {
+      "title": "Recommended specialists",
+      "subtitle": "Available candidates near {{plot}} for the selected alert.",
+      "yourPlot": "your plot",
+      "candidates": "{{count}} candidates",
+      "bestMatch": "Best match",
+      "request": "Request"
+    },
+    "requests": {
+      "title": "My assistance requests",
+      "subtitle": "Track requests for this plot and their current status.",
+      "pendingResponse": "{{count}} pending response",
+      "colRequest": "Request",
+      "colSpecialist": "Specialist",
+      "colStatus": "Status",
+      "colLastUpdate": "Last update",
+      "colAction": "Action",
+      "loading": "Loading requests…",
+      "empty": "No assistance requests for this plot yet.",
+      "reviewProposal": "Review proposal",
+      "searchAgain": "Search again",
+      "viewCase": "View case"
+    },
+    "modal": {
+      "title": "Request expert assistance",
+      "subtitle": "Send a formal intervention request linked to the selected alert.",
+      "plot": "Plot",
+      "relatedAlert": "Related alert",
+      "noActiveAlert": "No active alert",
+      "reason": "Reason for request",
+      "message": "Message to specialist (optional)",
+      "messagePlaceholder": "Describe what you need the specialist to evaluate during the field visit…",
+      "cancel": "Cancel",
+      "sending": "Sending…",
+      "send": "Send request"
+    },
+    "success": {
+      "title": "Request sent successfully",
+      "textPrefix": "Your intervention request was sent to",
+      "textSuffix": "The request is now pending specialist response.",
+      "requestId": "Request ID",
+      "specialist": "Specialist",
+      "plot": "Plot",
+      "status": "Status",
+      "note": "You'll be notified when the specialist responds. Contact details remain locked until a proposal is accepted.",
+      "viewCase": "View case",
+      "back": "Back to expert assistance"
+    }
+  },
+  "caseDetail": {
+    "headerSubtitle": "Track this assistance case and coordinate the field visit with the specialist.",
+    "notFound": "Case not found. It may have been closed or reassigned.",
+    "backToAssistance": "Back to expert assistance",
+    "breadcrumb": {
+      "caseDetail": "Case Detail"
+    },
+    "kpi": {
+      "statusTitle": "Case status",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "pending": "Pending",
+      "specialistTitle": "Specialist",
+      "linkedAlertTitle": "Linked alert",
+      "pestReport": "Pest symptom report",
+      "contactTitle": "Contact access",
+      "unlocked": "Unlocked",
+      "locked": "Locked",
+      "contactAvailable": "Direct contact is now available below.",
+      "acceptToUnlock": "Accept the proposal to unlock direct contact."
+    },
+    "proposal": {
+      "title": "Service proposal",
+      "awaitingSub": "Waiting for the specialist to submit a proposal.",
+      "readonlySub": "Read-only proposal submitted by the specialist.",
+      "received": "Received {{date}}",
+      "pendingTitle": "Proposal pending",
+      "pendingText": "{{name}} has received your request and is preparing a service proposal. You'll be notified when it's ready.",
+      "accept": "Accept proposal",
+      "decline": "Decline proposal",
+      "simulate": "Simulate specialist response",
+      "declinedTitle": "Proposal declined",
+      "declinedText": "Specialist search has been reactivated for this alert. Choose another specialist to continue.",
+      "findAnother": "Find another specialist",
+      "proposedService": "Proposed service",
+      "visitDate": "Estimated visit date",
+      "duration": "Estimated duration",
+      "scope": "Scope",
+      "cost": "Estimated cost",
+      "notesTitle": "Notes from specialist",
+      "acceptedBanner": "Proposal accepted · visit scheduled {{date}}"
+    },
+    "specialistProfile": {
+      "title": "Specialist profile",
+      "viewFull": "View full profile",
+      "available": "Available",
+      "successRate": "Success rate",
+      "casesHandled": "Cases handled",
+      "distance": "Distance"
+    },
+    "contact": {
+      "unlockedTitle": "Contact unlocked",
+      "unlockedSubtitle": "The proposal has been accepted. Coordinate the field visit directly with the specialist.",
+      "visitScheduled": "Visit scheduled · {{date}}",
+      "accepted": "Accepted",
+      "phone": "Phone",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "copy": "Copy",
+      "open": "Open",
+      "infoNote": "Contact details are only visible to you and will remain accessible for the duration of the case.",
+      "openWhatsApp": "Open WhatsApp",
+      "backToCase": "Back to case detail",
+      "lockedHeaderTitle": "Contact specialist",
+      "lockedTitle": "Contact details locked",
+      "lockedText": "Contact details will be available after accepting the proposal.",
+      "lockedButton": "Contact specialist"
+    },
+    "timeline": {
+      "title": "Case timeline"
+    },
+    "declineModal": {
+      "title": "Decline proposal",
+      "subtitle": "This will cancel the current proposal and return you to specialist search.",
+      "warning": "Declining this proposal will reactivate the specialist search for this alert. The specialist will be notified.",
+      "proposalFrom": "Proposal from",
+      "reason": "Reason for declining (optional)",
+      "reasonPlaceholder": "e.g. Budget too high, preferred a different availability…",
+      "cancel": "Cancel",
+      "decline": "Decline proposal"
+    }
+  },
+  "interventions": {
+    "headerSubtitle": "Track technical interventions linked to alerts, proposals and field prescriptions.",
+    "breadcrumb": {
+      "interventions": "Interventions",
+      "overview": "Overview"
+    },
+    "plotLabel": "Plot:",
+    "allPlots": "All plots",
+    "kpi": {
+      "totalTitle": "Total interventions",
+      "totalFoot": "Accepted cases in the technical-service lifecycle.",
+      "pendingCertTitle": "Pending certification",
+      "actionRequired": "Action required",
+      "pendingCertFoot": "Prescriptions waiting for field application confirmation.",
+      "recoveryTitle": "Recovery monitoring",
+      "recoveryFoot": "Post-intervention vigor under observation.",
+      "closureTitle": "Closure pending",
+      "closureFoot": "Cases ready for service evaluation and closure."
+    },
+    "records": {
+      "title": "Intervention records",
+      "subtitle": "Technical interventions linked to alerts, proposals and field prescriptions.",
+      "colId": "ID",
+      "colPlot": "Plot",
+      "colAlert": "Linked alert",
+      "colSpecialist": "Specialist",
+      "colStatus": "Status",
+      "loading": "Loading interventions…",
+      "empty": "No interventions yet. Accept a specialist proposal in Expert Assistance to start one.",
+      "assistanceCase": "Assistance case"
+    },
+    "rx": {
+      "title": "Prescription summary",
+      "subtitle": "Technical prescription issued by the specialist — read-only.",
+      "products": "Products"
+    },
+    "selected": {
+      "title": "Selected intervention",
+      "linkedAlert": "Linked alert",
+      "specialist": "Specialist",
+      "prescription": "Prescription",
+      "estimatedCost": "Estimated cost",
+      "selectHint": "Select an intervention to view its details."
+    },
+    "next": {
+      "simulate": "Next: the specialist issues the technical prescription.",
+      "certify": "Next required action: certify the application after field execution.",
+      "impact": "Under recovery monitoring — report the impact after the grace period.",
+      "close": "Ready to close — evaluate the service and finalize.",
+      "closed": "This intervention is closed."
+    },
+    "action": {
+      "simulate": "Simulate specialist prescription",
+      "certify": "Certify application",
+      "impact": "Report impact",
+      "close": "Close intervention",
+      "closedBanner": "Service closed and evaluated."
+    },
+    "recovery": {
+      "title": "Post-intervention recovery",
+      "monitoringPeriod": "Monitoring period",
+      "days14": "14 days",
+      "recoveryStatus": "Recovery status",
+      "serviceClosed": "Service closed",
+      "impactReported": "Impact reported",
+      "underObservation": "Under observation",
+      "note": "Vegetation vigor is monitored during the grace period. Report the impact once the recovery window completes."
+    },
+    "certifyModal": {
+      "title": "Certify application",
+      "subtitle": "Register the field execution of the technical prescription.",
+      "linkedIntervention": "Linked intervention",
+      "prescription": "Prescription",
+      "appliedArea": "Applied area",
+      "appliedAreaPlaceholder": "e.g. South-west block · 0.6 ha",
+      "executionStatus": "Execution status",
+      "appliedAsPrescribed": "Applied as prescribed",
+      "partiallyApplied": "Partially applied",
+      "notApplied": "Not applied",
+      "fieldNote": "Field note (optional)",
+      "fieldNotePlaceholder": "Describe field conditions or any deviation from the prescription…",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "certify": "Certify application"
+    },
+    "impactModal": {
+      "title": "Report intervention impact",
+      "subtitle": "Report whether the phytosanitary issue improved after the grace period.",
+      "linkedIntervention": "Linked intervention",
+      "gracePeriod": "Grace period",
+      "days14Completed": "14 days completed",
+      "observedResult": "Observed result",
+      "pestReduced": "Pest pressure reduced",
+      "symptomsPersist": "Symptoms persist",
+      "newSymptoms": "New symptoms detected",
+      "notEnoughEvidence": "Not enough evidence yet",
+      "impactLevel": "Impact level",
+      "producerAssessment": "Producer assessment",
+      "assessmentPlaceholder": "Describe the observed change in the affected area…",
+      "cancel": "Cancel",
+      "sending": "Sending…",
+      "submit": "Submit impact report"
+    },
+    "closeModal": {
+      "title": "Close intervention",
+      "subtitle": "Finalize the technical service and evaluate your experience with the specialist.",
+      "readyToClose": "Ready to close",
+      "serviceResult": "Service result",
+      "resolved": "Resolved",
+      "partiallyResolved": "Partially resolved",
+      "notResolved": "Not resolved",
+      "hireAgain": "Would you hire this specialist again?",
+      "yes": "Yes",
+      "no": "No",
+      "feedback": "Private feedback (optional)",
+      "feedbackPlaceholder": "Add a short comment about the service quality, punctuality, or technical support…",
+      "cancel": "Cancel",
+      "closing": "Closing…",
+      "close": "Close intervention"
+    }
+  },
+  "alertsPage": {
+    "headerSubtitle": "Monitor active alerts, prioritize critical risks, and review nearby community threats across your plots.",
+    "breadcrumb": {
+      "alerts": "Alerts",
+      "overview": "Overview"
+    },
+    "kpi": {
+      "activeTitle": "Active Alerts",
+      "activePill": "Active alerts",
+      "activeCaption": "{{high}} high priority / {{critical}} critical",
+      "criticalTitle": "Critical Risk",
+      "critical": "Critical",
+      "immediate": "Immediate attention required",
+      "noCritical": "No critical risks",
+      "affectedTitle": "Affected Plots",
+      "plots": "plots",
+      "recommendedTitle": "Recommended Actions",
+      "pending": "pending",
+      "reviewActions": "Review actions"
+    },
+    "list": {
+      "title": "Alerts List",
+      "reportSymptoms": "Report symptoms",
+      "search": "Search",
+      "colType": "Alert type",
+      "colPlot": "Plot",
+      "colSource": "Source",
+      "colSeverity": "Severity",
+      "colDate": "Date",
+      "colStatus": "Status",
+      "colAction": "Action",
+      "loading": "Loading alerts…",
+      "empty": "No alerts found.",
+      "resolve": "Resolve",
+      "dismiss": "Dismiss"
+    },
+    "community": {
+      "title": "Community Risk",
+      "subtitle": "Preventive community diffusion and nearby risk monitoring",
+      "noPlot": "No plot selected",
+      "riskRadius": "Risk radius: {{km}}km",
+      "mapTitle": "Community Risk Map",
+      "mapSubtitle": "Anonymized nearby signals detected around {{plot}} within a {{km}} km monitoring radius.",
+      "signalsTitle": "Nearby Risk Signals",
+      "within": "Within {{km}}k radius",
+      "distanceFrom": "{{km}} km from {{plot}}"
+    },
+    "threat": {
+      "probable": "Probable threat",
+      "severity": "Severity",
+      "approxDistance": "Approx distance",
+      "geoRadius": "Geographic radius"
+    },
+    "recommendation": {
+      "title": "Preventive Recommendation"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "viewPlot": "View plot details",
+      "reportSymptoms": "Report symptoms",
+      "openNutrition": "Open nutrition plan",
+      "requestExpert": "Request expert"
+    },
+    "error": "Something went wrong loading alerts."
+  },
+  "pestPage": {
+    "headerSubtitle": "Monitor biological risk signals, symptom reports, and autonomous pest-related detections across your plots.",
+    "breadcrumb": {
+      "pestSurveillance": "Pest Surveillance",
+      "overview": "Overview"
+    },
+    "kpi": {
+      "surveillanceTitle": "Surveillance status",
+      "active": "Active",
+      "surveillanceCaption": "Satellite, manual reports, and community signals are being evaluated.",
+      "plotsMonitored": "{{count}} plots monitored",
+      "threatTitle": "Probable threat",
+      "underObservation": "Under observation",
+      "threatCaption": "Detected from low-vigor signals and recent symptom reports.",
+      "confidenceTitle": "Risk confidence",
+      "mediumHigh": "Medium-high",
+      "confidenceCaption": "Calculated from symptoms, NDVI variation, and nearby signals.",
+      "exposureTitle": "Community exposure",
+      "radius": "{{km}} km radius",
+      "signals": "{{count}} signals",
+      "exposureCaption": "Nearby plots show related risk patterns within the monitoring radius.",
+      "viewCommunity": "View community risk"
+    },
+    "mapFilters": {
+      "all": "All signals",
+      "manual": "Manual",
+      "satellite": "Satellite",
+      "community": "Community",
+      "autonomous": "Autonomous"
+    },
+    "map": {
+      "title": "Surveillance map",
+      "subtitle": "Risk signals from manual reports, satellite indicators, and community activity.",
+      "activeSignals": "{{count}} active signals",
+      "legendManual": "Manual report",
+      "legendSatellite": "Satellite signal",
+      "legendCommunity": "Community signal"
+    },
+    "history": {
+      "title": "Symptom report history",
+      "subtitle": "Reports submitted by you across all plots.",
+      "createReport": "Create new report",
+      "colId": "Report ID",
+      "colPlot": "Plot",
+      "colSymptoms": "Symptoms",
+      "colResult": "Result",
+      "loading": "Loading reports…",
+      "empty": "No reports submitted yet."
+    },
+    "risk": {
+      "title": "Current risk evaluation",
+      "subtitle": "System analysis based on available indicators.",
+      "underObservation": "Under observation",
+      "probablePattern": "Probable pattern",
+      "patternValue": "Possible {{threat}} pattern",
+      "status": "Status",
+      "estimatedRisk": "Estimated risk",
+      "mediumHigh": "Medium-high",
+      "lowMedium": "Low-medium",
+      "mainEvidence": "Main evidence",
+      "confirmedReports": "Confirmed symptom reports",
+      "totalReports": "Total symptom reports submitted",
+      "nearbySignals": "Nearby community signals",
+      "nextStepTitle": "Recommended next step",
+      "nextStepText": "Inspect leaves and monitor low-vigor zones before requesting a specialist intervention.",
+      "reportSymptoms": "Report symptoms",
+      "viewAlerts": "View related alerts",
+      "requestExpert": "Request expert"
+    },
+    "autonomous": {
+      "title": "Autonomous detections",
+      "subtitle": "Signals detected without manual symptom reports.",
+      "preview": "Preview",
+      "note": "Automatic detections will populate here once agronomic monitoring emits risk events."
+    },
+    "error": "Something went wrong loading surveillance data.",
+    "form": {
+      "title": "Report symptoms",
+      "plot": "Plot",
+      "riskZone": "Risk zone",
+      "observedSeverity": "Observed severity",
+      "symptoms": "Symptoms",
+      "noCatalog": "No symptom catalog available.",
+      "notes": "Notes (optional)",
+      "cancel": "Cancel",
+      "submitting": "Submitting…",
+      "submit": "Submit report"
+    }
+  },
+  "supportPage": {
+    "headerSubtitle": "Find answers, reach a specialist, or review your account's legal agreements.",
+    "breadcrumb": {
+      "support": "Support",
+      "overview": "Overview"
+    },
+    "searchPlaceholder": "Search help articles, e.g. \"NDVI thresholds\" or \"invite a teammate\"",
+    "expert": {
+      "title": "Expert Assistance",
+      "subtitle": "For urgent field issues — routes directly to an on-call specialist.",
+      "priority": "Priority",
+      "button": "Go to Experts"
+    },
+    "legal": {
+      "title": "Legal documents",
+      "subtitle": "Terms, privacy policy, SLA, and device warranty.",
+      "count": "{{count}} documents",
+      "view": "View"
+    },
+    "tabs": {
+      "faq": "FAQ",
+      "legal": "Legal"
+    },
+    "categories": "CATEGORIES",
+    "articlesCount": "{{count}} articles",
+    "noArticles": "No articles match your search.",
+    "readFull": "Read full document",
+    "lastUpdated": "Last updated {{date}}",
+    "footnote": "This summary is provided for convenience within the Viora app.",
+    "close": "Close"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "viewPlot": "View plot details",
+    "reportSymptoms": "Report symptoms",
+    "openNutrition": "Open nutrition plan",
+    "requestExpert": "Request expert"
+  },
+  "expensePage": {
+    "headerSubtitle": "Track climate mitigation and phytosanitary intervention costs across your plots.",
+    "breadcrumb": {
+      "expenseHistory": "Expense History",
+      "overview": "Overview"
+    },
+    "plotLabel": "Plot:",
+    "allPlots": "All plots",
+    "registerExpense": "Register expense",
+    "kpi": {
+      "totalTitle": "Total expenses",
+      "currentCampaign": "Current campaign",
+      "totalFoot": "Recorded during the current campaign.",
+      "climateTitle": "Climate mitigation",
+      "climateFoot": "Nutrition and corrective actions linked to phenological risk.",
+      "pestTitle": "Pest intervention",
+      "pestFoot": "Treatment-related costs linked to phytosanitary alerts.",
+      "pendingTitle": "Pending records",
+      "actionRequired": "Action required",
+      "pendingFoot": "Certified actions without registered expense yet."
+    },
+    "records": {
+      "title": "Expense records",
+      "subtitle": "Registered costs for {{scope}}, linked to mitigation and intervention actions.",
+      "export": "Export",
+      "colDate": "Date",
+      "colPlot": "Plot",
+      "colType": "Type",
+      "colLinkedAction": "Linked action",
+      "colCategory": "Category",
+      "colAmount": "Amount",
+      "colStatus": "Status",
+      "loading": "Loading expenses…",
+      "empty": "No expenses registered for this scope yet."
+    },
+    "impact": {
+      "title": "Financial impact summary",
+      "campaignExpense": "Campaign expense",
+      "highestDriver": "Highest cost driver",
+      "mostAffected": "Most affected plot",
+      "registeredRecords": "Registered records"
+    },
+    "byPlot": {
+      "title": "Expense by plot",
+      "plot": "plot",
+      "plots": "plots",
+      "empty": "No expenses to break down yet."
+    },
+    "modal": {
+      "title": "Register expense",
+      "subtitle": "Record a mitigation or intervention cost and link it to a plot action.",
+      "expenseType": "Expense type",
+      "climateMitigation": "Climate mitigation",
+      "pestIntervention": "Pest intervention",
+      "linkedPlot": "Linked plot",
+      "linkedAction": "Linked action",
+      "linkedActionPlaceholder": "e.g. DN-042, INT-011 (optional)",
+      "category": "Category",
+      "inputs": "Inputs",
+      "labor": "Labor",
+      "specialist": "Specialist",
+      "amount": "Amount (S/)",
+      "date": "Date",
+      "paymentStatus": "Payment status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "note": "Note (optional)",
+      "notePlaceholder": "Add a short description of the expense, supplier, or field context…",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "save": "Save expense"
+    }
+  },
+  "maps": {
+    "unavailable": "Map unavailable",
+    "noNearbySignals": "No nearby signals within radius",
+    "noRiskSignals": "No risk signals on this plot",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
   "myPlots": {
     "overview": "Overview",
     "subtitle": "Manage your registered plots, boundaries, monitoring status, and linked devices.",
@@ -203,6 +999,7 @@
   "common": {
     "updated": "Updated",
     "loading": "Loading",
+    "inProgress": "In progress",
     "risk": "Risk",
     "backToDashboard": "Back to dashboard",
     "back": "Back",
@@ -400,12 +1197,15 @@
     "overallHealth": {
       "title": "Overall Plot Health",
       "status": "Status",
-      "waiting": "Waiting for farm summary"
+      "waiting": "Waiting for farm summary",
+      "noData": "No data",
+      "empty": "0 plots registered"
     },
     "ndvi": {
       "title": "NDVI Status",
       "fromLastUpdate": "from last update",
-      "loading": "Loading NDVI records"
+      "loading": "Loading NDVI records",
+      "empty": "Appears once a plot reports data"
     },
     "chill": {
       "title": "Chill Accumulation",
@@ -413,13 +1213,15 @@
       "disclaimerZero": "Chill builds up only during the cold hours of the dormancy season; warm periods add none.",
       "remaining": "{{remaining}} to reach the requirement.",
       "requirementMet": "Dormancy chill requirement met.",
-      "loading": "Loading chill accumulation"
+      "loading": "Loading chill accumulation",
+      "empty": "Appears once a plot reports data"
     },
     "yield": {
       "title": "Yield Forecast",
       "alternateBearing": "Risk of alternate bearing",
       "campaign": "Estimated for current campaign",
-      "loading": "Loading yield forecast"
+      "loading": "Loading yield forecast",
+      "empty": "Appears once a plot reports data"
     },
     "phenological": {
       "title": "Phenological Risk",
@@ -459,6 +1261,11 @@
     "lastUpdate": "Last recorded update",
     "recommendedAction": "Recommended action",
     "loading": "Loading plot overview...",
+    "empty": {
+      "title": "You haven't registered any plots yet",
+      "description": "Add your first finca to start tracking NDVI, chill accumulation, and IoT device readings.",
+      "cta": "Add your first plot"
+    },
     "recommendations": {
       "waiting": "Waiting for plot data",
       "inspect": "Prioritize field inspection and mitigation plan",
@@ -493,7 +1300,8 @@
     "temperatureAnomaly": "Temperature anomaly",
     "climateRisk": "Climate risk",
     "loading": "Loading weather summary",
-    "selectPlotPrompt": "Select a specific plot to see its weather summary."
+    "selectPlotPrompt": "Select a specific plot to see its weather summary.",
+    "empty": "Add a plot to see its weather summary."
   },
   "dataFreshness": {
     "title": "Data Freshness",
@@ -517,7 +1325,8 @@
     "selectTimeRange": "Select trend analysis time range",
     "currentValue": "Current value",
     "observation": "Observation",
-    "loading": "Loading trend analysis"
+    "loading": "Loading trend analysis",
+    "empty": "No agronomic statistics recorded yet — this fills in once a plot is added."
   },
   "alerts": {
     "title": "Recent Alerts",
@@ -527,7 +1336,8 @@
     "severity": "Severity",
     "date": "Date",
     "status": "Status",
-    "loading": "Loading recent alerts"
+    "loading": "Loading recent alerts",
+    "empty": "No alerts yet — alerts appear once your plots start reporting data."
   },
   "recommended": {
     "title": "Recommended Actions",
@@ -585,6 +1395,62 @@
       "warning": "Warning",
       "critical": "Critical",
       "inactive": "Inactive"
+    }
+  },
+  "onboardingChecklist": {
+    "eyebrow": "Setup guide",
+    "title": "Get started with Viora",
+    "progress": "{{done}} / {{total}}",
+    "launcher": "Setup {{done}}/{{total}}",
+    "steps": {
+      "plot": {
+        "title": "Register your first plot",
+        "description": "Draw your field boundary so monitoring can start."
+      },
+      "dashboard": {
+        "title": "Return to Dashboard",
+        "description": "Review your plot health and climate overview."
+      },
+      "expert": {
+        "title": "Visit Expert Assistance",
+        "description": "Know where to request specialist support."
+      }
+    },
+    "actions": {
+      "continue": "Continue setup",
+      "finish": "Finish setup",
+      "minimize": "Minimize onboarding",
+      "open": "Open setup guide"
+    }
+  },
+  "dashboardCoachmarks": {
+    "steps": {
+      "overall": {
+        "title": "Overall plot health",
+        "description": "This summarizes the general condition of your registered plots so you can quickly spot whether the farm is stable or needs review."
+      },
+      "ndvi": {
+        "title": "NDVI status",
+        "description": "This card shows vegetation vigor from satellite imagery. It helps you notice stress signals before they become visible in the field."
+      },
+      "chill": {
+        "title": "Chill accumulation",
+        "description": "This tracks cold-hour progress for the campaign, useful for understanding flowering risk and seasonal development."
+      },
+      "yield": {
+        "title": "Yield forecast",
+        "description": "This estimates production outlook and risk so you can connect monitoring signals with expected harvest performance."
+      },
+      "plotOverview": {
+        "title": "Plot overview",
+        "description": "This is the main working area for your selected plot: map, health status, phenological risk, latest NDVI, and recommended actions."
+      }
+    },
+    "actions": {
+      "back": "Back",
+      "next": "Next",
+      "done": "Done",
+      "skip": "Skip dashboard tour"
     }
   }
 }

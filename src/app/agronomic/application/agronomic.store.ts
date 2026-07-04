@@ -290,6 +290,15 @@ export class AgronomicStore {
 
   readonly plotsCount = computed<number>(() => (this.plotsLoaded() ? this.plots().length : 0));
 
+  /**
+   * True once the plots request has resolved AND the account owns no plots.
+   * Cards use this as the single source of truth to switch from their loading
+   * placeholder to a real empty state, so a brand-new account never sits on
+   * "Loading…" forever. While `plotsLoaded()` is still false this stays false,
+   * keeping the loading placeholder during the genuine in-flight window.
+   */
+  readonly hasNoPlots = computed<boolean>(() => this.plotsLoaded() && this.plots().length === 0);
+
   readonly hasErrors = computed<boolean>(() => this.errors().length > 0);
 
   /**
@@ -654,6 +663,11 @@ export class AgronomicStore {
         next: (registration) => {
           this.lastPlotRegistration.set(registration);
           this.plotsLoaded.set(false);
+          // Force the next dashboard refresh to re-ingest statistics so the
+          // All Plots aggregate summary (NDVI/chill/yield) picks up the brand-new
+          // plot immediately; otherwise the 30-min ingestion cooldown can leave
+          // All Plots empty until a hard reload resets the in-memory timer.
+          this.lastStatisticsSyncAt = 0;
           this.fetchMyPlotsOverview();
           onSuccess?.(registration);
         },
@@ -701,6 +715,9 @@ export class AgronomicStore {
           }
 
           this.plotsLoaded.set(false);
+          // A boundary edit changes area/NDVI, so re-ingest on next refresh to
+          // refresh the All Plots aggregate rather than serving stale figures.
+          this.lastStatisticsSyncAt = 0;
           this.fetchPlots();
           this.fetchMyPlotsOverview();
           onSuccess?.();
@@ -819,6 +836,9 @@ export class AgronomicStore {
         next: () => {
           this.evictPlotCaches(String(plotId));
           this.plotsLoaded.set(false);
+          // Re-ingest on next refresh so the All Plots aggregate no longer counts
+          // the removed plot's figures.
+          this.lastStatisticsSyncAt = 0;
           this.fetchMyPlotsOverview();
           onSuccess?.();
         },

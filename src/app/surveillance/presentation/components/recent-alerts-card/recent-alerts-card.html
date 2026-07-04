@@ -49,6 +49,11 @@
             </span>
           </article>
         }
+      } @else if (store.alertsLoaded()) {
+        <section class="empty-state">
+          <img src="/assets/icons/dashboard/megaphone-outline.svg" alt="" class="empty-icon" />
+          <span>{{ 'alerts.empty' | translate }}</span>
+        </section>
       } @else {
         <section class="empty-state">
           {{ 'alerts.loading' | translate }}

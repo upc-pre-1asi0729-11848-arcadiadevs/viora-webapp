@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import type { Map as MapboxMap, Marker } from 'mapbox-gl';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { environment } from '../../../../../environments/environment';
 import { NearbyRiskSignal } from '../../../domain/model/nearby-risk-signal.entity';
@@ -29,7 +30,7 @@ const RINGS_LAYER = 'community-risk-rings-layer';
 @Component({
   selector: 'app-community-risk-map',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './community-risk-map.html',
   styleUrl: './community-risk-map.css',
 })

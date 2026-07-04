@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { ActiveSessionService } from '../../../infrastructure/active-session.service';
+import { ProfileStore } from '../../../../profile/application/profile.store';
 
 interface SidebarItem {
   labelKey: string;
@@ -22,9 +23,20 @@ interface SidebarItem {
 })
 export class DashboardSidebar {
   private readonly session = inject(ActiveSessionService);
+  private readonly profile = inject(ProfileStore);
   private readonly router = inject(Router);
 
   protected readonly collapsed = signal<boolean>(false);
+
+  constructor() {
+    // The sidebar mounts once per authenticated session (it lives in the layout
+    // shell). Sign-in doesn't return the avatar, so hydrate it from the profile
+    // when the session has none yet — this restores the toolbar photo after a
+    // fresh login without the user having to open Settings.
+    if (this.session.session() && !this.session.session()?.photoUrl) {
+      this.profile.load();
+    }
+  }
 
   /** Signed-in identity for the footer (name, else email, else a fallback). */
   protected readonly displayName = computed<string>(() => {

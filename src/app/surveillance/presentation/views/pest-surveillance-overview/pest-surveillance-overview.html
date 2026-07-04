@@ -1,7 +1,7 @@
 <section class="pest-page">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs"
-    subtitle="Monitor biological risk signals, symptom reports, and autonomous pest-related detections across your plots."
+    [subtitle]="'pestPage.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
     (refresh)="refresh()" />
 
@@ -16,44 +16,44 @@
   <section class="kpi-grid">
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Surveillance status</h2>
-        <span class="kpi-pill kpi-pill--green">Active</span>
+        <h2>{{ 'pestPage.kpi.surveillanceTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--green">{{ 'pestPage.kpi.active' | translate }}</span>
       </div>
-      <span class="kpi-number kpi-number--sm">Active</span>
-      <p class="kpi-caption">Satellite, manual reports, and community signals are being evaluated.</p>
+      <span class="kpi-number kpi-number--sm">{{ 'pestPage.kpi.active' | translate }}</span>
+      <p class="kpi-caption">{{ 'pestPage.kpi.surveillanceCaption' | translate }}</p>
       <button mat-stroked-button type="button" class="ghost-button" (click)="navigateTo('/agronomic/plots')">
-        <mat-icon>map</mat-icon> {{ plotsMonitored() }} plots monitored
+        <mat-icon>map</mat-icon> {{ 'pestPage.kpi.plotsMonitored' | translate: { count: plotsMonitored() } }}
       </button>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Probable threat</h2>
-        <span class="kpi-pill kpi-pill--soft">Under observation</span>
+        <h2>{{ 'pestPage.kpi.threatTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--soft">{{ 'pestPage.kpi.underObservation' | translate }}</span>
       </div>
       <span class="kpi-threat">{{ store.probableThreatLabel() }}</span>
-      <p class="kpi-caption">Detected from low-vigor signals and recent symptom reports.</p>
+      <p class="kpi-caption">{{ 'pestPage.kpi.threatCaption' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Risk confidence</h2>
-        <span class="kpi-pill kpi-pill--soft">Medium-high</span>
+        <h2>{{ 'pestPage.kpi.confidenceTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--soft">{{ 'pestPage.kpi.mediumHigh' | translate }}</span>
       </div>
       <span class="kpi-number">{{ store.riskConfidence() }}%</span>
       <div class="confidence-bar"><span [style.width.%]="store.riskConfidence()"></span></div>
-      <p class="kpi-caption">Calculated from symptoms, NDVI variation, and nearby signals.</p>
+      <p class="kpi-caption">{{ 'pestPage.kpi.confidenceCaption' | translate }}</p>
     </mat-card>
 
     <mat-card class="kpi-card">
       <div class="kpi-head">
-        <h2>Community exposure</h2>
-        <span class="kpi-pill kpi-pill--soft">{{ store.communityRisk().radiusKm }} km radius</span>
+        <h2>{{ 'pestPage.kpi.exposureTitle' | translate }}</h2>
+        <span class="kpi-pill kpi-pill--soft">{{ 'pestPage.kpi.radius' | translate: { km: store.communityRisk().radiusKm } }}</span>
       </div>
-      <span class="kpi-number kpi-number--sm">{{ store.communityExposureCount() }} signals</span>
-      <p class="kpi-caption">Nearby plots show related risk patterns within the monitoring radius.</p>
+      <span class="kpi-number kpi-number--sm">{{ 'pestPage.kpi.signals' | translate: { count: store.communityExposureCount() } }}</span>
+      <p class="kpi-caption">{{ 'pestPage.kpi.exposureCaption' | translate }}</p>
       <button mat-stroked-button type="button" class="ghost-button" (click)="navigateTo('/surveillance/alerts')">
-        <mat-icon>campaign</mat-icon> View community risk
+        <mat-icon>campaign</mat-icon> {{ 'pestPage.kpi.viewCommunity' | translate }}
       </button>
     </mat-card>
   </section>
@@ -64,10 +64,10 @@
     <mat-card class="map-card">
       <div class="card-head">
         <div>
-          <h2>Surveillance map</h2>
-          <p>Risk signals from manual reports, satellite indicators, and community activity.</p>
+          <h2>{{ 'pestPage.map.title' | translate }}</h2>
+          <p>{{ 'pestPage.map.subtitle' | translate }}</p>
         </div>
-        <span class="kpi-pill kpi-pill--soft">{{ activeSignalsCount() }} active signals</span>
+        <span class="kpi-pill kpi-pill--soft">{{ 'pestPage.map.activeSignals' | translate: { count: activeSignalsCount() } }}</span>
       </div>
 
       <div class="filter-chips">
@@ -77,7 +77,7 @@
             class="filter-chip"
             [class.is-active]="mapFilter() === filter.id"
             (click)="setMapFilter(filter.id)">
-            {{ filter.label }}
+            {{ filter.labelKey | translate }}
           </button>
         }
       </div>
@@ -85,35 +85,35 @@
       <app-surveillance-map [boundary]="selectedBoundary()" [markers]="mapMarkers()" />
 
       <div class="map-legend-row">
-        <span><i class="dot dot--high"></i> Manual report</span>
-        <span><i class="dot dot--medium"></i> Satellite signal</span>
-        <span><i class="dot dot--low"></i> Community signal</span>
+        <span><i class="dot dot--high"></i> {{ 'pestPage.map.legendManual' | translate }}</span>
+        <span><i class="dot dot--medium"></i> {{ 'pestPage.map.legendSatellite' | translate }}</span>
+        <span><i class="dot dot--low"></i> {{ 'pestPage.map.legendCommunity' | translate }}</span>
       </div>
     </mat-card>
 
     <mat-card class="history-card">
       <div class="card-head">
         <div>
-          <h2>Symptom report history</h2>
-          <p>Reports submitted by you across all plots.</p>
+          <h2>{{ 'pestPage.history.title' | translate }}</h2>
+          <p>{{ 'pestPage.history.subtitle' | translate }}</p>
         </div>
         <button mat-flat-button type="button" class="primary-button" (click)="openReportForm()">
-          <mat-icon>add</mat-icon> Create new report
+          <mat-icon>add</mat-icon> {{ 'pestPage.history.createReport' | translate }}
         </button>
       </div>
 
       <div class="history-table">
         <div class="history-header">
-          <span>Report ID</span>
-          <span>Plot</span>
-          <span>Symptoms</span>
-          <span>Result</span>
+          <span>{{ 'pestPage.history.colId' | translate }}</span>
+          <span>{{ 'pestPage.history.colPlot' | translate }}</span>
+          <span>{{ 'pestPage.history.colSymptoms' | translate }}</span>
+          <span>{{ 'pestPage.history.colResult' | translate }}</span>
         </div>
 
         @if (store.loading().reports && store.pestReports().length === 0) {
-          <div class="history-state">Loading reports…</div>
+          <div class="history-state">{{ 'pestPage.history.loading' | translate }}</div>
         } @else if (store.pestReports().length === 0) {
-          <div class="history-state">No reports submitted yet.</div>
+          <div class="history-state">{{ 'pestPage.history.empty' | translate }}</div>
         } @else {
           @for (report of store.pestReports(); track report.id) {
             <div class="history-row">
@@ -132,68 +132,68 @@
     <mat-card class="risk-card">
       <div class="card-head">
         <div>
-          <h2>Current risk evaluation</h2>
-          <p>System analysis based on available indicators.</p>
+          <h2>{{ 'pestPage.risk.title' | translate }}</h2>
+          <p>{{ 'pestPage.risk.subtitle' | translate }}</p>
         </div>
-        <span class="kpi-pill kpi-pill--soft">Under observation</span>
+        <span class="kpi-pill kpi-pill--soft">{{ 'pestPage.risk.underObservation' | translate }}</span>
       </div>
 
-      <span class="risk-pattern-label">Probable pattern</span>
-      <strong class="risk-pattern">Possible {{ store.probableThreatLabel() }} pattern</strong>
+      <span class="risk-pattern-label">{{ 'pestPage.risk.probablePattern' | translate }}</span>
+      <strong class="risk-pattern">{{ 'pestPage.risk.patternValue' | translate: { threat: store.probableThreatLabel() } }}</strong>
 
       <div class="risk-status-grid">
         <div class="risk-status-box">
-          <span>Status</span>
-          <strong>Under observation</strong>
+          <span>{{ 'pestPage.risk.status' | translate }}</span>
+          <strong>{{ 'pestPage.risk.underObservation' | translate }}</strong>
         </div>
         <div class="risk-status-box">
-          <span>Estimated risk</span>
-          <strong class="risk-estimate">{{ store.riskConfidence() >= 60 ? 'Medium-high' : 'Low-medium' }}</strong>
+          <span>{{ 'pestPage.risk.estimatedRisk' | translate }}</span>
+          <strong class="risk-estimate">{{ (store.riskConfidence() >= 60 ? 'pestPage.risk.mediumHigh' : 'pestPage.risk.lowMedium') | translate }}</strong>
         </div>
       </div>
 
-      <span class="evidence-title">Main evidence</span>
+      <span class="evidence-title">{{ 'pestPage.risk.mainEvidence' | translate }}</span>
       <div class="evidence-list">
         <div class="evidence-row">
           <span class="evidence-num">{{ store.confirmedReports().length }}</span>
-          Confirmed symptom reports
+          {{ 'pestPage.risk.confirmedReports' | translate }}
         </div>
         <div class="evidence-row">
           <span class="evidence-num">{{ store.pestReports().length }}</span>
-          Total symptom reports submitted
+          {{ 'pestPage.risk.totalReports' | translate }}
         </div>
         <div class="evidence-row">
           <span class="evidence-num">{{ store.communityExposureCount() }}</span>
-          Nearby community signals
+          {{ 'pestPage.risk.nearbySignals' | translate }}
         </div>
       </div>
 
       <div class="next-step">
         <mat-icon>info</mat-icon>
         <div>
-          <strong>Recommended next step</strong>
-          <p>Inspect leaves and monitor low-vigor zones before requesting a specialist intervention.</p>
+          <strong>{{ 'pestPage.risk.nextStepTitle' | translate }}</strong>
+          <p>{{ 'pestPage.risk.nextStepText' | translate }}</p>
         </div>
       </div>
 
       <button mat-stroked-button type="button" class="ghost-button block" (click)="openReportForm()">
-        <mat-icon>pest_control</mat-icon> Report symptoms
+        <mat-icon>pest_control</mat-icon> {{ 'pestPage.risk.reportSymptoms' | translate }}
       </button>
       <button mat-stroked-button type="button" class="ghost-button block" (click)="navigateTo('/surveillance/alerts')">
-        <mat-icon>campaign</mat-icon> View related alerts
+        <mat-icon>campaign</mat-icon> {{ 'pestPage.risk.viewAlerts' | translate }}
       </button>
       <button mat-stroked-button type="button" class="ghost-button block" (click)="navigateTo('/assistance/expert-assistance/request')">
-        <mat-icon>groups</mat-icon> Request expert
+        <mat-icon>groups</mat-icon> {{ 'pestPage.risk.requestExpert' | translate }}
       </button>
     </mat-card>
 
     <mat-card class="autonomous-card">
       <div class="card-head">
         <div>
-          <h2>Autonomous detections</h2>
-          <p>Signals detected without manual symptom reports.</p>
+          <h2>{{ 'pestPage.autonomous.title' | translate }}</h2>
+          <p>{{ 'pestPage.autonomous.subtitle' | translate }}</p>
         </div>
-        <span class="kpi-pill kpi-pill--muted">Preview</span>
+        <span class="kpi-pill kpi-pill--muted">{{ 'pestPage.autonomous.preview' | translate }}</span>
       </div>
 
       <div class="autonomous-list">
@@ -209,13 +209,13 @@
           </div>
         }
       </div>
-      <p class="autonomous-note">Automatic detections will populate here once agronomic monitoring emits risk events.</p>
+      <p class="autonomous-note">{{ 'pestPage.autonomous.note' | translate }}</p>
     </mat-card>
     </div>
   </section>
 
   @if (store.errors().length > 0) {
-    <section class="error-box"><strong>Something went wrong loading surveillance data.</strong></section>
+    <section class="error-box"><strong>{{ 'pestPage.error' | translate }}</strong></section>
   }
 </section>
 
@@ -224,12 +224,12 @@
   <div class="modal-overlay" (click)="closeReportForm()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <h2>Report symptoms</h2>
+        <h2>{{ 'pestPage.form.title' | translate }}</h2>
         <button mat-icon-button type="button" (click)="closeReportForm()"><mat-icon>close</mat-icon></button>
       </div>
 
       <label class="field">
-        <span>Plot</span>
+        <span>{{ 'pestPage.form.plot' | translate }}</span>
         <select [value]="formPlotId()" (change)="formPlotId.set($any($event.target).value)">
           @for (plot of plots(); track plot.id) {
             <option [value]="plot.id">{{ plot.name }}</option>
@@ -238,7 +238,7 @@
       </label>
 
       <label class="field">
-        <span>Risk zone</span>
+        <span>{{ 'pestPage.form.riskZone' | translate }}</span>
         <select [value]="formRiskZone()" (change)="formRiskZone.set($any($event.target).value)">
           @for (zone of riskZones; track zone) {
             <option [value]="zone">{{ zone }}</option>
@@ -247,7 +247,7 @@
       </label>
 
       <label class="field">
-        <span>Observed severity</span>
+        <span>{{ 'pestPage.form.observedSeverity' | translate }}</span>
         <select [value]="formSeverity()" (change)="formSeverity.set($any($event.target).value)">
           @for (sev of severities; track sev) {
             <option [value]="sev">{{ sev }}</option>
@@ -256,9 +256,9 @@
       </label>
 
       <div class="field">
-        <span>Symptoms</span>
+        <span>{{ 'pestPage.form.symptoms' | translate }}</span>
         @if (store.symptoms().length === 0) {
-          <p class="field-hint">No symptom catalog available.</p>
+          <p class="field-hint">{{ 'pestPage.form.noCatalog' | translate }}</p>
         } @else {
           <div class="symptom-grid">
             @for (symptom of store.symptoms(); track symptom.id) {
@@ -275,14 +275,14 @@
       </div>
 
       <label class="field">
-        <span>Notes (optional)</span>
+        <span>{{ 'pestPage.form.notes' | translate }}</span>
         <textarea rows="2" [value]="formNotes()" (input)="formNotes.set($any($event.target).value)"></textarea>
       </label>
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeReportForm()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeReportForm()">{{ 'pestPage.form.cancel' | translate }}</button>
         <button mat-flat-button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submitReport()">
-          {{ store.loading().submitting ? 'Submitting…' : 'Submit report' }}
+          {{ (store.loading().submitting ? 'pestPage.form.submitting' : 'pestPage.form.submit') | translate }}
         </button>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <section class="settings-page">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs()"
-    subtitle="Manage your account, marketplace visibility, and security preferences."
+    [subtitle]="'settingsPage.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
     (refresh)="resetDraft()" />
 
@@ -16,7 +16,7 @@
         [attr.aria-selected]="activeTab() === tab.id"
         (click)="selectTab(tab.id)">
         <mat-icon>{{ tab.icon }}</mat-icon>
-        {{ tab.label }}
+        {{ tab.labelKey | translate }}
       </button>
     }
   </nav>
@@ -30,16 +30,16 @@
         <mat-card class="section-card">
           <div class="section-head">
             <div>
-              <h2 class="section-title">Personal information</h2>
-              <p class="section-subtitle">Your name and contact details as seen by specialists.</p>
+              <h2 class="section-title">{{ 'settingsPage.profile.personalTitle' | translate }}</h2>
+              <p class="section-subtitle">{{ 'settingsPage.profile.personalSubtitle' | translate }}</p>
             </div>
           </div>
 
           <div class="identity-row">
             <img class="avatar avatar--lg" [src]="preview().avatarUrl" alt="Profile photo" />
             <div class="identity-text">
-              <span class="identity-name">{{ fullName() || 'Your name' }}</span>
-              <span class="identity-role">{{ jobTitle() || 'Job title' }} · {{ store.profile().roleLabel }}</span>
+              <span class="identity-name">{{ fullName() || ('settingsPage.profile.yourName' | translate) }}</span>
+              <span class="identity-role">{{ jobTitle() || ('settingsPage.profile.jobTitleFallback' | translate) }} · {{ store.profile().roleLabel }}</span>
             </div>
             <input
               #photoInput
@@ -54,7 +54,7 @@
               [disabled]="photoUploadDisabled"
               (click)="photoInput.click()">
               <mat-icon>photo_camera</mat-icon>
-              {{ uploadingPhoto() ? 'Uploading…' : 'Change photo' }}
+              {{ (uploadingPhoto() ? 'settingsPage.profile.uploading' : 'settingsPage.profile.changePhoto') | translate }}
             </button>
           </div>
           @if (photoError()) {
@@ -63,26 +63,26 @@
 
           <div class="form-grid">
             <label class="field">
-              <span>Full name</span>
+              <span>{{ 'settingsPage.profile.fullName' | translate }}</span>
               <input type="text" [value]="fullName()" (input)="fullName.set($any($event.target).value)" />
             </label>
             <label class="field">
-              <span>Email address</span>
+              <span>{{ 'settingsPage.profile.emailAddress' | translate }}</span>
               <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" />
             </label>
             <label class="field">
-              <span>Phone number</span>
+              <span>{{ 'settingsPage.profile.phoneNumber' | translate }}</span>
               <input type="tel" [value]="phone()" (input)="phone.set($any($event.target).value)" />
             </label>
             <label class="field">
-              <span>Job title</span>
+              <span>{{ 'settingsPage.profile.jobTitle' | translate }}</span>
               <input type="text" [value]="jobTitle()" (input)="jobTitle.set($any($event.target).value)" />
             </label>
           </div>
 
           <div class="form-grid">
             <label class="field field--inline">
-              <span>Language</span>
+              <span>{{ 'settingsPage.profile.language' | translate }}</span>
               <div class="select-wrap">
                 <select [value]="language()" (change)="language.set($any($event.target).value)">
                   @for (lang of languageOptions; track lang) {
@@ -101,7 +101,7 @@
               class="primary-button"
               [disabled]="store.saving()"
               (click)="saveChanges()">
-              {{ store.saving() ? 'Saving…' : 'Save changes' }}
+              {{ (store.saving() ? 'settingsPage.profile.saving' : 'settingsPage.profile.saveChanges') | translate }}
             </button>
           </div>
         </mat-card>
@@ -110,38 +110,36 @@
         <mat-card class="section-card">
           <div class="section-head">
             <div>
-              <h2 class="section-title">Marketplace visibility</h2>
-              <p class="section-subtitle">
-                Shown on your profile card when specialists receive your assistance requests.
-              </p>
+              <h2 class="section-title">{{ 'settingsPage.profile.marketplaceTitle' | translate }}</h2>
+              <p class="section-subtitle">{{ 'settingsPage.profile.marketplaceSubtitle' | translate }}</p>
             </div>
           </div>
 
           <div class="form-grid">
             <label class="field">
-              <span>Grove focus</span>
+              <span>{{ 'settingsPage.profile.groveFocus' | translate }}</span>
               <input
                 type="text"
-                placeholder="e.g. Olive oil production"
+                [placeholder]="'settingsPage.profile.groveFocusPlaceholder' | translate"
                 [value]="specialtyArea()"
                 (input)="specialtyArea.set($any($event.target).value)" />
             </label>
             <label class="field">
-              <span>Location</span>
+              <span>{{ 'settingsPage.profile.location' | translate }}</span>
               <input
                 type="text"
-                placeholder="e.g. Valle de Ica, Peru"
+                [placeholder]="'settingsPage.profile.locationPlaceholder' | translate"
                 [value]="location()"
                 (input)="location.set($any($event.target).value)" />
             </label>
           </div>
 
           <div class="field">
-            <span>Total farmed area</span>
+            <span>{{ 'settingsPage.profile.totalArea' | translate }}</span>
             <div class="readonly-metric">
               <mat-icon>eco</mat-icon>
               <strong>{{ preview().farmSizeLabel }}</strong>
-              <span class="readonly-hint">Summed automatically from your plots in My Plots.</span>
+              <span class="readonly-hint">{{ 'settingsPage.profile.totalAreaHint' | translate }}</span>
             </div>
           </div>
         </mat-card>
@@ -149,18 +147,18 @@
 
       <!-- Right column: live preview -->
       <aside class="preview-column">
-        <p class="preview-caption">How specialists see your request</p>
+        <p class="preview-caption">{{ 'settingsPage.profile.previewCaption' | translate }}</p>
 
         <div class="preview-card">
           <div class="preview-badges">
-            <span class="badge badge--best"><mat-icon>eco</mat-icon> Producer</span>
+            <span class="badge badge--best"><mat-icon>eco</mat-icon> {{ 'auth.roles.producer' | translate }}</span>
           </div>
 
           <div class="preview-identity">
             <img class="avatar" [src]="preview().avatarUrl" alt="Profile photo" />
             <div class="identity-text">
-              <span class="preview-name">{{ preview().fullName || 'Your name' }}</span>
-              <span class="preview-role">{{ preview().specialtyArea || 'Grove focus' }}</span>
+              <span class="preview-name">{{ preview().fullName || ('settingsPage.profile.yourName' | translate) }}</span>
+              <span class="preview-role">{{ preview().specialtyArea || ('settingsPage.profile.groveFocus' | translate) }}</span>
             </div>
           </div>
 
@@ -172,14 +170,13 @@
           </div>
 
           <div class="preview-foot">
-            <button mat-flat-button type="button" class="primary-button" disabled>Respond</button>
+            <button mat-flat-button type="button" class="primary-button" disabled>{{ 'settingsPage.profile.respond' | translate }}</button>
           </div>
         </div>
 
         <p class="preview-note">
           <mat-icon>info</mat-icon>
-          This preview updates live as you edit. It is exactly what a specialist sees when you send an assistance
-          request from Expert Assistance.
+          {{ 'settingsPage.profile.previewNote' | translate }}
         </p>
       </aside>
     </div>
@@ -190,8 +187,8 @@
     <mat-card class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">Referrals</h2>
-          <p class="section-subtitle">Invite others to Viora. Grow the ecosystem together.</p>
+          <h2 class="section-title">{{ 'settingsPage.referrals.title' | translate }}</h2>
+          <p class="section-subtitle">{{ 'settingsPage.referrals.subtitle' | translate }}</p>
         </div>
       </div>
 
@@ -199,18 +196,18 @@
         <!-- Left: reward + code -->
         <div class="referral-left">
           <h3 class="referral-headline">
-            Refer a friend and earn a {{ billing.referralCode().rewardPercent || 20 }}% discount coupon.
+            {{ 'settingsPage.referrals.headline' | translate: { percent: billing.referralCode().rewardPercent || 20 } }}
           </h3>
 
           <img
             class="referral-illustration"
             src="/assets/images/general/referrals-image.png"
-            alt="Refer a friend to Viora" />
+            [alt]="'settingsPage.referrals.illustrationAlt' | translate" />
 
           <button type="button" class="referral-code-ticket" (click)="copyReferralCode()">
-            <span class="ticket-label">Your referral code</span>
+            <span class="ticket-label">{{ 'settingsPage.referrals.yourCode' | translate }}</span>
             <span class="ticket-code">{{ billing.referralCode().code || '————' }}</span>
-            <span class="ticket-hint">{{ codeCopied() ? 'Copied!' : 'Tap to copy' }}</span>
+            <span class="ticket-hint">{{ (codeCopied() ? 'settingsPage.referrals.copied' : 'settingsPage.referrals.tapToCopy') | translate }}</span>
           </button>
         </div>
 
@@ -218,19 +215,19 @@
         <div class="referral-right">
           <div class="referral-step">
             <span class="step-num">1</span>
-            <span class="step-text">Send an invite to a partner.</span>
+            <span class="step-text">{{ 'settingsPage.referrals.step1' | translate }}</span>
           </div>
           <div class="referral-step">
             <span class="step-num">2</span>
-            <span class="step-text">Your partner signs up.</span>
+            <span class="step-text">{{ 'settingsPage.referrals.step2' | translate }}</span>
           </div>
           <div class="referral-step">
             <span class="step-num">3</span>
-            <span class="step-text">You will be able to claim your coupon when your partner registers for the first time.</span>
+            <span class="step-text">{{ 'settingsPage.referrals.step3' | translate }}</span>
           </div>
 
           <button mat-flat-button type="button" class="primary-button block" (click)="shareReferral()">
-            <mat-icon>share</mat-icon> Refer a partner by text, email or more
+            <mat-icon>share</mat-icon> {{ 'settingsPage.referrals.shareButton' | translate }}
           </button>
         </div>
       </div>
@@ -239,12 +236,12 @@
     <mat-card class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">Coupons</h2>
-          <p class="section-subtitle">{{ selectedCoupon() ? 'Coupon details and conditions.' : 'Do you have a coupon?' }}</p>
+          <h2 class="section-title">{{ 'settingsPage.coupons.title' | translate }}</h2>
+          <p class="section-subtitle">{{ (selectedCoupon() ? 'settingsPage.coupons.subtitleDetail' : 'settingsPage.coupons.subtitlePrompt') | translate }}</p>
         </div>
         @if (selectedCoupon()) {
           <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="backToCoupons()">
-            <mat-icon>arrow_back</mat-icon> Back
+            <mat-icon>arrow_back</mat-icon> {{ 'settingsPage.coupons.back' | translate }}
           </button>
         }
       </div>
@@ -254,7 +251,7 @@
           <input
             type="text"
             class="redeem-input"
-            placeholder="Enter a coupon code, e.g. WELCOME10"
+            [placeholder]="'settingsPage.coupons.redeemPlaceholder' | translate"
             [value]="redeemInput()"
             (input)="redeemInput.set($any($event.target).value)"
             (keydown.enter)="redeemCoupon(); $event.preventDefault()" />
@@ -264,7 +261,7 @@
             class="primary-button"
             [disabled]="!redeemInput().trim() || billing.redeeming()"
             (click)="redeemCoupon()">
-            {{ billing.redeeming() ? 'Redeeming…' : 'Redeem' }}
+            {{ (billing.redeeming() ? 'settingsPage.coupons.redeeming' : 'settingsPage.coupons.redeem') | translate }}
           </button>
         </div>
         @if (billing.redeemError()) {
@@ -277,12 +274,12 @@
               <div class="coupon-content">
                 <div class="coupon-head">
                   <mat-icon>redeem</mat-icon>
-                  <span class="coupon-kind">coupon</span>
+                  <span class="coupon-kind">{{ 'settingsPage.coupons.kind' | translate }}</span>
                 </div>
                 <span class="coupon-code">{{ coupon.code }}</span>
                 <span class="coupon-desc">{{ coupon.description }}</span>
                 <div class="coupon-foot">
-                  <span class="coupon-link">View conditions</span>
+                  <span class="coupon-link">{{ 'settingsPage.coupons.viewConditions' | translate }}</span>
                   @if (coupon.validUntilLabel) {
                     <span class="coupon-valid">{{ coupon.validUntilLabel }}</span>
                   }
@@ -291,7 +288,7 @@
               <img class="coupon-thumb" src="/assets/images/general/coupon-image.png" alt="Viora coupon" />
             </button>
           } @empty {
-            <p class="empty-hint">No coupons yet. Redeem a code or refer a partner to earn one.</p>
+            <p class="empty-hint">{{ 'settingsPage.coupons.empty' | translate }}</p>
           }
         </div>
       } @else if (selectedCoupon(); as coupon) {
@@ -318,11 +315,11 @@
               <div class="cf-codebox">
                 <span class="cf-code">{{ coupon.code }}</span>
                 <button type="button" class="cf-copy" (click)="copyCouponCode(coupon)">
-                  <mat-icon>content_copy</mat-icon> {{ couponCodeCopied() ? 'Copied' : 'Copy code' }}
+                  <mat-icon>content_copy</mat-icon> {{ (couponCodeCopied() ? 'settingsPage.coupons.codeCopied' : 'settingsPage.coupons.copyCode') | translate }}
                 </button>
               </div>
               <span class="cf-valid">
-                {{ coupon.validUntilLong ? 'Valid until ' + coupon.validUntilLong + ' or while credits last.' : 'Valid while credits last.' }}
+                {{ coupon.validUntilLong ? ('settingsPage.coupons.validUntil' | translate: { date: coupon.validUntilLong }) : ('settingsPage.coupons.validWhileCredits' | translate) }}
               </span>
               <span class="cf-notch cf-notch-left"></span>
               <span class="cf-notch cf-notch-right"></span>
@@ -341,15 +338,15 @@
           </div>
 
           <button type="button" class="conditions-toggle" (click)="toggleConditions()">
-            View conditions <mat-icon>{{ conditionsExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ 'settingsPage.coupons.viewConditions' | translate }} <mat-icon>{{ conditionsExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
           </button>
 
           @if (conditionsExpanded()) {
             <div class="terms-card">
-              <h3 class="terms-title">Terms &amp; conditions</h3>
+              <h3 class="terms-title">{{ 'settingsPage.coupons.termsTitle' | translate }}</h3>
               <ul class="terms-list">
                 @for (term of referralTerms; track term) {
-                  <li>{{ term }}</li>
+                  <li>{{ term | translate }}</li>
                 }
               </ul>
             </div>
@@ -364,13 +361,13 @@
     <mat-card class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">Password</h2>
-          <p class="section-subtitle">Use at least 8 characters.</p>
+          <h2 class="section-title">{{ 'settingsPage.security.passwordTitle' | translate }}</h2>
+          <p class="section-subtitle">{{ 'settingsPage.security.passwordSubtitle' | translate }}</p>
         </div>
       </div>
 
       <label class="field">
-        <span>Current password</span>
+        <span>{{ 'settingsPage.security.currentPassword' | translate }}</span>
         <input
           type="password"
           autocomplete="current-password"
@@ -380,7 +377,7 @@
 
       <div class="form-grid">
         <label class="field">
-          <span>New password</span>
+          <span>{{ 'settingsPage.security.newPassword' | translate }}</span>
           <input
             type="password"
             autocomplete="new-password"
@@ -388,7 +385,7 @@
             (input)="newPassword.set($any($event.target).value)" />
         </label>
         <label class="field">
-          <span>Confirm new password</span>
+          <span>{{ 'settingsPage.security.confirmNewPassword' | translate }}</span>
           <input
             type="password"
             autocomplete="new-password"
@@ -410,7 +407,7 @@
           class="primary-button"
           [disabled]="!canUpdatePassword"
           (click)="updatePassword()">
-          {{ security.changingPassword() ? 'Updating…' : 'Update password' }}
+          {{ (security.changingPassword() ? 'settingsPage.security.updating' : 'settingsPage.security.updatePassword') | translate }}
         </button>
       </div>
     </mat-card>
@@ -418,14 +415,14 @@
     <mat-card class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">Active sessions</h2>
-          <p class="section-subtitle">{{ security.sessions().length }} devices signed in</p>
+          <h2 class="section-title">{{ 'settingsPage.security.sessionsTitle' | translate }}</h2>
+          <p class="section-subtitle">{{ 'settingsPage.security.devicesSignedIn' | translate: { count: security.sessions().length } }}</p>
         </div>
       </div>
 
       <div class="session-list">
         @if (security.loadingSessions() && security.sessions().length === 0) {
-          <div class="empty-hint">Loading sessions…</div>
+          <div class="empty-hint">{{ 'settingsPage.security.loadingSessions' | translate }}</div>
         } @else {
           @for (session of security.sessions(); track session.id) {
             <div class="session-row">
@@ -435,10 +432,10 @@
                 <span class="session-sub">{{ session.subtitle }}</span>
               </div>
               @if (session.current) {
-                <span class="session-current">This device</span>
+                <span class="session-current">{{ 'settingsPage.security.thisDevice' | translate }}</span>
               } @else {
                 <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="signOutSession(session.id!)">
-                  Sign out
+                  {{ 'settingsPage.security.signOut' | translate }}
                 </button>
               }
             </div>
@@ -450,15 +447,13 @@
     <mat-card class="section-card danger-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">Danger zone</h2>
-          <p class="section-subtitle">
-            Deleting your account permanently removes your profile and access. This cannot be undone.
-          </p>
+          <h2 class="section-title">{{ 'settingsPage.security.dangerTitle' | translate }}</h2>
+          <p class="section-subtitle">{{ 'settingsPage.security.dangerSubtitle' | translate }}</p>
         </div>
       </div>
 
       <button mat-stroked-button type="button" class="danger-button" (click)="openDelete()">
-        Delete account
+        {{ 'settingsPage.security.deleteAccount' | translate }}
       </button>
     </mat-card>
   }
@@ -470,24 +465,23 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>Delete account</h2>
-          <p class="modal-subtitle">This permanently deletes your account and profile.</p>
+          <h2>{{ 'settingsPage.deleteModal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'settingsPage.deleteModal.subtitle' | translate }}</p>
         </div>
         <button mat-icon-button type="button" (click)="closeDelete()"><mat-icon>close</mat-icon></button>
       </div>
       <p class="modal-body-text">
-        Are you sure you want to permanently delete your account? Your profile and access will be
-        removed and this action cannot be undone.
+        {{ 'settingsPage.deleteModal.body' | translate }}
       </p>
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDelete()">Cancel</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDelete()">{{ 'settingsPage.deleteModal.cancel' | translate }}</button>
         <button
           mat-flat-button
           type="button"
           class="danger-button"
           [disabled]="security.deleting()"
           (click)="confirmDelete()">
-          {{ security.deleting() ? 'Deleting…' : 'Delete account' }}
+          {{ (security.deleting() ? 'settingsPage.deleteModal.deleting' : 'settingsPage.deleteModal.confirm') | translate }}
         </button>
       </div>
     </div>

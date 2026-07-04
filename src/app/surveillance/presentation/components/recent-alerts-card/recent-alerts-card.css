@@ -245,9 +245,23 @@
 
 .empty-state {
   min-height: 260px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
   color: #8a8f8b;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.empty-state .empty-icon {
+  width: 30px;
+  height: 30px;
+  opacity: 0.55;
 }
 
 @media (max-width: 1100px) {

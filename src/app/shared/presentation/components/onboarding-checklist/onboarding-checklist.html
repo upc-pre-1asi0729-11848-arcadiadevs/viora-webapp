@@ -1,0 +1,75 @@
+@if (visible()) {
+  <section class="onboarding-card" [class.is-complete]="allDone()" aria-live="polite">
+    <header class="onboarding-header">
+      <div>
+        <p class="eyebrow">{{ 'onboardingChecklist.eyebrow' | translate }}</p>
+        <h2>{{ 'onboardingChecklist.title' | translate }}</h2>
+      </div>
+
+      <button
+        type="button"
+        class="icon-button"
+        (click)="minimize()"
+        [attr.aria-label]="'onboardingChecklist.actions.minimize' | translate"
+        [attr.title]="'onboardingChecklist.actions.minimize' | translate">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <div class="progress-row">
+      <div class="progress-track" aria-hidden="true">
+        <span [style.width.%]="progressPercent()"></span>
+      </div>
+      <span class="progress-label">
+        {{ 'onboardingChecklist.progress' | translate: { done: completedCount(), total: totalSteps } }}
+      </span>
+    </div>
+
+    <ol class="step-list">
+      @for (step of steps(); track step.id) {
+        <li>
+          <button
+            type="button"
+            class="step-button"
+            [class.is-complete]="step.completed"
+            [class.is-active]="nextStep()?.id === step.id"
+            [disabled]="!step.unlocked"
+            (click)="openStep(step)">
+            <span class="step-marker">
+              @if (step.completed) {
+                <mat-icon>check</mat-icon>
+              } @else {
+                {{ stepIndex(step.id) }}
+              }
+            </span>
+
+            <span class="step-copy">
+              <strong>{{ step.titleKey | translate }}</strong>
+              <span>{{ step.descriptionKey | translate }}</span>
+            </span>
+
+            <mat-icon class="step-arrow">chevron_right</mat-icon>
+          </button>
+        </li>
+      }
+    </ol>
+
+    <button type="button" class="primary-action" (click)="openNextStep()">
+      @if (allDone()) {
+        <mat-icon>task_alt</mat-icon>
+      } @else {
+        <mat-icon>{{ nextStep()?.icon ?? 'arrow_forward' }}</mat-icon>
+      }
+      <span>{{ primaryActionKey() | translate }}</span>
+    </button>
+  </section>
+} @else if (showLauncher()) {
+  <button
+    type="button"
+    class="onboarding-launcher"
+    (click)="reopen()"
+    [attr.aria-label]="'onboardingChecklist.actions.open' | translate">
+    <mat-icon>task_alt</mat-icon>
+    <span>{{ 'onboardingChecklist.launcher' | translate: { done: completedCount(), total: totalSteps } }}</span>
+  </button>
+}

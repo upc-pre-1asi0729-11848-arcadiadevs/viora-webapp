@@ -1,0 +1,52 @@
+@if (active() && highlightRect(); as rect) {
+  <section class="coachmark-layer" aria-live="polite">
+    <div
+      class="spotlight-ring"
+      [style.top.px]="rect.top"
+      [style.left.px]="rect.left"
+      [style.width.px]="rect.width"
+      [style.height.px]="rect.height">
+    </div>
+
+    <article
+      class="coachmark-card"
+      [style.top.px]="tooltipPosition().top"
+      [style.left.px]="tooltipPosition().left">
+      <div class="coachmark-pointer" aria-hidden="true"></div>
+
+      <header>
+        <span>{{ progressLabel() }}</span>
+        <button
+          type="button"
+          class="icon-button"
+          (click)="skip()"
+          [attr.aria-label]="'dashboardCoachmarks.actions.skip' | translate">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+
+      <h2>{{ currentStep().titleKey | translate }}</h2>
+      <p>{{ currentStep().descriptionKey | translate }}</p>
+
+      <footer>
+        <button
+          type="button"
+          class="text-button"
+          [disabled]="currentIndex() === 0"
+          (click)="previous()">
+          {{ 'dashboardCoachmarks.actions.back' | translate }}
+        </button>
+
+        <div class="dots" aria-hidden="true">
+          @for (step of steps; track step.target; let index = $index) {
+            <span [class.is-active]="index === currentIndex()"></span>
+          }
+        </div>
+
+        <button type="button" class="primary-button" (click)="next()">
+          {{ (isLastStep() ? 'dashboardCoachmarks.actions.done' : 'dashboardCoachmarks.actions.next') | translate }}
+        </button>
+      </footer>
+    </article>
+  </section>
+}

@@ -15,7 +15,12 @@
     }
   </header>
 
-  @if (store.selectedDashboardScope() === 'all') {
+  @if (store.hasNoPlots()) {
+    <div class="empty-state">
+      <img class="empty-cloud" src="/assets/icons/dashboard/weather-cloud.png" alt="" />
+      <span>{{ 'weather.empty' | translate }}</span>
+    </div>
+  } @else if (store.selectedDashboardScope() === 'all') {
     <div class="empty-state">
       <img class="empty-cloud" src="/assets/icons/dashboard/weather-cloud.png" alt="" />
       <span>{{ 'weather.selectPlotPrompt' | translate }}</span>

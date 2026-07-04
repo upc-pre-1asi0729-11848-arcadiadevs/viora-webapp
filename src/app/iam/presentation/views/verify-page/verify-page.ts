@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuthStore } from '../../../application/auth.store';
 
@@ -10,7 +11,7 @@ type VerifyState = 'verifying' | 'success' | 'error';
 @Component({
   selector: 'app-verify-page',
   standalone: true,
-  imports: [MatIconModule, RouterLink],
+  imports: [MatIconModule, RouterLink, TranslatePipe],
   templateUrl: './verify-page.html',
   styleUrls: ['../auth-pages.css'],
 })

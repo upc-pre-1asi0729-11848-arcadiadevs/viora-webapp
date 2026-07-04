@@ -88,6 +88,17 @@
         </footer>
       </aside>
     </section>
+  } @else if (store.hasNoPlots()) {
+    <section class="empty-state onboarding">
+      <span class="empty-icon-shell">
+        <img src="/assets/icons/dashboard/leaf-outline.svg" alt="" />
+      </span>
+      <h3 class="empty-title">{{ 'plotOverview.empty.title' | translate }}</h3>
+      <p class="empty-description">{{ 'plotOverview.empty.description' | translate }}</p>
+      <a class="empty-cta" routerLink="/agronomic/plots/new">
+        {{ 'plotOverview.empty.cta' | translate }}
+      </a>
+    </section>
   } @else {
     <section class="empty-state">
       {{ 'plotOverview.loading' | translate }}

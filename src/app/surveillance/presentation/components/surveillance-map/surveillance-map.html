@@ -2,16 +2,16 @@
   <div #mapContainer class="sm-canvas"></div>
 
   @if (mapUnavailable()) {
-    <div class="sm-fallback">Map unavailable</div>
+    <div class="sm-fallback">{{ 'maps.unavailable' | translate }}</div>
   }
 
   @if (markers().length === 0) {
-    <span class="sm-empty">No risk signals on this plot</span>
+    <span class="sm-empty">{{ 'maps.noRiskSignals' | translate }}</span>
   }
 
   <div class="sm-legend">
-    <span><i class="dot dot--high"></i> High</span>
-    <span><i class="dot dot--medium"></i> Medium</span>
-    <span><i class="dot dot--low"></i> Low</span>
+    <span><i class="dot dot--high"></i> {{ 'maps.high' | translate }}</span>
+    <span><i class="dot dot--medium"></i> {{ 'maps.medium' | translate }}</span>
+    <span><i class="dot dot--low"></i> {{ 'maps.low' | translate }}</span>
   </div>
 </div>

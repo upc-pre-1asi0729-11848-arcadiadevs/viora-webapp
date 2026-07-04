@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   DashboardBreadcrumbItem,
@@ -28,7 +29,7 @@ interface CategoryOption {
 @Component({
   selector: 'app-support-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
   templateUrl: './support-overview.html',
   styleUrl: './support-overview.css',
 })
@@ -49,8 +50,8 @@ export class SupportOverviewView {
   protected readonly openDoc = signal<LegalDocument | null>(null);
 
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => [
-    { label: 'Support', disabled: true },
-    { label: this.activeTab() === 'legal' ? 'Legal' : 'FAQ', disabled: true },
+    { label: 'Support', labelKey: 'supportPage.breadcrumb.support', disabled: true },
+    { label: this.activeTab() === 'legal' ? 'Legal' : 'FAQ', labelKey: this.activeTab() === 'legal' ? 'supportPage.tabs.legal' : 'supportPage.tabs.faq', disabled: true },
   ]);
 
   /** Category chips with live counts ("All articles" first). */

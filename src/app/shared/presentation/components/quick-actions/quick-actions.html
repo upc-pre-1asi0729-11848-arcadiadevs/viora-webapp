@@ -1,14 +1,14 @@
 <section class="quick-actions">
-  <h2>Quick Actions</h2>
+  <h2>{{ 'quickActions.title' | translate }}</h2>
 
   <nav class="quick-actions-list" aria-label="Agronomic quick actions">
-    @for (action of actions; track action.label) {
+    @for (action of actions; track action.labelKey) {
       <a
         class="quick-action-item"
         [routerLink]="action.route"
         [queryParams]="queryParams()">
         <img [src]="action.iconPath" alt="" class="quick-action-icon" />
-        <span>{{ action.label }}</span>
+        <span>{{ action.labelKey | translate }}</span>
       </a>
     }
   </nav>
