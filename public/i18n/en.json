@@ -1162,6 +1162,7 @@
   },
   "specialistDashboard": {
     "subtitle": "Monitor incoming requests, epidemiological alerts, and your active interventions.",
+    "noDataYet": "No data yet",
     "welcome": {
       "title": "Welcome back, Specialist.",
       "body": "Your technical expertise is crucial today. We've identified critical alerts that require your immediate review in your sector."
@@ -1206,7 +1207,8 @@
       "subtitle": "Accepted cases over time",
       "monthly": "Monthly",
       "annual": "Annual",
-      "legend": "Accepted cases"
+      "legend": "Accepted cases",
+      "empty": "No accepted cases to chart yet."
     }
   },
   "sidebar": {

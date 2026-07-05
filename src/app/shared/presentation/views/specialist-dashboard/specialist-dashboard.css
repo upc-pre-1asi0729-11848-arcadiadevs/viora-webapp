@@ -124,6 +124,18 @@
   font-size: 12px;
 }
 
+.kpi-value.is-empty {
+  color: #c8c2b8;
+}
+
+.chart-empty {
+  margin: 0;
+  padding: 48px 26px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .kpi-pill {
   align-self: flex-start;
   padding: 5px 12px;

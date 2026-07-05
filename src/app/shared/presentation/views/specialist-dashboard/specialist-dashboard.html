@@ -21,34 +21,41 @@
     <article class="card kpi-card">
       <span class="kpi-label">{{ 'specialistDashboard.kpis.resolved' | translate }}</span>
       <strong class="kpi-value">{{ store.kpis()?.resolvedInterventions ?? 0 | number }}</strong>
-      <div class="kpi-bar">
-        <span class="kpi-bar-fill is-blue" style="width: 70%"></span>
-      </div>
       <span class="kpi-foot">{{ 'specialistDashboard.kpis.thisMonth' | translate }}</span>
     </article>
 
     <article class="card kpi-card">
       <span class="kpi-label">{{ 'specialistDashboard.kpis.acceptance' | translate }}</span>
-      <strong class="kpi-value">{{ store.kpis()?.acceptanceRatePercent ?? 0 | number:'1.0-1' }}%</strong>
-      <div class="kpi-bar">
-        <span
-          class="kpi-bar-fill is-neutral"
-          [style.width.%]="store.kpis()?.acceptanceRatePercent ?? 0"></span>
-      </div>
-      <span class="kpi-foot">{{ acceptanceDeltaLabel() }}</span>
+      @if (store.kpis()?.acceptanceRatePercent; as acceptance) {
+        <strong class="kpi-value">{{ acceptance | number:'1.0-1' }}%</strong>
+        <div class="kpi-bar">
+          <span class="kpi-bar-fill is-neutral" [style.width.%]="acceptance"></span>
+        </div>
+        @if (acceptanceDeltaLabel(); as delta) {
+          <span class="kpi-foot">{{ delta }}</span>
+        }
+      } @else {
+        <strong class="kpi-value is-empty">—</strong>
+        <span class="kpi-foot">{{ 'specialistDashboard.noDataYet' | translate }}</span>
+      }
     </article>
 
     <article class="card kpi-card">
       <span class="kpi-label">{{ 'specialistDashboard.kpis.phytosanitary' | translate }}</span>
-      <strong class="kpi-value">{{ store.kpis()?.phytosanitaryEfficiencyPercent ?? 0 | number:'1.0-1' }}%</strong>
-      <div class="kpi-bar">
-        <span
-          class="kpi-bar-fill is-green"
-          [style.width.%]="store.kpis()?.phytosanitaryEfficiencyPercent ?? 0"></span>
-      </div>
-      <span class="kpi-pill" [attr.data-status]="store.kpis()?.phytosanitaryStatus">
-        {{ 'specialistDashboard.kpis.status.' + (store.kpis()?.phytosanitaryStatus ?? 'optimal') | translate }}
-      </span>
+      @if (store.kpis()?.phytosanitaryEfficiencyPercent; as phyto) {
+        <strong class="kpi-value">{{ phyto | number:'1.0-1' }}%</strong>
+        <div class="kpi-bar">
+          <span class="kpi-bar-fill is-green" [style.width.%]="phyto"></span>
+        </div>
+        @if (store.kpis()?.phytosanitaryStatus; as status) {
+          <span class="kpi-pill" [attr.data-status]="status">
+            {{ 'specialistDashboard.kpis.status.' + status | translate }}
+          </span>
+        }
+      } @else {
+        <strong class="kpi-value is-empty">—</strong>
+        <span class="kpi-foot">{{ 'specialistDashboard.noDataYet' | translate }}</span>
+      }
     </article>
   </section>
 
@@ -157,35 +164,37 @@
       </div>
     </header>
 
-    <div class="chart-frame">
-      <svg
-        class="chart-svg"
-        [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
-        preserveAspectRatio="none"
-        role="img"
-        [attr.aria-label]="'specialistDashboard.performance.subtitle' | translate">
-        <defs>
-          <linearGradient id="perfFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#2e4a3a" stop-opacity="0.16" />
-            <stop offset="100%" stop-color="#2e4a3a" stop-opacity="0" />
-          </linearGradient>
-        </defs>
-        @if (chartPolyline()) {
+    @if (chartPolyline()) {
+      <div class="chart-frame">
+        <svg
+          class="chart-svg"
+          [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+          preserveAspectRatio="none"
+          role="img"
+          [attr.aria-label]="'specialistDashboard.performance.subtitle' | translate">
+          <defs>
+            <linearGradient id="perfFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2e4a3a" stop-opacity="0.16" />
+              <stop offset="100%" stop-color="#2e4a3a" stop-opacity="0" />
+            </linearGradient>
+          </defs>
           <path class="chart-area" [attr.d]="chartArea()" fill="url(#perfFill)" />
           <polyline class="chart-line" [attr.points]="chartPolyline()" />
+        </svg>
+      </div>
+
+      <div class="chart-axis">
+        @for (label of chartLabels(); track $index) {
+          <span>{{ label }}</span>
         }
-      </svg>
-    </div>
+      </div>
 
-    <div class="chart-axis">
-      @for (label of chartLabels(); track $index) {
-        <span>{{ label }}</span>
-      }
-    </div>
-
-    <div class="chart-legend">
-      <span class="legend-dot" aria-hidden="true"></span>
-      {{ 'specialistDashboard.performance.legend' | translate }}
-    </div>
+      <div class="chart-legend">
+        <span class="legend-dot" aria-hidden="true"></span>
+        {{ 'specialistDashboard.performance.legend' | translate }}
+      </div>
+    } @else {
+      <p class="chart-empty">{{ 'specialistDashboard.performance.empty' | translate }}</p>
+    }
   </article>
 </section>

@@ -1162,6 +1162,7 @@
   },
   "specialistDashboard": {
     "subtitle": "Supervisa solicitudes entrantes, alertas epidemiológicas y tus intervenciones activas.",
+    "noDataYet": "Sin datos aún",
     "welcome": {
       "title": "Bienvenido de nuevo, Especialista.",
       "body": "Tu experiencia técnica es crucial hoy. Identificamos alertas críticas que requieren tu revisión inmediata en tu sector."
@@ -1206,7 +1207,8 @@
       "subtitle": "Casos aceptados a lo largo del tiempo",
       "monthly": "Mensual",
       "annual": "Anual",
-      "legend": "Casos aceptados"
+      "legend": "Casos aceptados",
+      "empty": "Aún no hay casos aceptados para graficar."
     }
   },
   "sidebar": {

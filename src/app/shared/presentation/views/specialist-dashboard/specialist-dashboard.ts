@@ -52,9 +52,12 @@ export class SpecialistDashboard implements OnInit {
     { label: 'Overview', labelKey: 'breadcrumbs.overview', disabled: true },
   ];
 
-  /** Signed delta for the Acceptance Rate KPI (e.g. "+2.4%"). */
-  protected readonly acceptanceDeltaLabel = computed<string>(() => {
-    const delta = this.store.kpis()?.acceptanceRateDeltaPercent ?? 0;
+  /** Signed delta for the Acceptance Rate KPI (e.g. "+2.4%"), or null if none. */
+  protected readonly acceptanceDeltaLabel = computed<string | null>(() => {
+    const delta = this.store.kpis()?.acceptanceRateDeltaPercent;
+    if (delta === null || delta === undefined) {
+      return null;
+    }
     const sign = delta >= 0 ? '+' : '';
     return `${sign}${delta}%`;
   });
