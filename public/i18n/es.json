@@ -1353,6 +1353,189 @@
       "sending": "Enviando…"
     }
   },
+  "specialistRequests": {
+    "subtitle": "Tu flujo de casos — desde las propuestas que enviaste hasta las intervenciones que cerraste.",
+    "noDataYet": "Sin datos aún",
+    "empty": "Aún no tienes casos. Cuando respondas una solicitud del marketplace, aparecerá aquí.",
+    "emptyError": "No pudimos acceder a tus solicitudes. Aparecerán aquí cuando el servicio esté disponible.",
+    "sentAgo": "Enviada",
+    "acceptedAgo": "Aceptada",
+    "viewProposal": "Ver propuesta",
+    "viewSummary": "Ver resumen",
+    "followUp": "Continuar",
+    "goToFieldInspection": "Ir a inspección de campo",
+    "breadcrumb": {
+      "requests": "Mis Solicitudes",
+      "overview": "Resumen"
+    },
+    "kpis": {
+      "sent": "Propuestas enviadas",
+      "sentFoot": "A la espera de la respuesta del productor.",
+      "inProgress": "En progreso",
+      "inProgressFoot": "Casos aceptados en los que trabajas.",
+      "closed": "Cerradas este mes",
+      "closedFoot": "Intervenciones finalizadas.",
+      "acceptance": "Tasa de aceptación"
+    },
+    "awaiting": {
+      "title": "Esperando respuesta",
+      "count": "{{count}} pendientes",
+      "hint": "Propuestas que enviaste y el productor aún no ha respondido."
+    },
+    "inProgress": {
+      "title": "En progreso",
+      "count": "{{count}} activas",
+      "hint": "Casos aceptados — contínualos desde Inspección de campo."
+    },
+    "closed": {
+      "title": "Cerradas y rechazadas",
+      "count": "{{count}} casos",
+      "hint": "Intervenciones completadas y propuestas que el productor rechazó."
+    },
+    "status": {
+      "PROPOSAL_RECEIVED": "Propuesta enviada",
+      "AWAITING_RESPONSE": "Esperando respuesta",
+      "ACCEPTED": "En progreso",
+      "CLOSED": "Cerrada",
+      "DECLINED": "Rechazada"
+    },
+    "stage": {
+      "NEEDS_VISIT": "Requiere visita",
+      "FINDINGS_LOGGED": "Hallazgos registrados",
+      "PRESCRIBED": "Prescrita",
+      "CLOSED": "Cerrada"
+    },
+    "severity": {
+      "CRITICAL": "Crítica",
+      "HIGH": "Alta",
+      "MEDIUM": "Media",
+      "LOW": "Baja"
+    },
+    "detail": {
+      "status": "Estado",
+      "severity": "Severidad",
+      "problem": "Problema",
+      "location": "Ubicación",
+      "cost": "Costo propuesto",
+      "proposedDate": "Fecha propuesta"
+    }
+  },
+  "specialistFieldInspection": {
+    "subtitle": "Tu trabajo en campo — inspecciona la parcela, registra hallazgos y emite la prescripción del tratamiento.",
+    "empty": "No hay casos activos para inspeccionar. Las intervenciones aceptadas aparecerán aquí.",
+    "emptyError": "No pudimos acceder a tus casos de campo. Aparecerán aquí cuando el servicio esté disponible.",
+    "acceptedAgo": "Aceptada",
+    "awaitingProducer": "A la espera de que el productor aplique el tratamiento e informe.",
+    "startInspection": "Iniciar inspección",
+    "writePrescription": "Escribir prescripción",
+    "viewRecord": "Ver registro",
+    "cancel": "Cancelar",
+    "saving": "Guardando…",
+    "breadcrumb": {
+      "field": "Inspección de Campo",
+      "active": "Casos activos"
+    },
+    "kpis": {
+      "needsVisit": "Requiere visita",
+      "needsVisitFoot": "Casos aceptados a la espera de tu inspección.",
+      "pending": "Prescripción pendiente",
+      "pendingFoot": "Hallazgos registrados, listos para prescribir.",
+      "prescribed": "Prescritas",
+      "prescribedFoot": "A la espera de la aplicación del productor.",
+      "closed": "Cerradas",
+      "closedFoot": "Intervenciones finalizadas."
+    },
+    "needsVisit": {
+      "title": "Requiere visita de campo",
+      "count": "{{count}} por inspeccionar",
+      "hint": "Casos aceptados — registra lo que encuentres en sitio."
+    },
+    "pending": {
+      "title": "Prescripción pendiente",
+      "count": "{{count}} por prescribir",
+      "hint": "Los hallazgos están registrados — emite el plan de tratamiento."
+    },
+    "prescribed": {
+      "title": "Prescritas · esperando productor",
+      "count": "{{count}} activas",
+      "hint": "El productor aplica el tratamiento e informa el resultado."
+    },
+    "closed": {
+      "title": "Cerradas",
+      "count": "{{count}} casos",
+      "hint": "Intervenciones que completaron todo su ciclo."
+    },
+    "stage": {
+      "NEEDS_VISIT": "Requiere visita",
+      "FINDINGS_LOGGED": "Hallazgos registrados",
+      "PRESCRIBED": "Prescrita",
+      "CLOSED": "Cerrada"
+    },
+    "severity": {
+      "CRITICAL": "Crítica",
+      "HIGH": "Alta",
+      "MEDIUM": "Media",
+      "LOW": "Baja"
+    },
+    "findingType": {
+      "PHYTOSANITARY": "Fitosanitario",
+      "NUTRITIONAL": "Nutricional",
+      "WATER_STRESS": "Estrés hídrico",
+      "OTHER": "Otro"
+    },
+    "incidence": {
+      "LOW": "Baja",
+      "MEDIUM": "Media",
+      "CRITICAL": "Crítica"
+    },
+    "applicationMethod": {
+      "HYDRAULIC_SPRAYING": "Aspersión hidráulica",
+      "DRIP_IRRIGATION": "Riego por goteo",
+      "FOLIAR": "Foliar",
+      "SOIL_DRENCH": "Drench al suelo",
+      "OTHER": "Otro"
+    },
+    "ppe": {
+      "MASK": "Mascarilla",
+      "GLOVES": "Guantes",
+      "GOGGLES": "Gafas",
+      "COVERALLS": "Overol"
+    },
+    "findingsModal": {
+      "title": "Registrar hallazgos de inspección",
+      "findingType": "Tipo de hallazgo",
+      "incidence": "Nivel de incidencia",
+      "description": "Descripción técnica",
+      "descriptionPlaceholder": "Describe lo que observaste en sitio — síntomas, área afectada, distribución…",
+      "submit": "Guardar hallazgos"
+    },
+    "prescriptionModal": {
+      "title": "Escribir prescripción del tratamiento",
+      "method": "Método de aplicación",
+      "phi": "Intervalo pre-cosecha (días)",
+      "phiPlaceholder": "p. ej. 14",
+      "sprayVolume": "Volumen de aspersión",
+      "sprayUnit": "Unidad de volumen",
+      "ppe": "Equipo de protección requerido",
+      "products": "Productos",
+      "addProduct": "Agregar producto",
+      "productName": "Nombre del producto",
+      "dose": "Dosis",
+      "unit": "Unidad",
+      "sessions": "Sesiones",
+      "recommendations": "Recomendaciones del agrónomo",
+      "recommendationsPlaceholder": "Momento de aplicación, notas de seguridad, seguimiento…",
+      "submit": "Emitir prescripción"
+    },
+    "detail": {
+      "stage": "Etapa",
+      "severity": "Severidad",
+      "problem": "Problema",
+      "location": "Ubicación",
+      "updated": "Última actualización",
+      "note": "Este caso ya fue prescrito. El productor aplica el tratamiento e informa el resultado — la intervención se cierra cuando se confirma el impacto."
+    }
+  },
   "sidebar": {
     "brand": "Viora Dashboard",
     "navigation": "Navegación del dashboard",

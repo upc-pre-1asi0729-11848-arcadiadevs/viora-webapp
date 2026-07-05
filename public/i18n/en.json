@@ -1353,6 +1353,189 @@
       "sending": "Sending…"
     }
   },
+  "specialistRequests": {
+    "subtitle": "Your pipeline of cases — from the proposals you've sent to the interventions you've closed.",
+    "noDataYet": "No data yet",
+    "empty": "No cases yet. Once you respond to a marketplace request, it will show up here.",
+    "emptyError": "We couldn't reach your requests. They'll appear here once the service is available.",
+    "sentAgo": "Sent",
+    "acceptedAgo": "Accepted",
+    "viewProposal": "View proposal",
+    "viewSummary": "View summary",
+    "followUp": "Follow up",
+    "goToFieldInspection": "Go to field inspection",
+    "breadcrumb": {
+      "requests": "My Requests",
+      "overview": "Overview"
+    },
+    "kpis": {
+      "sent": "Sent proposals",
+      "sentFoot": "Awaiting the producer's response.",
+      "inProgress": "In progress",
+      "inProgressFoot": "Accepted cases you're working on.",
+      "closed": "Closed this month",
+      "closedFoot": "Interventions wrapped up.",
+      "acceptance": "Acceptance rate"
+    },
+    "awaiting": {
+      "title": "Awaiting response",
+      "count": "{{count}} pending",
+      "hint": "Proposals you've sent that the producer hasn't answered yet."
+    },
+    "inProgress": {
+      "title": "In progress",
+      "count": "{{count}} active",
+      "hint": "Accepted cases — continue them from Field Inspection."
+    },
+    "closed": {
+      "title": "Closed & declined",
+      "count": "{{count}} cases",
+      "hint": "Completed interventions and proposals the producer declined."
+    },
+    "status": {
+      "PROPOSAL_RECEIVED": "Proposal sent",
+      "AWAITING_RESPONSE": "Awaiting response",
+      "ACCEPTED": "In progress",
+      "CLOSED": "Closed",
+      "DECLINED": "Declined"
+    },
+    "stage": {
+      "NEEDS_VISIT": "Needs field visit",
+      "FINDINGS_LOGGED": "Findings logged",
+      "PRESCRIBED": "Prescribed",
+      "CLOSED": "Closed"
+    },
+    "severity": {
+      "CRITICAL": "Critical",
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "detail": {
+      "status": "Status",
+      "severity": "Severity",
+      "problem": "Problem",
+      "location": "Location",
+      "cost": "Proposed cost",
+      "proposedDate": "Proposed date"
+    }
+  },
+  "specialistFieldInspection": {
+    "subtitle": "Your on-site work — inspect the plot, log findings and issue the treatment prescription.",
+    "empty": "No active cases to inspect. Accepted interventions will appear here.",
+    "emptyError": "We couldn't reach your field cases. They'll appear here once the service is available.",
+    "acceptedAgo": "Accepted",
+    "awaitingProducer": "Awaiting the producer to apply and report back.",
+    "startInspection": "Start inspection",
+    "writePrescription": "Write prescription",
+    "viewRecord": "View record",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "breadcrumb": {
+      "field": "Field Inspection",
+      "active": "Active cases"
+    },
+    "kpis": {
+      "needsVisit": "Needs field visit",
+      "needsVisitFoot": "Accepted cases awaiting your inspection.",
+      "pending": "Prescription pending",
+      "pendingFoot": "Findings logged, ready to prescribe.",
+      "prescribed": "Prescribed",
+      "prescribedFoot": "Awaiting the producer's application.",
+      "closed": "Closed",
+      "closedFoot": "Interventions wrapped up."
+    },
+    "needsVisit": {
+      "title": "Needs field visit",
+      "count": "{{count}} to inspect",
+      "hint": "Accepted cases — record what you find on site."
+    },
+    "pending": {
+      "title": "Prescription pending",
+      "count": "{{count}} to prescribe",
+      "hint": "Findings are logged — issue the treatment plan."
+    },
+    "prescribed": {
+      "title": "Prescribed · awaiting producer",
+      "count": "{{count}} active",
+      "hint": "The producer applies the treatment and reports the outcome."
+    },
+    "closed": {
+      "title": "Closed",
+      "count": "{{count}} cases",
+      "hint": "Interventions that have run their full course."
+    },
+    "stage": {
+      "NEEDS_VISIT": "Needs field visit",
+      "FINDINGS_LOGGED": "Findings logged",
+      "PRESCRIBED": "Prescribed",
+      "CLOSED": "Closed"
+    },
+    "severity": {
+      "CRITICAL": "Critical",
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "findingType": {
+      "PHYTOSANITARY": "Phytosanitary",
+      "NUTRITIONAL": "Nutritional",
+      "WATER_STRESS": "Water stress",
+      "OTHER": "Other"
+    },
+    "incidence": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "CRITICAL": "Critical"
+    },
+    "applicationMethod": {
+      "HYDRAULIC_SPRAYING": "Hydraulic spraying",
+      "DRIP_IRRIGATION": "Drip irrigation",
+      "FOLIAR": "Foliar",
+      "SOIL_DRENCH": "Soil drench",
+      "OTHER": "Other"
+    },
+    "ppe": {
+      "MASK": "Mask",
+      "GLOVES": "Gloves",
+      "GOGGLES": "Goggles",
+      "COVERALLS": "Coveralls"
+    },
+    "findingsModal": {
+      "title": "Log inspection findings",
+      "findingType": "Finding type",
+      "incidence": "Incidence level",
+      "description": "Technical description",
+      "descriptionPlaceholder": "Describe what you observed on site — symptoms, affected area, distribution…",
+      "submit": "Save findings"
+    },
+    "prescriptionModal": {
+      "title": "Write treatment prescription",
+      "method": "Application method",
+      "phi": "Pre-harvest interval (days)",
+      "phiPlaceholder": "e.g. 14",
+      "sprayVolume": "Spray volume",
+      "sprayUnit": "Volume unit",
+      "ppe": "Required protective equipment",
+      "products": "Products",
+      "addProduct": "Add product",
+      "productName": "Product name",
+      "dose": "Dose",
+      "unit": "Unit",
+      "sessions": "Sessions",
+      "recommendations": "Agronomist recommendations",
+      "recommendationsPlaceholder": "Application timing, safety notes, follow-up guidance…",
+      "submit": "Issue prescription"
+    },
+    "detail": {
+      "stage": "Stage",
+      "severity": "Severity",
+      "problem": "Problem",
+      "location": "Location",
+      "updated": "Last updated",
+      "note": "This case has been prescribed. The producer applies the treatment and reports the outcome — the intervention closes once impact is confirmed."
+    }
+  },
   "sidebar": {
     "brand": "Viora Dashboard",
     "navigation": "Dashboard navigation",

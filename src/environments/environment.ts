@@ -40,6 +40,10 @@ export const environment = {
     // inbox of incoming producer cases (PENDING), enriched across contexts.
     interventionMarketplace: '/intervention-marketplace',
 
+    // Specialist cases read model (My Requests + Field Inspection): the signed-in
+    // specialist's pipeline across statuses with their field-inspection stage.
+    specialistCases: '/specialist-cases',
+
     // Interventions (technical-service lifecycle): composed overview + the
     // prescription/execution/outcome action endpoints.
     interventions: '/interventions',
