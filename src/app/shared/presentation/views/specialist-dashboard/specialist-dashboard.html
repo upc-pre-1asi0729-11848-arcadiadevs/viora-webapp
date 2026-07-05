@@ -1,0 +1,200 @@
+<section class="specialist-dashboard">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    [subtitle]="'specialistDashboard.subtitle' | translate"
+    [updatedLabel]="updatedAgoLabel()"
+    (refresh)="refresh()" />
+
+  <!-- Welcome banner -->
+  <section class="welcome-banner">
+    <div class="welcome-copy">
+      <h2>{{ 'specialistDashboard.welcome.title' | translate }}</h2>
+      <p>{{ 'specialistDashboard.welcome.body' | translate }}</p>
+    </div>
+    <span class="welcome-icon" aria-hidden="true">
+      <mat-icon>eco</mat-icon>
+    </span>
+  </section>
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistDashboard.kpis.resolved' | translate }}</span>
+      <strong class="kpi-value">{{ store.kpis()?.resolvedInterventions ?? 0 | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistDashboard.kpis.thisMonth' | translate }}</span>
+    </article>
+
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistDashboard.kpis.acceptance' | translate }}</span>
+      @if (store.kpis()?.acceptanceRatePercent; as acceptance) {
+        <strong class="kpi-value">{{ acceptance | number:'1.0-1' }}%</strong>
+        <div class="kpi-bar">
+          <span class="kpi-bar-fill is-neutral" [style.width.%]="acceptance"></span>
+        </div>
+        @if (acceptanceDeltaLabel(); as delta) {
+          <span class="kpi-foot">{{ delta }}</span>
+        }
+      } @else {
+        <strong class="kpi-value is-empty">—</strong>
+        <span class="kpi-foot">{{ 'specialistDashboard.noDataYet' | translate }}</span>
+      }
+    </article>
+
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistDashboard.kpis.phytosanitary' | translate }}</span>
+      @if (store.kpis()?.phytosanitaryEfficiencyPercent; as phyto) {
+        <strong class="kpi-value">{{ phyto | number:'1.0-1' }}%</strong>
+        <div class="kpi-bar">
+          <span class="kpi-bar-fill is-green" [style.width.%]="phyto"></span>
+        </div>
+        @if (store.kpis()?.phytosanitaryStatus; as status) {
+          <span class="kpi-pill" [attr.data-status]="status">
+            {{ 'specialistDashboard.kpis.status.' + status | translate }}
+          </span>
+        }
+      } @else {
+        <strong class="kpi-value is-empty">—</strong>
+        <span class="kpi-foot">{{ 'specialistDashboard.noDataYet' | translate }}</span>
+      }
+    </article>
+  </section>
+
+  <!-- Zonal radar + incoming requests -->
+  <section class="mid-grid">
+    <article class="card zonal-card">
+      <header class="card-head">
+        <div>
+          <h3>{{ 'specialistDashboard.zonal.title' | translate }}</h3>
+          <p>{{ 'specialistDashboard.zonal.subtitle' | translate }}</p>
+        </div>
+        <a class="card-link" routerLink="/surveillance/alerts">
+          {{ 'specialistDashboard.zonal.fullMap' | translate }} <span aria-hidden="true">↗</span>
+        </a>
+      </header>
+
+      <ul class="zonal-list">
+        @for (risk of store.zonalRisks(); track risk.id) {
+          <li class="zonal-item">
+            <span class="severity-pill" [attr.data-severity]="risk.severity">
+              {{ 'specialistDashboard.severity.' + risk.severity | translate }}
+            </span>
+            <div class="zonal-body">
+              <strong>{{ risk.title }}</strong>
+              <span>
+                {{ risk.distanceKm | number:'1.0-1' }} {{ 'specialistDashboard.zonal.kmAway' | translate }}
+                &middot; {{ risk.sector }}
+              </span>
+            </div>
+            <span class="zonal-chevron" aria-hidden="true">›</span>
+          </li>
+        } @empty {
+          <li class="zonal-empty">{{ 'specialistDashboard.zonal.empty' | translate }}</li>
+        }
+      </ul>
+    </article>
+
+    <article class="card incoming-card">
+      <header class="card-head">
+        <h3>{{ 'specialistDashboard.incoming.title' | translate }}</h3>
+        @if (incomingCount() > 0) {
+          <span class="new-badge">
+            {{ incomingCount() }} {{ 'specialistDashboard.incoming.new' | translate }}
+          </span>
+        }
+      </header>
+
+      @if (store.incomingRequests().length > 0) {
+        <div class="incoming-table" role="table">
+          <div class="incoming-row incoming-head" role="row">
+            <span role="columnheader">{{ 'specialistDashboard.incoming.plot' | translate }}</span>
+            <span role="columnheader">{{ 'specialistDashboard.incoming.problem' | translate }}</span>
+            <span role="columnheader">{{ 'specialistDashboard.incoming.date' | translate }}</span>
+            <span role="columnheader">{{ 'specialistDashboard.incoming.action' | translate }}</span>
+          </div>
+
+          @for (request of store.incomingRequests(); track request.id) {
+            <div class="incoming-row" role="row">
+              <div class="incoming-plot">
+                <strong>{{ request.plotLabel }}</strong>
+                <span>{{ request.growerLabel }}</span>
+              </div>
+              <span class="incoming-problem">{{ request.problem }}</span>
+              <span class="incoming-date">{{ request.createdAt | date:'MMM d, HH:mm' }}</span>
+              <div class="incoming-actions">
+                <button type="button" class="btn-verify" (click)="verify(request)">
+                  {{ 'specialistDashboard.incoming.verify' | translate }}
+                </button>
+                <button type="button" class="btn-decline" (click)="decline(request)">
+                  {{ 'specialistDashboard.incoming.decline' | translate }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <a class="incoming-footer" routerLink="/specialist/requests">
+          {{ 'specialistDashboard.incoming.viewAll' | translate }} <span aria-hidden="true">→</span>
+        </a>
+      } @else {
+        <p class="incoming-empty">{{ 'specialistDashboard.incoming.empty' | translate }}</p>
+      }
+    </article>
+  </section>
+
+  <!-- Performance chart -->
+  <article class="card performance-card">
+    <header class="card-head">
+      <div>
+        <h3>{{ 'specialistDashboard.performance.title' | translate }}</h3>
+        <p>{{ 'specialistDashboard.performance.subtitle' | translate }}</p>
+      </div>
+      <div class="view-toggle" role="group" [attr.aria-label]="'specialistDashboard.performance.title' | translate">
+        <button
+          type="button"
+          [class.is-active]="store.performanceView() === 'monthly'"
+          (click)="setPerformanceView('monthly')">
+          {{ 'specialistDashboard.performance.monthly' | translate }}
+        </button>
+        <button
+          type="button"
+          [class.is-active]="store.performanceView() === 'annual'"
+          (click)="setPerformanceView('annual')">
+          {{ 'specialistDashboard.performance.annual' | translate }}
+        </button>
+      </div>
+    </header>
+
+    @if (chartPolyline()) {
+      <div class="chart-frame">
+        <svg
+          class="chart-svg"
+          [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+          preserveAspectRatio="none"
+          role="img"
+          [attr.aria-label]="'specialistDashboard.performance.subtitle' | translate">
+          <defs>
+            <linearGradient id="perfFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2e4a3a" stop-opacity="0.16" />
+              <stop offset="100%" stop-color="#2e4a3a" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path class="chart-area" [attr.d]="chartArea()" fill="url(#perfFill)" />
+          <polyline class="chart-line" [attr.points]="chartPolyline()" />
+        </svg>
+      </div>
+
+      <div class="chart-axis">
+        @for (label of chartLabels(); track $index) {
+          <span>{{ label }}</span>
+        }
+      </div>
+
+      <div class="chart-legend">
+        <span class="legend-dot" aria-hidden="true"></span>
+        {{ 'specialistDashboard.performance.legend' | translate }}
+      </div>
+    } @else {
+      <p class="chart-empty">{{ 'specialistDashboard.performance.empty' | translate }}</p>
+    }
+  </article>
+</section>

@@ -6,6 +6,8 @@
       <router-outlet />
     </main>
 
-    <app-onboarding-checklist />
+    @if (!isSpecialist()) {
+      <app-onboarding-checklist />
+    }
   </section>
 </section>

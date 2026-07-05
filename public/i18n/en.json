@@ -1160,6 +1160,57 @@
     "30days": "30 days",
     "campaign": "Campaign"
   },
+  "specialistDashboard": {
+    "subtitle": "Monitor incoming requests, epidemiological alerts, and your active interventions.",
+    "noDataYet": "No data yet",
+    "welcome": {
+      "title": "Welcome back, Specialist.",
+      "body": "Your technical expertise is crucial today. We've identified critical alerts that require your immediate review in your sector."
+    },
+    "kpis": {
+      "resolved": "Resolved Interventions",
+      "thisMonth": "This month",
+      "acceptance": "Acceptance Rate",
+      "phytosanitary": "Phytosanitary Efficiency",
+      "status": {
+        "optimal": "Optimal control",
+        "watch": "Needs monitoring",
+        "critical": "Critical control"
+      }
+    },
+    "zonal": {
+      "title": "Zonal prospecting radar",
+      "subtitle": "Identified risk in your zone",
+      "fullMap": "Full map",
+      "kmAway": "km away",
+      "empty": "No zonal risks detected in your area."
+    },
+    "severity": {
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "incoming": {
+      "title": "Incoming requests",
+      "new": "new",
+      "plot": "Plot",
+      "problem": "Problem",
+      "date": "Date",
+      "action": "Action",
+      "verify": "Verify",
+      "decline": "Decline",
+      "viewAll": "View all applications",
+      "empty": "No incoming requests right now."
+    },
+    "performance": {
+      "title": "Performance of interventions",
+      "subtitle": "Accepted cases over time",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "legend": "Accepted cases",
+      "empty": "No accepted cases to chart yet."
+    }
+  },
   "sidebar": {
     "brand": "Viora Dashboard",
     "navigation": "Dashboard navigation",
@@ -1174,6 +1225,10 @@
     "expertAssistance": "Expert Assistance",
     "expenseHistory": "Expense History",
     "interventions": "Interventions",
+    "interventionMarketplace": "Intervention Marketplace",
+    "myRequests": "My Requests",
+    "fieldInspection": "Field Inspection",
+    "myProfile": "My Profile",
     "settings": "Settings",
     "subscription": "Subscription",
     "support": "Support",
