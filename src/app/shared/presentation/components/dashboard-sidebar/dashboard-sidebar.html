@@ -17,7 +17,7 @@
 
   <nav class="sidebar-nav" [attr.aria-label]="'sidebar.navigation' | translate">
     <section class="nav-group">
-      @for (item of mainItems; track item.labelKey) {
+      @for (item of mainItems(); track item.labelKey) {
         <a
           class="nav-item"
           [routerLink]="item.route"

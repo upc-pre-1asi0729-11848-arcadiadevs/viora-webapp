@@ -49,7 +49,8 @@ export class DashboardSidebar {
     () => this.session.session()?.photoUrl?.trim() || '/assets/images/dashboard/generic-user.jpg',
   );
 
-  protected readonly mainItems: SidebarItem[] = [
+  /** Primary navigation for the grower (producer) segment. */
+  private readonly growerItems: SidebarItem[] = [
     {
       labelKey: 'sidebar.dashboard',
       route: '/dashboard',
@@ -97,6 +98,46 @@ export class DashboardSidebar {
       iconPath: '/assets/icons/dashboard/construct-outline.svg',
     },
   ];
+
+  /**
+   * Primary navigation for the specialist segment. Distinct workspace: the
+   * specialist reviews incoming producer requests and manages field
+   * interventions rather than tending their own plots (My Portfolio is
+   * intentionally deferred).
+   */
+  private readonly specialistItems: SidebarItem[] = [
+    {
+      labelKey: 'sidebar.dashboard',
+      route: '/dashboard',
+      iconPath: '/assets/icons/dashboard/grid-outline.svg',
+      exact: true,
+    },
+    {
+      labelKey: 'sidebar.interventionMarketplace',
+      route: '/specialist/marketplace',
+      icon: 'storefront',
+    },
+    {
+      labelKey: 'sidebar.myRequests',
+      route: '/specialist/requests',
+      icon: 'inbox',
+    },
+    {
+      labelKey: 'sidebar.fieldInspection',
+      route: '/specialist/field-inspection',
+      icon: 'center_focus_weak',
+    },
+    {
+      labelKey: 'sidebar.myProfile',
+      route: '/settings',
+      icon: 'person',
+    },
+  ];
+
+  /** Primary navigation, chosen by the signed-in user's segment. */
+  protected readonly mainItems = computed<SidebarItem[]>(() =>
+    this.session.isSpecialist() ? this.specialistItems : this.growerItems,
+  );
 
   protected readonly secondaryItems: SidebarItem[] = [
     {
