@@ -1,7 +1,11 @@
 import { Routes } from '@angular/router';
 
+import { specialistDashboardMatch } from './dashboard-role.guard';
+
 const producerDashboard = () =>
   import('./views/producer-dashboard/producer-dashboard').then((m) => m.ProducerDashboard);
+const specialistDashboard = () =>
+  import('./views/specialist-dashboard/specialist-dashboard').then((m) => m.SpecialistDashboard);
 const plotOverviewPage = () =>
   import('./views/plot-overview-page/plot-overview-page').then((m) => m.PlotOverviewPage);
 const weatherPage = () =>
@@ -51,13 +55,33 @@ const workspacePlaceholderRoutes: Routes = [
     },
   },
   {
-    path: 'specialist',
-    title: 'Specialist Workspace',
+    path: 'specialist/marketplace',
+    title: 'Intervention Marketplace',
     loadComponent: comingSoonPage,
     data: {
-      pageTitle: 'Specialist Workspace',
-      sectionLabel: 'Specialist',
-      subtitle: 'Review producer requests, cases, and field interventions — coming soon.',
+      pageTitle: 'Intervention Marketplace',
+      sectionLabel: 'Intervention Marketplace',
+      subtitle: 'Browse open producer cases and publish your service proposals — coming soon.',
+    },
+  },
+  {
+    path: 'specialist/requests',
+    title: 'My Requests',
+    loadComponent: comingSoonPage,
+    data: {
+      pageTitle: 'My Requests',
+      sectionLabel: 'My Requests',
+      subtitle: 'Track the producer requests assigned to you and their status — coming soon.',
+    },
+  },
+  {
+    path: 'specialist/field-inspection',
+    title: 'Field Inspection',
+    loadComponent: comingSoonPage,
+    data: {
+      pageTitle: 'Field Inspection',
+      sectionLabel: 'Field Inspection',
+      subtitle: 'Log on-site inspection findings for your active interventions — coming soon.',
     },
   },
 ];
@@ -66,6 +90,15 @@ const workspacePlaceholderRoutes: Routes = [
  * Route tree for workspace views that are not owned by a feature bounded context.
  */
 export const workspaceRoutes: Routes = [
+  // Both dashboards share `/dashboard`; the specialist matcher wins for
+  // specialist accounts, the producer dashboard is the fallback. Each stays in
+  // its own lazy chunk.
+  {
+    path: 'dashboard',
+    title: 'Overview',
+    canMatch: [specialistDashboardMatch],
+    loadComponent: specialistDashboard,
+  },
   {
     path: 'dashboard',
     title: 'Overview',
