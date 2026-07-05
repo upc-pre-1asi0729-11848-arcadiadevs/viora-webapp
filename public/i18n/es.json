@@ -1211,6 +1211,76 @@
       "empty": "Aún no hay casos aceptados para graficar."
     }
   },
+  "specialistMarketplace": {
+    "subtitle": "Casos entrantes enrutados a ti — revisa el contexto de la alerta y responde antes de que expiren.",
+    "noDataYet": "Sin datos aún",
+    "empty": "No hay casos entrantes por ahora. Las nuevas solicitudes de productores enrutadas a ti aparecerán aquí.",
+    "emptyError": "No pudimos acceder al marketplace. Tus casos entrantes aparecerán aquí cuando el servicio esté disponible.",
+    "breadcrumb": {
+      "marketplace": "Marketplace de intervención",
+      "overview": "Resumen"
+    },
+    "kpis": {
+      "newCases": "Casos nuevos",
+      "new": "nuevos",
+      "newCasesFoot": "Enrutados a ti y en espera de respuesta.",
+      "contact": "Contacto",
+      "public": "Público",
+      "contactFoot": "Así te ven los productores en el marketplace.",
+      "viewProfile": "Ver perfil de contacto",
+      "acceptance": "Tasa de aceptación",
+      "active": "Casos activos",
+      "activeFoot": "Intervenciones actualmente en curso."
+    },
+    "producers": {
+      "title": "Productores encontrados",
+      "subtitle": "Casos entrantes que esperan tu respuesta.",
+      "count": "{{count}} casos"
+    },
+    "severity": {
+      "CRITICAL": "Crítica",
+      "HIGH": "Alta",
+      "MEDIUM": "Media",
+      "LOW": "Baja"
+    },
+    "card": {
+      "new": "Nuevo",
+      "producer": "Productor",
+      "producerFallback": "Productor",
+      "production": "producción",
+      "ha": "ha",
+      "plots": "{{count}} parcelas",
+      "ndvi": "NDVI",
+      "decline": "Rechazar",
+      "review": "Revisar caso"
+    },
+    "log": {
+      "title": "Registro de casos entrantes",
+      "subtitle": "Un índice rápido de los casos enrutados a ti.",
+      "viewPipeline": "Ir a mis solicitudes",
+      "colRequest": "Solicitud",
+      "colProducer": "Productor",
+      "colProblem": "Problema",
+      "colReceived": "Recibido",
+      "colAction": "Acción",
+      "review": "Revisar",
+      "empty": "Aún no hay casos para listar."
+    },
+    "modal": {
+      "title": "Envía tu propuesta",
+      "subtitle": "Responde a este caso con una propuesta de servicio. El productor decide si la acepta.",
+      "serviceTitle": "Título del servicio",
+      "duration": "Duración estimada",
+      "scope": "Alcance del trabajo",
+      "scopeHint": "Una tarea por línea.",
+      "amount": "Monto",
+      "currency": "Moneda",
+      "details": "Detalles de la propuesta",
+      "cancel": "Cancelar",
+      "send": "Enviar propuesta",
+      "sending": "Enviando…"
+    }
+  },
   "sidebar": {
     "brand": "Viora Dashboard",
     "navigation": "Navegación del dashboard",

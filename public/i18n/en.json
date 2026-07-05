@@ -1211,6 +1211,76 @@
       "empty": "No accepted cases to chart yet."
     }
   },
+  "specialistMarketplace": {
+    "subtitle": "Incoming cases routed to you — review the alert context and respond before they expire.",
+    "noDataYet": "No data yet",
+    "empty": "No incoming cases right now. New producer requests routed to you will appear here.",
+    "emptyError": "We couldn't reach the marketplace. Your incoming cases will appear here once the service is available.",
+    "breadcrumb": {
+      "marketplace": "Intervention Marketplace",
+      "overview": "Overview"
+    },
+    "kpis": {
+      "newCases": "New cases",
+      "new": "new",
+      "newCasesFoot": "Routed to you and awaiting a response.",
+      "contact": "Contact",
+      "public": "Public",
+      "contactFoot": "This is how producers see you across the marketplace.",
+      "viewProfile": "View Contact Profile",
+      "acceptance": "Acceptance rate",
+      "active": "Active cases",
+      "activeFoot": "Interventions currently in progress."
+    },
+    "producers": {
+      "title": "Producers found",
+      "subtitle": "Incoming cases awaiting your response.",
+      "count": "{{count}} cases"
+    },
+    "severity": {
+      "CRITICAL": "Critical",
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "card": {
+      "new": "New",
+      "producer": "Producer",
+      "producerFallback": "Producer",
+      "production": "production",
+      "ha": "ha",
+      "plots": "{{count}} plots",
+      "ndvi": "NDVI",
+      "decline": "Decline",
+      "review": "Review case"
+    },
+    "log": {
+      "title": "Incoming case log",
+      "subtitle": "A scannable index of the cases routed to you.",
+      "viewPipeline": "Go to my requests",
+      "colRequest": "Request",
+      "colProducer": "Producer",
+      "colProblem": "Problem",
+      "colReceived": "Received",
+      "colAction": "Action",
+      "review": "Review",
+      "empty": "No cases to list yet."
+    },
+    "modal": {
+      "title": "Send your proposal",
+      "subtitle": "Respond to this case with a service proposal. The producer decides whether to accept it.",
+      "serviceTitle": "Service title",
+      "duration": "Estimated duration",
+      "scope": "Scope of work",
+      "scopeHint": "One task per line.",
+      "amount": "Amount",
+      "currency": "Currency",
+      "details": "Proposal details",
+      "cancel": "Cancel",
+      "send": "Send proposal",
+      "sending": "Sending…"
+    }
+  },
   "sidebar": {
     "brand": "Viora Dashboard",
     "navigation": "Dashboard navigation",

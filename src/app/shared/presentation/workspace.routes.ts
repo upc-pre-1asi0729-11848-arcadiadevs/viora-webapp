@@ -12,6 +12,8 @@ const weatherPage = () =>
   import('./views/weather-page/weather-page').then((m) => m.WeatherPage);
 const comingSoonPage = () =>
   import('./views/coming-soon-page/coming-soon-page').then((m) => m.ComingSoonPage);
+const specialistMarketplace = () =>
+  import('./views/specialist-marketplace/specialist-marketplace').then((m) => m.SpecialistMarketplace);
 
 const workspacePlaceholderRoutes: Routes = [
   {
@@ -57,12 +59,7 @@ const workspacePlaceholderRoutes: Routes = [
   {
     path: 'specialist/marketplace',
     title: 'Intervention Marketplace',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Intervention Marketplace',
-      sectionLabel: 'Intervention Marketplace',
-      subtitle: 'Browse open producer cases and publish your service proposals — coming soon.',
-    },
+    loadComponent: specialistMarketplace,
   },
   {
     path: 'specialist/requests',
