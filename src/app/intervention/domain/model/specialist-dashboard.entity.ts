@@ -13,13 +13,18 @@ export type ZonalRiskSeverity = 'HIGH' | 'MEDIUM' | 'LOW';
 /** Phytosanitary efficiency qualitative status (drives the KPI pill). */
 export type PhytosanitaryStatus = 'optimal' | 'watch' | 'critical';
 
-/** Headline KPI block (Resolved · Acceptance · Phytosanitary efficiency). */
+/**
+ * Headline KPI block (Resolved · Acceptance · Phytosanitary efficiency).
+ * Nullable metrics have no value yet for the signed-in specialist: the
+ * acceptance rate/delta are null until they have decided proposals, and the
+ * phytosanitary efficiency is null until an intervention-outcome source exists.
+ */
 export interface SpecialistKpis {
   readonly resolvedInterventions: number;
-  readonly acceptanceRatePercent: number;
-  readonly acceptanceRateDeltaPercent: number;
-  readonly phytosanitaryEfficiencyPercent: number;
-  readonly phytosanitaryStatus: PhytosanitaryStatus;
+  readonly acceptanceRatePercent: number | null;
+  readonly acceptanceRateDeltaPercent: number | null;
+  readonly phytosanitaryEfficiencyPercent: number | null;
+  readonly phytosanitaryStatus: PhytosanitaryStatus | null;
 }
 
 /** A single entry in the "Zonal prospecting radar" list. */

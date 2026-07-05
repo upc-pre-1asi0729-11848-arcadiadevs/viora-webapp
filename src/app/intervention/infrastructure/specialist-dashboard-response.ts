@@ -61,10 +61,12 @@ export class SpecialistDashboardAssembler {
     return {
       kpis: {
         resolvedInterventions: resource.resolvedInterventions ?? 0,
-        acceptanceRatePercent: resource.acceptanceRatePercent ?? 0,
-        acceptanceRateDeltaPercent: resource.acceptanceRateDeltaPercent ?? 0,
-        phytosanitaryEfficiencyPercent: resource.phytosanitaryEfficiencyPercent ?? 0,
-        phytosanitaryStatus: PHYTO_STATUSES.includes(status) ? status : 'optimal',
+        // Null metrics stay null so the view can show an empty state instead of
+        // a misleading zero — no fabricated data.
+        acceptanceRatePercent: resource.acceptanceRatePercent ?? null,
+        acceptanceRateDeltaPercent: resource.acceptanceRateDeltaPercent ?? null,
+        phytosanitaryEfficiencyPercent: resource.phytosanitaryEfficiencyPercent ?? null,
+        phytosanitaryStatus: PHYTO_STATUSES.includes(status) ? status : null,
       },
       zonalRisks: (resource.zonalRisks ?? []).map(SpecialistDashboardAssembler.toZonalRisk),
       incomingRequests: (resource.incomingRequests ?? []).map(
