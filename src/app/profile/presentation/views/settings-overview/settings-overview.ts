@@ -21,6 +21,7 @@ import { UserProfile } from '../../../domain/model/user-profile.entity';
 
 import { BillingStore } from '../../../../billing/application/billing.store';
 import { Coupon } from '../../../../billing/domain/model/coupon.entity';
+import { SubscriptionStore } from '../../../../billing/application/subscription.store';
 import { SecurityStore } from '../../../../iam/application/security.store';
 
 /** Settings sections. */
@@ -47,6 +48,7 @@ interface PasswordMessage {
 export class SettingsOverviewView implements OnInit {
   protected readonly store = inject(ProfileStore);
   protected readonly billing = inject(BillingStore);
+  protected readonly subscription = inject(SubscriptionStore);
   protected readonly security = inject(SecurityStore);
   private readonly agronomicApi = inject(AgronomicApiService);
   private readonly cloudinary = inject(CloudinaryService);
@@ -72,7 +74,20 @@ export class SettingsOverviewView implements OnInit {
   protected readonly language = signal('');
   protected readonly location = signal('');
   protected readonly specialtyArea = signal('');
+  // Specialist marketplace fields (drive the real recommendation matching).
+  protected readonly latitude = signal('');
+  protected readonly longitude = signal('');
+  protected readonly serviceRadiusKm = signal('');
+  protected readonly serviceTags = signal('');
+  protected readonly availability = signal('');
   protected readonly photoUrl = signal('');
+
+  protected readonly availabilityOptions = [
+    { value: 'AVAILABLE_TODAY', labelKey: 'settingsPage.profile.availabilityToday' },
+    { value: 'AVAILABLE_TOMORROW', labelKey: 'settingsPage.profile.availabilityTomorrow' },
+    { value: 'AVAILABLE_THIS_WEEK', labelKey: 'settingsPage.profile.availabilityWeek' },
+    { value: 'UNAVAILABLE', labelKey: 'settingsPage.profile.availabilityUnavailable' },
+  ];
   protected readonly uploadingPhoto = signal(false);
   protected readonly photoError = signal<string | null>(null);
   protected readonly totalHectares = signal(0);
@@ -111,21 +126,49 @@ export class SettingsOverviewView implements OnInit {
     const current = this.tabs.find((tab) => tab.id === this.activeTab());
     return [
       { label: 'Settings', labelKey: 'settingsPage.breadcrumb', disabled: true },
-      { label: 'Profile', labelKey: current?.labelKey ?? 'settingsPage.tabs.profile', disabled: true },
+      {
+        label: 'Profile',
+        labelKey: current?.labelKey ?? 'settingsPage.tabs.profile',
+        disabled: true,
+      },
     ];
   });
 
+  protected readonly isSpecialistProfile = computed<boolean>(
+    () => this.session.isSpecialist() || this.store.profile().role === 'specialist',
+  );
+
   /** Live preview of the marketplace card as the other party sees it. */
-  protected readonly preview = computed<UserProfile>(() =>
-    this.store.profile().withChanges({
+  protected readonly preview = computed<UserProfile>(() => {
+    const profile = this.store.profile();
+    return profile.withChanges({
+      role: this.isSpecialistProfile() ? 'specialist' : profile.role,
       fullName: this.fullName(),
+      jobTitle: this.jobTitle(),
       specialtyArea: this.specialtyArea(),
       location: this.location(),
       photoUrl: this.photoUrl(),
       totalHectares: this.totalHectares(),
       plotCount: this.plotCount(),
-    }),
+    });
+  });
+
+  protected readonly specialistDisplayRole = computed<string>(() => {
+    const profile = this.preview();
+    return profile.specialtyArea || profile.jobTitle || profile.roleLabel;
+  });
+
+  protected readonly hasSubscriptionData = computed<boolean>(
+    () => this.subscription.subscription() !== null || this.subscription.currentPlan() !== null,
   );
+
+  protected readonly isSpecialistProPlan = computed<boolean>(() => {
+    const plan = this.subscription.currentPlan();
+    const active = this.subscription.subscription();
+    return (
+      this.isProPlan(plan?.code, plan?.name) || this.isProPlan(active?.planCode, active?.planName)
+    );
+  });
 
   constructor() {
     // Refill the profile draft whenever a freshly loaded/saved profile arrives.
@@ -137,7 +180,11 @@ export class SettingsOverviewView implements OnInit {
 
   ngOnInit(): void {
     this.store.load();
-    this.loadFarmTotals();
+    if (!this.session.isSpecialist()) {
+      this.loadFarmTotals();
+    } else {
+      this.subscription.load();
+    }
   }
 
   protected selectTab(tab: SettingsTab): void {
@@ -161,7 +208,11 @@ export class SettingsOverviewView implements OnInit {
   /** Header refresh: reload whatever the active tab shows. */
   protected resetDraft(): void {
     this.store.load();
-    this.loadFarmTotals();
+    if (!this.session.isSpecialist()) {
+      this.loadFarmTotals();
+    } else {
+      this.subscription.load();
+    }
     if (this.activeTab() === 'referrals') {
       this.billing.load();
     } else if (this.activeTab() === 'security') {
@@ -177,6 +228,11 @@ export class SettingsOverviewView implements OnInit {
     this.language.set(profile.language);
     this.location.set(profile.location);
     this.specialtyArea.set(profile.specialtyArea);
+    this.latitude.set(profile.latitude != null ? String(profile.latitude) : '');
+    this.longitude.set(profile.longitude != null ? String(profile.longitude) : '');
+    this.serviceRadiusKm.set(profile.serviceRadiusKm != null ? String(profile.serviceRadiusKm) : '');
+    this.serviceTags.set(profile.serviceTags);
+    this.availability.set(profile.availability);
     this.photoUrl.set(profile.photoUrl);
   }
 
@@ -189,6 +245,7 @@ export class SettingsOverviewView implements OnInit {
   }
 
   protected saveChanges(): void {
+    const specialist = this.isSpecialistProfile();
     this.store.save({
       fullName: this.fullName().trim(),
       email: this.email().trim(),
@@ -197,8 +254,24 @@ export class SettingsOverviewView implements OnInit {
       language: this.language(),
       location: this.location().trim(),
       specialtyArea: this.specialtyArea().trim(),
+      // Specialist-only marketplace fields; omitted for producers.
+      latitude: specialist ? this.toNumberOrNull(this.latitude()) : undefined,
+      longitude: specialist ? this.toNumberOrNull(this.longitude()) : undefined,
+      serviceRadiusKm: specialist ? this.toNumberOrNull(this.serviceRadiusKm()) : undefined,
+      serviceTags: specialist ? this.serviceTags().trim() : undefined,
+      availability: specialist ? this.availability().trim() : undefined,
       photoUrl: this.photoUrl(),
     });
+  }
+
+  /** Parses a numeric input, returning null for blank/invalid values. */
+  private toNumberOrNull(value: string): number | null {
+    const trimmed = value.trim();
+    if (trimmed === '') {
+      return null;
+    }
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
   /** True while Cloudinary is not configured, disabling the change-photo button. */
@@ -346,11 +419,17 @@ export class SettingsOverviewView implements OnInit {
     this.passwordMessage.set(null);
 
     if (this.newPassword().length < 8) {
-      this.passwordMessage.set({ tone: 'error', text: 'New password must be at least 8 characters.' });
+      this.passwordMessage.set({
+        tone: 'error',
+        text: 'New password must be at least 8 characters.',
+      });
       return;
     }
     if (this.newPassword() !== this.confirmPassword()) {
-      this.passwordMessage.set({ tone: 'error', text: 'New password and confirmation do not match.' });
+      this.passwordMessage.set({
+        tone: 'error',
+        text: 'New password and confirmation do not match.',
+      });
       return;
     }
 
@@ -363,7 +442,10 @@ export class SettingsOverviewView implements OnInit {
           this.newPassword.set('');
           this.confirmPassword.set('');
         } else {
-          this.passwordMessage.set({ tone: 'error', text: message ?? 'Could not update your password.' });
+          this.passwordMessage.set({
+            tone: 'error',
+            text: message ?? 'Could not update your password.',
+          });
         }
       },
     );
@@ -391,5 +473,14 @@ export class SettingsOverviewView implements OnInit {
         void this.router.navigate(['/login']);
       }
     });
+  }
+
+  protected goToSubscription(): void {
+    void this.router.navigate(['/subscription']);
+  }
+
+  private isProPlan(code?: string, name?: string): boolean {
+    const value = `${code ?? ''} ${name ?? ''}`.toLowerCase();
+    return value.includes('pro');
   }
 }

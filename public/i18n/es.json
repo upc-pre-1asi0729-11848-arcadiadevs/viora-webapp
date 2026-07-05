@@ -78,6 +78,7 @@
     "profile": {
       "personalTitle": "Información personal",
       "personalSubtitle": "Tu nombre y datos de contacto tal como los ven los especialistas.",
+      "specialistPersonalSubtitle": "Tu nombre y datos de contacto tal como los ven los productores.",
       "yourName": "Tu nombre",
       "jobTitleFallback": "Cargo",
       "uploading": "Subiendo…",
@@ -91,15 +92,51 @@
       "saveChanges": "Guardar cambios",
       "marketplaceTitle": "Visibilidad en el marketplace",
       "marketplaceSubtitle": "Se muestra en tu tarjeta de perfil cuando los especialistas reciben tus solicitudes de asistencia.",
+      "specialistMarketplaceSubtitle": "Se muestra en tu tarjeta de especialista cuando los productores solicitan asistencia experta.",
       "groveFocus": "Enfoque del cultivo",
       "groveFocusPlaceholder": "ej. Producción de aceite de oliva",
+      "specialtyArea": "Área de especialidad",
+      "specialtyAreaPlaceholder": "ej. Especialista fitosanitario",
       "location": "Ubicación",
       "locationPlaceholder": "ej. Valle de Ica, Perú",
+      "serviceArea": "Área de servicio",
+      "serviceAreaPlaceholder": "ej. Valle de Ica, Perú",
+      "serviceTags": "Tags de servicio",
+      "serviceTagsPlaceholder": "p. ej. Monitoreo de Xylella, Síntomas foliares, Inspección de campo",
+      "serviceTagsHint": "Separados por comas. Se cotejan con la alerta para posicionarte ante los productores.",
+      "availability": "Disponibilidad",
+      "availabilitySelect": "Selecciona disponibilidad",
+      "availabilityToday": "Disponible hoy",
+      "availabilityTomorrow": "Disponible mañana",
+      "availabilityWeek": "Disponible esta semana",
+      "availabilityUnavailable": "No disponible",
+      "latitude": "Latitud base",
+      "latitudePlaceholder": "p. ej. -18.0146",
+      "longitude": "Longitud base",
+      "longitudePlaceholder": "p. ej. -70.2536",
+      "serviceRadius": "Radio de servicio (km)",
+      "serviceRadiusPlaceholder": "p. ej. 150",
+      "serviceRadiusHint": "Hasta dónde te desplazas. Los productores dentro de este radio te ven primero.",
+      "successRate": "Tasa de éxito",
+      "cases": "Casos",
+      "distance": "Distancia",
+      "request": "Solicitar",
+      "noDataYet": "No data yet",
+      "proBadgeTitle": "Badge Pro del marketplace",
+      "proBadgeSubtitle": "Controla el tag verificado Pro que se muestra en tu tarjeta de especialista.",
+      "proBadgeNoData": "La información de suscripción aún no está disponible, así que no se puede confirmar la elegibilidad del badge.",
+      "activateBadge": "Activar badge",
+      "proBadgeReady": "Tu plan Pro podrá mostrar este badge cuando el backend exponga la preferencia.",
+      "proBadgeLockedTitle": "Sube a Specialist Pro",
+      "proBadgeLockedBody": "Las cuentas Pro pueden mostrar el badge verificado Pro para ganar visibilidad en las recomendaciones de productores.",
+      "viewProPlan": "Ver plan Pro",
       "totalArea": "Área total cultivada",
       "totalAreaHint": "Sumada automáticamente desde tus parcelas en Mis Parcelas.",
       "previewCaption": "Cómo ven los especialistas tu solicitud",
+      "specialistPreviewCaption": "Cómo ven los productores tu tarjeta de especialista",
       "respond": "Responder",
-      "previewNote": "Esta vista previa se actualiza en vivo mientras editas. Es exactamente lo que ve un especialista cuando envías una solicitud de asistencia desde Asistencia Experta."
+      "previewNote": "Esta vista previa se actualiza en vivo mientras editas. Es exactamente lo que ve un especialista cuando envías una solicitud de asistencia desde Asistencia Experta.",
+      "specialistPreviewNote": "Esta vista previa usa solo campos reales del perfil. Las métricas, tags, disponibilidad y distancia del marketplace permanecen vacías hasta que el backend las entregue."
     },
     "referrals": {
       "title": "Referidos",
@@ -245,6 +282,28 @@
       "subtitle": "Tu tarjeta se maneja de forma segura con MercadoPago.",
       "body": "Viora nunca almacena los datos completos de tu tarjeta. Tu método de pago se actualiza automáticamente la próxima vez que completes un pago a través del checkout seguro de MercadoPago.",
       "gotIt": "Entendido"
+    },
+    "specialist": {
+      "headerSubtitle": "Administra tu suscripción de especialista, visibilidad e historial de facturación.",
+      "plansSubtitle": "Compara niveles para visibilidad en marketplace y flujos de intervención.",
+      "plusTagline": "Empieza a recibir oportunidades de productores mejor calificadas.",
+      "proTagline": "Mayor visibilidad en marketplace con badge verificado Pro.",
+      "marketplaceAccess": "Oportunidades del marketplace",
+      "proBadge": "Badge verificado Pro",
+      "proBadgeReady": "Disponible con Pro",
+      "proBadgeLocked": "Requiere Specialist Pro",
+      "noDataYet": "No data yet",
+      "switchToPro": "Cambiar a Pro",
+      "cancelNote": "Perderás acceso a visibilidad en marketplace, prescripciones digitales y herramientas de conexión con productores al final del período de facturación.",
+      "cancelModalSuffix": ", luego perderás visibilidad en marketplace, herramientas de prescripción y beneficios de conexión con productores.",
+      "features": {
+        "opportunityFeed": "Feed de oportunidades para necesidades activas de productores",
+        "prescriptions": "Prescripciones digitales y herramientas de evaluación en campo",
+        "visibility": "Visibilidad dentro del ecosistema Viora",
+        "fieldContext": "Acceso a contexto de campo e indicadores de riesgo satelitales",
+        "fasterConnection": "Conexión más rápida con productores que necesitan intervención",
+        "proBadge": "Badge verificado Pro para mayor visibilidad en marketplace"
+      }
     }
   },
   "assistance": {
@@ -276,7 +335,10 @@
       "yourPlot": "tu parcela",
       "candidates": "{{count}} candidatos",
       "bestMatch": "Mejor coincidencia",
-      "request": "Solicitar"
+      "request": "Solicitar",
+      "loading": "Buscando especialistas cerca de esta parcela…",
+      "empty": "Aún no hay especialistas disponibles cerca de esta parcela. Vuelve a intentarlo más tarde a medida que se sumen especialistas.",
+      "noAlert": "Selecciona una parcela con una alerta activa para ver especialistas recomendados."
     },
     "requests": {
       "title": "Mis solicitudes de asistencia",
@@ -705,7 +767,17 @@
     "readFull": "Leer documento completo",
     "lastUpdated": "Última actualización {{date}}",
     "footnote": "Este resumen se proporciona por conveniencia dentro de la app Viora.",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "specialist": {
+      "headerSubtitle": "Encuentra respuestas sobre tu flujo de marketplace o revisa los acuerdos legales de tu cuenta.",
+      "searchPlaceholder": "Busca artículos de ayuda, ej. \"casos de productores\" o \"propuestas de servicio\"",
+      "marketplace": {
+        "title": "Intervention Marketplace",
+        "subtitle": "Revisa casos entrantes de productores, envía propuestas y gestiona oportunidades de intervención en campo.",
+        "tag": "Casos",
+        "button": "Abrir marketplace"
+      }
+    }
   },
   "quickActions": {
     "title": "Acciones rápidas",

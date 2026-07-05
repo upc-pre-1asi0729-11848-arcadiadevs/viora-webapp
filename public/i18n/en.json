@@ -78,6 +78,7 @@
     "profile": {
       "personalTitle": "Personal information",
       "personalSubtitle": "Your name and contact details as seen by specialists.",
+      "specialistPersonalSubtitle": "Your name and contact details as seen by producers.",
       "yourName": "Your name",
       "jobTitleFallback": "Job title",
       "uploading": "Uploading…",
@@ -91,15 +92,51 @@
       "saveChanges": "Save changes",
       "marketplaceTitle": "Marketplace visibility",
       "marketplaceSubtitle": "Shown on your profile card when specialists receive your assistance requests.",
+      "specialistMarketplaceSubtitle": "Shown on your specialist card when producers request expert assistance.",
       "groveFocus": "Grove focus",
       "groveFocusPlaceholder": "e.g. Olive oil production",
+      "specialtyArea": "Specialty area",
+      "specialtyAreaPlaceholder": "e.g. Phytosanitary specialist",
       "location": "Location",
       "locationPlaceholder": "e.g. Valle de Ica, Peru",
+      "serviceArea": "Service area",
+      "serviceAreaPlaceholder": "e.g. Ica valley, Peru",
+      "serviceTags": "Service tags",
+      "serviceTagsPlaceholder": "e.g. Xylella monitoring, Leaf symptoms, Field inspection",
+      "serviceTagsHint": "Comma-separated. These are matched against the alert to rank you for producers.",
+      "availability": "Availability",
+      "availabilitySelect": "Select availability",
+      "availabilityToday": "Available today",
+      "availabilityTomorrow": "Available tomorrow",
+      "availabilityWeek": "Available this week",
+      "availabilityUnavailable": "Unavailable",
+      "latitude": "Base latitude",
+      "latitudePlaceholder": "e.g. -18.0146",
+      "longitude": "Base longitude",
+      "longitudePlaceholder": "e.g. -70.2536",
+      "serviceRadius": "Service radius (km)",
+      "serviceRadiusPlaceholder": "e.g. 150",
+      "serviceRadiusHint": "How far you'll travel. Producers within this radius see you first.",
+      "successRate": "Success rate",
+      "cases": "Cases",
+      "distance": "Distance",
+      "request": "Request",
+      "noDataYet": "No data yet",
+      "proBadgeTitle": "Pro marketplace badge",
+      "proBadgeSubtitle": "Controls the verified Pro tag shown on your specialist card.",
+      "proBadgeNoData": "Subscription data is not available yet, so badge eligibility cannot be confirmed.",
+      "activateBadge": "Activate badge",
+      "proBadgeReady": "Your Pro plan can show this badge once the backend exposes the badge preference.",
+      "proBadgeLockedTitle": "Upgrade to Specialist Pro",
+      "proBadgeLockedBody": "Pro accounts can display the verified Pro badge for higher visibility in producer recommendations.",
+      "viewProPlan": "View Pro plan",
       "totalArea": "Total farmed area",
       "totalAreaHint": "Summed automatically from your plots in My Plots.",
       "previewCaption": "How specialists see your request",
+      "specialistPreviewCaption": "How producers see your specialist card",
       "respond": "Respond",
-      "previewNote": "This preview updates live as you edit. It is exactly what a specialist sees when you send an assistance request from Expert Assistance."
+      "previewNote": "This preview updates live as you edit. It is exactly what a specialist sees when you send an assistance request from Expert Assistance.",
+      "specialistPreviewNote": "This preview uses only real profile fields. Marketplace metrics, tags, availability, and distance stay empty until the backend provides them."
     },
     "referrals": {
       "title": "Referrals",
@@ -245,6 +282,28 @@
       "subtitle": "Your card is handled securely by MercadoPago.",
       "body": "Viora never stores your full card details. Your payment method updates automatically the next time you complete a payment through MercadoPago's secure checkout.",
       "gotIt": "Got it"
+    },
+    "specialist": {
+      "headerSubtitle": "Manage your specialist subscription, visibility, and billing history.",
+      "plansSubtitle": "Compare specialist tiers for marketplace visibility and intervention workflows.",
+      "plusTagline": "Start receiving better-qualified producer opportunities.",
+      "proTagline": "Higher marketplace visibility with a verified Pro badge.",
+      "marketplaceAccess": "Marketplace opportunities",
+      "proBadge": "Verified Pro badge",
+      "proBadgeReady": "Available with Pro",
+      "proBadgeLocked": "Requires Specialist Pro",
+      "noDataYet": "No data yet",
+      "switchToPro": "Switch to Pro",
+      "cancelNote": "You'll lose access to marketplace visibility, digital prescriptions, and producer connection tools at the end of the billing period.",
+      "cancelModalSuffix": ", then lose marketplace visibility, prescription tooling and producer connection benefits.",
+      "features": {
+        "opportunityFeed": "Opportunity feed for active producer service needs",
+        "prescriptions": "Digital prescriptions and field assessment tools",
+        "visibility": "Visibility inside the Viora ecosystem",
+        "fieldContext": "Access to field context and satellite-based risk indicators",
+        "fasterConnection": "Faster connection with producers who need intervention",
+        "proBadge": "Verified Pro badge for higher marketplace visibility"
+      }
     }
   },
   "assistance": {
@@ -276,7 +335,10 @@
       "yourPlot": "your plot",
       "candidates": "{{count}} candidates",
       "bestMatch": "Best match",
-      "request": "Request"
+      "request": "Request",
+      "loading": "Finding specialists near this plot…",
+      "empty": "No specialists are available near this plot yet. Try again later as more specialists join.",
+      "noAlert": "Select a plot with an active alert to see recommended specialists."
     },
     "requests": {
       "title": "My assistance requests",
@@ -705,7 +767,17 @@
     "readFull": "Read full document",
     "lastUpdated": "Last updated {{date}}",
     "footnote": "This summary is provided for convenience within the Viora app.",
-    "close": "Close"
+    "close": "Close",
+    "specialist": {
+      "headerSubtitle": "Find answers about your marketplace workflow or review your account's legal agreements.",
+      "searchPlaceholder": "Search help articles, e.g. \"producer cases\" or \"service proposals\"",
+      "marketplace": {
+        "title": "Intervention Marketplace",
+        "subtitle": "Review incoming producer cases, submit proposals, and manage field intervention opportunities.",
+        "tag": "Cases",
+        "button": "Open marketplace"
+      }
+    }
   },
   "quickActions": {
     "title": "Quick Actions",

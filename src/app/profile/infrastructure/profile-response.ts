@@ -12,6 +12,11 @@ export interface ProfileResource {
   language: string | null;
   location: string | null;
   specialtyArea: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  serviceRadiusKm: number | null;
+  serviceTags: string | null;
+  availability: string | null;
   photoUrl: string | null;
 }
 
@@ -24,6 +29,11 @@ export interface UpdateProfileRequest {
   language: string;
   location: string;
   specialtyArea: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  serviceRadiusKm?: number | null;
+  serviceTags?: string;
+  availability?: string;
   photoUrl: string;
 }
 
@@ -51,6 +61,11 @@ export class ProfileAssembler {
       language: resource.language ?? 'English',
       location: resource.location ?? '',
       specialtyArea: resource.specialtyArea ?? '',
+      latitude: resource.latitude ?? null,
+      longitude: resource.longitude ?? null,
+      serviceRadiusKm: resource.serviceRadiusKm ?? null,
+      serviceTags: resource.serviceTags ?? '',
+      availability: resource.availability ?? '',
       photoUrl: resource.photoUrl ?? '',
     });
   }
