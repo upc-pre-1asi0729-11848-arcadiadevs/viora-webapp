@@ -32,6 +32,10 @@ export const environment = {
     serviceProposals: '/service-proposals',
     specialists: '/specialists',
 
+    // Specialist segment dashboard read model: aggregates the signed-in
+    // specialist's KPIs, incoming producer requests, and performance series.
+    specialistDashboard: '/specialist-dashboard',
+
     // Interventions (technical-service lifecycle): composed overview + the
     // prescription/execution/outcome action endpoints.
     interventions: '/interventions',
