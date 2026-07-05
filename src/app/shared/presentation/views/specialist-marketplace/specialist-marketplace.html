@@ -1,0 +1,262 @@
+<section class="specialist-marketplace">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    [subtitle]="'specialistMarketplace.subtitle' | translate"
+    [updatedLabel]="updatedAgoLabel()"
+    (refresh)="refresh()" />
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <article class="card kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">{{ 'specialistMarketplace.kpis.newCases' | translate }}</span>
+        @if (store.newCasesCount() > 0) {
+          <span class="new-badge">{{ store.newCasesCount() }} {{ 'specialistMarketplace.kpis.new' | translate }}</span>
+        }
+      </div>
+      <strong class="kpi-value">{{ store.newCasesCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistMarketplace.kpis.newCasesFoot' | translate }}</span>
+    </article>
+
+    <article class="card kpi-card kpi-card--contact">
+      <div class="kpi-head">
+        <span class="kpi-label">{{ 'specialistMarketplace.kpis.contact' | translate }}</span>
+        <span class="kpi-pill">{{ 'specialistMarketplace.kpis.public' | translate }}</span>
+      </div>
+      <span class="kpi-contact-body">{{ 'specialistMarketplace.kpis.contactFoot' | translate }}</span>
+      <a class="contact-button" routerLink="/settings">
+        <mat-icon>badge</mat-icon> {{ 'specialistMarketplace.kpis.viewProfile' | translate }}
+      </a>
+    </article>
+
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistMarketplace.kpis.acceptance' | translate }}</span>
+      @if (store.acceptanceRatePercent(); as acceptance) {
+        <strong class="kpi-value">{{ acceptance | number:'1.0-1' }}%</strong>
+        <div class="kpi-bar">
+          <span class="kpi-bar-fill" [style.width.%]="acceptance"></span>
+        </div>
+      } @else {
+        <strong class="kpi-value is-empty">—</strong>
+        <span class="kpi-foot">{{ 'specialistMarketplace.noDataYet' | translate }}</span>
+      }
+    </article>
+
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistMarketplace.kpis.active' | translate }}</span>
+      <strong class="kpi-value">{{ store.activeCasesCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistMarketplace.kpis.activeFoot' | translate }}</span>
+    </article>
+  </section>
+
+  <!-- Separator -->
+  <div class="section-divider">
+    <div class="divider-copy">
+      <h2>{{ 'specialistMarketplace.producers.title' | translate }}</h2>
+      <p>{{ 'specialistMarketplace.producers.subtitle' | translate }}</p>
+    </div>
+    @if (store.newCasesCount() > 0) {
+      <span class="divider-count">
+        {{ 'specialistMarketplace.producers.count' | translate: { count: store.newCasesCount() } }}
+      </span>
+    }
+  </div>
+
+  <!-- Incoming case cards -->
+  @if (store.cases().length > 0) {
+    <section class="case-grid">
+      @for (caseItem of store.cases(); track caseItem.id) {
+        <article class="card case-card">
+          <div class="case-top">
+            <span class="severity-pill" [attr.data-severity]="severityKey(caseItem.severity)">
+              {{ 'specialistMarketplace.severity.' + severityKey(caseItem.severity) | translate }}
+            </span>
+            <span class="new-tag">{{ 'specialistMarketplace.card.new' | translate }}</span>
+          </div>
+
+          <div class="case-identity">
+            <span class="avatar">{{ initials(caseItem.producerName) }}</span>
+            <div class="identity-text">
+              <div class="identity-name">
+                <strong>{{ caseItem.producerName || ('specialistMarketplace.card.producerFallback' | translate) }}</strong>
+                <span class="producer-tag">{{ 'specialistMarketplace.card.producer' | translate }}</span>
+              </div>
+              @if (caseItem.productionType) {
+                <span class="identity-sub">
+                  {{ caseItem.productionType }} {{ 'specialistMarketplace.card.production' | translate }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="case-meta">
+            @if (caseItem.location) {
+              <span><mat-icon>location_on</mat-icon> {{ caseItem.location }}</span>
+            }
+            @if (caseItem.areaHectares != null || caseItem.plotCount != null) {
+              <span>
+                <mat-icon>eco</mat-icon>
+                @if (caseItem.areaHectares != null) {
+                  {{ caseItem.areaHectares | number:'1.0-1' }} {{ 'specialistMarketplace.card.ha' | translate }}
+                }
+                @if (caseItem.plotCount != null) {
+                  &middot; {{ 'specialistMarketplace.card.plots' | translate: { count: caseItem.plotCount } }}
+                }
+              </span>
+            }
+          </div>
+
+          <div class="case-subrow">
+            <span><mat-icon>grass</mat-icon> {{ caseItem.plotName }}</span>
+            @if (caseItem.createdAt) {
+              <span><mat-icon>schedule</mat-icon> {{ caseItem.createdAt | date:'MMM d · HH:mm' }}</span>
+            }
+          </div>
+
+          <div class="case-tags">
+            @if (caseItem.problem) {
+              <span class="case-tag"><mat-icon>coronavirus</mat-icon> {{ caseItem.problem }}</span>
+            }
+            @if (caseItem.ndvi != null) {
+              <span class="case-tag case-tag--ndvi">
+                <mat-icon>satellite_alt</mat-icon>
+                {{ 'specialistMarketplace.card.ndvi' | translate }} · {{ caseItem.ndvi | number:'1.2-2' }}
+              </span>
+            }
+          </div>
+
+          <div class="case-actions">
+            <button type="button" class="btn-decline" (click)="decline(caseItem)">
+              {{ 'specialistMarketplace.card.decline' | translate }}
+            </button>
+            <button type="button" class="btn-review" (click)="openProposal(caseItem)">
+              <mat-icon>send</mat-icon> {{ 'specialistMarketplace.card.review' | translate }}
+            </button>
+          </div>
+        </article>
+      }
+    </section>
+  } @else {
+    <section class="card empty-panel">
+      <mat-icon>inbox</mat-icon>
+      @if (store.error()) {
+        <p>{{ 'specialistMarketplace.emptyError' | translate }}</p>
+      } @else {
+        <p>{{ 'specialistMarketplace.empty' | translate }}</p>
+      }
+    </section>
+  }
+
+  <!-- Incoming case log (tabular index of the same cases) -->
+  <article class="card log-card">
+    <header class="card-head">
+      <div>
+        <h3>{{ 'specialistMarketplace.log.title' | translate }}</h3>
+        <p>{{ 'specialistMarketplace.log.subtitle' | translate }}</p>
+      </div>
+      <a class="card-link" routerLink="/specialist/requests">
+        {{ 'specialistMarketplace.log.viewPipeline' | translate }} <span aria-hidden="true">→</span>
+      </a>
+    </header>
+
+    @if (store.cases().length > 0) {
+      <div class="log-table" role="table">
+        <div class="log-row log-head" role="row">
+          <span role="columnheader">{{ 'specialistMarketplace.log.colRequest' | translate }}</span>
+          <span role="columnheader">{{ 'specialistMarketplace.log.colProducer' | translate }}</span>
+          <span role="columnheader">{{ 'specialistMarketplace.log.colProblem' | translate }}</span>
+          <span role="columnheader">{{ 'specialistMarketplace.log.colReceived' | translate }}</span>
+          <span role="columnheader">{{ 'specialistMarketplace.log.colAction' | translate }}</span>
+        </div>
+
+        @for (caseItem of store.cases(); track caseItem.id) {
+          <div class="log-row" role="row">
+            <span class="log-code">{{ caseItem.referenceCode || '—' }}</span>
+            <span>{{ caseItem.producerName || ('specialistMarketplace.card.producerFallback' | translate) }}</span>
+            <span class="log-problem">{{ caseItem.problem || '—' }}</span>
+            <span class="log-date">{{ (caseItem.createdAt | date:'MMM d, HH:mm') || '—' }}</span>
+            <span>
+              <button type="button" class="log-action" (click)="openProposal(caseItem)">
+                {{ 'specialistMarketplace.log.review' | translate }}
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="log-empty">{{ 'specialistMarketplace.log.empty' | translate }}</p>
+    }
+  </article>
+</section>
+
+<!-- Submit proposal modal -->
+@if (modalCase(); as caseItem) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ 'specialistMarketplace.modal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'specialistMarketplace.modal.subtitle' | translate }}</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="modal-case">
+        <span class="avatar">{{ initials(caseItem.producerName) }}</span>
+        <div class="identity-text">
+          <strong>{{ caseItem.producerName || ('specialistMarketplace.card.producerFallback' | translate) }}</strong>
+          <span class="modal-case-sub">
+            {{ caseItem.plotName }}
+            @if (caseItem.problem) { · {{ caseItem.problem }} }
+          </span>
+        </div>
+        <span class="severity-pill" [attr.data-severity]="severityKey(caseItem.severity)">
+          {{ 'specialistMarketplace.severity.' + severityKey(caseItem.severity) | translate }}
+        </span>
+      </div>
+
+      <div class="modal-grid">
+        <label class="field">
+          <span>{{ 'specialistMarketplace.modal.serviceTitle' | translate }}</span>
+          <input type="text" [value]="formTitle()" (input)="formTitle.set($any($event.target).value)" />
+        </label>
+        <label class="field">
+          <span>{{ 'specialistMarketplace.modal.duration' | translate }}</span>
+          <input type="text" [value]="formDuration()" (input)="formDuration.set($any($event.target).value)" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>{{ 'specialistMarketplace.modal.scope' | translate }}</span>
+        <textarea rows="4" [value]="formScope()" (input)="formScope.set($any($event.target).value)"></textarea>
+        <small>{{ 'specialistMarketplace.modal.scopeHint' | translate }}</small>
+      </label>
+
+      <div class="modal-grid">
+        <label class="field">
+          <span>{{ 'specialistMarketplace.modal.amount' | translate }}</span>
+          <input type="number" min="0" [value]="formAmount()" (input)="formAmount.set($any($event.target).value)" />
+        </label>
+        <label class="field">
+          <span>{{ 'specialistMarketplace.modal.currency' | translate }}</span>
+          <input type="text" [value]="formCurrency()" (input)="formCurrency.set($any($event.target).value)" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>{{ 'specialistMarketplace.modal.details' | translate }}</span>
+        <textarea rows="3" [value]="formDetails()" (input)="formDetails.set($any($event.target).value)"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-decline" (click)="closeModal()">
+          {{ 'specialistMarketplace.modal.cancel' | translate }}
+        </button>
+        <button type="button" class="btn-review" [disabled]="!canSubmit" (click)="submitProposal()">
+          <mat-icon>send</mat-icon>
+          {{ (store.submitting() ? 'specialistMarketplace.modal.sending' : 'specialistMarketplace.modal.send') | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
