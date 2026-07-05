@@ -48,8 +48,6 @@ export class SpecialistMarketplace implements OnInit {
     this.store.refresh();
   }
 
-  protected readonly acceptanceDeltaLabel = computed<string | null>(() => null);
-
   protected readonly updatedAgoLabel = computed<string>(() => {
     const updatedAt = this.store.updatedAt();
     if (!updatedAt) {
