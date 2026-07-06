@@ -1366,6 +1366,22 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* Register can exceed the viewport on short screens: let the page scroll and pin
+   the card top-center safely (no clipped top) instead of the login's fixed lock. */
+.login2-shell.is-register-shell {
+  place-items: safe center;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Discreet globe toggle, floated in the top-right corner over the backdrop. */
+.login2-lang {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  z-index: 3;
+}
+
 .login2-bg {
   position: absolute;
   inset: 0;
@@ -1611,50 +1627,173 @@
 .login2-card.is-register {
   width: min(1160px, 100%);
   grid-template-columns: 1fr 1.12fr;
-  /* Cap to viewport; the form panel scrolls internally, page never does. */
-  max-height: calc(100dvh - 64px);
 }
+/* Frame the window with a MARGIN (card's cream background shows through) rather
+   than a border: a grid item's margin box fills the cell, so the visual is always
+   inset 5px on every side and can never reach the card's clipped bottom edge. */
 .login2-card.is-register .login2-visual {
-  min-height: 100%;
+  min-height: 520px;
+  border: 0;
+  margin: 5px;
 }
 .login2-card.is-register .login2-dots {
   left: auto;
   right: 20px;
 }
+/* Fuller darkening (the image now hosts readable text top-to-bottom). */
 .login2-visual-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to top, rgba(12, 18, 14, 0.72), rgba(12, 18, 14, 0) 62%);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 16, 12, 0.62) 0%,
+    rgba(10, 16, 12, 0.4) 46%,
+    rgba(10, 16, 12, 0.74) 100%
+  );
 }
-.login2-visual-caption {
+
+/* The plan + role the visitor carried from /plans, presented over the image. */
+.reg2-context {
   position: absolute;
-  left: 28px;
-  right: 28px;
-  bottom: 52px;
+  inset: 0;
   z-index: 2;
-}
-.login2-eyebrow--onimage {
-  color: rgba(255, 255, 255, 0.82);
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-}
-.login2-title--onimage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: clamp(28px, 4vw, 46px);
+  /* Reserve the foot of the window for the typed caption + dots. */
+  padding-bottom: 96px;
   color: #fff;
-  margin-top: 4px;
-  min-height: 1.9em;
-  font-size: clamp(26px, 3vw, 38px);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
-.login2-caret--light {
+
+/* Motivational caption typed at the window foot (smaller than the confirmation). */
+.reg2-visual-caption {
+  position: absolute;
+  left: clamp(24px, 4vw, 46px);
+  right: 78px;
+  bottom: 22px;
+  z-index: 2;
+  margin: 0;
+  min-height: 2.5em;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(16px, 1.7vw, 21px);
+  font-weight: 500;
+  line-height: 1.24;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.42);
+}
+.reg2-caption-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 4px;
+  vertical-align: -0.08em;
   background: #fff;
+  border-radius: 1px;
+  animation: login2-caret-blink 1s steps(1, end) infinite;
+}
+.reg2-context-eyebrow {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.82);
+}
+.reg2-context-role {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.reg2-context-role.is-specialist {
+  border-color: rgba(193, 90, 46, 0.5);
+  background: rgba(193, 90, 46, 0.22);
+}
+.reg2-context-role img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.reg2-context-role-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.reg2-context-role-copy strong {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+}
+.reg2-context-role-copy > span {
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.82);
+}
+.reg2-context-plan {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 13px;
+}
+.reg2-context-plan mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #8fe3b4;
+  flex-shrink: 0;
+}
+.reg2-context-plan span {
+  flex: 1;
+}
+.reg2-context-plan strong {
+  text-transform: capitalize;
+}
+.reg2-context-plan a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.reg2-context-benefits {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reg2-context-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+}
+.reg2-context-benefits mat-icon {
+  font-size: 19px;
+  width: 19px;
+  height: 19px;
+  margin-top: 1px;
+  color: #8fe3b4;
+  flex-shrink: 0;
 }
 
 .reg2-panel {
   gap: 16px;
   padding: 34px clamp(26px, 3vw, 46px);
-  overflow-y: auto;
 }
 .reg2-heading {
   margin-top: 2px;
@@ -1669,104 +1808,10 @@
   color: #6b716d;
 }
 
-.reg2-plan-banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: #eef3ec;
-  border: 1px solid #d7e2d3;
-  font-size: 14px;
-  color: #2e4a3a;
-}
-.reg2-plan-banner mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #2e4a3a;
-}
-.reg2-plan-banner span {
-  flex: 1;
-}
-.reg2-plan-banner a {
-  color: #2e4a3a;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.reg2-plan-banner a:hover {
-  text-decoration: underline;
-}
-
 .reg2-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.reg2-roles {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.reg2-role {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1.5px solid #e2ded4;
-  border-radius: 16px;
-  background: #f4f1ea;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-.reg2-role img {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-.reg2-role-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-.reg2-role-copy strong {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1b241f;
-}
-.reg2-role-copy span {
-  font-size: 12px;
-  line-height: 1.35;
-  color: #7a8078;
-}
-.reg2-role:hover:not(:disabled) {
-  border-color: #b9c6b8;
-}
-.reg2-role.is-active {
-  border-color: #2e4a3a;
-  background: #eef3ec;
-  box-shadow: 0 6px 18px rgba(46, 74, 58, 0.14);
-}
-/* Specialist role adopts the brand orange when active. */
-.reg2-role:last-child.is-active {
-  border-color: #c15a2e;
-  background: #f7ede7;
-  box-shadow: 0 6px 18px rgba(193, 90, 46, 0.16);
-}
-.reg2-role:last-child.is-active .reg2-role-copy strong {
-  color: #c15a2e;
-}
-.reg2-roles.is-locked .reg2-role:disabled {
-  opacity: 1;
-  cursor: default;
-}
-.reg2-roles.is-locked .reg2-role:not(.is-active) {
-  opacity: 0.5;
 }
 
 .reg2-grid {
@@ -1792,18 +1837,24 @@
   .login2-card.is-register {
     grid-template-columns: 1fr;
     width: min(560px, 100%);
-    max-height: none;
   }
   .login2-card.is-register .login2-visual {
-    min-height: 220px;
+    min-height: auto;
   }
-  .reg2-panel {
-    overflow-y: visible;
+  /* Stacked: let the context flow and define the panel height instead of being
+     centered over a fixed-height image (which would clip it). */
+  .reg2-context {
+    position: relative;
+    justify-content: flex-start;
+    padding: clamp(24px, 6vw, 40px);
+  }
+  .login2-card.is-register .login2-dots,
+  .reg2-visual-caption {
+    display: none;
   }
 }
 
 @media (max-width: 560px) {
-  .reg2-roles,
   .reg2-grid {
     grid-template-columns: 1fr;
   }

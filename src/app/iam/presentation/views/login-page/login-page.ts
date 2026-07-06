@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AuthStore } from '../../../application/auth.store';
+import { AuthLanguageToggle } from '../../../../shared/presentation/components/auth-language-toggle/auth-language-toggle';
 
 /** A background/story slide: its image, CTA headline, and the segment it evokes. */
 interface LoginSlide {
@@ -16,7 +17,7 @@ interface LoginSlide {
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [MatIconModule, RouterLink, TranslatePipe],
+  imports: [MatIconModule, RouterLink, TranslatePipe, AuthLanguageToggle],
   templateUrl: './login-page.html',
   styleUrls: ['../auth-pages.css'],
 })
@@ -53,8 +54,12 @@ export class LoginPage implements OnDestroy {
     // The login is a fixed-height, full-viewport layout with a pinned backdrop,
     // so lock page scroll while it's shown (restored when leaving).
     document.body.style.overflow = 'hidden';
-    // Type the first headline in, then start the auto-cycle.
-    this.typeIn(this.titleTextAt(0), () => this.scheduleNextSlide());
+    // Wait for the translation bundle before typing so the first headline is never
+    // its raw i18n key (translations load async over HTTP on first paint), then
+    // type it in and start the auto-cycle.
+    this.translate.get(this.carouselSlides[0].titleKey).subscribe((text) => {
+      this.typeIn(text, () => this.scheduleNextSlide());
+    });
   }
 
   ngOnDestroy(): void {

@@ -1,4 +1,6 @@
-<section class="login2-shell">
+<section class="login2-shell is-register-shell">
+  <app-auth-language-toggle class="login2-lang" theme="dark" />
+
   <!-- Blurred backdrop of the same slide, so the crisp card window aligns with it. -->
   <div class="login2-bg" aria-hidden="true">
     @for (slide of carouselSlides; track slide.src; let index = $index) {
@@ -11,8 +13,9 @@
   </div>
 
   <div class="login2-card is-register">
-    <!-- Left: the crisp artistic window with an animated caption -->
-    <div class="login2-visual" aria-hidden="true">
+    <!-- Left: the crisp artistic window, now hosting the plan + role you chose
+         (moved off the form so the right panel stays short, no inner scroll). -->
+    <div class="login2-visual">
       @for (slide of carouselSlides; track slide.src; let index = $index) {
         <span
           class="login2-visual-layer"
@@ -20,10 +23,38 @@
           [style.background-image]="'url(' + slide.src + ')'"></span>
       }
       <div class="login2-visual-scrim"></div>
-      <div class="login2-visual-caption">
-        <span class="login2-eyebrow login2-eyebrow--onimage">{{ 'auth.register.storyEyebrow' | translate }}</span>
-        <h2 class="login2-title login2-title--onimage" aria-live="polite">{{ typedTitle() }}<span class="login2-caret login2-caret--light"></span></h2>
+
+      <div class="reg2-context">
+        <span class="reg2-context-eyebrow">{{ 'auth.register.joiningAs' | translate }}</span>
+
+        <div class="reg2-context-role" [class.is-specialist]="isSpecialist">
+          <img [src]="roleImage" alt="" />
+          <span class="reg2-context-role-copy">
+            <strong>{{ roleNameKey | translate }}</strong>
+            <span>{{ roleDescriptionKey | translate }}</span>
+          </span>
+        </div>
+
+        @if (selectedPlan()) {
+          <div class="reg2-context-plan">
+            <mat-icon aria-hidden="true">verified</mat-icon>
+            <span>{{ 'auth.register.planSelected' | translate }} <strong>{{ selectedPlan() }}</strong></span>
+            <a routerLink="/plans">{{ 'auth.register.changePlan' | translate }}</a>
+          </div>
+        }
+
+        <ul class="reg2-context-benefits">
+          @for (benefit of roleBenefits; track benefit) {
+            <li><mat-icon aria-hidden="true">check_circle</mat-icon>{{ benefit | translate }}</li>
+          }
+        </ul>
       </div>
+
+      <!-- Motivational caption typed at the foot of the window, per segment. -->
+      <p class="reg2-visual-caption" aria-live="polite">
+        {{ typedTitle() }}<span class="reg2-caption-caret" aria-hidden="true"></span>
+      </p>
+
       <div class="login2-dots" role="tablist" aria-label="Background slides">
         @for (slide of carouselSlides; track slide.src; let index = $index) {
           <button
@@ -38,22 +69,15 @@
 
     <!-- Right: the create-account panel -->
     <div class="login2-panel reg2-panel">
-      <a class="login2-back" [href]="landingUrl">
-        <mat-icon aria-hidden="true">arrow_back</mat-icon> {{ 'auth.login.back' | translate }}
+      <!-- Smart back: register is only reachable from /plans, so return there. -->
+      <a class="login2-back" routerLink="/plans">
+        <mat-icon aria-hidden="true">arrow_back</mat-icon> {{ 'auth.register.backToPlans' | translate }}
       </a>
 
       <div class="reg2-heading">
         <h1 class="login2-title reg2-title">{{ 'auth.register.title' | translate }}</h1>
         <p class="reg2-subtitle">{{ 'auth.register.subtitle' | translate }}</p>
       </div>
-
-      @if (selectedPlan()) {
-        <div class="reg2-plan-banner">
-          <mat-icon>verified</mat-icon>
-          <span>{{ 'auth.register.planSelected' | translate }} <strong>{{ selectedPlan() }}</strong></span>
-          <a routerLink="/plans">{{ 'auth.register.changePlan' | translate }}</a>
-        </div>
-      }
 
       @if (auth.error()) {
         <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
@@ -63,33 +87,6 @@
       }
 
       <form class="reg2-form" (submit)="submit(); $event.preventDefault()">
-        <div class="reg2-roles" [class.is-locked]="roleLocked">
-          <button
-            type="button"
-            class="reg2-role"
-            [class.is-active]="role() === 'ROLE_GROWER'"
-            [disabled]="roleLocked"
-            (click)="selectRole('ROLE_GROWER')">
-            <img src="/assets/images/general/olive-producer-character-2.png" alt="" />
-            <span class="reg2-role-copy">
-              <strong>{{ 'auth.roles.producer' | translate }}</strong>
-              <span>{{ 'auth.register.producerDescription' | translate }}</span>
-            </span>
-          </button>
-          <button
-            type="button"
-            class="reg2-role"
-            [class.is-active]="role() === 'ROLE_SPECIALIST'"
-            [disabled]="roleLocked"
-            (click)="selectRole('ROLE_SPECIALIST')">
-            <img src="/assets/images/general/phytosanitary-specialist-character-2.png" alt="" />
-            <span class="reg2-role-copy">
-              <strong>{{ 'auth.roles.specialist' | translate }}</strong>
-              <span>{{ 'auth.register.specialistDescription' | translate }}</span>
-            </span>
-          </button>
-        </div>
-
         <div class="reg2-grid">
           <label class="login2-field">
             <span class="login2-label">{{ 'auth.fields.fullName' | translate }}</span>
