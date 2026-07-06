@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -21,6 +21,7 @@ export class RegisterPage {
   protected readonly auth = inject(AuthStore);
   protected readonly subscription = inject(SubscriptionStore);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   protected readonly fullName = signal('');
   protected readonly email = signal('');
@@ -59,6 +60,13 @@ export class RegisterPage {
     if (plan) {
       this.selectedPlan.set(plan);
       this.selectedInterval = params.get('interval') === 'ANNUAL' ? 'ANNUAL' : 'MONTHLY';
+    } else {
+      // Payment-first: you can't register without first choosing a plan. Send the
+      // visitor to the plan-selection screen (carry any referral code along).
+      this.router.navigate(['/plans'], {
+        queryParams: ref ? { ref } : {},
+        replaceUrl: true,
+      });
     }
   }
 

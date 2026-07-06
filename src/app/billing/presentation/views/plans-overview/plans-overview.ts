@@ -39,6 +39,8 @@ export class PlansOverviewView implements OnInit {
   protected readonly plans = signal<Plan[]>([]);
   protected readonly loading = signal<boolean>(true);
   protected readonly segment = signal<PlanSegment>('grower');
+  /** Referral code carried from a referral link, forwarded into registration. */
+  private referralCode: string | null = null;
   /** True while we hand off to the MercadoPago checkout. */
   protected readonly redirecting = signal<boolean>(false);
 
@@ -67,6 +69,7 @@ export class PlansOverviewView implements OnInit {
     if (role === 'ROLE_SPECIALIST' || role === 'specialist') {
       this.segment.set('specialist');
     }
+    this.referralCode = this.route.snapshot.queryParamMap.get('ref');
     this.api.getPlans().subscribe({
       next: (plans) => {
         this.plans.set(plans);
@@ -97,6 +100,7 @@ export class PlansOverviewView implements OnInit {
         role: this.isSpecialist() ? 'ROLE_SPECIALIST' : 'ROLE_GROWER',
         plan: plan.code,
         interval: plan.interval,
+        ...(this.referralCode ? { ref: this.referralCode } : {}),
       },
     });
   }
