@@ -231,6 +231,7 @@
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;
+  object-fit: cover;
 }
 
 .identity-text {
@@ -586,6 +587,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .field > span {
@@ -602,6 +604,7 @@
 .field input,
 .field textarea {
   width: 100%;
+  box-sizing: border-box;
   padding: 10px 12px;
   border: 1px solid #ddd7cd;
   border-radius: 10px;

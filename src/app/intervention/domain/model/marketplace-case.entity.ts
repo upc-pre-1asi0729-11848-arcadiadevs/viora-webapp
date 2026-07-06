@@ -22,6 +22,8 @@ export interface MarketplaceCase {
   readonly problem: string;
   readonly ndvi: number | null;
   readonly producerName: string;
+  /** Producer's avatar URL; null when unset (view falls back to a monogram). */
+  readonly producerPhotoUrl: string | null;
   /** Crop type (e.g. "Olive"); the view frames it as "<crop> production". */
   readonly productionType: string | null;
   readonly plotName: string;
