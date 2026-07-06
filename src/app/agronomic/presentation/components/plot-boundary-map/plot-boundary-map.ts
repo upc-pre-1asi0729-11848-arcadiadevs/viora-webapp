@@ -355,6 +355,29 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
 
   // ----- Internal rendering -----
 
+  /**
+   * Orders the vertices by angle around their centroid so the polygon can never
+   * self-intersect — clicking corners in a crossing order (e.g. A-C-B-D) would
+   * otherwise draw a bow-tie. Plot fields are effectively convex, so angular
+   * ordering yields exactly the intended clean shape. Markers stay at the raw
+   * click positions; only the connecting geometry (and the saved polygon) uses
+   * this order.
+   */
+  private orderedPoints(): PlotCoordinate[] {
+    const pts = this.points;
+
+    if (pts.length < 3) {
+      return pts;
+    }
+
+    const cx = pts.reduce((sum, point) => sum + point[0], 0) / pts.length;
+    const cy = pts.reduce((sum, point) => sum + point[1], 0) / pts.length;
+
+    return [...pts].sort(
+      (a, b) => Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx),
+    );
+  }
+
   private setupLayers(): void {
     if (!this.map) {
       return;
@@ -398,9 +421,12 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
       this.closed ? [1] : [2, 1.5],
     );
 
-    const lineCoords = this.closed && this.points.length >= 3
-      ? [...this.points, this.points[0]]
-      : this.points;
+    // Draw through the centroid-ordered vertices so the outline is always a
+    // simple polygon, regardless of the order the corners were clicked.
+    const ordered = this.orderedPoints();
+    const lineCoords = this.closed && ordered.length >= 3
+      ? [...ordered, ordered[0]]
+      : ordered;
 
     const lineSource = this.map.getSource(LINE_SOURCE) as mapboxgl.GeoJSONSource;
     lineSource.setData(
@@ -415,13 +441,13 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
 
     const fillSource = this.map.getSource(FILL_SOURCE) as mapboxgl.GeoJSONSource;
     fillSource.setData(
-      this.closed && this.points.length >= 3
+      this.closed && ordered.length >= 3
         ? {
             type: 'Feature',
             properties: {},
             geometry: {
               type: 'Polygon',
-              coordinates: [[...this.points, this.points[0]]],
+              coordinates: [[...ordered, ordered[0]]],
             },
           }
         : this.emptyCollection(),
@@ -490,10 +516,13 @@ export class PlotBoundaryMap implements AfterViewInit, OnDestroy {
 
   private emit(): void {
     this.closedState.set(this.closed);
+    // Emit the ordered vertices so the area and the saved polygon match the clean
+    // outline the user sees — never the raw (possibly crossing) click order.
+    const ordered = this.orderedPoints();
     this.boundaryChange.emit({
-      points: [...this.points],
+      points: [...ordered],
       closed: this.closed,
-      areaHectares: this.points.length >= 3 ? polygonAreaHectares(this.points) : 0,
+      areaHectares: ordered.length >= 3 ? polygonAreaHectares(ordered) : 0,
       addMode: this.addMode,
     });
   }
