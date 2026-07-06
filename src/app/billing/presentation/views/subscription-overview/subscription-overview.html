@@ -170,7 +170,7 @@
         </div>
 
         <div class="plan-grid">
-          @for (plan of store.plans(); track plan.code) {
+          @for (plan of visiblePlans(); track plan.code) {
             <div class="plan-card" [class.is-current]="isCurrentPlan(plan)">
               @if (isCurrentPlan(plan)) {
                 <span class="plan-tag">{{ 'subscriptionPage.plans.currentTag' | translate }}</span>
