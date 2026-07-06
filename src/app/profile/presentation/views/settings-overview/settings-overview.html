@@ -279,6 +279,23 @@
               </div>
             </div>
           }
+
+          <div class="card-actions">
+            <button
+              mat-flat-button
+              type="button"
+              class="primary-button"
+              [disabled]="store.saving()"
+              (click)="saveChanges()"
+            >
+              {{
+                (store.saving()
+                  ? 'settingsPage.profile.saving'
+                  : 'settingsPage.profile.saveChanges'
+                ) | translate
+              }}
+            </button>
+          </div>
         </mat-card>
 
         @if (isSpecialistProfile()) {
@@ -295,33 +312,27 @@
               <span class="pro-preview-badge"><mat-icon>verified</mat-icon> Pro</span>
             </div>
 
-            @if (!hasSubscriptionData()) {
+            @if (isSpecialistProPlan()) {
               <div class="badge-control-row">
-                <span class="badge-lock-icon"><mat-icon>sync_problem</mat-icon></span>
+                <label class="toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="showProBadge()"
+                    (change)="showProBadge.set($any($event.target).checked)"
+                  />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
                 <div class="badge-copy">
-                  <strong>{{ 'settingsPage.profile.noDataYet' | translate }}</strong>
-                  <span>{{ 'settingsPage.profile.proBadgeNoData' | translate }}</span>
-                </div>
-              </div>
-            } @else if (isSpecialistProPlan()) {
-              <div class="badge-control-row">
-                <span class="badge-lock-icon is-open"><mat-icon>lock_open</mat-icon></span>
-                <div class="badge-copy">
-                  <strong>{{ 'settingsPage.profile.activateBadge' | translate }}</strong>
+                  <strong>{{ 'settingsPage.profile.proBadgeToggle' | translate }}</strong>
                   <span>{{ 'settingsPage.profile.proBadgeReady' | translate }}</span>
                 </div>
-                <button
-                  mat-stroked-button
-                  type="button"
-                  class="ghost-button ghost-button--sm"
-                  disabled
-                >
-                  {{ 'settingsPage.profile.noDataYet' | translate }}
-                </button>
               </div>
             } @else {
               <div class="badge-control-row">
-                <span class="badge-lock-icon"><mat-icon>lock</mat-icon></span>
+                <label class="toggle is-locked">
+                  <input type="checkbox" disabled />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
                 <div class="badge-copy">
                   <strong>{{ 'settingsPage.profile.proBadgeLockedTitle' | translate }}</strong>
                   <span>{{ 'settingsPage.profile.proBadgeLockedBody' | translate }}</span>
@@ -332,7 +343,7 @@
                   class="ghost-button ghost-button--sm"
                   (click)="goToSubscription()"
                 >
-                  {{ 'settingsPage.profile.viewProPlan' | translate }}
+                  {{ 'settingsPage.profile.upgradeToPro' | translate }}
                 </button>
               </div>
             }
@@ -390,12 +401,14 @@
               <span class="badge badge--best"
                 ><mat-icon>handyman</mat-icon> {{ 'auth.roles.specialist' | translate }}</span
               >
-              @if (isSpecialistProPlan()) {
+              @if (isSpecialistProPlan() && showProBadge()) {
                 <span class="badge badge--pro"><mat-icon>verified</mat-icon> Pro</span>
               }
-              <span class="badge badge--muted"
-                ><i class="dot"></i> {{ 'settingsPage.profile.noDataYet' | translate }}</span
-              >
+              @if (previewAvailabilityLabelKey()) {
+                <span class="badge badge--avail"
+                  ><i class="dot"></i> {{ previewAvailabilityLabelKey() | translate }}</span
+                >
+              }
             </div>
 
             <div class="preview-identity">
@@ -430,10 +443,6 @@
                   {{ 'settingsPage.profile.noDataYet' | translate }}</span
                 >
               }
-              <span
-                ><mat-icon>near_me</mat-icon> {{ 'settingsPage.profile.distance' | translate }}:
-                {{ 'settingsPage.profile.noDataYet' | translate }}</span
-              >
             </div>
 
             <div class="specialist-tags">

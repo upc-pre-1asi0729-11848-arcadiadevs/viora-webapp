@@ -438,6 +438,14 @@ img.avatar {
   color: #8c877f;
 }
 
+.badge--avail {
+  background: #d6f3e3;
+  color: #1f7a54;
+}
+.badge--avail .dot {
+  background: #1f7a54;
+}
+
 .badge--pro,
 .pro-preview-badge {
   background: #c15a2e;
@@ -585,6 +593,51 @@ img.avatar {
   border-radius: 12px;
   background: #fbfaf7;
   border: 1px solid #ece6db;
+}
+
+/* Pro-badge toggle switch */
+.toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  cursor: pointer;
+}
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-track {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: #d8d2c7;
+  transition: background 0.18s ease;
+}
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(24, 34, 29, 0.28);
+  transition: transform 0.18s ease;
+}
+.toggle input:checked + .toggle-track {
+  background: #c15a2e;
+}
+.toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(20px);
+}
+.toggle.is-locked {
+  cursor: not-allowed;
+}
+.toggle.is-locked .toggle-track {
+  background: #e6e0d5;
 }
 
 .badge-lock-icon {

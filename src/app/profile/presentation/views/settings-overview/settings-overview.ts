@@ -110,6 +110,12 @@ export class SettingsOverviewView implements OnInit {
   protected readonly radiusMax = 500;
   protected readonly radiusDefault = 150;
   protected readonly showLocationPicker = signal(false);
+  /** Default specialty shown pre-filled (editable) for specialists. */
+  private readonly defaultSpecialtyArea = 'Phytosanitary specialist';
+  /** Whether the Pro badge is shown on the card (Pro plan only; display-only). */
+  protected readonly showProBadge = signal(true);
+  /** Guards the draft so incidental profile re-emits never wipe unsaved edits. */
+  private draftHydrated = false;
 
   /** True when the given catalogue tag is part of the current selection. */
   protected isTagSelected(value: string): boolean {
@@ -262,10 +268,17 @@ export class SettingsOverviewView implements OnInit {
   });
 
   constructor() {
-    // Refill the profile draft whenever a freshly loaded/saved profile arrives.
+    // Hydrate the editable draft from the FIRST real profile load only. The store
+    // is a singleton that re-emits on incidental events (a tab's data loading, the
+    // sidebar refreshing identity); re-applying then would wipe unsaved edits, so
+    // guard against it. A manual refresh or save re-arms hydration explicitly.
     effect(() => {
       const profile = this.store.profile();
+      if (this.draftHydrated || !profile.email) {
+        return;
+      }
       this.applyDraftFrom(profile);
+      this.draftHydrated = true;
     });
   }
 
@@ -298,6 +311,7 @@ export class SettingsOverviewView implements OnInit {
 
   /** Header refresh: reload whatever the active tab shows. */
   protected resetDraft(): void {
+    this.draftHydrated = false;
     this.store.load();
     if (!this.session.isSpecialist()) {
       this.loadFarmTotals();
@@ -318,7 +332,10 @@ export class SettingsOverviewView implements OnInit {
     this.jobTitle.set(profile.jobTitle);
     this.language.set(profile.language);
     this.location.set(profile.location);
-    this.specialtyArea.set(profile.specialtyArea);
+    const specialist = this.session.isSpecialist() || profile.role === 'specialist';
+    this.specialtyArea.set(
+      profile.specialtyArea || (specialist ? this.defaultSpecialtyArea : ''),
+    );
     this.latitude.set(profile.latitude != null ? String(profile.latitude) : '');
     this.longitude.set(profile.longitude != null ? String(profile.longitude) : '');
     this.serviceRadiusKm.set(profile.serviceRadiusKm != null ? String(profile.serviceRadiusKm) : '');
