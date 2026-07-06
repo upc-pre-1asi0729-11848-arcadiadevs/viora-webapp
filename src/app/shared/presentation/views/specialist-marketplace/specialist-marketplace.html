@@ -75,7 +75,11 @@
           </div>
 
           <div class="case-identity">
-            <span class="avatar">{{ initials(caseItem.producerName) }}</span>
+            @if (caseItem.producerPhotoUrl) {
+              <img class="avatar" [src]="caseItem.producerPhotoUrl" alt="" />
+            } @else {
+              <span class="avatar">{{ initials(caseItem.producerName) }}</span>
+            }
             <div class="identity-text">
               <div class="identity-name">
                 <strong>{{ caseItem.producerName || ('specialistMarketplace.card.producerFallback' | translate) }}</strong>
@@ -202,7 +206,11 @@
       </div>
 
       <div class="modal-case">
-        <span class="avatar">{{ initials(caseItem.producerName) }}</span>
+        @if (caseItem.producerPhotoUrl) {
+          <img class="avatar" [src]="caseItem.producerPhotoUrl" alt="" />
+        } @else {
+          <span class="avatar">{{ initials(caseItem.producerName) }}</span>
+        }
         <div class="identity-text">
           <strong>{{ caseItem.producerName || ('specialistMarketplace.card.producerFallback' | translate) }}</strong>
           <span class="modal-case-sub">

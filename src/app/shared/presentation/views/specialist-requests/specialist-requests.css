@@ -1,12 +1,14 @@
-:host { display: block; }
-
-.specialist-requests {
+:host {
+  display: block;
   --card-bg: #ffffff;
   --brand: #2e4a3a;
   --ink: #18221d;
   --muted: #6b716d;
   --hairline: #edeae4;
   --surface: #faf8f4;
+}
+
+.specialist-requests {
   min-height: 100%;
   color: var(--ink);
   font-family: 'Poppins', sans-serif;

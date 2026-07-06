@@ -15,6 +15,7 @@ export interface SpecialistCandidateResource {
   tags: string[] | null;
   availability: string | null;
   available: boolean | null;
+  photoUrl: string | null;
 }
 
 /** Maps the backend availability enum to the local presentation availability. */
@@ -42,11 +43,12 @@ export class SpecialistCandidateAssembler {
       id: resource.id ?? null,
       name: resource.name ?? '',
       role: resource.role ?? 'Phytosanitary specialist',
-      successRate: resource.successRate ?? 0,
+      successRate: resource.successRate ?? null,
       caseCount: resource.caseCount ?? 0,
-      distanceKm: resource.distanceKm ?? 0,
+      distanceKm: resource.distanceKm ?? null,
       tags: resource.tags ?? [],
       availability: toAvailability(resource),
+      photoUrl: resource.photoUrl ?? '',
       bestMatch,
     });
   }

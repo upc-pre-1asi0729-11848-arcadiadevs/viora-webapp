@@ -45,6 +45,9 @@ interface ServiceProposalView {
 
 /** View model for the specialist contact card (revealed after acceptance). */
 interface SpecialistContactView {
+  name: string;
+  initials: string;
+  photoUrl: string;
   phone: string;
   email: string;
   whatsapp: string;
@@ -99,14 +102,19 @@ export class CaseDetailView implements OnInit {
     { label: this.caseCode() || '—', disabled: true },
   ]);
 
-  /** The specialist assigned to the case. */
+  /**
+   * The specialist assigned to the case. Prefers the recommendation list (carries
+   * the per-alert distance), then the profile loaded by id — so the identity cards
+   * populate even on a direct visit/reload when recommendations aren't loaded.
+   */
   protected readonly specialist = computed<SpecialistCandidate | null>(() => {
     const specialistId = this.request()?.specialistId ?? null;
     if (specialistId == null) {
-      return null;
+      return this.store.activeSpecialist();
     }
     return (
       this.store.specialists().find((s) => String(s.id) === String(specialistId)) ??
+      this.store.activeSpecialist() ??
       this.store.specialists()[0] ??
       null
     );
@@ -197,13 +205,30 @@ export class CaseDetailView implements OnInit {
   protected readonly contact = computed<SpecialistContactView>(() => {
     const contact = this.store.activeContact();
     const proposal = this.store.activeProposal();
+    // The contact carries the specialist's own name/photo, so the unlocked card
+    // stays populated even when the recommendation list isn't loaded.
+    const name = contact?.fullName?.trim() || this.specialist()?.name || '';
     return {
+      name,
+      initials: this.monogram(name),
+      photoUrl: contact?.photoUrl?.trim() || this.specialist()?.photoUrl || '',
       phone: contact?.phone || '—',
       email: contact?.email || '—',
       whatsapp: contact?.whatsapp ?? '',
       visitScheduled: proposal?.proposedDateLabel ?? '—',
     };
   });
+
+  /** Two-letter monogram from a full name, for the avatar fallback. */
+  private monogram(name: string): string {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return '';
+    }
+    const first = parts[0][0] ?? '';
+    const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+    return (first + last).toUpperCase();
+  }
 
   /** Case timeline derived from the request lifecycle, newest event first. */
   protected readonly timeline = computed<CaseTimelineEvent[]>(() => {
@@ -321,17 +346,6 @@ export class CaseDetailView implements OnInit {
         status: 'ALERT_CONFIRMED',
       })
       .subscribe({ error: () => undefined });
-  }
-
-  /**
-   * Simulates the specialist submitting a proposal (no specialist app exists yet),
-   * moving the case from "awaiting" to "proposal received" in-place.
-   */
-  protected simulateResponse(): void {
-    const code = this.caseCode();
-    if (code) {
-      this.store.simulateSpecialistResponse(code);
-    }
   }
 
   // ----- Decline modal -----

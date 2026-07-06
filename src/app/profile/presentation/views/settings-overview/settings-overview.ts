@@ -110,6 +110,8 @@ export class SettingsOverviewView implements OnInit {
   protected readonly radiusMax = 500;
   protected readonly radiusDefault = 150;
   protected readonly showLocationPicker = signal(false);
+  /** Flags the mandatory-phone error after a specialist tries to save without one. */
+  protected readonly phoneRequiredError = signal(false);
   /** Default specialty shown pre-filled (editable) for specialists. */
   private readonly defaultSpecialtyArea = 'Phytosanitary specialist';
   /** Whether the Pro badge is shown on the card (Pro plan only); persisted. */
@@ -355,6 +357,14 @@ export class SettingsOverviewView implements OnInit {
 
   protected saveChanges(): void {
     const specialist = this.isSpecialistProfile();
+    // A specialist's phone is part of the contact the producer unlocks, so it's
+    // mandatory: block the save and flag the field instead of persisting a card
+    // with no reachable phone.
+    if (specialist && this.phone().trim() === '') {
+      this.phoneRequiredError.set(true);
+      return;
+    }
+    this.phoneRequiredError.set(false);
     this.store.save({
       fullName: this.fullName().trim(),
       email: this.email().trim(),

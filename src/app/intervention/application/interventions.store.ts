@@ -28,6 +28,7 @@ export class InterventionsStore {
   readonly selectedCode = signal<string | null>(null);
   readonly prescription = signal<PrescriptionView | null>(null);
   readonly specialistNames = signal<Record<number, string>>({});
+  readonly specialistPhotoUrls = signal<Record<number, string>>({});
 
   readonly loading = signal<{ list: boolean; action: boolean }>({ list: false, action: false });
   readonly lastSyncedAt = signal<number | null>(null);
@@ -103,8 +104,12 @@ export class InterventionsStore {
     return this.specialistNames()[specialistId] ?? `Specialist #${specialistId}`;
   }
 
-  simulatePrescription(requestId: number, onDone?: (ok: boolean) => void): void {
-    this.runAction(this.api.simulatePrescription(requestId), onDone);
+  /** Resolves a specialist's avatar URL from the loaded profile map (empty when none). */
+  specialistPhotoUrl(specialistId: number | null): string {
+    if (specialistId == null) {
+      return '';
+    }
+    return this.specialistPhotoUrls()[specialistId] ?? '';
   }
 
   certifyApplication(request: CertifyApplicationRequest, onDone?: (ok: boolean) => void): void {
@@ -167,7 +172,7 @@ export class InterventionsStore {
       return;
     }
 
-    forkJoin(ids.map((id) => this.api.getSpecialistProfile(id)))
+    forkJoin(ids.map((id) => this.api.getSpecialistProfileCard(id)))
       .pipe(take(1))
       .subscribe({
         next: (profiles) => {
@@ -175,7 +180,16 @@ export class InterventionsStore {
             const next = { ...names };
             profiles.forEach((profile) => {
               if (profile.id != null) {
-                next[profile.id] = profile.fullName || `Specialist #${profile.id}`;
+                next[Number(profile.id)] = profile.name || `Specialist #${profile.id}`;
+              }
+            });
+            return next;
+          });
+          this.specialistPhotoUrls.update((photos) => {
+            const next = { ...photos };
+            profiles.forEach((profile) => {
+              if (profile.id != null && profile.photoUrl) {
+                next[Number(profile.id)] = profile.photoUrl;
               }
             });
             return next;

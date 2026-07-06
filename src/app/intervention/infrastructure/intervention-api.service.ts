@@ -184,22 +184,6 @@ export class InterventionApiService extends BaseApi {
       .pipe(map((resource) => SpecialistContactAssembler.toEntityFromResource(resource)));
   }
 
-  /**
-   * Simulates the specialist responding to a request by submitting a proposal on
-   * their behalf (there is no specialist-facing app yet). Moves the request to
-   * PROPOSAL_RECEIVED so the full case flow can be demoed end-to-end.
-   * @param {number|string} requestId - Request to generate a proposal for.
-   * @returns {Observable<InterventionRequest>}
-   */
-  simulateSpecialistResponse(requestId: number | string): Observable<InterventionRequest> {
-    return this.http
-      .post<InterventionRequestResource>(
-        `${this.requestsEndpoint.resourceUrl(requestId)}/simulate-specialist-response`,
-        {},
-      )
-      .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
-  }
-
   // ----- Interventions (technical-service lifecycle) -----
 
   /**
@@ -212,20 +196,6 @@ export class InterventionApiService extends BaseApi {
         params: this.queryParams(),
       })
       .pipe(map((resources) => InterventionSummaryAssembler.toEntitiesFromResources(resources ?? [])));
-  }
-
-  /**
-   * Simulates the specialist issuing a technical prescription for an accepted case
-   * (no specialist app yet), moving the intervention to PRESCRIPTION_ISSUED.
-   * @param {number|string} requestId - The accepted intervention request.
-   */
-  simulatePrescription(requestId: number | string): Observable<PrescriptionView> {
-    return this.http
-      .post<TreatmentPrescriptionResource>(
-        `${this.interventionsEndpoint.resourceUrl(requestId)}/simulate-prescription`,
-        {},
-      )
-      .pipe(map((resource) => TreatmentPrescriptionAssembler.toView(resource)));
   }
 
   /**
@@ -252,6 +222,42 @@ export class InterventionApiService extends BaseApi {
           fullName: resource.fullName ?? '',
           role: resource.role ?? '',
         })),
+      );
+  }
+
+  /**
+   * Fetches a specialist's full public profile as a card entity (name, role,
+   * avatar, stats, availability) so the case detail can show the specialist
+   * reliably even when the recommendation list isn't loaded.
+   */
+  getSpecialistProfileCard(id: number | string): Observable<SpecialistCandidate> {
+    return this.http
+      .get<{
+        id: number | null;
+        fullName: string | null;
+        role: string | null;
+        successRate: number | null;
+        caseCount: number | null;
+        distanceKm: number | null;
+        tags: string[] | null;
+        availability: string | null;
+        photoUrl: string | null;
+      }>(this.specialistsEndpoint.resourceUrl(id))
+      .pipe(
+        map((resource) =>
+          SpecialistCandidateAssembler.toEntityFromResource({
+            id: resource.id ?? null,
+            name: resource.fullName ?? '',
+            role: resource.role ?? null,
+            successRate: resource.successRate ?? null,
+            caseCount: resource.caseCount ?? null,
+            distanceKm: resource.distanceKm ?? null,
+            tags: resource.tags ?? null,
+            availability: resource.availability ?? null,
+            available: null,
+            photoUrl: resource.photoUrl ?? null,
+          }),
+        ),
       );
   }
 

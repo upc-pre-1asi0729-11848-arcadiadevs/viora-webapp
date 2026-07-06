@@ -4,6 +4,8 @@ import { SpecialistContact } from '../domain/model/specialist-contact.entity';
 export interface SpecialistContactResource {
   specialistId: number | null;
   fullName: string | null;
+  role: string | null;
+  photoUrl: string | null;
   phone: string | null;
   email: string | null;
   whatsapp: string | null;
@@ -14,6 +16,8 @@ export class SpecialistContactAssembler {
     return new SpecialistContact({
       specialistId: resource.specialistId ?? null,
       fullName: resource.fullName ?? '',
+      role: resource.role ?? '',
+      photoUrl: resource.photoUrl ?? '',
       phone: resource.phone ?? '',
       email: resource.email ?? '',
       whatsapp: resource.whatsapp ?? '',

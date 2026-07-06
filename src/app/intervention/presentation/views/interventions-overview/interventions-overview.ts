@@ -144,12 +144,14 @@ export class InterventionsOverviewView implements OnInit {
   }
 
   /** The primary lifecycle action available for the selected intervention. */
-  protected readonly nextAction = computed<'simulate' | 'certify' | 'impact' | 'close' | null>(() => {
+  protected readonly nextAction = computed<'awaiting' | 'certify' | 'impact' | 'close' | null>(() => {
     const item = this.selected();
     if (!item) {
       return null;
     }
-    if (item.needsPrescription) return 'simulate';
+    // Accepted but not yet prescribed: the specialist issues the real prescription
+    // from their Field Inspection screen, so the producer just waits here.
+    if (item.needsPrescription) return 'awaiting';
     if (item.needsCertification) return 'certify';
     if (item.inRecovery) return 'impact';
     if (item.readyToClose) return 'close';
@@ -157,13 +159,6 @@ export class InterventionsOverviewView implements OnInit {
   });
 
   // ----- Actions -----
-
-  protected simulatePrescription(): void {
-    const item = this.selected();
-    if (item?.interventionRequestId != null) {
-      this.store.simulatePrescription(item.interventionRequestId);
-    }
-  }
 
   protected openModal(kind: 'certify' | 'impact' | 'close'): void {
     if (kind === 'certify') {
