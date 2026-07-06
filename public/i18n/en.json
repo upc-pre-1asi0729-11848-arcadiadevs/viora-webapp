@@ -46,6 +46,11 @@
       }
     },
     "register": {
+      "slides": {
+        "s1": "Every grove, intelligently watched.",
+        "s2": "From early alert to field action.",
+        "s3": "Where your data meets the harvest."
+      },
       "storyEyebrow": "Choose your workspace",
       "storyTitle": "Build the right field account.",
       "storyDescription": "Producers monitor plots and devices. Specialists support teams with field expertise, diagnostics and interventions.",

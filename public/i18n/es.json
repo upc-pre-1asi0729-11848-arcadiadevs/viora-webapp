@@ -46,6 +46,11 @@
       }
     },
     "register": {
+      "slides": {
+        "s1": "Cada olivar, vigilado con inteligencia.",
+        "s2": "De la alerta temprana a la acción en campo.",
+        "s3": "Donde tus datos se encuentran con la cosecha."
+      },
       "storyEyebrow": "Elige tu espacio de trabajo",
       "storyTitle": "Construye la cuenta de campo adecuada.",
       "storyDescription": "Los productores monitorean parcelas y dispositivos. Los especialistas apoyan a los equipos con experiencia de campo, diagnósticos e intervenciones.",

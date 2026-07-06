@@ -1606,6 +1606,209 @@
   border: 0;
 }
 
+/* Register variant — same window-over-backdrop language, wider card,
+   headline captioned over the image, denser two-column form. */
+.login2-card.is-register {
+  width: min(1160px, 100%);
+  grid-template-columns: 1fr 1.12fr;
+  /* Cap to viewport; the form panel scrolls internally, page never does. */
+  max-height: calc(100dvh - 64px);
+}
+.login2-card.is-register .login2-visual {
+  min-height: 100%;
+}
+.login2-card.is-register .login2-dots {
+  left: auto;
+  right: 20px;
+}
+.login2-visual-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(12, 18, 14, 0.72), rgba(12, 18, 14, 0) 62%);
+}
+.login2-visual-caption {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 52px;
+  z-index: 2;
+}
+.login2-eyebrow--onimage {
+  color: rgba(255, 255, 255, 0.82);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+.login2-title--onimage {
+  color: #fff;
+  margin-top: 4px;
+  min-height: 1.9em;
+  font-size: clamp(26px, 3vw, 38px);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+.login2-caret--light {
+  background: #fff;
+}
+
+.reg2-panel {
+  gap: 16px;
+  padding: 34px clamp(26px, 3vw, 46px);
+  overflow-y: auto;
+}
+.reg2-heading {
+  margin-top: 2px;
+}
+.reg2-title {
+  min-height: 0;
+  font-size: clamp(26px, 3vw, 34px);
+}
+.reg2-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6b716d;
+}
+
+.reg2-plan-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #eef3ec;
+  border: 1px solid #d7e2d3;
+  font-size: 14px;
+  color: #2e4a3a;
+}
+.reg2-plan-banner mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #2e4a3a;
+}
+.reg2-plan-banner span {
+  flex: 1;
+}
+.reg2-plan-banner a {
+  color: #2e4a3a;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.reg2-plan-banner a:hover {
+  text-decoration: underline;
+}
+
+.reg2-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reg2-roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.reg2-role {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid #e2ded4;
+  border-radius: 16px;
+  background: #f4f1ea;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.reg2-role img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.reg2-role-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.reg2-role-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1b241f;
+}
+.reg2-role-copy span {
+  font-size: 12px;
+  line-height: 1.35;
+  color: #7a8078;
+}
+.reg2-role:hover:not(:disabled) {
+  border-color: #b9c6b8;
+}
+.reg2-role.is-active {
+  border-color: #2e4a3a;
+  background: #eef3ec;
+  box-shadow: 0 6px 18px rgba(46, 74, 58, 0.14);
+}
+/* Specialist role adopts the brand orange when active. */
+.reg2-role:last-child.is-active {
+  border-color: #c15a2e;
+  background: #f7ede7;
+  box-shadow: 0 6px 18px rgba(193, 90, 46, 0.16);
+}
+.reg2-role:last-child.is-active .reg2-role-copy strong {
+  color: #c15a2e;
+}
+.reg2-roles.is-locked .reg2-role:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.reg2-roles.is-locked .reg2-role:not(.is-active) {
+  opacity: 0.5;
+}
+
+.reg2-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.reg2-req {
+  color: #c15a2e;
+  font-style: normal;
+  font-weight: 700;
+}
+.reg2-hint {
+  font-size: 12px;
+  color: #8a827a;
+}
+.reg2-hint--error {
+  color: #b4402a;
+}
+
+@media (max-width: 900px) {
+  .login2-card.is-register {
+    grid-template-columns: 1fr;
+    width: min(560px, 100%);
+    max-height: none;
+  }
+  .login2-card.is-register .login2-visual {
+    min-height: 220px;
+  }
+  .reg2-panel {
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 560px) {
+  .reg2-roles,
+  .reg2-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 820px) {
   .login2-shell {
     padding: 16px;

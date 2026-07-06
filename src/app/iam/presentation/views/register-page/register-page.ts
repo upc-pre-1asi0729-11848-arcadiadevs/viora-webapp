@@ -1,8 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AuthStore } from '../../../application/auth.store';
 import { SubscriptionStore } from '../../../../billing/application/subscription.store';
@@ -17,11 +17,29 @@ type AccountRole = 'ROLE_GROWER' | 'ROLE_SPECIALIST';
   templateUrl: './register-page.html',
   styleUrls: ['../auth-pages.css'],
 })
-export class RegisterPage {
+export class RegisterPage implements OnDestroy {
   protected readonly auth = inject(AuthStore);
   protected readonly subscription = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  /** The marketing site the "Back" link returns to. */
+  protected readonly landingUrl = 'https://viora-website.vercel.app/';
+
+  // Artistic backdrop carousel (shared visual language with the login screen).
+  protected readonly activeSlide = signal(0);
+  protected readonly typedTitle = signal('');
+  protected readonly carouselSlides = [
+    { src: '/assets/images/onboarding/carrusel_1.png', titleKey: 'auth.register.slides.s1' },
+    { src: '/assets/images/onboarding/carrusel_2.png', titleKey: 'auth.register.slides.s2' },
+    { src: '/assets/images/onboarding/carrusel_3.png', titleKey: 'auth.register.slides.s3' },
+  ];
+  private readonly slideHoldMs = 9000;
+  private readonly typeSpeedMs = 55;
+  private readonly deleteSpeedMs = 28;
+  private cycleTimer: ReturnType<typeof setTimeout> | undefined;
+  private typeTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly fullName = signal('');
   protected readonly email = signal('');
@@ -60,6 +78,8 @@ export class RegisterPage {
     if (plan) {
       this.selectedPlan.set(plan);
       this.selectedInterval = params.get('interval') === 'ANNUAL' ? 'ANNUAL' : 'MONTHLY';
+      // Only animate once we know we're staying on this screen.
+      this.typeIn(this.titleTextAt(0), () => this.scheduleNextSlide());
     } else {
       // Payment-first: you can't register without first choosing a plan. Send the
       // visitor to the plan-selection screen (carry any referral code along).
@@ -67,6 +87,77 @@ export class RegisterPage {
         queryParams: ref ? { ref } : {},
         replaceUrl: true,
       });
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.clearTimers();
+  }
+
+  // ----- Backdrop carousel + typewriter headline -----
+
+  protected selectSlide(index: number): void {
+    if (index === this.activeSlide()) {
+      return;
+    }
+    this.clearTimers();
+    this.transitionTo(index);
+  }
+
+  private titleTextAt(index: number): string {
+    return this.translate.instant(this.carouselSlides[index].titleKey);
+  }
+
+  private scheduleNextSlide(): void {
+    this.cycleTimer = setTimeout(() => {
+      const next = (this.activeSlide() + 1) % this.carouselSlides.length;
+      this.transitionTo(next);
+    }, this.slideHoldMs);
+  }
+
+  private transitionTo(index: number): void {
+    this.deleteAll(() => {
+      this.activeSlide.set(index);
+      this.typeIn(this.titleTextAt(index), () => this.scheduleNextSlide());
+    });
+  }
+
+  private deleteAll(done: () => void): void {
+    const step = () => {
+      const current = this.typedTitle();
+      if (current.length === 0) {
+        done();
+        return;
+      }
+      this.typedTitle.set(current.slice(0, -1));
+      this.typeTimer = setTimeout(step, this.deleteSpeedMs);
+    };
+    step();
+  }
+
+  private typeIn(target: string, done?: () => void): void {
+    this.typedTitle.set('');
+    let count = 0;
+    const step = () => {
+      count += 1;
+      this.typedTitle.set(target.slice(0, count));
+      if (count >= target.length) {
+        done?.();
+        return;
+      }
+      this.typeTimer = setTimeout(step, this.typeSpeedMs);
+    };
+    step();
+  }
+
+  private clearTimers(): void {
+    if (this.cycleTimer !== undefined) {
+      clearTimeout(this.cycleTimer);
+      this.cycleTimer = undefined;
+    }
+    if (this.typeTimer !== undefined) {
+      clearTimeout(this.typeTimer);
+      this.typeTimer = undefined;
     }
   }
 
