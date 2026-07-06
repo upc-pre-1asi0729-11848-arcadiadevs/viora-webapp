@@ -437,16 +437,28 @@
             </div>
 
             <div class="specialist-tags">
-              <span class="specialist-tag is-empty"
-                >{{ 'settingsPage.profile.serviceTags' | translate }}:
-                {{ 'settingsPage.profile.noDataYet' | translate }}</span
-              >
+              @if (previewTags().length > 0) {
+                @for (tag of previewTags(); track tag.value) {
+                  <span class="specialist-tag">{{
+                    tag.labelKey ? (tag.labelKey | translate) : tag.value
+                  }}</span>
+                }
+              } @else {
+                <span class="specialist-tag is-empty"
+                  >{{ 'settingsPage.profile.serviceTags' | translate }}:
+                  {{ 'settingsPage.profile.noDataYet' | translate }}</span
+                >
+              }
             </div>
 
             <div class="preview-foot">
-              <span class="foot-availability is-empty"
+              <span class="foot-availability" [class.is-empty]="!previewAvailabilityLabelKey()"
                 ><i class="dot"></i> {{ 'settingsPage.profile.availability' | translate }}:
-                {{ 'settingsPage.profile.noDataYet' | translate }}</span
+                {{
+                  previewAvailabilityLabelKey()
+                    ? (previewAvailabilityLabelKey() | translate)
+                    : ('settingsPage.profile.noDataYet' | translate)
+                }}</span
               >
               <button mat-flat-button type="button" class="primary-button" disabled>
                 <mat-icon>send</mat-icon> {{ 'settingsPage.profile.request' | translate }}

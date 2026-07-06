@@ -236,6 +236,19 @@ export class SettingsOverviewView implements OnInit {
     return profile.specialtyArea || profile.jobTitle || profile.roleLabel;
   });
 
+  /** Live preview of the selected service tags, mapped to their display labels. */
+  protected readonly previewTags = computed<{ value: string; labelKey: string | null }[]>(() =>
+    parseServiceTags(this.serviceTags()).map((value) => ({
+      value,
+      labelKey: SPECIALIST_SERVICE_TAGS.find((option) => option.value === value)?.labelKey ?? null,
+    })),
+  );
+
+  /** i18n key for the selected availability, or null when none is chosen. */
+  protected readonly previewAvailabilityLabelKey = computed<string | null>(
+    () => this.availabilityOptions.find((option) => option.value === this.availability())?.labelKey ?? null,
+  );
+
   protected readonly hasSubscriptionData = computed<boolean>(
     () => this.subscription.subscription() !== null || this.subscription.currentPlan() !== null,
   );
