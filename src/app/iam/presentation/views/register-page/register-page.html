@@ -148,6 +148,17 @@
           </label>
         </div>
 
+        @if (password().length > 0) {
+          <ul class="reg2-pwd-rules" aria-live="polite">
+            @for (rule of passwordChecklist(); track rule.labelKey) {
+              <li [class.is-met]="rule.met">
+                <mat-icon aria-hidden="true">{{ rule.met ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                {{ rule.labelKey | translate }}
+              </li>
+            }
+          </ul>
+        }
+
         <label class="login2-field">
           <span class="login2-label">{{ 'auth.fields.referralCode' | translate }}</span>
           <input

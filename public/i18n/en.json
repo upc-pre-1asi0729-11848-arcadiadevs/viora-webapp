@@ -20,6 +20,13 @@
       "confirmPassword": "Confirm password",
       "confirmPasswordPlaceholder": "Repeat your password",
       "passwordsMismatch": "Passwords do not match.",
+      "pwdRules": {
+        "length": "At least 8 characters",
+        "upper": "One uppercase letter",
+        "lower": "One lowercase letter",
+        "number": "One number",
+        "special": "One special character"
+      },
       "referralCode": "Referral code (optional)",
       "referralCodePlaceholder": "e.g. VIORA-4JYFFQ",
       "referralHint": "Invited by a partner? Their code rewards them when you join."
