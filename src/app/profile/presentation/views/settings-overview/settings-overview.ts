@@ -13,11 +13,19 @@ import {
   DashboardBreadcrumbItem,
   DashboardHeader,
 } from '../../../../shared/presentation/components/dashboard-header/dashboard-header';
+import {
+  LocationPickerModal,
+  PickedLocation,
+} from '../../../../shared/presentation/components/location-picker-modal/location-picker-modal';
 
 import { AgronomicApiService } from '../../../../agronomic/infrastructure/agronomic-api.service';
 
 import { ProfileStore } from '../../../application/profile.store';
 import { UserProfile } from '../../../domain/model/user-profile.entity';
+import {
+  SPECIALIST_SERVICE_TAGS,
+  parseServiceTags,
+} from '../../../domain/model/service-tags.catalog';
 
 import { BillingStore } from '../../../../billing/application/billing.store';
 import { Coupon } from '../../../../billing/domain/model/coupon.entity';
@@ -41,7 +49,14 @@ interface PasswordMessage {
 @Component({
   selector: 'app-settings-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    DashboardHeader,
+    LocationPickerModal,
+    TranslatePipe,
+  ],
   templateUrl: './settings-overview.html',
   styleUrl: './settings-overview.css',
 })
@@ -88,6 +103,69 @@ export class SettingsOverviewView implements OnInit {
     { value: 'AVAILABLE_THIS_WEEK', labelKey: 'settingsPage.profile.availabilityWeek' },
     { value: 'UNAVAILABLE', labelKey: 'settingsPage.profile.availabilityUnavailable' },
   ];
+
+  // Specialist marketplace: predefined tag catalogue, radius slider and map picker.
+  protected readonly serviceTagOptions = SPECIALIST_SERVICE_TAGS;
+  protected readonly radiusMin = 25;
+  protected readonly radiusMax = 500;
+  protected readonly radiusDefault = 150;
+  protected readonly showLocationPicker = signal(false);
+
+  /** True when the given catalogue tag is part of the current selection. */
+  protected isTagSelected(value: string): boolean {
+    return parseServiceTags(this.serviceTags()).includes(value);
+  }
+
+  /** Adds or removes a catalogue tag, keeping the stored comma-separated string. */
+  protected toggleServiceTag(value: string): void {
+    const current = parseServiceTags(this.serviceTags());
+    const next = current.includes(value)
+      ? current.filter((tag) => tag !== value)
+      : [...current, value];
+    this.serviceTags.set(next.join(', '));
+  }
+
+  /** Effective radius for the slider, falling back to the default when unset. */
+  protected radiusValue(): number {
+    const parsed = Number(this.serviceRadiusKm());
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : this.radiusDefault;
+  }
+
+  protected onRadiusInput(value: string): void {
+    this.serviceRadiusKm.set(value);
+  }
+
+  protected openLocationPicker(): void {
+    this.showLocationPicker.set(true);
+  }
+
+  protected closeLocationPicker(): void {
+    this.showLocationPicker.set(false);
+  }
+
+  /** Applies the map selection: coordinates drive matching, label fills Service area. */
+  protected onLocationPicked(picked: PickedLocation): void {
+    this.latitude.set(String(picked.latitude));
+    this.longitude.set(String(picked.longitude));
+    if (picked.label) {
+      this.location.set(picked.label);
+    }
+    this.showLocationPicker.set(false);
+  }
+
+  protected pickerInitialLat(): number | null {
+    const parsed = Number(this.latitude());
+    return Number.isFinite(parsed) && this.latitude().trim() !== '' ? parsed : null;
+  }
+
+  protected pickerInitialLng(): number | null {
+    const parsed = Number(this.longitude());
+    return Number.isFinite(parsed) && this.longitude().trim() !== '' ? parsed : null;
+  }
+
+  protected hasCoordinates(): boolean {
+    return this.latitude().trim() !== '' && this.longitude().trim() !== '';
+  }
   protected readonly uploadingPhoto = signal(false);
   protected readonly photoError = signal<string | null>(null);
   protected readonly totalHectares = signal(0);

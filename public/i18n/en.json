@@ -103,7 +103,25 @@
       "serviceAreaPlaceholder": "e.g. Ica valley, Peru",
       "serviceTags": "Service tags",
       "serviceTagsPlaceholder": "e.g. Xylella monitoring, Leaf symptoms, Field inspection",
-      "serviceTagsHint": "Comma-separated. These are matched against the alert to rank you for producers.",
+      "serviceTagsHint": "Pick the specialties that match you. These rank you against producer alerts.",
+      "tags": {
+        "xylella": "Xylella monitoring",
+        "phytosanitary": "Phytosanitary inspection",
+        "biological": "Biological control",
+        "pest": "Pest & leaf symptoms",
+        "treatment": "Pest treatment",
+        "inspection": "Field inspection",
+        "ndvi": "Low-vigor / NDVI diagnosis",
+        "water": "Water stress & irrigation",
+        "climate": "Climate & phenological risk",
+        "chill": "Chill deficit",
+        "nutritional": "Nutritional deficiency"
+      },
+      "baseLocation": "Base location",
+      "baseLocationHint": "Set the point you work from. It drives how far producers see you in the marketplace.",
+      "setOnMap": "Set on map",
+      "locationSet": "Location set",
+      "locationUnset": "No location set yet",
       "availability": "Availability",
       "availabilitySelect": "Select availability",
       "availabilityToday": "Available today",
@@ -116,7 +134,7 @@
       "longitudePlaceholder": "e.g. -70.2536",
       "serviceRadius": "Service radius (km)",
       "serviceRadiusPlaceholder": "e.g. 150",
-      "serviceRadiusHint": "How far you'll travel. Producers within this radius see you first.",
+      "serviceRadiusHint": "How far you'll travel. Producers within this radius see you first; beyond it you still appear, ranked lower.",
       "successRate": "Success rate",
       "cases": "Cases",
       "distance": "Distance",
@@ -1535,6 +1553,17 @@
       "updated": "Last updated",
       "note": "This case has been prescribed. The producer applies the treatment and reports the outcome — the intervention closes once impact is confirmed."
     }
+  },
+  "locationPicker": {
+    "title": "Set your location",
+    "subtitle": "Search or click the map to place your base. We'll use it to match you with nearby producers.",
+    "searchPlaceholder": "Search a city, valley or region…",
+    "search": "Search",
+    "resolving": "Resolving location…",
+    "pickHint": "Click the map or drag the marker to choose your base.",
+    "unavailable": "The map isn't available right now. Please try again later.",
+    "cancel": "Cancel",
+    "confirm": "Confirm location"
   },
   "sidebar": {
     "brand": "Viora Dashboard",

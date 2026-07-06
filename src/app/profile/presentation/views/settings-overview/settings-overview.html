@@ -188,25 +188,17 @@
                 (input)="specialtyArea.set($any($event.target).value)"
               />
             </label>
-            <label class="field">
-              <span>{{
-                (isSpecialistProfile()
-                  ? 'settingsPage.profile.serviceArea'
-                  : 'settingsPage.profile.location'
-                ) | translate
-              }}</span>
-              <input
-                type="text"
-                [placeholder]="
-                  (isSpecialistProfile()
-                    ? 'settingsPage.profile.serviceAreaPlaceholder'
-                    : 'settingsPage.profile.locationPlaceholder'
-                  ) | translate
-                "
-                [value]="location()"
-                (input)="location.set($any($event.target).value)"
-              />
-            </label>
+            @if (!isSpecialistProfile()) {
+              <label class="field">
+                <span>{{ 'settingsPage.profile.location' | translate }}</span>
+                <input
+                  type="text"
+                  [placeholder]="'settingsPage.profile.locationPlaceholder' | translate"
+                  [value]="location()"
+                  (input)="location.set($any($event.target).value)"
+                />
+              </label>
+            }
           </div>
 
           @if (!isSpecialistProfile()) {
@@ -222,16 +214,23 @@
             </div>
           } @else {
             <div class="specialist-marketplace-fields">
-              <label class="field">
+              <div class="field">
                 <span>{{ 'settingsPage.profile.serviceTags' | translate }}</span>
-                <input
-                  type="text"
-                  [placeholder]="'settingsPage.profile.serviceTagsPlaceholder' | translate"
-                  [value]="serviceTags()"
-                  (input)="serviceTags.set($any($event.target).value)"
-                />
+                <div class="tag-chips">
+                  @for (option of serviceTagOptions; track option.value) {
+                    <button
+                      type="button"
+                      class="tag-chip"
+                      [class.is-active]="isTagSelected(option.value)"
+                      (click)="toggleServiceTag(option.value)"
+                    >
+                      <mat-icon>{{ isTagSelected(option.value) ? 'check' : 'add' }}</mat-icon>
+                      {{ option.labelKey | translate }}
+                    </button>
+                  }
+                </div>
                 <span class="field-hint">{{ 'settingsPage.profile.serviceTagsHint' | translate }}</span>
-              </label>
+              </div>
 
               <label class="field">
                 <span>{{ 'settingsPage.profile.availability' | translate }}</span>
@@ -245,41 +244,39 @@
                 </select>
               </label>
 
-              <div class="form-grid">
-                <label class="field">
-                  <span>{{ 'settingsPage.profile.latitude' | translate }}</span>
-                  <input
-                    type="number"
-                    step="any"
-                    [placeholder]="'settingsPage.profile.latitudePlaceholder' | translate"
-                    [value]="latitude()"
-                    (input)="latitude.set($any($event.target).value)"
-                  />
-                </label>
-                <label class="field">
-                  <span>{{ 'settingsPage.profile.longitude' | translate }}</span>
-                  <input
-                    type="number"
-                    step="any"
-                    [placeholder]="'settingsPage.profile.longitudePlaceholder' | translate"
-                    [value]="longitude()"
-                    (input)="longitude.set($any($event.target).value)"
-                  />
-                </label>
+              <div class="field">
+                <span>{{ 'settingsPage.profile.baseLocation' | translate }}</span>
+                <div class="location-control">
+                  <div class="location-status">
+                    <mat-icon>place</mat-icon>
+                    @if (hasCoordinates()) {
+                      <span>{{ location() || ('settingsPage.profile.locationSet' | translate) }}</span>
+                    } @else {
+                      <span class="muted">{{ 'settingsPage.profile.locationUnset' | translate }}</span>
+                    }
+                  </div>
+                  <button type="button" class="btn-map" (click)="openLocationPicker()">
+                    <mat-icon>map</mat-icon> {{ 'settingsPage.profile.setOnMap' | translate }}
+                  </button>
+                </div>
+                <span class="field-hint">{{ 'settingsPage.profile.baseLocationHint' | translate }}</span>
               </div>
 
-              <label class="field">
+              <div class="field">
                 <span>{{ 'settingsPage.profile.serviceRadius' | translate }}</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  [placeholder]="'settingsPage.profile.serviceRadiusPlaceholder' | translate"
-                  [value]="serviceRadiusKm()"
-                  (input)="serviceRadiusKm.set($any($event.target).value)"
-                />
+                <div class="radius-control">
+                  <input
+                    type="range"
+                    [min]="radiusMin"
+                    [max]="radiusMax"
+                    step="5"
+                    [value]="radiusValue()"
+                    (input)="onRadiusInput($any($event.target).value)"
+                  />
+                  <span class="radius-value">{{ radiusValue() }} km</span>
+                </div>
                 <span class="field-hint">{{ 'settingsPage.profile.serviceRadiusHint' | translate }}</span>
-              </label>
+              </div>
             </div>
           }
         </mat-card>
@@ -862,4 +859,13 @@
       </div>
     </div>
   </div>
+}
+
+@if (showLocationPicker()) {
+  <app-location-picker-modal
+    [initialLat]="pickerInitialLat()"
+    [initialLng]="pickerInitialLng()"
+    (confirmed)="onLocationPicked($event)"
+    (dismissed)="closeLocationPicker()"
+  />
 }

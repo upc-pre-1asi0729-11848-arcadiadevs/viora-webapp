@@ -103,7 +103,25 @@
       "serviceAreaPlaceholder": "ej. Valle de Ica, Perú",
       "serviceTags": "Tags de servicio",
       "serviceTagsPlaceholder": "p. ej. Monitoreo de Xylella, Síntomas foliares, Inspección de campo",
-      "serviceTagsHint": "Separados por comas. Se cotejan con la alerta para posicionarte ante los productores.",
+      "serviceTagsHint": "Elige las especialidades que te describen. Te posicionan frente a las alertas de los productores.",
+      "tags": {
+        "xylella": "Monitoreo de Xylella",
+        "phytosanitary": "Inspección fitosanitaria",
+        "biological": "Control biológico",
+        "pest": "Plagas y síntomas foliares",
+        "treatment": "Tratamiento de plagas",
+        "inspection": "Inspección de campo",
+        "ndvi": "Diagnóstico de bajo vigor / NDVI",
+        "water": "Estrés hídrico y riego",
+        "climate": "Riesgo climático y fenológico",
+        "chill": "Déficit de frío",
+        "nutritional": "Deficiencia nutricional"
+      },
+      "baseLocation": "Ubicación base",
+      "baseLocationHint": "Fija el punto desde el que trabajas. Determina hasta dónde te ven los productores en el marketplace.",
+      "setOnMap": "Fijar en el mapa",
+      "locationSet": "Ubicación fijada",
+      "locationUnset": "Aún sin ubicación",
       "availability": "Disponibilidad",
       "availabilitySelect": "Selecciona disponibilidad",
       "availabilityToday": "Disponible hoy",
@@ -116,7 +134,7 @@
       "longitudePlaceholder": "p. ej. -70.2536",
       "serviceRadius": "Radio de servicio (km)",
       "serviceRadiusPlaceholder": "p. ej. 150",
-      "serviceRadiusHint": "Hasta dónde te desplazas. Los productores dentro de este radio te ven primero.",
+      "serviceRadiusHint": "Hasta dónde te desplazas. Los productores dentro de este radio te ven primero; más allá igual apareces, con menor prioridad.",
       "successRate": "Tasa de éxito",
       "cases": "Casos",
       "distance": "Distancia",
@@ -1535,6 +1553,17 @@
       "updated": "Última actualización",
       "note": "Este caso ya fue prescrito. El productor aplica el tratamiento e informa el resultado — la intervención se cierra cuando se confirma el impacto."
     }
+  },
+  "locationPicker": {
+    "title": "Fija tu ubicación",
+    "subtitle": "Busca o haz clic en el mapa para ubicar tu base. La usaremos para emparejarte con productores cercanos.",
+    "searchPlaceholder": "Busca una ciudad, valle o región…",
+    "search": "Buscar",
+    "resolving": "Resolviendo ubicación…",
+    "pickHint": "Haz clic en el mapa o arrastra el marcador para elegir tu base.",
+    "unavailable": "El mapa no está disponible por ahora. Inténtalo de nuevo más tarde.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar ubicación"
   },
   "sidebar": {
     "brand": "Viora Dashboard",
