@@ -36,7 +36,7 @@
       "signIn": "Sign in",
       "foot": "New to Viora?",
       "createAccount": "Create an account",
-      "back": "Back",
+      "back": "Back to Website",
       "loginTo": "Log in to",
       "arcadiaTagline": "Built by ArcadiaDevs — smart tools for a thriving field.",
       "slides": {
@@ -58,12 +58,30 @@
       "subtitle": "Join Viora as a Producer or Specialist.",
       "producerDescription": "Monitor plots, IoT devices and alerts",
       "specialistDescription": "Assist producers with field expertise",
+      "joiningAs": "You're joining as",
+      "benefits": {
+        "producerB1": "Live NDVI & satellite crop health",
+        "producerB2": "IoT devices, weather and smart alerts",
+        "producerB3": "One-tap specialist help when problems arise",
+        "specialistB1": "Receive assistance requests from nearby producers",
+        "specialistB2": "Send diagnostics, prescriptions and follow-ups",
+        "specialistB3": "Grow your reputation with a verified pro profile"
+      },
+      "motiv": {
+        "producerP1": "Turn every hectare into a decision.",
+        "producerP2": "Catch stress before it costs a harvest.",
+        "producerP3": "Your grove, watched while you rest.",
+        "specialistP1": "Turn your expertise into income.",
+        "specialistP2": "Reach the producers who need you.",
+        "specialistP3": "Diagnose, prescribe, get paid."
+      },
       "creating": "Creating account...",
       "createAccount": "Create account",
       "continueToPayment": "Continue to payment",
       "redirecting": "Redirecting to secure checkout...",
       "planSelected": "Selected plan:",
       "changePlan": "Change",
+      "backToPlans": "Back to plans",
       "foot": "Already have an account?",
       "signIn": "Sign in",
       "success": {
@@ -1909,6 +1927,10 @@
       "specialist": "Get discovered by growers the moment risk rises."
     },
     "featured": "Best value",
+    "badge": {
+      "plus": "Popular pick",
+      "pro": "Best value"
+    },
     "choose": "Choose {{plan}}",
     "loading": "Loading plans...",
     "unavailable": "Plans are not available right now. Please try again shortly.",

@@ -36,7 +36,7 @@
       "signIn": "Iniciar sesión",
       "foot": "¿Nuevo en Viora?",
       "createAccount": "Crear una cuenta",
-      "back": "Volver",
+      "back": "Volver a la website",
       "loginTo": "Inicia sesión en",
       "arcadiaTagline": "Creado por ArcadiaDevs — tecnología para un campo próspero.",
       "slides": {
@@ -58,12 +58,30 @@
       "subtitle": "Únete a Viora como Productor o Especialista.",
       "producerDescription": "Monitorea parcelas, dispositivos IoT y alertas",
       "specialistDescription": "Apoya a los productores con experiencia de campo",
+      "joiningAs": "Te unes como",
+      "benefits": {
+        "producerB1": "Salud del cultivo con NDVI y satélite en vivo",
+        "producerB2": "Dispositivos IoT, clima y alertas inteligentes",
+        "producerB3": "Ayuda de un especialista con un solo toque",
+        "specialistB1": "Recibe solicitudes de productores cercanos",
+        "specialistB2": "Envía diagnósticos, prescripciones y seguimientos",
+        "specialistB3": "Haz crecer tu reputación con un perfil pro verificado"
+      },
+      "motiv": {
+        "producerP1": "Convierte cada hectárea en una decisión.",
+        "producerP2": "Detecta el estrés antes de perder cosecha.",
+        "producerP3": "Tu olivar, vigilado mientras descansas.",
+        "specialistP1": "Convierte tu experiencia en ingresos.",
+        "specialistP2": "Llega a los productores que te necesitan.",
+        "specialistP3": "Diagnostica, prescribe y cobra."
+      },
       "creating": "Creando cuenta...",
       "createAccount": "Crear cuenta",
       "continueToPayment": "Continuar al pago",
       "redirecting": "Redirigiendo al pago seguro...",
       "planSelected": "Plan elegido:",
       "changePlan": "Cambiar",
+      "backToPlans": "Volver a planes",
       "foot": "¿Ya tienes una cuenta?",
       "signIn": "Iniciar sesión",
       "success": {
@@ -1909,6 +1927,10 @@
       "specialist": "Haz que los productores te encuentren cuando sube el riesgo."
     },
     "featured": "Mejor valor",
+    "badge": {
+      "plus": "Opción popular",
+      "pro": "Mejor valor"
+    },
     "choose": "Elegir {{plan}}",
     "loading": "Cargando planes...",
     "unavailable": "Los planes no están disponibles ahora. Inténtalo en un momento.",
