@@ -1,6 +1,12 @@
 :host {
   display: contents;
   font-family: 'Poppins', sans-serif;
+  /* Producer green by default; the specialist tour switches to secondary. */
+  --cm-accent: #214a38;
+}
+
+:host(.is-specialist) {
+  --cm-accent: #c15a2e;
 }
 
 .coachmark-layer {
@@ -13,7 +19,7 @@
 .spotlight-ring {
   position: fixed;
   box-sizing: border-box;
-  border: 3px solid #214a38;
+  border: 3px solid var(--cm-accent);
   border-radius: 18px;
   background: transparent;
   box-shadow:
@@ -32,7 +38,7 @@
   box-sizing: border-box;
   padding: 20px;
   border-radius: 16px;
-  background: #214a38;
+  background: var(--cm-accent);
   color: #ffffff;
   box-shadow: 0 22px 52px rgba(20, 29, 24, 0.3);
   pointer-events: auto;
@@ -45,7 +51,7 @@
   width: 18px;
   height: 18px;
   border-radius: 3px;
-  background: #214a38;
+  background: var(--cm-accent);
   transform: rotate(45deg);
 }
 
@@ -137,7 +143,7 @@ footer {
   border: 0;
   border-radius: 999px;
   background: #ffffff;
-  color: #214a38;
+  color: var(--cm-accent);
   font-size: 13px;
   font-weight: 800;
 }

@@ -4,6 +4,14 @@
   bottom: 24px;
   z-index: 140;
   font-family: 'Poppins', sans-serif;
+  /* Producer green by default; the specialist variant switches to secondary. */
+  --ob-accent: #214a38;
+  --ob-accent-strong: #173629;
+}
+
+:host(.is-specialist) {
+  --ob-accent: #c15a2e;
+  --ob-accent-strong: #a54a22;
 }
 
 .onboarding-card {
@@ -86,7 +94,7 @@ h2 {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #214a38;
+  background: var(--ob-accent);
   transition: width 180ms ease;
 }
 
@@ -152,8 +160,8 @@ h2 {
 }
 
 .step-button.is-complete .step-marker {
-  border-color: #214a38;
-  background: #214a38;
+  border-color: var(--ob-accent);
+  background: var(--ob-accent);
   color: #ffffff;
 }
 
@@ -195,7 +203,7 @@ h2 {
   justify-content: center;
   gap: 8px;
   border: 0;
-  background: #214a38;
+  background: var(--ob-accent);
   color: #ffffff;
   font-family: inherit;
   font-weight: 700;
@@ -213,7 +221,7 @@ h2 {
 
 .primary-action:hover,
 .onboarding-launcher:hover {
-  background: #173629;
+  background: var(--ob-accent-strong);
 }
 
 .primary-action mat-icon,
