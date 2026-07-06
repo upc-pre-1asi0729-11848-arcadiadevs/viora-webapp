@@ -9,10 +9,11 @@ export interface SpecialistCandidateProps {
   name?: string;
   /** Producer-facing role, e.g. "Phytosanitary specialist" (no honorific prefix). */
   role?: string;
-  /** Success rate as a percentage (0–100), replacing the legacy star rating. */
-  successRate?: number;
+  /** Success rate as a percentage (0–100); null when there are no closed cases yet. */
+  successRate?: number | null;
   caseCount?: number;
-  distanceKm?: number;
+  /** Distance to the case (km); null on a standalone lookup with no alert context. */
+  distanceKm?: number | null;
   tags?: string[];
   availability?: SpecialistAvailability;
   /** Avatar URL; empty falls back to the initials monogram. */
@@ -32,9 +33,11 @@ export class SpecialistCandidate {
   readonly id: number | string | null;
   readonly name: string;
   readonly role: string;
-  readonly successRate: number;
+  /** Service success rate (%); null when the specialist has no closed cases yet. */
+  readonly successRate: number | null;
   readonly caseCount: number;
-  readonly distanceKm: number;
+  /** Distance to the case (km); null on a standalone lookup with no alert context. */
+  readonly distanceKm: number | null;
   readonly tags: string[];
   readonly availability: SpecialistAvailability;
   readonly photoUrl: string;
@@ -44,9 +47,9 @@ export class SpecialistCandidate {
     id = null,
     name = '',
     role = '',
-    successRate = 0,
+    successRate = null,
     caseCount = 0,
-    distanceKm = 0,
+    distanceKm = null,
     tags = [],
     availability = 'week',
     photoUrl = '',
@@ -84,7 +87,12 @@ export class SpecialistCandidate {
   }
 
   get successRateLabel(): string {
-    return `${Math.round(this.successRate)}% success`;
+    return this.successRate == null ? 'No ratings yet' : `${Math.round(this.successRate)}% success`;
+  }
+
+  /** Bare percentage for stat rows ("100%"), or an em dash when unrated. */
+  get successRatePercentLabel(): string {
+    return this.successRate == null ? '—' : `${Math.round(this.successRate)}%`;
   }
 
   get caseCountLabel(): string {
@@ -92,6 +100,6 @@ export class SpecialistCandidate {
   }
 
   get distanceLabel(): string {
-    return `${this.distanceKm.toFixed(1)} km away`;
+    return this.distanceKm == null ? '—' : `${this.distanceKm.toFixed(1)} km away`;
   }
 }
