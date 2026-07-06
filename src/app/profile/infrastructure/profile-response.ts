@@ -17,6 +17,7 @@ export interface ProfileResource {
   serviceRadiusKm: number | null;
   serviceTags: string | null;
   availability: string | null;
+  showProBadge: boolean | null;
   photoUrl: string | null;
 }
 
@@ -34,6 +35,7 @@ export interface UpdateProfileRequest {
   serviceRadiusKm?: number | null;
   serviceTags?: string;
   availability?: string;
+  showProBadge?: boolean | null;
   photoUrl: string;
 }
 
@@ -66,6 +68,7 @@ export class ProfileAssembler {
       serviceRadiusKm: resource.serviceRadiusKm ?? null,
       serviceTags: resource.serviceTags ?? '',
       availability: resource.availability ?? '',
+      showProBadge: resource.showProBadge ?? null,
       photoUrl: resource.photoUrl ?? '',
     });
   }

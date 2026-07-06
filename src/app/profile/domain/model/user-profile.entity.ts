@@ -37,6 +37,8 @@ export interface UserProfileProps {
   serviceTags?: string;
   /** Specialist availability token (AVAILABLE_TODAY/…/UNAVAILABLE). */
   availability?: string;
+  /** Whether the specialist shows the verified Pro badge; null until chosen. */
+  showProBadge?: boolean | null;
   /** Cloudinary avatar URL; empty means the generic photo is shown. */
   photoUrl?: string;
   /**
@@ -64,6 +66,7 @@ export class UserProfile {
   readonly serviceRadiusKm: number | null;
   readonly serviceTags: string;
   readonly availability: string;
+  readonly showProBadge: boolean | null;
   readonly photoUrl: string;
   readonly totalHectares: number;
   readonly plotCount: number;
@@ -84,6 +87,7 @@ export class UserProfile {
     serviceRadiusKm = null,
     serviceTags = '',
     availability = '',
+    showProBadge = null,
     photoUrl = '',
     totalHectares = 0,
     plotCount = 0,
@@ -103,6 +107,7 @@ export class UserProfile {
     this.serviceRadiusKm = serviceRadiusKm;
     this.serviceTags = serviceTags;
     this.availability = availability;
+    this.showProBadge = showProBadge;
     this.photoUrl = photoUrl;
     this.totalHectares = totalHectares;
     this.plotCount = plotCount;
@@ -156,6 +161,7 @@ export class UserProfile {
       serviceRadiusKm: this.serviceRadiusKm,
       serviceTags: this.serviceTags,
       availability: this.availability,
+      showProBadge: this.showProBadge,
       photoUrl: this.photoUrl,
       totalHectares: this.totalHectares,
       plotCount: this.plotCount,

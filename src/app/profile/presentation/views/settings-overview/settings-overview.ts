@@ -112,7 +112,7 @@ export class SettingsOverviewView implements OnInit {
   protected readonly showLocationPicker = signal(false);
   /** Default specialty shown pre-filled (editable) for specialists. */
   private readonly defaultSpecialtyArea = 'Phytosanitary specialist';
-  /** Whether the Pro badge is shown on the card (Pro plan only; display-only). */
+  /** Whether the Pro badge is shown on the card (Pro plan only); persisted. */
   protected readonly showProBadge = signal(true);
   /** Guards the draft so incidental profile re-emits never wipe unsaved edits. */
   private draftHydrated = false;
@@ -341,6 +341,7 @@ export class SettingsOverviewView implements OnInit {
     this.serviceRadiusKm.set(profile.serviceRadiusKm != null ? String(profile.serviceRadiusKm) : '');
     this.serviceTags.set(profile.serviceTags);
     this.availability.set(profile.availability);
+    this.showProBadge.set(profile.showProBadge ?? true);
     this.photoUrl.set(profile.photoUrl);
   }
 
@@ -368,6 +369,7 @@ export class SettingsOverviewView implements OnInit {
       serviceRadiusKm: specialist ? this.toNumberOrNull(this.serviceRadiusKm()) : undefined,
       serviceTags: specialist ? this.serviceTags().trim() : undefined,
       availability: specialist ? this.availability().trim() : undefined,
+      showProBadge: specialist ? this.showProBadge() : undefined,
       photoUrl: this.photoUrl(),
     });
   }
