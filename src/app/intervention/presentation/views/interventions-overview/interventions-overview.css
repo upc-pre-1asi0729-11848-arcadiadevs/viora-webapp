@@ -330,6 +330,18 @@
   font-weight: 500;
 }
 
+.waiting-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f4f1ea;
+  color: #6f6a62;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 .recovery-ok { color: #3f6fd0; }
 
 .recovery-note {
@@ -366,6 +378,7 @@
 }
 
 .avatar--sm { width: 40px; height: 40px; font-size: 13px; }
+img.avatar { object-fit: cover; }
 
 .identity-text { display: flex; flex-direction: column; gap: 2px; }
 .specialist-name { font-size: 13px; font-weight: 600; color: #1f2523; }

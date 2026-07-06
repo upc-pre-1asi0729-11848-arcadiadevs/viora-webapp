@@ -21,6 +21,8 @@ export interface SignUpRequest {
   password: string;
   role: string;
   fullName: string;
+  /** Mandatory for specialists (their producer-facing contact); null otherwise. */
+  phone: string | null;
   referralCode: string | null;
 }
 

@@ -230,6 +230,24 @@ img.avatar {
   line-height: 1.4;
 }
 
+.req {
+  color: #b23b34;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.field-error {
+  font-size: 11px;
+  color: #b23b34;
+  line-height: 1.4;
+}
+
+.field input.is-invalid,
+input.is-invalid {
+  border-color: #d98a84;
+  box-shadow: 0 0 0 3px rgba(178, 59, 52, 0.12);
+}
+
 .select-wrap {
   position: relative;
   display: flex;
@@ -541,6 +559,90 @@ img.avatar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* Contact card preview (how the producer sees the specialist's contact) */
+.preview-caption--sub {
+  margin-top: 22px;
+}
+.contact-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid #e7f0ea;
+  background: #ffffff;
+}
+.contact-preview-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.unlocked-dot {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #d6f3e3;
+  color: #1f7a54;
+}
+.unlocked-dot mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.contact-preview-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.contact-preview-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.contact-preview-copy span {
+  font-size: 12px;
+  color: #8c877f;
+}
+.contact-preview-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f4ed;
+}
+.contact-preview-identity .avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.contact-preview-rows {
+  display: flex;
+  flex-direction: column;
+}
+.contact-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 2px;
+  border-top: 1px solid #f0ece4;
+  font-size: 13px;
+}
+.contact-preview-row:first-child {
+  border-top: none;
+}
+.cp-label {
+  color: #8c877f;
+}
+.contact-preview-row strong.is-empty {
+  color: #c8c2b8;
+  font-weight: 500;
 }
 
 .specialist-tag {

@@ -97,7 +97,11 @@
           </div>
 
           <div class="rx-specialist">
-            <span class="avatar avatar--sm">{{ store.specialistName(selected()!.specialistId).slice(0,2).toUpperCase() }}</span>
+            @if (store.specialistPhotoUrl(selected()!.specialistId)) {
+              <img class="avatar avatar--sm" [src]="store.specialistPhotoUrl(selected()!.specialistId)" alt="" />
+            } @else {
+              <span class="avatar avatar--sm">{{ store.specialistName(selected()!.specialistId).slice(0,2).toUpperCase() }}</span>
+            }
             <div class="identity-text">
               <span class="specialist-name">{{ store.specialistName(selected()!.specialistId) }}</span>
               <span class="specialist-role">{{ rx.treatment }}</span>
@@ -157,7 +161,7 @@
             <mat-icon>info</mat-icon>
             <span>
               @switch (nextAction()) {
-                @case ('simulate') { {{ 'interventions.next.simulate' | translate }} }
+                @case ('awaiting') { {{ 'interventions.next.awaiting' | translate }} }
                 @case ('certify') { {{ 'interventions.next.certify' | translate }} }
                 @case ('impact') { {{ 'interventions.next.impact' | translate }} }
                 @case ('close') { {{ 'interventions.next.close' | translate }} }
@@ -167,10 +171,8 @@
           </div>
 
           @switch (nextAction()) {
-            @case ('simulate') {
-              <button mat-flat-button type="button" class="primary-button block" [disabled]="store.loading().action" (click)="simulatePrescription()">
-                <mat-icon>bolt</mat-icon> {{ 'interventions.action.simulate' | translate }}
-              </button>
+            @case ('awaiting') {
+              <div class="waiting-banner"><mat-icon>hourglass_empty</mat-icon> {{ 'interventions.action.awaitingBanner' | translate }}</div>
             }
             @case ('certify') {
               <button mat-flat-button type="button" class="primary-button block" (click)="openModal('certify')">
@@ -337,7 +339,11 @@
       </div>
 
       <div class="close-specialist">
-        <span class="avatar avatar--sm">{{ store.specialistName(item.specialistId).slice(0,2).toUpperCase() }}</span>
+        @if (store.specialistPhotoUrl(item.specialistId)) {
+          <img class="avatar avatar--sm" [src]="store.specialistPhotoUrl(item.specialistId)" alt="" />
+        } @else {
+          <span class="avatar avatar--sm">{{ store.specialistName(item.specialistId).slice(0,2).toUpperCase() }}</span>
+        }
         <div class="identity-text">
           <span class="specialist-name">{{ store.specialistName(item.specialistId) }}</span>
           <span class="specialist-role">{{ item.code }} · {{ plotName(item.plotId) }}</span>

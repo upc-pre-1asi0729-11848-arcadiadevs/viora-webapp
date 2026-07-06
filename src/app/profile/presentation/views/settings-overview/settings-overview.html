@@ -105,8 +105,23 @@
               />
             </label>
             <label class="field">
-              <span>{{ 'settingsPage.profile.phoneNumber' | translate }}</span>
-              <input type="tel" [value]="phone()" (input)="phone.set($any($event.target).value)" />
+              <span>
+                {{ 'settingsPage.profile.phoneNumber' | translate }}
+                @if (isSpecialistProfile()) { <em class="req">*</em> }
+              </span>
+              <input
+                type="tel"
+                [class.is-invalid]="phoneRequiredError()"
+                [value]="phone()"
+                (input)="phone.set($any($event.target).value)"
+              />
+              @if (isSpecialistProfile()) {
+                @if (phoneRequiredError()) {
+                  <span class="field-error">{{ 'settingsPage.profile.phoneRequired' | translate }}</span>
+                } @else {
+                  <span class="field-hint">{{ 'settingsPage.profile.phoneContactHint' | translate }}</span>
+                }
+              }
             </label>
             <label class="field">
               <span>{{ 'settingsPage.profile.jobTitle' | translate }}</span>
@@ -472,6 +487,54 @@
               <button mat-flat-button type="button" class="primary-button" disabled>
                 <mat-icon>send</mat-icon> {{ 'settingsPage.profile.request' | translate }}
               </button>
+            </div>
+          </div>
+
+          <!-- Contact card preview: how the producer sees the specialist's contact
+               once they accept the proposal. -->
+          <p class="preview-caption preview-caption--sub">
+            {{ 'settingsPage.profile.contactPreviewCaption' | translate }}
+          </p>
+          <div class="preview-card contact-preview-card">
+            <div class="contact-preview-head">
+              <span class="unlocked-dot"><mat-icon>lock_open</mat-icon></span>
+              <div class="contact-preview-copy">
+                <strong>{{ 'settingsPage.profile.contactPreviewTitle' | translate }}</strong>
+                <span>{{ 'settingsPage.profile.contactPreviewSubtitle' | translate }}</span>
+              </div>
+            </div>
+
+            <div class="contact-preview-identity">
+              <img class="avatar" [src]="preview().avatarUrl" alt="Profile photo" />
+              <div class="identity-text">
+                <span class="preview-name">{{
+                  fullName() || ('settingsPage.profile.yourName' | translate)
+                }}</span>
+                <span class="preview-role">{{
+                  specialtyArea() || specialistDisplayRole()
+                }}</span>
+              </div>
+            </div>
+
+            <div class="contact-preview-rows">
+              <div class="contact-preview-row">
+                <span class="cp-label">{{ 'settingsPage.profile.phoneNumber' | translate }}</span>
+                <strong [class.is-empty]="!phone()">{{
+                  phone() || ('settingsPage.profile.noDataYet' | translate)
+                }}</strong>
+              </div>
+              <div class="contact-preview-row">
+                <span class="cp-label">{{ 'settingsPage.profile.emailAddress' | translate }}</span>
+                <strong [class.is-empty]="!email()">{{
+                  email() || ('settingsPage.profile.noDataYet' | translate)
+                }}</strong>
+              </div>
+              <div class="contact-preview-row">
+                <span class="cp-label">WhatsApp</span>
+                <strong [class.is-empty]="!phone()">{{
+                  phone() || ('settingsPage.profile.noDataYet' | translate)
+                }}</strong>
+              </div>
             </div>
           </div>
         }

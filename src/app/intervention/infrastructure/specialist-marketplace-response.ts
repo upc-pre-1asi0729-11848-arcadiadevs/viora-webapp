@@ -21,6 +21,7 @@ export interface MarketplaceCaseResource {
   problem: string | null;
   ndvi: number | null;
   producerName: string | null;
+  producerPhotoUrl: string | null;
   productionType: string | null;
   plotName: string | null;
   location: string | null;
@@ -61,6 +62,7 @@ export class SpecialistMarketplaceAssembler {
       problem: resource.problem ?? '',
       ndvi: resource.ndvi ?? null,
       producerName: resource.producerName ?? '',
+      producerPhotoUrl: resource.producerPhotoUrl ?? null,
       productionType: resource.productionType ?? null,
       plotName: resource.plotName ?? '',
       location: resource.location ?? null,

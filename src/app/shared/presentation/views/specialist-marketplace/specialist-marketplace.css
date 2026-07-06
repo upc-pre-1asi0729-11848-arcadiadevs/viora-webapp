@@ -1,15 +1,18 @@
 :host {
   display: block;
-}
-
-.specialist-marketplace {
+  /* Defined on :host (not .specialist-marketplace) so the proposal modal — which
+     renders at the component root, outside .specialist-marketplace — inherits them
+     too; otherwise var(--brand) resolves to nothing and the submit button reads
+     white until hover. */
   --card-bg: #ffffff;
   --brand: #2e4a3a;
   --ink: #18221d;
   --muted: #6b716d;
   --hairline: #edeae4;
   --surface: #faf8f4;
+}
 
+.specialist-marketplace {
   min-height: 100%;
   color: var(--ink);
   font-family: 'Poppins', sans-serif;
@@ -231,6 +234,7 @@
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;
+  object-fit: cover;
 }
 
 .identity-text {
@@ -586,6 +590,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .field > span {
@@ -602,6 +607,7 @@
 .field input,
 .field textarea {
   width: 100%;
+  box-sizing: border-box;
   padding: 10px 12px;
   border: 1px solid #ddd7cd;
   border-radius: 10px;

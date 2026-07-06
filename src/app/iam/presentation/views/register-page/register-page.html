@@ -96,6 +96,22 @@
           </label>
         </div>
 
+        <label class="field">
+          <span>
+            {{ 'auth.fields.phone' | translate }}
+            @if (phoneRequired) { <em class="req">*</em> }
+          </span>
+          <input
+            type="tel"
+            autocomplete="tel"
+            [placeholder]="'auth.fields.phonePlaceholder' | translate"
+            [value]="phone()"
+            (input)="phone.set($any($event.target).value)" />
+          @if (isSpecialist) {
+            <span class="field-hint">{{ 'auth.fields.phoneSpecialistHint' | translate }}</span>
+          }
+        </label>
+
         <div class="register-field-grid">
           <label class="field">
             <span>{{ 'auth.fields.password' | translate }}</span>
