@@ -21,6 +21,7 @@ export class RegisterPage {
 
   protected readonly fullName = signal('');
   protected readonly email = signal('');
+  protected readonly phone = signal('');
   protected readonly password = signal('');
   protected readonly confirmPassword = signal('');
   protected readonly role = signal<AccountRole>('ROLE_GROWER');
@@ -42,6 +43,15 @@ export class RegisterPage {
     this.role.set(role);
   }
 
+  protected get isSpecialist(): boolean {
+    return this.role() === 'ROLE_SPECIALIST';
+  }
+
+  /** A specialist's phone is their producer-facing contact, so it's mandatory. */
+  protected get phoneRequired(): boolean {
+    return this.isSpecialist;
+  }
+
   protected get passwordsMismatch(): boolean {
     return this.confirmPassword().length > 0 && this.password() !== this.confirmPassword();
   }
@@ -52,6 +62,7 @@ export class RegisterPage {
       this.email().trim().length > 3 &&
       this.password().length >= 8 &&
       this.password() === this.confirmPassword() &&
+      (!this.phoneRequired || this.phone().trim().length > 0) &&
       !this.auth.busy()
     );
   }
@@ -66,6 +77,7 @@ export class RegisterPage {
         password: this.password(),
         role: this.role(),
         fullName: this.fullName().trim(),
+        phone: this.phone().trim() || null,
         referralCode: this.referralCode().trim() || null,
       },
       (ok) => {
