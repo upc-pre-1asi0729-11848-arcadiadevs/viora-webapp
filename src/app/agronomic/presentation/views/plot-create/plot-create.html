@@ -178,7 +178,14 @@
 
       <!-- Right: Boundary -->
       <mat-card class="boundary-card">
-        <h2 class="card-title">{{ 'plotCreate.boundary.title' | translate }}</h2>
+        <div class="boundary-head">
+          <h2 class="card-title">{{ 'plotCreate.boundary.title' | translate }}</h2>
+          <button type="button" class="guide-reopen" (click)="openGuide()"
+                  [attr.aria-label]="'plotCreate.guide.reopen' | translate"
+                  [attr.title]="'plotCreate.guide.reopen' | translate">
+            <mat-icon>help_outline</mat-icon>
+          </button>
+        </div>
         <p class="card-subtitle">{{ 'plotCreate.boundary.subtitle' | translate }}</p>
 
         <div class="map-wrap">
@@ -258,5 +265,51 @@
     <section class="error-box">
       <strong>{{ 'common.somethingWrong' | translate }}</strong>
     </section>
+  }
+
+  <!-- First-visit boundary drawing tutorial (classic welcome modal). -->
+  @if (showGuide()) {
+    <div class="guide-overlay" (click)="dismissGuide()">
+      <div class="guide-modal" role="dialog" aria-modal="true"
+           (click)="$event.stopPropagation()">
+        <div class="guide-illustration" aria-hidden="true">
+          <svg class="guide-svg" viewBox="0 0 220 120">
+            <rect class="gs-field" x="8" y="8" width="204" height="104" rx="14" />
+            <polygon class="gs-poly" points="48,34 176,28 182,92 52,96" />
+            <circle class="gs-dot gs-d1" cx="48" cy="34" r="7" />
+            <circle class="gs-dot gs-d2" cx="176" cy="28" r="7" />
+            <circle class="gs-dot gs-d3" cx="182" cy="92" r="7" />
+            <circle class="gs-dot gs-d4" cx="52" cy="96" r="7" />
+          </svg>
+        </div>
+
+        <h2 class="guide-title">{{ 'plotCreate.guide.title' | translate }}</h2>
+        <p class="guide-sub">{{ 'plotCreate.guide.subtitle' | translate }}</p>
+
+        <div class="guide-steps">
+          @for (step of guideSteps; track step.titleKey; let i = $index) {
+            <div class="guide-step">
+              <span class="guide-step-icon"><mat-icon>{{ step.icon }}</mat-icon></span>
+              <span class="guide-step-num">{{ i + 1 }}</span>
+              <strong>{{ step.titleKey | translate }}</strong>
+              <span class="guide-step-desc">{{ step.descKey | translate }}</span>
+            </div>
+          }
+        </div>
+
+        <p class="guide-reassure">
+          <mat-icon>auto_awesome</mat-icon> {{ 'plotCreate.guide.reassure' | translate }}
+        </p>
+
+        <div class="guide-actions">
+          <button type="button" class="guide-skip" (click)="dismissGuide()">
+            {{ 'plotCreate.guide.skip' | translate }}
+          </button>
+          <button type="button" class="guide-start" (click)="dismissGuide()">
+            <mat-icon>draw</mat-icon> {{ 'plotCreate.guide.start' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </section>
