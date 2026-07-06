@@ -962,6 +962,26 @@
     "title": "Create plot",
     "subtitle": "Define the geographic boundary of your plot to enable satellite and climate monitoring.",
     "reset": "Reset form",
+    "guide": {
+      "title": "Draw your plot in 3 steps",
+      "subtitle": "You'll outline your field on the map so Viora can monitor it by satellite.",
+      "reopen": "How to draw the boundary",
+      "reassure": "Mark the corners in any order — we connect them into a clean shape.",
+      "skip": "Skip",
+      "start": "Got it, let's draw",
+      "step1": {
+        "title": "Find your field",
+        "desc": "Search your field's name or pan the map until you see it."
+      },
+      "step2": {
+        "title": "Mark the corners",
+        "desc": "Click each corner of your field. Use the buttons below to Undo or Clear."
+      },
+      "step3": {
+        "title": "Close the polygon",
+        "desc": "Press \"Close polygon\" to finish — the area is calculated for you."
+      }
+    },
     "edit": {
       "title": "Edit plot",
       "subtitle": "Update the plot details and boundary. Changes are saved to the selected plot.",
@@ -1869,6 +1889,18 @@
       "expert": {
         "title": "Visit Expert Assistance",
         "description": "Know where to request specialist support."
+      },
+      "profile": {
+        "title": "Complete your specialist profile",
+        "description": "Set your location and service tags so producers can find you."
+      },
+      "spDashboard": {
+        "title": "Review your dashboard",
+        "description": "Check your KPIs, zonal radar and incoming requests."
+      },
+      "marketplace": {
+        "title": "Explore the Marketplace",
+        "description": "Discover producer requests and send your proposals."
       }
     },
     "actions": {
@@ -1899,6 +1931,26 @@
       "plotOverview": {
         "title": "Plot overview",
         "description": "This is the main working area for your selected plot: map, health status, phenological risk, latest NDVI, and recommended actions."
+      },
+      "spResolved": {
+        "title": "Resolved interventions",
+        "description": "How many cases you closed this month — your core activity as a specialist on the platform."
+      },
+      "spAcceptance": {
+        "title": "Acceptance rate",
+        "description": "The share of your proposals that producers accept. A healthy rate means your offers land well."
+      },
+      "spPhyto": {
+        "title": "Phytosanitary efficiency",
+        "description": "How effective your interventions are at controlling the reported threats across the fields you serve."
+      },
+      "spZonal": {
+        "title": "Zonal risk radar",
+        "description": "Nearby outbreaks and risks ranked by distance, so you know where demand for your expertise is rising."
+      },
+      "spIncoming": {
+        "title": "Incoming requests",
+        "description": "New assistance requests from producers — verify or decline them here, or open the Marketplace to send a proposal."
       }
     },
     "actions": {

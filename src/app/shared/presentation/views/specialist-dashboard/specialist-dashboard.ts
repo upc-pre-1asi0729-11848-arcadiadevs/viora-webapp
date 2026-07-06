@@ -8,6 +8,7 @@ import { SpecialistDashboardStore } from '../../../../intervention/application/s
 import { IncomingRequest } from '../../../../intervention/domain/model/specialist-dashboard.entity';
 import { DashboardBreadcrumbItem } from '../../components/dashboard-header/dashboard-header';
 import { DashboardHeader } from '../../components/dashboard-header/dashboard-header';
+import { DashboardCoachmarks } from '../../components/dashboard-coachmarks/dashboard-coachmarks';
 
 /** Geometry of the inline performance sparkline (SVG user units). */
 const CHART_WIDTH = 1000;
@@ -17,7 +18,15 @@ const CHART_PADDING_Y = 24;
 @Component({
   selector: 'app-specialist-dashboard',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, RouterLink, MatIconModule, DashboardHeader, TranslatePipe],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    RouterLink,
+    MatIconModule,
+    DashboardHeader,
+    DashboardCoachmarks,
+    TranslatePipe,
+  ],
   templateUrl: './specialist-dashboard.html',
   styleUrl: './specialist-dashboard.css',
 })

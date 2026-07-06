@@ -962,6 +962,26 @@
     "title": "Crear parcela",
     "subtitle": "Define el límite geográfico de tu parcela para habilitar el monitoreo satelital y climático.",
     "reset": "Reiniciar formulario",
+    "guide": {
+      "title": "Dibuja tu parcela en 3 pasos",
+      "subtitle": "Marcarás el contorno de tu campo en el mapa para que Viora lo monitoree por satélite.",
+      "reopen": "Cómo dibujar el límite",
+      "reassure": "Marca las esquinas en cualquier orden — nosotros las unimos en una forma limpia.",
+      "skip": "Omitir",
+      "start": "Entendido, a dibujar",
+      "step1": {
+        "title": "Ubica tu campo",
+        "desc": "Busca el nombre de tu campo o mueve el mapa hasta verlo."
+      },
+      "step2": {
+        "title": "Marca las esquinas",
+        "desc": "Haz clic en cada esquina de tu campo. Usa los botones de abajo para Deshacer o Limpiar."
+      },
+      "step3": {
+        "title": "Cierra el polígono",
+        "desc": "Pulsa \"Cerrar polígono\" para terminar — el área se calcula sola."
+      }
+    },
     "edit": {
       "title": "Editar parcela",
       "subtitle": "Actualiza los datos y el límite de la parcela. Los cambios se guardan en la parcela seleccionada.",
@@ -1869,6 +1889,18 @@
       "expert": {
         "title": "Visita Asistencia Experta",
         "description": "Ubica donde solicitar apoyo de especialistas."
+      },
+      "profile": {
+        "title": "Completa tu perfil de especialista",
+        "description": "Define tu ubicacion y tags de servicio para que los productores te encuentren."
+      },
+      "spDashboard": {
+        "title": "Revisa tu dashboard",
+        "description": "Revisa tus KPIs, el radar zonal y las solicitudes entrantes."
+      },
+      "marketplace": {
+        "title": "Explora el Marketplace",
+        "description": "Descubre solicitudes de productores y envia tus propuestas."
       }
     },
     "actions": {
@@ -1899,6 +1931,26 @@
       "plotOverview": {
         "title": "Vista de parcela",
         "description": "Es el area principal de trabajo de la parcela seleccionada: mapa, salud, riesgo fenologico, ultimo NDVI y acciones recomendadas."
+      },
+      "spResolved": {
+        "title": "Intervenciones resueltas",
+        "description": "Cuantos casos cerraste este mes: tu actividad principal como especialista en la plataforma."
+      },
+      "spAcceptance": {
+        "title": "Tasa de aceptacion",
+        "description": "El porcentaje de tus propuestas que los productores aceptan. Una tasa alta indica que tus ofertas encajan bien."
+      },
+      "spPhyto": {
+        "title": "Eficiencia fitosanitaria",
+        "description": "Que tan efectivas son tus intervenciones para controlar las amenazas reportadas en los campos que atiendes."
+      },
+      "spZonal": {
+        "title": "Radar de riesgo zonal",
+        "description": "Brotes y riesgos cercanos ordenados por distancia, para saber donde crece la demanda de tu experiencia."
+      },
+      "spIncoming": {
+        "title": "Solicitudes entrantes",
+        "description": "Nuevas solicitudes de productores: verificalas o rechazalas aqui, o abre el Marketplace para enviar una propuesta."
       }
     },
     "actions": {

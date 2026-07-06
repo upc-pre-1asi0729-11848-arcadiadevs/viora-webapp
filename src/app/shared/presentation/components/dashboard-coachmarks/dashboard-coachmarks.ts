@@ -12,7 +12,8 @@ import { DOCUMENT } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { OnboardingStore } from '../../../application/onboarding.store';
+import { OnboardingStepId, OnboardingStore } from '../../../application/onboarding.store';
+import { ActiveSessionService } from '../../../infrastructure/active-session.service';
 
 interface CoachmarkStep {
   target: string;
@@ -38,15 +39,19 @@ interface TooltipPosition {
   imports: [MatIconModule, TranslatePipe],
   templateUrl: './dashboard-coachmarks.html',
   styleUrl: './dashboard-coachmarks.css',
+  host: { '[class.is-specialist]': 'isSpecialist()' },
 })
 export class DashboardCoachmarks implements AfterViewInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
+  private readonly session = inject(ActiveSessionService);
   protected readonly onboardingStore = inject(OnboardingStore);
+
+  protected readonly isSpecialist = this.session.isSpecialist;
 
   private readonly viewReady = signal<boolean>(false);
   private measureTimer: number | null = null;
 
-  protected readonly steps: CoachmarkStep[] = [
+  private readonly producerSteps: CoachmarkStep[] = [
     {
       target: 'overall-health',
       titleKey: 'dashboardCoachmarks.steps.overall.title',
@@ -74,6 +79,47 @@ export class DashboardCoachmarks implements AfterViewInit, OnDestroy {
     },
   ];
 
+  private readonly specialistSteps: CoachmarkStep[] = [
+    {
+      target: 'sp-resolved',
+      titleKey: 'dashboardCoachmarks.steps.spResolved.title',
+      descriptionKey: 'dashboardCoachmarks.steps.spResolved.description',
+    },
+    {
+      target: 'sp-acceptance',
+      titleKey: 'dashboardCoachmarks.steps.spAcceptance.title',
+      descriptionKey: 'dashboardCoachmarks.steps.spAcceptance.description',
+    },
+    {
+      target: 'sp-phyto',
+      titleKey: 'dashboardCoachmarks.steps.spPhyto.title',
+      descriptionKey: 'dashboardCoachmarks.steps.spPhyto.description',
+    },
+    {
+      target: 'sp-zonal',
+      titleKey: 'dashboardCoachmarks.steps.spZonal.title',
+      descriptionKey: 'dashboardCoachmarks.steps.spZonal.description',
+    },
+    {
+      target: 'sp-incoming',
+      titleKey: 'dashboardCoachmarks.steps.spIncoming.title',
+      descriptionKey: 'dashboardCoachmarks.steps.spIncoming.description',
+    },
+  ];
+
+  /** The active step set follows the signed-in role. */
+  protected get steps(): CoachmarkStep[] {
+    return this.isSpecialist() ? this.specialistSteps : this.producerSteps;
+  }
+
+  /** The onboarding step this tour completes / requires, by role. */
+  private get dashboardStepId(): OnboardingStepId {
+    return this.isSpecialist() ? 'sp-dashboard' : 'dashboard';
+  }
+  private get prerequisiteStepId(): OnboardingStepId {
+    return this.isSpecialist() ? 'profile' : 'plot';
+  }
+
   protected readonly currentIndex = signal<number>(0);
   protected readonly highlightRect = signal<HighlightRect | null>(null);
   protected readonly tooltipPosition = signal<TooltipPosition>({ top: 120, left: 280 });
@@ -81,8 +127,8 @@ export class DashboardCoachmarks implements AfterViewInit, OnDestroy {
   protected readonly active = computed<boolean>(
     () =>
       this.viewReady() &&
-      this.onboardingStore.isCompleted('plot') &&
-      !this.onboardingStore.isCompleted('dashboard'),
+      this.onboardingStore.isCompleted(this.prerequisiteStepId) &&
+      !this.onboardingStore.isCompleted(this.dashboardStepId),
   );
 
   protected readonly currentStep = computed<CoachmarkStep>(
@@ -147,7 +193,7 @@ export class DashboardCoachmarks implements AfterViewInit, OnDestroy {
   }
 
   private completeDashboardTour(): void {
-    this.onboardingStore.complete('dashboard');
+    this.onboardingStore.complete(this.dashboardStepId);
   }
 
   private queueMeasure(shouldScroll: boolean): void {

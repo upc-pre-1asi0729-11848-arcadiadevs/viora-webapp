@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
+import { ActiveSessionService } from '../../../../shared/infrastructure/active-session.service';
 
 import { AgronomicStore } from '../../../application/agronomic.store';
 import { PlotCoordinate } from '../../../domain/model/plot.entity';
@@ -50,8 +51,17 @@ export class PlotCreate {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly session = inject(ActiveSessionService);
 
   protected readonly store = inject(AgronomicStore);
+
+  /** First-visit tutorial for drawing the boundary (the "classic modal" form). */
+  protected readonly showGuide = signal<boolean>(false);
+  protected readonly guideSteps = [
+    { icon: 'travel_explore', titleKey: 'plotCreate.guide.step1.title', descKey: 'plotCreate.guide.step1.desc' },
+    { icon: 'add_location_alt', titleKey: 'plotCreate.guide.step2.title', descKey: 'plotCreate.guide.step2.desc' },
+    { icon: 'check_circle', titleKey: 'plotCreate.guide.step3.title', descKey: 'plotCreate.guide.step3.desc' },
+  ];
 
   private readonly boundaryMap = viewChild(PlotBoundaryMap);
 
@@ -89,6 +99,11 @@ export class PlotCreate {
 
   constructor() {
     this.form.statusChanges.subscribe(() => this.formStatus.set(this.form.valid));
+
+    // New producers drawing their first plot get the one-time boundary tutorial.
+    if (!this.isEditMode && !this.guideSeen()) {
+      this.showGuide.set(true);
+    }
 
     if (this.isEditMode) {
       // Make sure the plot list is available, then preload the form + boundary
@@ -209,6 +224,34 @@ export class PlotCreate {
       { id: 'confirm', labelKey: 'plotCreate.steps.confirm', state: confirmState, index: 3 },
     ];
   });
+
+  // ----- Boundary drawing guide (first-visit modal) -----
+
+  protected openGuide(): void {
+    this.showGuide.set(true);
+  }
+
+  /** Closes the guide and remembers it per account so it shows only once. */
+  protected dismissGuide(): void {
+    this.showGuide.set(false);
+    try {
+      localStorage.setItem(this.guideStorageKey(), '1');
+    } catch {
+      // Private browsing / storage limits should not block plot creation.
+    }
+  }
+
+  private guideSeen(): boolean {
+    try {
+      return localStorage.getItem(this.guideStorageKey()) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private guideStorageKey(): string {
+    return `viora.plotGuideSeen.${this.session.userId ?? 'anonymous'}`;
+  }
 
   // ----- Boundary toolbar actions -----
 

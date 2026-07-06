@@ -6,8 +6,8 @@
       <router-outlet />
     </main>
 
-    @if (!isSpecialist()) {
-      <app-onboarding-checklist />
-    }
+    <!-- The onboarding checklist is role-aware (producer plots vs specialist
+         profile/marketplace), so it renders for both account types. -->
+    <app-onboarding-checklist />
   </section>
 </section>

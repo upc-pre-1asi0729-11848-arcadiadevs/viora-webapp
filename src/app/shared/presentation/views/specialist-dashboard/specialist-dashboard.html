@@ -18,13 +18,13 @@
 
   <!-- KPI cards -->
   <section class="kpi-grid">
-    <article class="card kpi-card">
+    <article class="card kpi-card" data-onboarding-target="sp-resolved">
       <span class="kpi-label">{{ 'specialistDashboard.kpis.resolved' | translate }}</span>
       <strong class="kpi-value">{{ store.kpis()?.resolvedInterventions ?? 0 | number }}</strong>
       <span class="kpi-foot">{{ 'specialistDashboard.kpis.thisMonth' | translate }}</span>
     </article>
 
-    <article class="card kpi-card">
+    <article class="card kpi-card" data-onboarding-target="sp-acceptance">
       <span class="kpi-label">{{ 'specialistDashboard.kpis.acceptance' | translate }}</span>
       @if (store.kpis()?.acceptanceRatePercent; as acceptance) {
         <strong class="kpi-value">{{ acceptance | number:'1.0-1' }}%</strong>
@@ -40,7 +40,7 @@
       }
     </article>
 
-    <article class="card kpi-card">
+    <article class="card kpi-card" data-onboarding-target="sp-phyto">
       <span class="kpi-label">{{ 'specialistDashboard.kpis.phytosanitary' | translate }}</span>
       @if (store.kpis()?.phytosanitaryEfficiencyPercent; as phyto) {
         <strong class="kpi-value">{{ phyto | number:'1.0-1' }}%</strong>
@@ -61,7 +61,7 @@
 
   <!-- Zonal radar + incoming requests -->
   <section class="mid-grid">
-    <article class="card zonal-card">
+    <article class="card zonal-card" data-onboarding-target="sp-zonal">
       <header class="card-head">
         <div>
           <h3>{{ 'specialistDashboard.zonal.title' | translate }}</h3>
@@ -93,7 +93,7 @@
       </ul>
     </article>
 
-    <article class="card incoming-card">
+    <article class="card incoming-card" data-onboarding-target="sp-incoming">
       <header class="card-head">
         <h3>{{ 'specialistDashboard.incoming.title' | translate }}</h3>
         @if (incomingCount() > 0) {
@@ -197,4 +197,6 @@
       <p class="chart-empty">{{ 'specialistDashboard.performance.empty' | translate }}</p>
     }
   </article>
+
+  <app-dashboard-coachmarks />
 </section>
