@@ -537,14 +537,14 @@
       "selectHint": "Selecciona una intervención para ver sus detalles."
     },
     "next": {
-      "simulate": "Siguiente: el especialista emite la prescripción técnica.",
+      "awaiting": "Esperando a que el especialista emita la prescripción técnica.",
       "certify": "Próxima acción requerida: certifica la aplicación tras la ejecución en campo.",
       "impact": "En monitoreo de recuperación — reporta el impacto tras el período de gracia.",
       "close": "Listo para cerrar — evalúa el servicio y finaliza.",
       "closed": "Esta intervención está cerrada."
     },
     "action": {
-      "simulate": "Simular prescripción del especialista",
+      "awaitingBanner": "Esperando la prescripción del especialista.",
       "certify": "Certificar aplicación",
       "impact": "Reportar impacto",
       "close": "Cerrar intervención",

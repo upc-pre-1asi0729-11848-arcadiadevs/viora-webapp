@@ -537,14 +537,14 @@
       "selectHint": "Select an intervention to view its details."
     },
     "next": {
-      "simulate": "Next: the specialist issues the technical prescription.",
+      "awaiting": "Waiting for the specialist to issue the technical prescription.",
       "certify": "Next required action: certify the application after field execution.",
       "impact": "Under recovery monitoring — report the impact after the grace period.",
       "close": "Ready to close — evaluate the service and finalize.",
       "closed": "This intervention is closed."
     },
     "action": {
-      "simulate": "Simulate specialist prescription",
+      "awaitingBanner": "Waiting for the specialist's prescription.",
       "certify": "Certify application",
       "impact": "Report impact",
       "close": "Close intervention",

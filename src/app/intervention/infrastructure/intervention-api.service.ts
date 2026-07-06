@@ -199,20 +199,6 @@ export class InterventionApiService extends BaseApi {
   }
 
   /**
-   * Simulates the specialist issuing a technical prescription for an accepted case
-   * (no specialist app yet), moving the intervention to PRESCRIPTION_ISSUED.
-   * @param {number|string} requestId - The accepted intervention request.
-   */
-  simulatePrescription(requestId: number | string): Observable<PrescriptionView> {
-    return this.http
-      .post<TreatmentPrescriptionResource>(
-        `${this.interventionsEndpoint.resourceUrl(requestId)}/simulate-prescription`,
-        {},
-      )
-      .pipe(map((resource) => TreatmentPrescriptionAssembler.toView(resource)));
-  }
-
-  /**
    * Fetches the technical prescription for the "Prescription summary" card.
    * @param {number|string} prescriptionId
    */

@@ -161,7 +161,7 @@
             <mat-icon>info</mat-icon>
             <span>
               @switch (nextAction()) {
-                @case ('simulate') { {{ 'interventions.next.simulate' | translate }} }
+                @case ('awaiting') { {{ 'interventions.next.awaiting' | translate }} }
                 @case ('certify') { {{ 'interventions.next.certify' | translate }} }
                 @case ('impact') { {{ 'interventions.next.impact' | translate }} }
                 @case ('close') { {{ 'interventions.next.close' | translate }} }
@@ -171,10 +171,8 @@
           </div>
 
           @switch (nextAction()) {
-            @case ('simulate') {
-              <button mat-flat-button type="button" class="primary-button block" [disabled]="store.loading().action" (click)="simulatePrescription()">
-                <mat-icon>bolt</mat-icon> {{ 'interventions.action.simulate' | translate }}
-              </button>
+            @case ('awaiting') {
+              <div class="waiting-banner"><mat-icon>hourglass_empty</mat-icon> {{ 'interventions.action.awaitingBanner' | translate }}</div>
             }
             @case ('certify') {
               <button mat-flat-button type="button" class="primary-button block" (click)="openModal('certify')">

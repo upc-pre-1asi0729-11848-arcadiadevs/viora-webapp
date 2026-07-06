@@ -112,10 +112,6 @@ export class InterventionsStore {
     return this.specialistPhotoUrls()[specialistId] ?? '';
   }
 
-  simulatePrescription(requestId: number, onDone?: (ok: boolean) => void): void {
-    this.runAction(this.api.simulatePrescription(requestId), onDone);
-  }
-
   certifyApplication(request: CertifyApplicationRequest, onDone?: (ok: boolean) => void): void {
     this.runAction(this.api.certifyApplication(request), onDone);
   }
