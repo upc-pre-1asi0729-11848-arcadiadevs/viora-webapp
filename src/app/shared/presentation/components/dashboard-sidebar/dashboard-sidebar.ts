@@ -127,11 +127,6 @@ export class DashboardSidebar {
       route: '/specialist/field-inspection',
       icon: 'center_focus_weak',
     },
-    {
-      labelKey: 'sidebar.myProfile',
-      route: '/settings',
-      icon: 'person',
-    },
   ];
 
   /** Primary navigation, chosen by the signed-in user's segment. */
