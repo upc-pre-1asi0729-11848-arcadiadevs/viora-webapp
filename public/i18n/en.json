@@ -1883,6 +1883,9 @@
     "subtitle": "Choose a plan to get started. Pay securely, then jump straight into Viora.",
     "haveAccount": "Already have an account?",
     "login": "Sign in",
+    "signedInAs": "You are signed in.",
+    "switchAccount": "Use another account",
+    "redirecting": "Opening checkout...",
     "segment": {
       "aria": "Choose your account type",
       "grower": "Grower",

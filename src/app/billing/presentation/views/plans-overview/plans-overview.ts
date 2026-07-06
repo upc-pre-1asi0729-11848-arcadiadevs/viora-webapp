@@ -5,7 +5,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { SubscriptionApiService } from '../../../infrastructure/subscription-api.service';
+import { SubscriptionStore } from '../../../application/subscription.store';
 import { Plan } from '../../../domain/model/plan.entity';
+import { ActiveSessionService } from '../../../../shared/infrastructure/active-session.service';
+import { AuthStore } from '../../../../iam/application/auth.store';
 
 type PlanSegment = 'grower' | 'specialist';
 
@@ -24,6 +27,9 @@ type PlanSegment = 'grower' | 'specialist';
 })
 export class PlansOverviewView implements OnInit {
   private readonly api = inject(SubscriptionApiService);
+  private readonly subscription = inject(SubscriptionStore);
+  private readonly session = inject(ActiveSessionService);
+  private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -33,6 +39,12 @@ export class PlansOverviewView implements OnInit {
   protected readonly plans = signal<Plan[]>([]);
   protected readonly loading = signal<boolean>(true);
   protected readonly segment = signal<PlanSegment>('grower');
+  /** True while we hand off to the MercadoPago checkout. */
+  protected readonly redirecting = signal<boolean>(false);
+
+  /** Whether a stale/active session is present (already has an account). */
+  protected readonly isSignedIn = this.session.isAuthenticated;
+  protected readonly checkoutError = this.subscription.error;
 
   protected readonly isSpecialist = computed<boolean>(() => this.segment() === 'specialist');
 
@@ -68,8 +80,18 @@ export class PlansOverviewView implements OnInit {
     this.segment.set(segment);
   }
 
-  /** Carries the chosen plan into registration, which continues to checkout. */
+  /**
+   * Continues with the chosen plan. A fresh visitor goes to registration first;
+   * a visitor who already has an account (a session is present) skips straight to
+   * the MercadoPago checkout — this also frees an account that signed up but never
+   * paid from being pinned to this screen.
+   */
   protected choose(plan: Plan): void {
+    if (this.isSignedIn()) {
+      this.redirecting.set(true);
+      this.subscription.startCheckout(plan.code, plan.interval, () => this.redirecting.set(false));
+      return;
+    }
     this.router.navigate(['/register'], {
       queryParams: {
         role: this.isSpecialist() ? 'ROLE_SPECIALIST' : 'ROLE_GROWER',
@@ -77,5 +99,10 @@ export class PlansOverviewView implements OnInit {
         interval: plan.interval,
       },
     });
+  }
+
+  /** Signs the current (unpaid) account out so a different account can be used. */
+  protected logout(): void {
+    this.auth.logout();
   }
 }

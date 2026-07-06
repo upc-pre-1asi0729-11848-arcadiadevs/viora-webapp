@@ -1883,6 +1883,9 @@
     "subtitle": "Elige un plan para empezar. Paga de forma segura y entra directo a Viora.",
     "haveAccount": "¿Ya tienes cuenta?",
     "login": "Iniciar sesión",
+    "signedInAs": "Tu sesión está iniciada.",
+    "switchAccount": "Usar otra cuenta",
+    "redirecting": "Abriendo el pago...",
     "segment": {
       "aria": "Elige tu tipo de cuenta",
       "grower": "Productor",

@@ -46,15 +46,9 @@
   text-decoration: none;
 }
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 700;
-  transition: background 0.25s ease;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 .top-actions { display: inline-flex; align-items: center; gap: 14px; font-size: 14px; }
 .have { color: var(--muted); }
@@ -64,8 +58,11 @@
   border: 1px solid var(--hairline);
   background: #fff;
   color: var(--ink);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 .login-link:hover { border-color: var(--accent); color: var(--accent); }
@@ -246,6 +243,22 @@
   margin-top: 1px;
 }
 .featured .features li mat-icon { color: #fff; }
+
+.checkout-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  max-width: 560px;
+  margin: 26px auto 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fbeceb;
+  border: 1px solid #f0d3d0;
+  color: #b23b34;
+  font-size: 13px;
+}
+.checkout-error mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
 
 /* ---- Footer ---- */
 .foot {

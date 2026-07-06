@@ -1,11 +1,16 @@
 <div class="plans-page" [class.is-specialist]="isSpecialist()">
   <header class="top">
     <a class="brand" [href]="landingUrl">
-      <span class="brand-mark">V</span> Viora
+      <img class="brand-mark" src="/assets/brand/viora-icon-svg.svg" alt="" /> Viora
     </a>
     <div class="top-actions">
-      <span class="have">{{ 'plansPage.haveAccount' | translate }}</span>
-      <a class="login-link" routerLink="/login">{{ 'plansPage.login' | translate }}</a>
+      @if (isSignedIn()) {
+        <span class="have">{{ 'plansPage.signedInAs' | translate }}</span>
+        <button type="button" class="login-link" (click)="logout()">{{ 'plansPage.switchAccount' | translate }}</button>
+      } @else {
+        <span class="have">{{ 'plansPage.haveAccount' | translate }}</span>
+        <a class="login-link" routerLink="/login">{{ 'plansPage.login' | translate }}</a>
+      }
     </div>
   </header>
 
@@ -68,9 +73,13 @@
                 <span class="suffix">{{ plan.intervalSuffix }}</span>
               </div>
 
-              <button type="button" class="cta" (click)="choose(plan)">
-                {{ 'plansPage.choose' | translate: { plan: plan.name } }}
-                <mat-icon>arrow_forward</mat-icon>
+              <button type="button" class="cta" [disabled]="redirecting()" (click)="choose(plan)">
+                @if (redirecting()) {
+                  {{ 'plansPage.redirecting' | translate }}
+                } @else {
+                  {{ 'plansPage.choose' | translate: { plan: plan.name } }}
+                  <mat-icon>arrow_forward</mat-icon>
+                }
               </button>
 
               <ul class="features">
@@ -83,6 +92,10 @@
         }
       </div>
     </section>
+
+    @if (checkoutError()) {
+      <p class="checkout-error"><mat-icon>error_outline</mat-icon> {{ checkoutError() }}</p>
+    }
 
     <footer class="foot">
       <span><mat-icon>lock</mat-icon> {{ 'plansPage.secured' | translate }}</span>
