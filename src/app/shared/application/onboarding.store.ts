@@ -2,22 +2,27 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { ActiveSessionService } from '../infrastructure/active-session.service';
 
-export type OnboardingStepId = 'plot' | 'dashboard' | 'expert';
+// Producer steps: plot | dashboard | expert. Specialist steps: profile |
+// sp-dashboard | marketplace. The store is role-agnostic — it just tracks which
+// step ids are done; the checklist/coachmarks own the per-role step sets.
+export type OnboardingStepId =
+  | 'plot'
+  | 'dashboard'
+  | 'expert'
+  | 'profile'
+  | 'sp-dashboard'
+  | 'marketplace';
 
 interface OnboardingState {
   minimized: boolean;
   dismissed: boolean;
-  completed: Record<OnboardingStepId, boolean>;
+  completed: Record<string, boolean>;
 }
 
 const DEFAULT_STATE: OnboardingState = {
   minimized: false,
   dismissed: false,
-  completed: {
-    plot: false,
-    dashboard: false,
-    expert: false,
-  },
+  completed: {},
 };
 
 @Injectable({
@@ -36,7 +41,7 @@ export class OnboardingStore {
   );
 
   isCompleted(stepId: OnboardingStepId): boolean {
-    return this.stateSignal().completed[stepId];
+    return this.stateSignal().completed[stepId] ?? false;
   }
 
   complete(stepId: OnboardingStepId): void {
@@ -93,10 +98,7 @@ export class OnboardingStore {
       return {
         minimized: parsed.minimized ?? DEFAULT_STATE.minimized,
         dismissed: parsed.dismissed ?? DEFAULT_STATE.dismissed,
-        completed: {
-          ...DEFAULT_STATE.completed,
-          ...(parsed.completed ?? {}),
-        },
+        completed: { ...(parsed.completed ?? {}) },
       };
     } catch {
       return DEFAULT_STATE;
