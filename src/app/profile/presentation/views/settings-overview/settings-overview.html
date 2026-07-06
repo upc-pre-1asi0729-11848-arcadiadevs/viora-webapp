@@ -3,7 +3,8 @@
     [breadcrumbs]="breadcrumbs()"
     [subtitle]="'settingsPage.headerSubtitle' | translate"
     [updatedLabel]="store.lastSyncLabel()"
-    (refresh)="resetDraft()" />
+    (refresh)="resetDraft()"
+  />
 
   <!-- Section tabs -->
   <nav class="settings-tabs" role="tablist">
@@ -14,7 +15,8 @@
         class="settings-tab"
         [class.is-active]="activeTab() === tab.id"
         [attr.aria-selected]="activeTab() === tab.id"
-        (click)="selectTab(tab.id)">
+        (click)="selectTab(tab.id)"
+      >
         <mat-icon>{{ tab.icon }}</mat-icon>
         {{ tab.labelKey | translate }}
       </button>
@@ -31,30 +33,54 @@
           <div class="section-head">
             <div>
               <h2 class="section-title">{{ 'settingsPage.profile.personalTitle' | translate }}</h2>
-              <p class="section-subtitle">{{ 'settingsPage.profile.personalSubtitle' | translate }}</p>
+              <p class="section-subtitle">
+                {{
+                  (isSpecialistProfile()
+                    ? 'settingsPage.profile.specialistPersonalSubtitle'
+                    : 'settingsPage.profile.personalSubtitle'
+                  ) | translate
+                }}
+              </p>
             </div>
           </div>
 
           <div class="identity-row">
             <img class="avatar avatar--lg" [src]="preview().avatarUrl" alt="Profile photo" />
             <div class="identity-text">
-              <span class="identity-name">{{ fullName() || ('settingsPage.profile.yourName' | translate) }}</span>
-              <span class="identity-role">{{ jobTitle() || ('settingsPage.profile.jobTitleFallback' | translate) }} · {{ store.profile().roleLabel }}</span>
+              <span class="identity-name">{{
+                fullName() || ('settingsPage.profile.yourName' | translate)
+              }}</span>
+              <span class="identity-role">
+                {{ jobTitle() || ('settingsPage.profile.jobTitleFallback' | translate) }}
+                &middot;
+                {{
+                  isSpecialistProfile()
+                    ? ('auth.roles.specialist' | translate)
+                    : store.profile().roleLabel
+                }}
+              </span>
             </div>
             <input
               #photoInput
               type="file"
               accept="image/*"
               hidden
-              (change)="onPhotoSelected($event)" />
+              (change)="onPhotoSelected($event)"
+            />
             <button
               mat-stroked-button
               type="button"
               class="ghost-button ghost-button--sm"
               [disabled]="photoUploadDisabled"
-              (click)="photoInput.click()">
+              (click)="photoInput.click()"
+            >
               <mat-icon>photo_camera</mat-icon>
-              {{ (uploadingPhoto() ? 'settingsPage.profile.uploading' : 'settingsPage.profile.changePhoto') | translate }}
+              {{
+                (uploadingPhoto()
+                  ? 'settingsPage.profile.uploading'
+                  : 'settingsPage.profile.changePhoto'
+                ) | translate
+              }}
             </button>
           </div>
           @if (photoError()) {
@@ -64,11 +90,19 @@
           <div class="form-grid">
             <label class="field">
               <span>{{ 'settingsPage.profile.fullName' | translate }}</span>
-              <input type="text" [value]="fullName()" (input)="fullName.set($any($event.target).value)" />
+              <input
+                type="text"
+                [value]="fullName()"
+                (input)="fullName.set($any($event.target).value)"
+              />
             </label>
             <label class="field">
               <span>{{ 'settingsPage.profile.emailAddress' | translate }}</span>
-              <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" />
+              <input
+                type="email"
+                [value]="email()"
+                (input)="email.set($any($event.target).value)"
+              />
             </label>
             <label class="field">
               <span>{{ 'settingsPage.profile.phoneNumber' | translate }}</span>
@@ -76,7 +110,11 @@
             </label>
             <label class="field">
               <span>{{ 'settingsPage.profile.jobTitle' | translate }}</span>
-              <input type="text" [value]="jobTitle()" (input)="jobTitle.set($any($event.target).value)" />
+              <input
+                type="text"
+                [value]="jobTitle()"
+                (input)="jobTitle.set($any($event.target).value)"
+              />
             </label>
           </div>
 
@@ -100,8 +138,14 @@
               type="button"
               class="primary-button"
               [disabled]="store.saving()"
-              (click)="saveChanges()">
-              {{ (store.saving() ? 'settingsPage.profile.saving' : 'settingsPage.profile.saveChanges') | translate }}
+              (click)="saveChanges()"
+            >
+              {{
+                (store.saving()
+                  ? 'settingsPage.profile.saving'
+                  : 'settingsPage.profile.saveChanges'
+                ) | translate
+              }}
             </button>
           </div>
         </mat-card>
@@ -110,73 +154,336 @@
         <mat-card class="section-card">
           <div class="section-head">
             <div>
-              <h2 class="section-title">{{ 'settingsPage.profile.marketplaceTitle' | translate }}</h2>
-              <p class="section-subtitle">{{ 'settingsPage.profile.marketplaceSubtitle' | translate }}</p>
+              <h2 class="section-title">
+                {{ 'settingsPage.profile.marketplaceTitle' | translate }}
+              </h2>
+              <p class="section-subtitle">
+                {{
+                  (isSpecialistProfile()
+                    ? 'settingsPage.profile.specialistMarketplaceSubtitle'
+                    : 'settingsPage.profile.marketplaceSubtitle'
+                  ) | translate
+                }}
+              </p>
             </div>
           </div>
 
           <div class="form-grid">
             <label class="field">
-              <span>{{ 'settingsPage.profile.groveFocus' | translate }}</span>
+              <span>{{
+                (isSpecialistProfile()
+                  ? 'settingsPage.profile.specialtyArea'
+                  : 'settingsPage.profile.groveFocus'
+                ) | translate
+              }}</span>
               <input
                 type="text"
-                [placeholder]="'settingsPage.profile.groveFocusPlaceholder' | translate"
+                [placeholder]="
+                  (isSpecialistProfile()
+                    ? 'settingsPage.profile.specialtyAreaPlaceholder'
+                    : 'settingsPage.profile.groveFocusPlaceholder'
+                  ) | translate
+                "
                 [value]="specialtyArea()"
-                (input)="specialtyArea.set($any($event.target).value)" />
+                (input)="specialtyArea.set($any($event.target).value)"
+              />
             </label>
-            <label class="field">
-              <span>{{ 'settingsPage.profile.location' | translate }}</span>
-              <input
-                type="text"
-                [placeholder]="'settingsPage.profile.locationPlaceholder' | translate"
-                [value]="location()"
-                (input)="location.set($any($event.target).value)" />
-            </label>
+            @if (!isSpecialistProfile()) {
+              <label class="field">
+                <span>{{ 'settingsPage.profile.location' | translate }}</span>
+                <input
+                  type="text"
+                  [placeholder]="'settingsPage.profile.locationPlaceholder' | translate"
+                  [value]="location()"
+                  (input)="location.set($any($event.target).value)"
+                />
+              </label>
+            }
           </div>
 
-          <div class="field">
-            <span>{{ 'settingsPage.profile.totalArea' | translate }}</span>
-            <div class="readonly-metric">
-              <mat-icon>eco</mat-icon>
-              <strong>{{ preview().farmSizeLabel }}</strong>
-              <span class="readonly-hint">{{ 'settingsPage.profile.totalAreaHint' | translate }}</span>
+          @if (!isSpecialistProfile()) {
+            <div class="field">
+              <span>{{ 'settingsPage.profile.totalArea' | translate }}</span>
+              <div class="readonly-metric">
+                <mat-icon>eco</mat-icon>
+                <strong>{{ preview().farmSizeLabel }}</strong>
+                <span class="readonly-hint">{{
+                  'settingsPage.profile.totalAreaHint' | translate
+                }}</span>
+              </div>
             </div>
+          } @else {
+            <div class="specialist-marketplace-fields">
+              <div class="field">
+                <span>{{ 'settingsPage.profile.serviceTags' | translate }}</span>
+                <div class="tag-chips">
+                  @for (option of serviceTagOptions; track option.value) {
+                    <button
+                      type="button"
+                      class="tag-chip"
+                      [class.is-active]="isTagSelected(option.value)"
+                      (click)="toggleServiceTag(option.value)"
+                    >
+                      <mat-icon>{{ isTagSelected(option.value) ? 'check' : 'add' }}</mat-icon>
+                      {{ option.labelKey | translate }}
+                    </button>
+                  }
+                </div>
+                <span class="field-hint">{{ 'settingsPage.profile.serviceTagsHint' | translate }}</span>
+              </div>
+
+              <label class="field">
+                <span>{{ 'settingsPage.profile.availability' | translate }}</span>
+                <select [value]="availability()" (change)="availability.set($any($event.target).value)">
+                  <option value="">{{ 'settingsPage.profile.availabilitySelect' | translate }}</option>
+                  @for (option of availabilityOptions; track option.value) {
+                    <option [value]="option.value" [selected]="availability() === option.value">
+                      {{ option.labelKey | translate }}
+                    </option>
+                  }
+                </select>
+              </label>
+
+              <div class="field">
+                <span>{{ 'settingsPage.profile.baseLocation' | translate }}</span>
+                <div class="location-control">
+                  <div class="location-status">
+                    <mat-icon>place</mat-icon>
+                    @if (hasCoordinates()) {
+                      <span>{{ location() || ('settingsPage.profile.locationSet' | translate) }}</span>
+                    } @else {
+                      <span class="muted">{{ 'settingsPage.profile.locationUnset' | translate }}</span>
+                    }
+                  </div>
+                  <button type="button" class="btn-map" (click)="openLocationPicker()">
+                    <mat-icon>map</mat-icon> {{ 'settingsPage.profile.setOnMap' | translate }}
+                  </button>
+                </div>
+                <span class="field-hint">{{ 'settingsPage.profile.baseLocationHint' | translate }}</span>
+              </div>
+
+              <div class="field">
+                <span>{{ 'settingsPage.profile.serviceRadius' | translate }}</span>
+                <div class="radius-control">
+                  <input
+                    type="range"
+                    [min]="radiusMin"
+                    [max]="radiusMax"
+                    step="5"
+                    [value]="radiusValue()"
+                    (input)="onRadiusInput($any($event.target).value)"
+                  />
+                  <span class="radius-value">{{ radiusValue() }} km</span>
+                </div>
+                <span class="field-hint">{{ 'settingsPage.profile.serviceRadiusHint' | translate }}</span>
+              </div>
+            </div>
+          }
+
+          <div class="card-actions">
+            <button
+              mat-flat-button
+              type="button"
+              class="primary-button"
+              [disabled]="store.saving()"
+              (click)="saveChanges()"
+            >
+              {{
+                (store.saving()
+                  ? 'settingsPage.profile.saving'
+                  : 'settingsPage.profile.saveChanges'
+                ) | translate
+              }}
+            </button>
           </div>
         </mat-card>
+
+        @if (isSpecialistProfile()) {
+          <mat-card class="section-card pro-badge-card" [class.is-locked]="!isSpecialistProPlan()">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">
+                  {{ 'settingsPage.profile.proBadgeTitle' | translate }}
+                </h2>
+                <p class="section-subtitle">
+                  {{ 'settingsPage.profile.proBadgeSubtitle' | translate }}
+                </p>
+              </div>
+              <span class="pro-preview-badge"><mat-icon>verified</mat-icon> Pro</span>
+            </div>
+
+            @if (isSpecialistProPlan()) {
+              <div class="badge-control-row">
+                <label class="toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="showProBadge()"
+                    (change)="showProBadge.set($any($event.target).checked)"
+                  />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+                <div class="badge-copy">
+                  <strong>{{ 'settingsPage.profile.proBadgeToggle' | translate }}</strong>
+                  <span>{{ 'settingsPage.profile.proBadgeReady' | translate }}</span>
+                </div>
+              </div>
+            } @else {
+              <div class="badge-control-row">
+                <label class="toggle is-locked">
+                  <input type="checkbox" disabled />
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+                <div class="badge-copy">
+                  <strong>{{ 'settingsPage.profile.proBadgeLockedTitle' | translate }}</strong>
+                  <span>{{ 'settingsPage.profile.proBadgeLockedBody' | translate }}</span>
+                </div>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="ghost-button ghost-button--sm"
+                  (click)="goToSubscription()"
+                >
+                  {{ 'settingsPage.profile.upgradeToPro' | translate }}
+                </button>
+              </div>
+            }
+          </mat-card>
+        }
       </div>
 
       <!-- Right column: live preview -->
       <aside class="preview-column">
-        <p class="preview-caption">{{ 'settingsPage.profile.previewCaption' | translate }}</p>
+        <p class="preview-caption">
+          {{
+            (isSpecialistProfile()
+              ? 'settingsPage.profile.specialistPreviewCaption'
+              : 'settingsPage.profile.previewCaption'
+            ) | translate
+          }}
+        </p>
 
-        <div class="preview-card">
-          <div class="preview-badges">
-            <span class="badge badge--best"><mat-icon>eco</mat-icon> {{ 'auth.roles.producer' | translate }}</span>
-          </div>
+        @if (!isSpecialistProfile()) {
+          <div class="preview-card">
+            <div class="preview-badges">
+              <span class="badge badge--best"
+                ><mat-icon>eco</mat-icon> {{ 'auth.roles.producer' | translate }}</span
+              >
+            </div>
 
-          <div class="preview-identity">
-            <img class="avatar" [src]="preview().avatarUrl" alt="Profile photo" />
-            <div class="identity-text">
-              <span class="preview-name">{{ preview().fullName || ('settingsPage.profile.yourName' | translate) }}</span>
-              <span class="preview-role">{{ preview().specialtyArea || ('settingsPage.profile.groveFocus' | translate) }}</span>
+            <div class="preview-identity">
+              <img class="avatar" [src]="preview().avatarUrl" alt="Profile photo" />
+              <div class="identity-text">
+                <span class="preview-name">{{
+                  preview().fullName || ('settingsPage.profile.yourName' | translate)
+                }}</span>
+                <span class="preview-role">{{
+                  preview().specialtyArea || ('settingsPage.profile.groveFocus' | translate)
+                }}</span>
+              </div>
+            </div>
+
+            <div class="preview-meta">
+              @if (preview().location) {
+                <span><mat-icon>location_on</mat-icon> {{ preview().location }}</span>
+              }
+              <span><mat-icon>eco</mat-icon> {{ preview().farmSizeLabel }}</span>
+            </div>
+
+            <div class="preview-foot">
+              <button mat-flat-button type="button" class="primary-button" disabled>
+                {{ 'settingsPage.profile.respond' | translate }}
+              </button>
             </div>
           </div>
+        } @else {
+          <div class="preview-card specialist-preview-card">
+            <div class="preview-badges">
+              <span class="badge badge--best"
+                ><mat-icon>handyman</mat-icon> {{ 'auth.roles.specialist' | translate }}</span
+              >
+              @if (isSpecialistProPlan() && showProBadge()) {
+                <span class="badge badge--pro"><mat-icon>verified</mat-icon> Pro</span>
+              }
+              @if (previewAvailabilityLabelKey()) {
+                <span class="badge badge--avail"
+                  ><i class="dot"></i> {{ previewAvailabilityLabelKey() | translate }}</span
+                >
+              }
+            </div>
 
-          <div class="preview-meta">
-            @if (preview().location) {
-              <span><mat-icon>location_on</mat-icon> {{ preview().location }}</span>
-            }
-            <span><mat-icon>eco</mat-icon> {{ preview().farmSizeLabel }}</span>
-          </div>
+            <div class="preview-identity">
+              <img class="avatar" [src]="preview().avatarUrl" alt="Profile photo" />
+              <div class="identity-text">
+                <span class="preview-name">{{
+                  preview().fullName || ('settingsPage.profile.yourName' | translate)
+                }}</span>
+                <span class="preview-role">{{
+                  specialistDisplayRole() || ('settingsPage.profile.specialtyArea' | translate)
+                }}</span>
+                <span class="specialist-stats">
+                  <span class="stat-success"
+                    >{{ 'settingsPage.profile.successRate' | translate }}:
+                    {{ 'settingsPage.profile.noDataYet' | translate }}</span
+                  >
+                  <span class="stat-sep">&middot;</span>
+                  <span class="stat-cases"
+                    >{{ 'settingsPage.profile.cases' | translate }}:
+                    {{ 'settingsPage.profile.noDataYet' | translate }}</span
+                  >
+                </span>
+              </div>
+            </div>
 
-          <div class="preview-foot">
-            <button mat-flat-button type="button" class="primary-button" disabled>{{ 'settingsPage.profile.respond' | translate }}</button>
+            <div class="preview-meta">
+              @if (preview().location) {
+                <span><mat-icon>location_on</mat-icon> {{ preview().location }}</span>
+              } @else {
+                <span
+                  ><mat-icon>location_on</mat-icon>
+                  {{ 'settingsPage.profile.noDataYet' | translate }}</span
+                >
+              }
+            </div>
+
+            <div class="specialist-tags">
+              @if (previewTags().length > 0) {
+                @for (tag of previewTags(); track tag.value) {
+                  <span class="specialist-tag">{{
+                    tag.labelKey ? (tag.labelKey | translate) : tag.value
+                  }}</span>
+                }
+              } @else {
+                <span class="specialist-tag is-empty"
+                  >{{ 'settingsPage.profile.serviceTags' | translate }}:
+                  {{ 'settingsPage.profile.noDataYet' | translate }}</span
+                >
+              }
+            </div>
+
+            <div class="preview-foot">
+              <span class="foot-availability" [class.is-empty]="!previewAvailabilityLabelKey()"
+                ><i class="dot"></i> {{ 'settingsPage.profile.availability' | translate }}:
+                {{
+                  previewAvailabilityLabelKey()
+                    ? (previewAvailabilityLabelKey() | translate)
+                    : ('settingsPage.profile.noDataYet' | translate)
+                }}</span
+              >
+              <button mat-flat-button type="button" class="primary-button" disabled>
+                <mat-icon>send</mat-icon> {{ 'settingsPage.profile.request' | translate }}
+              </button>
+            </div>
           </div>
-        </div>
+        }
 
         <p class="preview-note">
           <mat-icon>info</mat-icon>
-          {{ 'settingsPage.profile.previewNote' | translate }}
+          {{
+            (isSpecialistProfile()
+              ? 'settingsPage.profile.specialistPreviewNote'
+              : 'settingsPage.profile.previewNote'
+            ) | translate
+          }}
         </p>
       </aside>
     </div>
@@ -196,18 +503,25 @@
         <!-- Left: reward + code -->
         <div class="referral-left">
           <h3 class="referral-headline">
-            {{ 'settingsPage.referrals.headline' | translate: { percent: billing.referralCode().rewardPercent || 20 } }}
+            {{
+              'settingsPage.referrals.headline'
+                | translate: { percent: billing.referralCode().rewardPercent || 20 }
+            }}
           </h3>
 
           <img
             class="referral-illustration"
             src="/assets/images/general/referrals-image.png"
-            [alt]="'settingsPage.referrals.illustrationAlt' | translate" />
+            [alt]="'settingsPage.referrals.illustrationAlt' | translate"
+          />
 
           <button type="button" class="referral-code-ticket" (click)="copyReferralCode()">
             <span class="ticket-label">{{ 'settingsPage.referrals.yourCode' | translate }}</span>
             <span class="ticket-code">{{ billing.referralCode().code || '————' }}</span>
-            <span class="ticket-hint">{{ (codeCopied() ? 'settingsPage.referrals.copied' : 'settingsPage.referrals.tapToCopy') | translate }}</span>
+            <span class="ticket-hint">{{
+              (codeCopied() ? 'settingsPage.referrals.copied' : 'settingsPage.referrals.tapToCopy')
+                | translate
+            }}</span>
           </button>
         </div>
 
@@ -226,7 +540,12 @@
             <span class="step-text">{{ 'settingsPage.referrals.step3' | translate }}</span>
           </div>
 
-          <button mat-flat-button type="button" class="primary-button block" (click)="shareReferral()">
+          <button
+            mat-flat-button
+            type="button"
+            class="primary-button block"
+            (click)="shareReferral()"
+          >
             <mat-icon>share</mat-icon> {{ 'settingsPage.referrals.shareButton' | translate }}
           </button>
         </div>
@@ -237,10 +556,22 @@
       <div class="section-head">
         <div>
           <h2 class="section-title">{{ 'settingsPage.coupons.title' | translate }}</h2>
-          <p class="section-subtitle">{{ (selectedCoupon() ? 'settingsPage.coupons.subtitleDetail' : 'settingsPage.coupons.subtitlePrompt') | translate }}</p>
+          <p class="section-subtitle">
+            {{
+              (selectedCoupon()
+                ? 'settingsPage.coupons.subtitleDetail'
+                : 'settingsPage.coupons.subtitlePrompt'
+              ) | translate
+            }}
+          </p>
         </div>
         @if (selectedCoupon()) {
-          <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="backToCoupons()">
+          <button
+            mat-stroked-button
+            type="button"
+            class="ghost-button ghost-button--sm"
+            (click)="backToCoupons()"
+          >
             <mat-icon>arrow_back</mat-icon> {{ 'settingsPage.coupons.back' | translate }}
           </button>
         }
@@ -254,14 +585,21 @@
             [placeholder]="'settingsPage.coupons.redeemPlaceholder' | translate"
             [value]="redeemInput()"
             (input)="redeemInput.set($any($event.target).value)"
-            (keydown.enter)="redeemCoupon(); $event.preventDefault()" />
+            (keydown.enter)="redeemCoupon(); $event.preventDefault()"
+          />
           <button
             mat-flat-button
             type="button"
             class="primary-button"
             [disabled]="!redeemInput().trim() || billing.redeeming()"
-            (click)="redeemCoupon()">
-            {{ (billing.redeeming() ? 'settingsPage.coupons.redeeming' : 'settingsPage.coupons.redeem') | translate }}
+            (click)="redeemCoupon()"
+          >
+            {{
+              (billing.redeeming()
+                ? 'settingsPage.coupons.redeeming'
+                : 'settingsPage.coupons.redeem'
+              ) | translate
+            }}
           </button>
         </div>
         @if (billing.redeemError()) {
@@ -279,13 +617,19 @@
                 <span class="coupon-code">{{ coupon.code }}</span>
                 <span class="coupon-desc">{{ coupon.description }}</span>
                 <div class="coupon-foot">
-                  <span class="coupon-link">{{ 'settingsPage.coupons.viewConditions' | translate }}</span>
+                  <span class="coupon-link">{{
+                    'settingsPage.coupons.viewConditions' | translate
+                  }}</span>
                   @if (coupon.validUntilLabel) {
                     <span class="coupon-valid">{{ coupon.validUntilLabel }}</span>
                   }
                 </div>
               </div>
-              <img class="coupon-thumb" src="/assets/images/general/coupon-image.png" alt="Viora coupon" />
+              <img
+                class="coupon-thumb"
+                src="/assets/images/general/coupon-image.png"
+                alt="Viora coupon"
+              />
             </button>
           } @empty {
             <p class="empty-hint">{{ 'settingsPage.coupons.empty' | translate }}</p>
@@ -299,46 +643,59 @@
             [style.--gx]="glossX()"
             [style.--gy]="glossY()"
             (pointermove)="onCouponMove($event)"
-            (pointerleave)="onCouponLeave()">
-          <div class="coupon-3d">
-            <!-- Front -->
-            <div class="coupon-face coupon-front">
-              <span class="cf-gloss"></span>
-              <div class="cf-head">
-                <span class="cf-brand">Viora Referrals</span>
-                <span class="cf-type">COUPON<br />TYPE {{ coupon.typeLabel }}</span>
+            (pointerleave)="onCouponLeave()"
+          >
+            <div class="coupon-3d">
+              <!-- Front -->
+              <div class="coupon-face coupon-front">
+                <span class="cf-gloss"></span>
+                <div class="cf-head">
+                  <span class="cf-brand">Viora Referrals</span>
+                  <span class="cf-type">COUPON<br />TYPE {{ coupon.typeLabel }}</span>
+                </div>
+                <div class="cf-offer">
+                  <span class="cf-percent">{{ coupon.discountPercent }}%</span>
+                  <span class="cf-sub">{{ coupon.discountSubtitle }}</span>
+                </div>
+                <div class="cf-codebox">
+                  <span class="cf-code">{{ coupon.code }}</span>
+                  <button type="button" class="cf-copy" (click)="copyCouponCode(coupon)">
+                    <mat-icon>content_copy</mat-icon>
+                    {{
+                      (couponCodeCopied()
+                        ? 'settingsPage.coupons.codeCopied'
+                        : 'settingsPage.coupons.copyCode'
+                      ) | translate
+                    }}
+                  </button>
+                </div>
+                <span class="cf-valid">
+                  {{
+                    coupon.validUntilLong
+                      ? ('settingsPage.coupons.validUntil'
+                        | translate: { date: coupon.validUntilLong })
+                      : ('settingsPage.coupons.validWhileCredits' | translate)
+                  }}
+                </span>
+                <span class="cf-notch cf-notch-left"></span>
+                <span class="cf-notch cf-notch-right"></span>
               </div>
-              <div class="cf-offer">
-                <span class="cf-percent">{{ coupon.discountPercent }}%</span>
-                <span class="cf-sub">{{ coupon.discountSubtitle }}</span>
+              <!-- Back -->
+              <div class="coupon-face coupon-back">
+                <span class="cb-year">{{ coupon.yearShort }}</span>
+                <span class="cb-serial">{{ coupon.monthLabel }}<br />{{ coupon.serialLabel }}</span>
+                <div class="cb-brand">
+                  <span class="cb-name">Viora</span>
+                  <span class="cb-tag">Referrals</span>
+                </div>
+                <span class="cb-leaf"><mat-icon>eco</mat-icon></span>
               </div>
-              <div class="cf-codebox">
-                <span class="cf-code">{{ coupon.code }}</span>
-                <button type="button" class="cf-copy" (click)="copyCouponCode(coupon)">
-                  <mat-icon>content_copy</mat-icon> {{ (couponCodeCopied() ? 'settingsPage.coupons.codeCopied' : 'settingsPage.coupons.copyCode') | translate }}
-                </button>
-              </div>
-              <span class="cf-valid">
-                {{ coupon.validUntilLong ? ('settingsPage.coupons.validUntil' | translate: { date: coupon.validUntilLong }) : ('settingsPage.coupons.validWhileCredits' | translate) }}
-              </span>
-              <span class="cf-notch cf-notch-left"></span>
-              <span class="cf-notch cf-notch-right"></span>
             </div>
-            <!-- Back -->
-            <div class="coupon-face coupon-back">
-              <span class="cb-year">{{ coupon.yearShort }}</span>
-              <span class="cb-serial">{{ coupon.monthLabel }}<br />{{ coupon.serialLabel }}</span>
-              <div class="cb-brand">
-                <span class="cb-name">Viora</span>
-                <span class="cb-tag">Referrals</span>
-              </div>
-              <span class="cb-leaf"><mat-icon>eco</mat-icon></span>
-            </div>
-          </div>
           </div>
 
           <button type="button" class="conditions-toggle" (click)="toggleConditions()">
-            {{ 'settingsPage.coupons.viewConditions' | translate }} <mat-icon>{{ conditionsExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ 'settingsPage.coupons.viewConditions' | translate }}
+            <mat-icon>{{ conditionsExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
           </button>
 
           @if (conditionsExpanded()) {
@@ -372,7 +729,8 @@
           type="password"
           autocomplete="current-password"
           [value]="currentPassword()"
-          (input)="currentPassword.set($any($event.target).value)" />
+          (input)="currentPassword.set($any($event.target).value)"
+        />
       </label>
 
       <div class="form-grid">
@@ -382,7 +740,8 @@
             type="password"
             autocomplete="new-password"
             [value]="newPassword()"
-            (input)="newPassword.set($any($event.target).value)" />
+            (input)="newPassword.set($any($event.target).value)"
+          />
         </label>
         <label class="field">
           <span>{{ 'settingsPage.security.confirmNewPassword' | translate }}</span>
@@ -390,12 +749,17 @@
             type="password"
             autocomplete="new-password"
             [value]="confirmPassword()"
-            (input)="confirmPassword.set($any($event.target).value)" />
+            (input)="confirmPassword.set($any($event.target).value)"
+          />
         </label>
       </div>
 
       @if (passwordMessage(); as msg) {
-        <p class="field-message" [class.is-ok]="msg.tone === 'ok'" [class.is-error]="msg.tone === 'error'">
+        <p
+          class="field-message"
+          [class.is-ok]="msg.tone === 'ok'"
+          [class.is-error]="msg.tone === 'error'"
+        >
           {{ msg.text }}
         </p>
       }
@@ -406,8 +770,14 @@
           type="button"
           class="primary-button"
           [disabled]="!canUpdatePassword"
-          (click)="updatePassword()">
-          {{ (security.changingPassword() ? 'settingsPage.security.updating' : 'settingsPage.security.updatePassword') | translate }}
+          (click)="updatePassword()"
+        >
+          {{
+            (security.changingPassword()
+              ? 'settingsPage.security.updating'
+              : 'settingsPage.security.updatePassword'
+            ) | translate
+          }}
         </button>
       </div>
     </mat-card>
@@ -416,7 +786,12 @@
       <div class="section-head">
         <div>
           <h2 class="section-title">{{ 'settingsPage.security.sessionsTitle' | translate }}</h2>
-          <p class="section-subtitle">{{ 'settingsPage.security.devicesSignedIn' | translate: { count: security.sessions().length } }}</p>
+          <p class="section-subtitle">
+            {{
+              'settingsPage.security.devicesSignedIn'
+                | translate: { count: security.sessions().length }
+            }}
+          </p>
         </div>
       </div>
 
@@ -426,15 +801,24 @@
         } @else {
           @for (session of security.sessions(); track session.id) {
             <div class="session-row">
-              <span class="session-icon"><mat-icon>{{ session.icon }}</mat-icon></span>
+              <span class="session-icon"
+                ><mat-icon>{{ session.icon }}</mat-icon></span
+              >
               <div class="session-text">
                 <span class="session-title">{{ session.title }}</span>
                 <span class="session-sub">{{ session.subtitle }}</span>
               </div>
               @if (session.current) {
-                <span class="session-current">{{ 'settingsPage.security.thisDevice' | translate }}</span>
+                <span class="session-current">{{
+                  'settingsPage.security.thisDevice' | translate
+                }}</span>
               } @else {
-                <button mat-stroked-button type="button" class="ghost-button ghost-button--sm" (click)="signOutSession(session.id!)">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="ghost-button ghost-button--sm"
+                  (click)="signOutSession(session.id!)"
+                >
                   {{ 'settingsPage.security.signOut' | translate }}
                 </button>
               }
@@ -468,22 +852,41 @@
           <h2>{{ 'settingsPage.deleteModal.title' | translate }}</h2>
           <p class="modal-subtitle">{{ 'settingsPage.deleteModal.subtitle' | translate }}</p>
         </div>
-        <button mat-icon-button type="button" (click)="closeDelete()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button type="button" (click)="closeDelete()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
       <p class="modal-body-text">
         {{ 'settingsPage.deleteModal.body' | translate }}
       </p>
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDelete()">{{ 'settingsPage.deleteModal.cancel' | translate }}</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeDelete()">
+          {{ 'settingsPage.deleteModal.cancel' | translate }}
+        </button>
         <button
           mat-flat-button
           type="button"
           class="danger-button"
           [disabled]="security.deleting()"
-          (click)="confirmDelete()">
-          {{ (security.deleting() ? 'settingsPage.deleteModal.deleting' : 'settingsPage.deleteModal.confirm') | translate }}
+          (click)="confirmDelete()"
+        >
+          {{
+            (security.deleting()
+              ? 'settingsPage.deleteModal.deleting'
+              : 'settingsPage.deleteModal.confirm'
+            ) | translate
+          }}
         </button>
       </div>
     </div>
   </div>
+}
+
+@if (showLocationPicker()) {
+  <app-location-picker-modal
+    [initialLat]="pickerInitialLat()"
+    [initialLng]="pickerInitialLng()"
+    (confirmed)="onLocationPicked($event)"
+    (dismissed)="closeLocationPicker()"
+  />
 }

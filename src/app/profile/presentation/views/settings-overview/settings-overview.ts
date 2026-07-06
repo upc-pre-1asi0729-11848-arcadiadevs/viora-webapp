@@ -13,14 +13,23 @@ import {
   DashboardBreadcrumbItem,
   DashboardHeader,
 } from '../../../../shared/presentation/components/dashboard-header/dashboard-header';
+import {
+  LocationPickerModal,
+  PickedLocation,
+} from '../../../../shared/presentation/components/location-picker-modal/location-picker-modal';
 
 import { AgronomicApiService } from '../../../../agronomic/infrastructure/agronomic-api.service';
 
 import { ProfileStore } from '../../../application/profile.store';
 import { UserProfile } from '../../../domain/model/user-profile.entity';
+import {
+  SPECIALIST_SERVICE_TAGS,
+  parseServiceTags,
+} from '../../../domain/model/service-tags.catalog';
 
 import { BillingStore } from '../../../../billing/application/billing.store';
 import { Coupon } from '../../../../billing/domain/model/coupon.entity';
+import { SubscriptionStore } from '../../../../billing/application/subscription.store';
 import { SecurityStore } from '../../../../iam/application/security.store';
 
 /** Settings sections. */
@@ -40,13 +49,21 @@ interface PasswordMessage {
 @Component({
   selector: 'app-settings-overview',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, DashboardHeader, TranslatePipe],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    DashboardHeader,
+    LocationPickerModal,
+    TranslatePipe,
+  ],
   templateUrl: './settings-overview.html',
   styleUrl: './settings-overview.css',
 })
 export class SettingsOverviewView implements OnInit {
   protected readonly store = inject(ProfileStore);
   protected readonly billing = inject(BillingStore);
+  protected readonly subscription = inject(SubscriptionStore);
   protected readonly security = inject(SecurityStore);
   private readonly agronomicApi = inject(AgronomicApiService);
   private readonly cloudinary = inject(CloudinaryService);
@@ -72,7 +89,89 @@ export class SettingsOverviewView implements OnInit {
   protected readonly language = signal('');
   protected readonly location = signal('');
   protected readonly specialtyArea = signal('');
+  // Specialist marketplace fields (drive the real recommendation matching).
+  protected readonly latitude = signal('');
+  protected readonly longitude = signal('');
+  protected readonly serviceRadiusKm = signal('');
+  protected readonly serviceTags = signal('');
+  protected readonly availability = signal('');
   protected readonly photoUrl = signal('');
+
+  protected readonly availabilityOptions = [
+    { value: 'AVAILABLE_TODAY', labelKey: 'settingsPage.profile.availabilityToday' },
+    { value: 'AVAILABLE_TOMORROW', labelKey: 'settingsPage.profile.availabilityTomorrow' },
+    { value: 'AVAILABLE_THIS_WEEK', labelKey: 'settingsPage.profile.availabilityWeek' },
+    { value: 'UNAVAILABLE', labelKey: 'settingsPage.profile.availabilityUnavailable' },
+  ];
+
+  // Specialist marketplace: predefined tag catalogue, radius slider and map picker.
+  protected readonly serviceTagOptions = SPECIALIST_SERVICE_TAGS;
+  protected readonly radiusMin = 25;
+  protected readonly radiusMax = 500;
+  protected readonly radiusDefault = 150;
+  protected readonly showLocationPicker = signal(false);
+  /** Default specialty shown pre-filled (editable) for specialists. */
+  private readonly defaultSpecialtyArea = 'Phytosanitary specialist';
+  /** Whether the Pro badge is shown on the card (Pro plan only); persisted. */
+  protected readonly showProBadge = signal(true);
+  /** Guards the draft so incidental profile re-emits never wipe unsaved edits. */
+  private draftHydrated = false;
+
+  /** True when the given catalogue tag is part of the current selection. */
+  protected isTagSelected(value: string): boolean {
+    return parseServiceTags(this.serviceTags()).includes(value);
+  }
+
+  /** Adds or removes a catalogue tag, keeping the stored comma-separated string. */
+  protected toggleServiceTag(value: string): void {
+    const current = parseServiceTags(this.serviceTags());
+    const next = current.includes(value)
+      ? current.filter((tag) => tag !== value)
+      : [...current, value];
+    this.serviceTags.set(next.join(', '));
+  }
+
+  /** Effective radius for the slider, falling back to the default when unset. */
+  protected radiusValue(): number {
+    const parsed = Number(this.serviceRadiusKm());
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : this.radiusDefault;
+  }
+
+  protected onRadiusInput(value: string): void {
+    this.serviceRadiusKm.set(value);
+  }
+
+  protected openLocationPicker(): void {
+    this.showLocationPicker.set(true);
+  }
+
+  protected closeLocationPicker(): void {
+    this.showLocationPicker.set(false);
+  }
+
+  /** Applies the map selection: coordinates drive matching, label fills Service area. */
+  protected onLocationPicked(picked: PickedLocation): void {
+    this.latitude.set(String(picked.latitude));
+    this.longitude.set(String(picked.longitude));
+    if (picked.label) {
+      this.location.set(picked.label);
+    }
+    this.showLocationPicker.set(false);
+  }
+
+  protected pickerInitialLat(): number | null {
+    const parsed = Number(this.latitude());
+    return Number.isFinite(parsed) && this.latitude().trim() !== '' ? parsed : null;
+  }
+
+  protected pickerInitialLng(): number | null {
+    const parsed = Number(this.longitude());
+    return Number.isFinite(parsed) && this.longitude().trim() !== '' ? parsed : null;
+  }
+
+  protected hasCoordinates(): boolean {
+    return this.latitude().trim() !== '' && this.longitude().trim() !== '';
+  }
   protected readonly uploadingPhoto = signal(false);
   protected readonly photoError = signal<string | null>(null);
   protected readonly totalHectares = signal(0);
@@ -111,33 +210,85 @@ export class SettingsOverviewView implements OnInit {
     const current = this.tabs.find((tab) => tab.id === this.activeTab());
     return [
       { label: 'Settings', labelKey: 'settingsPage.breadcrumb', disabled: true },
-      { label: 'Profile', labelKey: current?.labelKey ?? 'settingsPage.tabs.profile', disabled: true },
+      {
+        label: 'Profile',
+        labelKey: current?.labelKey ?? 'settingsPage.tabs.profile',
+        disabled: true,
+      },
     ];
   });
 
+  protected readonly isSpecialistProfile = computed<boolean>(
+    () => this.session.isSpecialist() || this.store.profile().role === 'specialist',
+  );
+
   /** Live preview of the marketplace card as the other party sees it. */
-  protected readonly preview = computed<UserProfile>(() =>
-    this.store.profile().withChanges({
+  protected readonly preview = computed<UserProfile>(() => {
+    const profile = this.store.profile();
+    return profile.withChanges({
+      role: this.isSpecialistProfile() ? 'specialist' : profile.role,
       fullName: this.fullName(),
+      jobTitle: this.jobTitle(),
       specialtyArea: this.specialtyArea(),
       location: this.location(),
       photoUrl: this.photoUrl(),
       totalHectares: this.totalHectares(),
       plotCount: this.plotCount(),
-    }),
+    });
+  });
+
+  protected readonly specialistDisplayRole = computed<string>(() => {
+    const profile = this.preview();
+    return profile.specialtyArea || profile.jobTitle || profile.roleLabel;
+  });
+
+  /** Live preview of the selected service tags, mapped to their display labels. */
+  protected readonly previewTags = computed<{ value: string; labelKey: string | null }[]>(() =>
+    parseServiceTags(this.serviceTags()).map((value) => ({
+      value,
+      labelKey: SPECIALIST_SERVICE_TAGS.find((option) => option.value === value)?.labelKey ?? null,
+    })),
   );
 
+  /** i18n key for the selected availability, or null when none is chosen. */
+  protected readonly previewAvailabilityLabelKey = computed<string | null>(
+    () => this.availabilityOptions.find((option) => option.value === this.availability())?.labelKey ?? null,
+  );
+
+  protected readonly hasSubscriptionData = computed<boolean>(
+    () => this.subscription.subscription() !== null || this.subscription.currentPlan() !== null,
+  );
+
+  protected readonly isSpecialistProPlan = computed<boolean>(() => {
+    const plan = this.subscription.currentPlan();
+    const active = this.subscription.subscription();
+    return (
+      this.isProPlan(plan?.code, plan?.name) || this.isProPlan(active?.planCode, active?.planName)
+    );
+  });
+
   constructor() {
-    // Refill the profile draft whenever a freshly loaded/saved profile arrives.
+    // Hydrate the editable draft from the FIRST real profile load only. The store
+    // is a singleton that re-emits on incidental events (a tab's data loading, the
+    // sidebar refreshing identity); re-applying then would wipe unsaved edits, so
+    // guard against it. A manual refresh or save re-arms hydration explicitly.
     effect(() => {
       const profile = this.store.profile();
+      if (this.draftHydrated || !profile.email) {
+        return;
+      }
       this.applyDraftFrom(profile);
+      this.draftHydrated = true;
     });
   }
 
   ngOnInit(): void {
     this.store.load();
-    this.loadFarmTotals();
+    if (!this.session.isSpecialist()) {
+      this.loadFarmTotals();
+    } else {
+      this.subscription.load();
+    }
   }
 
   protected selectTab(tab: SettingsTab): void {
@@ -160,8 +311,13 @@ export class SettingsOverviewView implements OnInit {
 
   /** Header refresh: reload whatever the active tab shows. */
   protected resetDraft(): void {
+    this.draftHydrated = false;
     this.store.load();
-    this.loadFarmTotals();
+    if (!this.session.isSpecialist()) {
+      this.loadFarmTotals();
+    } else {
+      this.subscription.load();
+    }
     if (this.activeTab() === 'referrals') {
       this.billing.load();
     } else if (this.activeTab() === 'security') {
@@ -176,7 +332,16 @@ export class SettingsOverviewView implements OnInit {
     this.jobTitle.set(profile.jobTitle);
     this.language.set(profile.language);
     this.location.set(profile.location);
-    this.specialtyArea.set(profile.specialtyArea);
+    const specialist = this.session.isSpecialist() || profile.role === 'specialist';
+    this.specialtyArea.set(
+      profile.specialtyArea || (specialist ? this.defaultSpecialtyArea : ''),
+    );
+    this.latitude.set(profile.latitude != null ? String(profile.latitude) : '');
+    this.longitude.set(profile.longitude != null ? String(profile.longitude) : '');
+    this.serviceRadiusKm.set(profile.serviceRadiusKm != null ? String(profile.serviceRadiusKm) : '');
+    this.serviceTags.set(profile.serviceTags);
+    this.availability.set(profile.availability);
+    this.showProBadge.set(profile.showProBadge ?? true);
     this.photoUrl.set(profile.photoUrl);
   }
 
@@ -189,6 +354,7 @@ export class SettingsOverviewView implements OnInit {
   }
 
   protected saveChanges(): void {
+    const specialist = this.isSpecialistProfile();
     this.store.save({
       fullName: this.fullName().trim(),
       email: this.email().trim(),
@@ -197,8 +363,25 @@ export class SettingsOverviewView implements OnInit {
       language: this.language(),
       location: this.location().trim(),
       specialtyArea: this.specialtyArea().trim(),
+      // Specialist-only marketplace fields; omitted for producers.
+      latitude: specialist ? this.toNumberOrNull(this.latitude()) : undefined,
+      longitude: specialist ? this.toNumberOrNull(this.longitude()) : undefined,
+      serviceRadiusKm: specialist ? this.toNumberOrNull(this.serviceRadiusKm()) : undefined,
+      serviceTags: specialist ? this.serviceTags().trim() : undefined,
+      availability: specialist ? this.availability().trim() : undefined,
+      showProBadge: specialist ? this.showProBadge() : undefined,
       photoUrl: this.photoUrl(),
     });
+  }
+
+  /** Parses a numeric input, returning null for blank/invalid values. */
+  private toNumberOrNull(value: string): number | null {
+    const trimmed = value.trim();
+    if (trimmed === '') {
+      return null;
+    }
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
   /** True while Cloudinary is not configured, disabling the change-photo button. */
@@ -346,11 +529,17 @@ export class SettingsOverviewView implements OnInit {
     this.passwordMessage.set(null);
 
     if (this.newPassword().length < 8) {
-      this.passwordMessage.set({ tone: 'error', text: 'New password must be at least 8 characters.' });
+      this.passwordMessage.set({
+        tone: 'error',
+        text: 'New password must be at least 8 characters.',
+      });
       return;
     }
     if (this.newPassword() !== this.confirmPassword()) {
-      this.passwordMessage.set({ tone: 'error', text: 'New password and confirmation do not match.' });
+      this.passwordMessage.set({
+        tone: 'error',
+        text: 'New password and confirmation do not match.',
+      });
       return;
     }
 
@@ -363,7 +552,10 @@ export class SettingsOverviewView implements OnInit {
           this.newPassword.set('');
           this.confirmPassword.set('');
         } else {
-          this.passwordMessage.set({ tone: 'error', text: message ?? 'Could not update your password.' });
+          this.passwordMessage.set({
+            tone: 'error',
+            text: message ?? 'Could not update your password.',
+          });
         }
       },
     );
@@ -391,5 +583,14 @@ export class SettingsOverviewView implements OnInit {
         void this.router.navigate(['/login']);
       }
     });
+  }
+
+  protected goToSubscription(): void {
+    void this.router.navigate(['/subscription']);
+  }
+
+  private isProPlan(code?: string, name?: string): boolean {
+    const value = `${code ?? ''} ${name ?? ''}`.toLowerCase();
+    return value.includes('pro');
   }
 }

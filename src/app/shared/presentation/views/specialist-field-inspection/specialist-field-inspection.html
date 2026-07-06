@@ -1,0 +1,314 @@
+<section class="field-inspection">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    [subtitle]="'specialistFieldInspection.subtitle' | translate"
+    [updatedLabel]="updatedAgoLabel()"
+    (refresh)="refresh()" />
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistFieldInspection.kpis.needsVisit' | translate }}</span>
+      <strong class="kpi-value" [class.is-empty]="store.needsVisitCount() === 0">{{ store.needsVisitCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistFieldInspection.kpis.needsVisitFoot' | translate }}</span>
+    </article>
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistFieldInspection.kpis.pending' | translate }}</span>
+      <strong class="kpi-value" [class.is-empty]="store.prescriptionPendingCount() === 0">{{ store.prescriptionPendingCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistFieldInspection.kpis.pendingFoot' | translate }}</span>
+    </article>
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistFieldInspection.kpis.prescribed' | translate }}</span>
+      <strong class="kpi-value" [class.is-empty]="store.prescribedCount() === 0">{{ store.prescribedCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistFieldInspection.kpis.prescribedFoot' | translate }}</span>
+    </article>
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistFieldInspection.kpis.closed' | translate }}</span>
+      <strong class="kpi-value" [class.is-empty]="store.closedCount() === 0">{{ store.closedCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistFieldInspection.kpis.closedFoot' | translate }}</span>
+    </article>
+  </section>
+
+  @if (store.cases().length === 0) {
+    <section class="card empty-panel">
+      <mat-icon>agriculture</mat-icon>
+      <p>{{ (store.error() ? 'specialistFieldInspection.emptyError' : 'specialistFieldInspection.empty') | translate }}</p>
+    </section>
+  }
+
+  <!-- Needs field visit -->
+  @if (store.needsVisitCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistFieldInspection.needsVisit.title' | translate }}
+          <span class="divider-count">{{ 'specialistFieldInspection.needsVisit.count' | translate: { count: store.needsVisitCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistFieldInspection.needsVisit.hint' | translate }}</p>
+    </div>
+    @for (item of store.needsVisitCases(); track item.requestId) {
+      <article class="card case-row">
+        <span class="row-icon icon-amber"><mat-icon>travel_explore</mat-icon></span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistFieldInspection.severity.' + severityKey(item.severity) | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <div class="row-tags">
+            @if (item.problem) { <span class="tag">{{ item.problem }}</span> }
+            @if (item.fieldStage) { <span class="tag tag--muted">{{ item.referenceCode }}</span> }
+          </div>
+          <span class="row-time"><mat-icon>schedule</mat-icon> {{ 'specialistFieldInspection.acceptedAgo' | translate }} {{ relativeTime(item.updatedAt) }}</span>
+        </div>
+        <button type="button" class="btn-primary" (click)="startInspection(item)">
+          <mat-icon>edit_note</mat-icon> {{ 'specialistFieldInspection.startInspection' | translate }}
+        </button>
+      </article>
+    }
+  }
+
+  <!-- Prescription pending -->
+  @if (store.prescriptionPendingCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistFieldInspection.pending.title' | translate }}
+          <span class="divider-count is-blue">{{ 'specialistFieldInspection.pending.count' | translate: { count: store.prescriptionPendingCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistFieldInspection.pending.hint' | translate }}</p>
+    </div>
+    @for (item of store.prescriptionPendingCases(); track item.requestId) {
+      <article class="card case-row">
+        <span class="row-icon icon-blue"><mat-icon>science</mat-icon></span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistFieldInspection.severity.' + severityKey(item.severity) | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <div class="row-tags">
+            <span class="tag tag--stage">{{ 'specialistFieldInspection.stage.FINDINGS_LOGGED' | translate }}</span>
+            @if (item.problem) { <span class="tag">{{ item.problem }}</span> }
+          </div>
+        </div>
+        <button type="button" class="btn-primary" (click)="writePrescription(item)">
+          <mat-icon>medication</mat-icon> {{ 'specialistFieldInspection.writePrescription' | translate }}
+        </button>
+      </article>
+    }
+  }
+
+  <!-- Prescribed · awaiting producer -->
+  @if (store.prescribedCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistFieldInspection.prescribed.title' | translate }}
+          <span class="divider-count is-green">{{ 'specialistFieldInspection.prescribed.count' | translate: { count: store.prescribedCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistFieldInspection.prescribed.hint' | translate }}</p>
+    </div>
+    @for (item of store.prescribedCases(); track item.requestId) {
+      <article class="card case-row">
+        <span class="row-icon icon-green"><mat-icon>task_alt</mat-icon></span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="status-pill" data-status="PRESCRIBED">{{ 'specialistFieldInspection.stage.PRESCRIBED' | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <span class="row-time"><mat-icon>hourglass_top</mat-icon> {{ 'specialistFieldInspection.awaitingProducer' | translate }}</span>
+        </div>
+        <button type="button" class="btn-ghost" (click)="openDetail(item)">{{ 'specialistFieldInspection.viewRecord' | translate }}</button>
+      </article>
+    }
+  }
+
+  <!-- Closed -->
+  @if (store.closedFieldCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistFieldInspection.closed.title' | translate }}
+          <span class="divider-count is-grey">{{ 'specialistFieldInspection.closed.count' | translate: { count: store.closedFieldCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistFieldInspection.closed.hint' | translate }}</p>
+    </div>
+    @for (item of store.closedFieldCases(); track item.requestId) {
+      <article class="card case-row is-muted">
+        <span class="row-icon icon-grey"><mat-icon>inventory_2</mat-icon></span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="status-pill" data-status="CLOSED">{{ 'specialistFieldInspection.stage.CLOSED' | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <span class="row-time"><mat-icon>schedule</mat-icon> {{ relativeTime(item.updatedAt) }}</span>
+        </div>
+        <button type="button" class="btn-ghost" (click)="openDetail(item)">{{ 'specialistFieldInspection.viewRecord' | translate }}</button>
+      </article>
+    }
+  }
+</section>
+
+<!-- Log findings modal -->
+@if (modalMode() === 'findings' && modalCase(); as item) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ 'specialistFieldInspection.findingsModal.title' | translate }}</h2>
+          <p class="modal-sub">{{ item.plotName }} · {{ item.producerName }}</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <label class="field">
+        <span class="field-label">{{ 'specialistFieldInspection.findingsModal.findingType' | translate }}</span>
+        <select class="field-input" [value]="findingType()" (change)="findingType.set($any($event.target).value)">
+          @for (type of findingTypes; track type) {
+            <option [value]="type">{{ 'specialistFieldInspection.findingType.' + type | translate }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="field">
+        <span class="field-label">{{ 'specialistFieldInspection.findingsModal.incidence' | translate }}</span>
+        <div class="segmented">
+          @for (level of incidenceLevels; track level) {
+            <button type="button" class="segment" [class.is-active]="incidenceLevel() === level" [attr.data-level]="level" (click)="incidenceLevel.set(level)">
+              {{ 'specialistFieldInspection.incidence.' + level | translate }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <label class="field">
+        <span class="field-label">{{ 'specialistFieldInspection.findingsModal.description' | translate }}</span>
+        <textarea class="field-input" rows="4" [value]="findingsDescription()" (input)="findingsDescription.set($any($event.target).value)"
+          [placeholder]="'specialistFieldInspection.findingsModal.descriptionPlaceholder' | translate"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeModal()">{{ 'specialistFieldInspection.cancel' | translate }}</button>
+        <button type="button" class="btn-primary" [disabled]="!canSubmitFindings" (click)="submitFindings()">
+          <mat-icon>save</mat-icon> {{ (store.submitting() ? 'specialistFieldInspection.saving' : 'specialistFieldInspection.findingsModal.submit') | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Write prescription modal -->
+@if (modalMode() === 'prescription' && modalCase(); as item) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal--wide" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ 'specialistFieldInspection.prescriptionModal.title' | translate }}</h2>
+          <p class="modal-sub">{{ item.plotName }} · {{ item.producerName }}</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="field-grid">
+        <label class="field">
+          <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.method' | translate }}</span>
+          <select class="field-input" [value]="applicationMethod()" (change)="applicationMethod.set($any($event.target).value)">
+            @for (method of applicationMethods; track method) {
+              <option [value]="method">{{ 'specialistFieldInspection.applicationMethod.' + method | translate }}</option>
+            }
+          </select>
+        </label>
+        <label class="field">
+          <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.phi' | translate }}</span>
+          <input class="field-input" type="number" min="0" [value]="preHarvestIntervalDays()" (input)="preHarvestIntervalDays.set($any($event.target).value)"
+            [placeholder]="'specialistFieldInspection.prescriptionModal.phiPlaceholder' | translate" />
+        </label>
+        <label class="field">
+          <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.sprayVolume' | translate }}</span>
+          <input class="field-input" type="number" min="0" [value]="sprayVolumeAmount()" (input)="sprayVolumeAmount.set($any($event.target).value)" placeholder="0" />
+        </label>
+        <label class="field">
+          <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.sprayUnit' | translate }}</span>
+          <input class="field-input" [value]="sprayVolumeUnit()" (input)="sprayVolumeUnit.set($any($event.target).value)" placeholder="L/ha" />
+        </label>
+      </div>
+
+      <div class="field">
+        <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.ppe' | translate }}</span>
+        <div class="chip-row">
+          @for (ppe of ppeOptions; track ppe) {
+            <button type="button" class="chip" [class.is-active]="isPPESelected(ppe)" (click)="togglePPE(ppe)">
+              <mat-icon>{{ isPPESelected(ppe) ? 'check' : 'add' }}</mat-icon>
+              {{ 'specialistFieldInspection.ppe.' + ppe | translate }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.products' | translate }}</span>
+          <button type="button" class="btn-link" (click)="addProduct()"><mat-icon>add</mat-icon> {{ 'specialistFieldInspection.prescriptionModal.addProduct' | translate }}</button>
+        </div>
+        @for (product of products(); track $index) {
+          <div class="product-row">
+            <input class="field-input" [value]="product.productName" (input)="updateProduct($index, 'productName', $any($event.target).value)"
+              [placeholder]="'specialistFieldInspection.prescriptionModal.productName' | translate" />
+            <input class="field-input sm" [value]="product.dosageAmount" (input)="updateProduct($index, 'dosageAmount', $any($event.target).value)" type="number" min="0"
+              [placeholder]="'specialistFieldInspection.prescriptionModal.dose' | translate" />
+            <input class="field-input sm" [value]="product.dosageUnit" (input)="updateProduct($index, 'dosageUnit', $any($event.target).value)"
+              [placeholder]="'specialistFieldInspection.prescriptionModal.unit' | translate" />
+            <input class="field-input sm" [value]="product.sessionsCount" (input)="updateProduct($index, 'sessionsCount', $any($event.target).value)" type="number" min="0"
+              [placeholder]="'specialistFieldInspection.prescriptionModal.sessions' | translate" />
+            @if (products().length > 1) {
+              <button type="button" class="row-remove" (click)="removeProduct($index)"><mat-icon>delete_outline</mat-icon></button>
+            }
+          </div>
+        }
+      </div>
+
+      <label class="field">
+        <span class="field-label">{{ 'specialistFieldInspection.prescriptionModal.recommendations' | translate }}</span>
+        <textarea class="field-input" rows="3" [value]="recommendations()" (input)="recommendations.set($any($event.target).value)"
+          [placeholder]="'specialistFieldInspection.prescriptionModal.recommendationsPlaceholder' | translate"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeModal()">{{ 'specialistFieldInspection.cancel' | translate }}</button>
+        <button type="button" class="btn-primary" [disabled]="!canSubmitPrescription" (click)="submitPrescription()">
+          <mat-icon>medication</mat-icon> {{ (store.submitting() ? 'specialistFieldInspection.saving' : 'specialistFieldInspection.prescriptionModal.submit') | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Read-only record modal -->
+@if (modalMode() === 'detail' && modalCase(); as item) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ item.plotName }}</h2>
+          <p class="modal-sub">{{ item.referenceCode }} · {{ item.producerName }}</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="modal-rows">
+        <div class="modal-line"><span>{{ 'specialistFieldInspection.detail.stage' | translate }}</span>
+          <span class="status-pill" [attr.data-status]="item.fieldStage">{{ 'specialistFieldInspection.stage.' + item.fieldStage | translate }}</span>
+        </div>
+        <div class="modal-line"><span>{{ 'specialistFieldInspection.detail.severity' | translate }}</span>
+          <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistFieldInspection.severity.' + severityKey(item.severity) | translate }}</span>
+        </div>
+        <div class="modal-line"><span>{{ 'specialistFieldInspection.detail.problem' | translate }}</span><strong>{{ item.problem || '—' }}</strong></div>
+        <div class="modal-line"><span>{{ 'specialistFieldInspection.detail.location' | translate }}</span><strong>{{ item.location || '—' }}</strong></div>
+        <div class="modal-line"><span>{{ 'specialistFieldInspection.detail.updated' | translate }}</span><strong>{{ (item.updatedAt | date:'medium') || '—' }}</strong></div>
+      </div>
+      <p class="modal-note">{{ 'specialistFieldInspection.detail.note' | translate }}</p>
+    </div>
+  </div>
+}

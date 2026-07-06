@@ -114,6 +114,20 @@
             </button>
           </div>
         </div>
+      } @empty {
+        <div class="specialist-empty">
+          <mat-icon>person_search</mat-icon>
+          <p>
+            {{
+              (store.loading().specialists
+                ? 'assistance.recommended.loading'
+                : (activeAlert()
+                    ? 'assistance.recommended.empty'
+                    : 'assistance.recommended.noAlert')
+              ) | translate
+            }}
+          </p>
+        </div>
       }
     </div>
   </mat-card>

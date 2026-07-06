@@ -1,0 +1,171 @@
+<section class="specialist-requests">
+  <app-dashboard-header
+    [breadcrumbs]="breadcrumbs"
+    [subtitle]="'specialistRequests.subtitle' | translate"
+    [updatedLabel]="updatedAgoLabel()"
+    (refresh)="refresh()" />
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistRequests.kpis.sent' | translate }}</span>
+      <strong class="kpi-value">{{ store.sentProposalsCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistRequests.kpis.sentFoot' | translate }}</span>
+    </article>
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistRequests.kpis.inProgress' | translate }}</span>
+      <strong class="kpi-value">{{ store.inProgressCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistRequests.kpis.inProgressFoot' | translate }}</span>
+    </article>
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistRequests.kpis.closed' | translate }}</span>
+      <strong class="kpi-value">{{ store.closedCount() | number }}</strong>
+      <span class="kpi-foot">{{ 'specialistRequests.kpis.closedFoot' | translate }}</span>
+    </article>
+    <article class="card kpi-card">
+      <span class="kpi-label">{{ 'specialistRequests.kpis.acceptance' | translate }}</span>
+      @if (store.acceptanceRatePercent(); as acceptance) {
+        <strong class="kpi-value">{{ acceptance | number:'1.0-1' }}%</strong>
+        <div class="kpi-bar"><span class="kpi-bar-fill" [style.width.%]="acceptance"></span></div>
+      } @else {
+        <strong class="kpi-value is-empty">—</strong>
+        <span class="kpi-foot">{{ 'specialistRequests.noDataYet' | translate }}</span>
+      }
+    </article>
+  </section>
+
+  @if (store.cases().length === 0) {
+    <section class="card empty-panel">
+      <mat-icon>inbox</mat-icon>
+      <p>{{ (store.error() ? 'specialistRequests.emptyError' : 'specialistRequests.empty') | translate }}</p>
+    </section>
+  }
+
+  <!-- Awaiting response -->
+  @if (store.awaitingCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistRequests.awaiting.title' | translate }}
+          <span class="divider-count">{{ 'specialistRequests.awaiting.count' | translate: { count: store.awaitingCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistRequests.awaiting.hint' | translate }}</p>
+    </div>
+    @for (item of store.awaitingCases(); track item.requestId) {
+      <article class="card case-row">
+        <span class="row-icon icon-blue"><mat-icon>send</mat-icon></span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="status-pill" [attr.data-status]="statusToken(item)">{{ 'specialistRequests.status.' + statusToken(item) | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <div class="row-tags">
+            <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistRequests.severity.' + severityKey(item.severity) | translate }}</span>
+            @if (item.problem) { <span class="tag">{{ item.problem }}</span> }
+            <span class="tag tag--muted">{{ costLabel(item) }} · {{ item.proposedDate | date:'MMM d · HH:mm' }}</span>
+          </div>
+          <span class="row-time"><mat-icon>schedule</mat-icon> {{ 'specialistRequests.sentAgo' | translate }} {{ relativeTime(item.proposedDate ?? item.updatedAt) }}</span>
+        </div>
+        <button type="button" class="btn-ghost" (click)="openDetail(item)">{{ 'specialistRequests.viewProposal' | translate }}</button>
+      </article>
+    }
+  }
+
+  <!-- In progress -->
+  @if (store.inProgressCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistRequests.inProgress.title' | translate }}
+          <span class="divider-count is-green">{{ 'specialistRequests.inProgress.count' | translate: { count: store.inProgressCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistRequests.inProgress.hint' | translate }}</p>
+    </div>
+    @for (item of store.inProgressCases(); track item.requestId) {
+      <article class="card case-row">
+        <span class="row-icon icon-green"><mat-icon>assignment_turned_in</mat-icon></span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="status-pill" [attr.data-status]="statusToken(item)">{{ 'specialistRequests.status.' + statusToken(item) | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <div class="row-tags">
+            <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistRequests.severity.' + severityKey(item.severity) | translate }}</span>
+            @if (item.problem) { <span class="tag">{{ item.problem }}</span> }
+            @if (item.fieldStage) { <span class="tag tag--stage">{{ 'specialistRequests.stage.' + item.fieldStage | translate }}</span> }
+          </div>
+          <span class="row-time"><mat-icon>schedule</mat-icon> {{ 'specialistRequests.acceptedAgo' | translate }} {{ relativeTime(item.updatedAt) }}</span>
+        </div>
+        <button type="button" class="btn-primary" (click)="followUp()">
+          <mat-icon>arrow_forward</mat-icon> {{ 'specialistRequests.followUp' | translate }}
+        </button>
+      </article>
+    }
+  }
+
+  <!-- Closed & declined -->
+  @if (store.closedDeclinedCases().length > 0) {
+    <div class="section-divider">
+      <div class="divider-copy">
+        <h2>{{ 'specialistRequests.closed.title' | translate }}
+          <span class="divider-count is-grey">{{ 'specialistRequests.closed.count' | translate: { count: store.closedDeclinedCases().length } }}</span>
+        </h2>
+      </div>
+      <p class="divider-hint">{{ 'specialistRequests.closed.hint' | translate }}</p>
+    </div>
+    @for (item of store.closedDeclinedCases(); track item.requestId) {
+      <article class="card case-row is-muted">
+        <span class="row-icon icon-grey">
+          <mat-icon>{{ item.requestStatus === 'DECLINED' ? 'cancel' : 'inventory_2' }}</mat-icon>
+        </span>
+        <div class="row-body">
+          <div class="row-head">
+            <strong>{{ item.plotName }}</strong>
+            <span class="status-pill" [attr.data-status]="statusToken(item)">{{ 'specialistRequests.status.' + statusToken(item) | translate }}</span>
+          </div>
+          <span class="row-sub">{{ item.producerName }}@if (item.location) { · {{ item.location }} }</span>
+          <div class="row-tags">
+            <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistRequests.severity.' + severityKey(item.severity) | translate }}</span>
+            @if (item.problem) { <span class="tag">{{ item.problem }}</span> }
+          </div>
+          <span class="row-time"><mat-icon>schedule</mat-icon> {{ relativeTime(item.updatedAt) }}</span>
+        </div>
+        <button type="button" class="btn-ghost" (click)="openDetail(item)">{{ 'specialistRequests.viewSummary' | translate }}</button>
+      </article>
+    }
+  }
+</section>
+
+<!-- Case detail modal -->
+@if (detailCase(); as item) {
+  <div class="modal-overlay" (click)="closeDetail()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h2>{{ item.plotName }}</h2>
+          <p class="modal-sub">{{ item.referenceCode }} · {{ item.producerName }}</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeDetail()"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="modal-rows">
+        <div class="modal-line"><span>{{ 'specialistRequests.detail.status' | translate }}</span>
+          <span class="status-pill" [attr.data-status]="statusToken(item)">{{ 'specialistRequests.status.' + statusToken(item) | translate }}</span>
+        </div>
+        <div class="modal-line"><span>{{ 'specialistRequests.detail.severity' | translate }}</span>
+          <span class="severity-pill" [attr.data-severity]="severityKey(item.severity)">{{ 'specialistRequests.severity.' + severityKey(item.severity) | translate }}</span>
+        </div>
+        <div class="modal-line"><span>{{ 'specialistRequests.detail.problem' | translate }}</span><strong>{{ item.problem || '—' }}</strong></div>
+        <div class="modal-line"><span>{{ 'specialistRequests.detail.location' | translate }}</span><strong>{{ item.location || '—' }}</strong></div>
+        <div class="modal-line"><span>{{ 'specialistRequests.detail.cost' | translate }}</span><strong>{{ costLabel(item) }}</strong></div>
+        <div class="modal-line"><span>{{ 'specialistRequests.detail.proposedDate' | translate }}</span><strong>{{ (item.proposedDate | date:'mediumDate') || '—' }}</strong></div>
+      </div>
+      @if (item.requestStatus === 'ACCEPTED' && item.fieldStage !== 'CLOSED') {
+        <button type="button" class="btn-primary block" (click)="followUp()">
+          <mat-icon>arrow_forward</mat-icon> {{ 'specialistRequests.goToFieldInspection' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+}

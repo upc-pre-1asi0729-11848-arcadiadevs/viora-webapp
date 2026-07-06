@@ -1,0 +1,53 @@
+<div class="picker-overlay" (click)="dismiss()">
+  <div class="picker" (click)="$event.stopPropagation()">
+    <div class="picker-head">
+      <div>
+        <h2>{{ 'locationPicker.title' | translate }}</h2>
+        <p class="picker-sub">{{ 'locationPicker.subtitle' | translate }}</p>
+      </div>
+      <button type="button" class="picker-close" (click)="dismiss()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    @if (mapUnavailable()) {
+      <div class="picker-unavailable">
+        <mat-icon>map</mat-icon>
+        <p>{{ 'locationPicker.unavailable' | translate }}</p>
+      </div>
+    } @else {
+      <div class="picker-search">
+        <mat-icon>search</mat-icon>
+        <input
+          type="text"
+          [placeholder]="'locationPicker.searchPlaceholder' | translate"
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)"
+          (keydown.enter)="onSearch()" />
+        <button type="button" class="search-btn" (click)="onSearch()">{{ 'locationPicker.search' | translate }}</button>
+      </div>
+
+      <div #mapContainer class="picker-map"></div>
+
+      <div class="picker-selected">
+        <mat-icon>place</mat-icon>
+        <span>
+          @if (resolving()) {
+            {{ 'locationPicker.resolving' | translate }}
+          } @else if (selectedLabel()) {
+            {{ selectedLabel() }}
+          } @else {
+            {{ 'locationPicker.pickHint' | translate }}
+          }
+        </span>
+      </div>
+    }
+
+    <div class="picker-actions">
+      <button type="button" class="btn-ghost" (click)="dismiss()">{{ 'locationPicker.cancel' | translate }}</button>
+      @if (!mapUnavailable()) {
+        <button type="button" class="btn-primary" (click)="confirm()">
+          <mat-icon>check</mat-icon> {{ 'locationPicker.confirm' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

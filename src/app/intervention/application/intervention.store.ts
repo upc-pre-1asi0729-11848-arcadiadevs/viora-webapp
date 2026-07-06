@@ -4,9 +4,9 @@
  * per-plot history) and specialist recommendations.
  *
  * Data-source note: intervention requests, specialist candidates, service
- * proposals and specialist contact are all served by the real backend. The
- * presentation specialist dataset is kept only as a fallback for when the
- * candidates endpoint is unavailable or returns nothing.
+ * proposals and specialist contact are all served by the real backend. No
+ * simulated data: recommended specialists are the real, geo-matched candidates
+ * for the alert; an empty result surfaces a real empty state, never fake cards.
  *
  * @module InterventionStore
  */
@@ -27,53 +27,16 @@ export interface InterventionLoadingState {
   case: boolean;
 }
 
-/**
- * Presentation dataset of recommended specialists, matching the Expert
- * Assistance design. Kept as a fallback for when the real candidates endpoint is
- * unavailable; a returned ranked set replaces it (mirrors the seeded catalog).
- */
-const PRESENTATION_SPECIALISTS: SpecialistCandidate[] = [
-  new SpecialistCandidate({
-    id: 890,
-    name: 'Valeria Rojas',
-    role: 'Phytosanitary specialist',
-    successRate: 96,
-    caseCount: 24,
-    distanceKm: 6.4,
-    tags: ['Xylella monitoring', 'Biological stress', 'Field inspection'],
-    availability: 'today',
-    bestMatch: true,
-  }),
-  new SpecialistCandidate({
-    id: 891,
-    name: 'Marco Salcedo',
-    role: 'Agricultural pest technician',
-    successRate: 92,
-    caseCount: 17,
-    distanceKm: 9.1,
-    tags: ['Leaf symptoms', 'Low-vigor inspection', 'Treatment follow-up'],
-    availability: 'tomorrow',
-  }),
-  new SpecialistCandidate({
-    id: 892,
-    name: 'Camila Torres',
-    role: 'Crop health consultant',
-    successRate: 94,
-    caseCount: 31,
-    distanceKm: 12.8,
-    tags: ['Olive disease assessment', 'Technical prescriptions'],
-    availability: 'week',
-  }),
-];
-
 @Injectable({
   providedIn: 'root',
 })
 export class InterventionStore {
   private readonly interventionApi = inject(InterventionApiService);
 
-  /** Recommended specialists for the selected plot's active alert. */
-  readonly specialists = signal<SpecialistCandidate[]>(PRESENTATION_SPECIALISTS);
+  /** Recommended specialists for the selected plot's active alert (real, geo-matched). */
+  readonly specialists = signal<SpecialistCandidate[]>([]);
+  /** Whether a specialist match has been attempted for the current alert. */
+  readonly specialistsLoaded = signal<boolean>(false);
   /** The producer's intervention requests for the selected plot (from the backend). */
   readonly requests = signal<InterventionRequest[]>([]);
   /** Whether the request history has loaded from the real backend at least once. */
@@ -131,9 +94,9 @@ export class InterventionStore {
   });
 
   /**
-   * Loads ranked specialists for an alert from the real matching policy. Any
-   * non-empty ranked set replaces the presentation fallback; an empty result
-   * keeps the current list so the UI never blanks out.
+   * Loads ranked specialists for an alert from the real geo-matching policy. The
+   * returned set replaces the list verbatim (including empty), so the producer
+   * only ever sees real, geo-matched candidates — never fabricated cards.
    * @param {number|string} alertId
    */
   loadSpecialists(alertId: number | string): void {
@@ -147,13 +110,22 @@ export class InterventionStore {
       )
       .subscribe({
         next: (specialists) => {
-          if (specialists.length > 0) {
-            this.specialists.set(specialists);
-          }
+          this.specialists.set(specialists);
+          this.specialistsLoaded.set(true);
           this.lastSyncedAt.set(Date.now());
         },
-        error: (error) => this.registerError(error),
+        error: (error) => {
+          this.specialists.set([]);
+          this.specialistsLoaded.set(true);
+          this.registerError(error);
+        },
       });
+  }
+
+  /** Clears recommended specialists (e.g. when switching to a plot with no active alert). */
+  clearSpecialists(): void {
+    this.specialists.set([]);
+    this.specialistsLoaded.set(false);
   }
 
   /**
