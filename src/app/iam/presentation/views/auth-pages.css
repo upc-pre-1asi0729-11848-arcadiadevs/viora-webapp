@@ -1415,6 +1415,9 @@
   position: relative;
   min-height: 560px;
   overflow: hidden;
+  /* Thin white frame so the crisp window reads as joined to the card. */
+  border: 5px solid #f7f3ec;
+  border-radius: 26px;
 }
 
 .login2-dots {

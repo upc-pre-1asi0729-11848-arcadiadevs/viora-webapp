@@ -49,10 +49,14 @@ export class LoginPage implements OnDestroy {
   constructor() {
     this.auth.clearMessages();
     this.startCarousel();
+    // The login is a fixed-height, full-viewport layout with a pinned backdrop,
+    // so lock page scroll while it's shown (restored when leaving).
+    document.body.style.overflow = 'hidden';
   }
 
   ngOnDestroy(): void {
     this.stopCarousel();
+    document.body.style.overflow = '';
   }
 
   protected get canSubmit(): boolean {
