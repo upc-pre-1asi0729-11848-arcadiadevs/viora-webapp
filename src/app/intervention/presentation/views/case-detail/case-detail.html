@@ -218,13 +218,13 @@
             </div>
 
             <div class="contact-specialist">
-              @if (specialist()?.photoUrl) {
-                <img class="avatar" [src]="specialist()!.photoUrl" alt="" />
+              @if (contact().photoUrl) {
+                <img class="avatar" [src]="contact().photoUrl" alt="" />
               } @else {
-                <span class="avatar">{{ specialist()?.initials }}</span>
+                <span class="avatar">{{ contact().initials }}</span>
               }
               <div class="identity-text">
-                <span class="specialist-name">{{ specialist()?.name }}</span>
+                <span class="specialist-name">{{ contact().name }}</span>
                 <span class="specialist-role">{{ 'caseDetail.contact.visitScheduled' | translate: { date: contact().visitScheduled } }}</span>
               </div>
               <span class="pill status-proposal">{{ 'caseDetail.contact.accepted' | translate }}</span>

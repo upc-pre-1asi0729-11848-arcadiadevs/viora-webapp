@@ -45,6 +45,9 @@ interface ServiceProposalView {
 
 /** View model for the specialist contact card (revealed after acceptance). */
 interface SpecialistContactView {
+  name: string;
+  initials: string;
+  photoUrl: string;
   phone: string;
   email: string;
   whatsapp: string;
@@ -202,13 +205,30 @@ export class CaseDetailView implements OnInit {
   protected readonly contact = computed<SpecialistContactView>(() => {
     const contact = this.store.activeContact();
     const proposal = this.store.activeProposal();
+    // The contact carries the specialist's own name/photo, so the unlocked card
+    // stays populated even when the recommendation list isn't loaded.
+    const name = contact?.fullName?.trim() || this.specialist()?.name || '';
     return {
+      name,
+      initials: this.monogram(name),
+      photoUrl: contact?.photoUrl?.trim() || this.specialist()?.photoUrl || '',
       phone: contact?.phone || '—',
       email: contact?.email || '—',
       whatsapp: contact?.whatsapp ?? '',
       visitScheduled: proposal?.proposedDateLabel ?? '—',
     };
   });
+
+  /** Two-letter monogram from a full name, for the avatar fallback. */
+  private monogram(name: string): string {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return '';
+    }
+    const first = parts[0][0] ?? '';
+    const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+    return (first + last).toUpperCase();
+  }
 
   /** Case timeline derived from the request lifecycle, newest event first. */
   protected readonly timeline = computed<CaseTimelineEvent[]>(() => {
