@@ -79,7 +79,7 @@ export class SubscriptionStore {
    * Opens a MercadoPago checkout for the target plan and redirects the browser
    * to the hosted checkout on success.
    */
-  startCheckout(planCode: string, interval: PlanInterval): void {
+  startCheckout(planCode: string, interval: PlanInterval, onError?: () => void): void {
     this.checkoutPendingSignal.set(planCode);
     this.errorSignal.set(null);
     this.api
@@ -91,12 +91,14 @@ export class SubscriptionStore {
             window.location.href = session.checkoutUrl;
           } else {
             this.errorSignal.set('Could not open the payment checkout.');
+            onError?.();
           }
         },
         error: (err) => {
           this.errorSignal.set(
             err?.error?.message ?? 'Payments are not available yet. Please try again later.',
           );
+          onError?.();
         },
       });
   }

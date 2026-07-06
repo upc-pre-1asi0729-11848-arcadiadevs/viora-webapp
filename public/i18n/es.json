@@ -47,6 +47,10 @@
       "specialistDescription": "Apoya a los productores con experiencia de campo",
       "creating": "Creando cuenta...",
       "createAccount": "Crear cuenta",
+      "continueToPayment": "Continuar al pago",
+      "redirecting": "Redirigiendo al pago seguro...",
+      "planSelected": "Plan elegido:",
+      "changePlan": "Cambiar",
       "foot": "¿Ya tienes una cuenta?",
       "signIn": "Iniciar sesión",
       "success": {
@@ -1872,5 +1876,30 @@
       "done": "Listo",
       "skip": "Saltar tour del dashboard"
     }
+  },
+  "plansPage": {
+    "eyebrow": "Membresía",
+    "title": "Planes que crecen contigo",
+    "subtitle": "Elige un plan para empezar. Paga de forma segura y entra directo a Viora.",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "login": "Iniciar sesión",
+    "signedInAs": "Tu sesión está iniciada.",
+    "switchAccount": "Usar otra cuenta",
+    "redirecting": "Abriendo el pago...",
+    "segment": {
+      "aria": "Elige tu tipo de cuenta",
+      "grower": "Productor",
+      "specialist": "Especialista"
+    },
+    "caption": {
+      "grower": "Protege tus olivares con inteligencia de campo diaria.",
+      "specialist": "Haz que los productores te encuentren cuando sube el riesgo."
+    },
+    "featured": "Mejor valor",
+    "choose": "Elegir {{plan}}",
+    "loading": "Cargando planes...",
+    "unavailable": "Los planes no están disponibles ahora. Inténtalo en un momento.",
+    "secured": "Pagos seguros con MercadoPago",
+    "cancelAnytime": "Cancela cuando quieras"
   }
 }

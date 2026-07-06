@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard, guestGuard } from './iam/presentation/auth.guards';
+import { subscriptionGuard } from './billing/presentation/subscription.guard';
 
 const workspaceRoutes = () =>
   import('./shared/presentation/workspace.routes').then((m) => m.workspaceRoutes);
@@ -23,6 +24,8 @@ const registerPage = () =>
   import('./iam/presentation/views/register-page/register-page').then((m) => m.RegisterPage);
 const verifyPage = () =>
   import('./iam/presentation/views/verify-page/verify-page').then((m) => m.VerifyPage);
+const plansPage = () =>
+  import('./billing/presentation/views/plans-overview/plans-overview').then((m) => m.PlansOverviewView);
 
 /**
  * Root route configuration. The `layout` (sidebar + content shell) is mounted
@@ -54,6 +57,15 @@ export const routes: Routes = [
     path: 'verify',
     title: 'Verify email',
     loadComponent: verifyPage,
+  },
+
+  // Public plan-selection screen — the entry point for new sign-ups (linked from
+  // the landing page's Get Started / Join CTAs). Choosing a plan leads to
+  // register → MercadoPago checkout → active subscription.
+  {
+    path: 'plans',
+    title: 'Choose your plan',
+    loadComponent: plansPage,
   },
 
   // Canonical path aliases (evaluated before the layout parent).
@@ -137,7 +149,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: layout,
-    canActivate: [authGuard],
+    canActivate: [authGuard, subscriptionGuard],
     children: [
       {
         path: 'agronomic',
