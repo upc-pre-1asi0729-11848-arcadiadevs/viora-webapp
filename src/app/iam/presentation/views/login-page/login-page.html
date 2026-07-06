@@ -1,18 +1,24 @@
 <section class="login2-shell">
-  <!-- Blurred backdrop: the same slide, so the crisp card image reads as an
-       unblurred window into the background. -->
+  <!-- Blurred backdrop: the same slide mapped to the viewport (cover/center/fixed),
+       so the crisp card layer below reads as an unblurred window into it. -->
   <div class="login2-bg" aria-hidden="true">
     @for (slide of carouselSlides; track slide.src; let index = $index) {
-      <img [src]="slide.src" alt="" [class.is-active]="activeSlide() === index" />
+      <span
+        class="login2-bg-layer"
+        [class.is-active]="activeSlide() === index"
+        [style.background-image]="'url(' + slide.src + ')'"></span>
     }
     <span class="login2-bg-tint"></span>
   </div>
 
   <div class="login2-card">
-    <!-- Left: the crisp carousel image -->
+    <!-- Left: the crisp "window" — same viewport-mapped image, no blur -->
     <div class="login2-visual" aria-hidden="true">
       @for (slide of carouselSlides; track slide.src; let index = $index) {
-        <img [src]="slide.src" alt="" [class.is-active]="activeSlide() === index" />
+        <span
+          class="login2-visual-layer"
+          [class.is-active]="activeSlide() === index"
+          [style.background-image]="'url(' + slide.src + ')'"></span>
       }
       <div class="login2-dots" role="tablist" aria-label="Background slides">
         @for (slide of carouselSlides; track slide.src; let index = $index) {
@@ -46,7 +52,7 @@
         }
 
         <label class="login2-field">
-          <span class="sr-only">{{ 'auth.fields.email' | translate }}</span>
+          <span class="login2-label">{{ 'auth.fields.email' | translate }}</span>
           <input
             type="email"
             autocomplete="email"
@@ -56,7 +62,7 @@
         </label>
 
         <label class="login2-field">
-          <span class="sr-only">{{ 'auth.fields.password' | translate }}</span>
+          <span class="login2-label">{{ 'auth.fields.password' | translate }}</span>
           <input
             type="password"
             autocomplete="current-password"

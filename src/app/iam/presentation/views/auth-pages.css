@@ -1371,24 +1371,32 @@
   inset: 0;
   z-index: 0;
 }
-.login2-bg img {
+/* Both the backdrop and the card window map the image to the VIEWPORT
+   (cover/center/fixed), so the crisp window sits pixel-aligned over the blurred
+   backdrop — the card reads as a window with the blur simply removed. */
+.login2-bg-layer,
+.login2-visual-layer {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.12);
-  filter: blur(26px) saturate(1.05);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   opacity: 0;
   transition: opacity 1.1s ease;
 }
-.login2-bg img.is-active {
+.login2-bg-layer.is-active,
+.login2-visual-layer.is-active {
   opacity: 1;
 }
+/* A single blur veil over the crisp backdrop keeps the fixed backgrounds
+   viewport-anchored (filtering the layer itself would re-anchor it). */
 .login2-bg-tint {
   position: absolute;
   inset: 0;
-  background: rgba(20, 28, 24, 0.28);
+  background: rgba(20, 28, 24, 0.14);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .login2-card {
@@ -1406,18 +1414,7 @@
 .login2-visual {
   position: relative;
   min-height: 560px;
-}
-.login2-visual img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.1s ease;
-}
-.login2-visual img.is-active {
-  opacity: 1;
+  overflow: hidden;
 }
 
 .login2-dots {
@@ -1495,7 +1492,14 @@
 }
 
 .login2-field {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.login2-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4f5651;
 }
 .login2-field input {
   width: 100%;
