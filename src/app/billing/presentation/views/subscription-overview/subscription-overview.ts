@@ -12,6 +12,7 @@ import {
 } from '../../../../shared/presentation/components/dashboard-header/dashboard-header';
 
 import { AgronomicApiService } from '../../../../agronomic/infrastructure/agronomic-api.service';
+import { ActiveSessionService } from '../../../../shared/infrastructure/active-session.service';
 
 import { SubscriptionStore } from '../../../application/subscription.store';
 import { Plan } from '../../../domain/model/plan.entity';
@@ -26,6 +27,7 @@ import { Plan } from '../../../domain/model/plan.entity';
 export class SubscriptionOverviewView implements OnInit {
   protected readonly store = inject(SubscriptionStore);
   private readonly agronomicApi = inject(AgronomicApiService);
+  private readonly session = inject(ActiveSessionService);
   private readonly route = inject(ActivatedRoute);
 
   /** Result banner shown when MercadoPago redirects back after a payment. */
@@ -44,6 +46,7 @@ export class SubscriptionOverviewView implements OnInit {
   protected readonly confirmPlan = signal<Plan | null>(null);
   protected readonly cancelModalOpen = signal(false);
   protected readonly paymentModalOpen = signal(false);
+  protected readonly isSpecialist = this.session.isSpecialist;
 
   protected readonly plotUsagePct = computed<number>(() => {
     const limit = this.store.currentPlan()?.plotLimit ?? 0;
@@ -56,13 +59,51 @@ export class SubscriptionOverviewView implements OnInit {
   });
 
   /** The annual plan offered for the "Switch to annual" shortcut. */
-  protected readonly annualPlan = computed<Plan | null>(() =>
-    this.store.plans().find((p) => p.interval === 'ANNUAL') ?? null,
+  protected readonly annualPlan = computed<Plan | null>(
+    () => this.store.plans().find((p) => p.interval === 'ANNUAL') ?? null,
   );
+
+  protected readonly currentPlanName = computed<string>(() => {
+    const plan = this.store.currentPlan();
+    const subscription = this.store.subscription();
+    if (this.isSpecialist()) {
+      if (plan) {
+        return this.specialistPlanName(plan);
+      }
+      if (subscription?.planName) {
+        return this.specialistPlanNameFromParts(
+          subscription.planCode,
+          subscription.planName,
+          subscription.interval,
+        );
+      }
+    }
+    return subscription?.planName || plan?.name || '';
+  });
+
+  protected readonly proBadgeStatus = computed<string>(() => {
+    if (!this.store.subscription() && !this.store.currentPlan()) {
+      return 'subscriptionPage.specialist.noDataYet';
+    }
+    return this.isSpecialistProPlan()
+      ? 'subscriptionPage.specialist.proBadgeReady'
+      : 'subscriptionPage.specialist.proBadgeLocked';
+  });
+
+  protected readonly isSpecialistProPlan = computed<boolean>(() => {
+    const plan = this.store.currentPlan();
+    const subscription = this.store.subscription();
+    return (
+      this.isProPlan(plan?.code, plan?.name) ||
+      this.isProPlan(subscription?.planCode, subscription?.planName)
+    );
+  });
 
   ngOnInit(): void {
     this.store.load();
-    this.loadUsage();
+    if (!this.isSpecialist()) {
+      this.loadUsage();
+    }
     this.readPaymentReturn();
   }
 
@@ -85,7 +126,9 @@ export class SubscriptionOverviewView implements OnInit {
 
   protected refresh(): void {
     this.store.load();
-    this.loadUsage();
+    if (!this.isSpecialist()) {
+      this.loadUsage();
+    }
   }
 
   private loadUsage(): void {
@@ -95,6 +138,36 @@ export class SubscriptionOverviewView implements OnInit {
 
   protected isCurrentPlan(plan: Plan): boolean {
     return this.store.subscription()?.planCode === plan.code;
+  }
+
+  protected displayPlanName(plan: Plan): string {
+    return this.isSpecialist() ? this.specialistPlanName(plan) : plan.name;
+  }
+
+  protected displayPlanTagline(plan: Plan): string {
+    if (!this.isSpecialist()) {
+      return plan.tagline;
+    }
+    return plan.isAnnual
+      ? 'subscriptionPage.specialist.proTagline'
+      : 'subscriptionPage.specialist.plusTagline';
+  }
+
+  protected planFeatureKeys(plan: Plan): string[] {
+    if (!this.isSpecialist()) {
+      return [];
+    }
+    const features = [
+      'subscriptionPage.specialist.features.opportunityFeed',
+      'subscriptionPage.specialist.features.prescriptions',
+      'subscriptionPage.specialist.features.visibility',
+      'subscriptionPage.specialist.features.fieldContext',
+      'subscriptionPage.specialist.features.fasterConnection',
+    ];
+    if (this.isProPlan(plan.code, plan.name)) {
+      features.push('subscriptionPage.specialist.features.proBadge');
+    }
+    return features;
   }
 
   // ----- Plan switching -----
@@ -123,7 +196,9 @@ export class SubscriptionOverviewView implements OnInit {
   }
 
   protected scrollToPlans(): void {
-    document.getElementById('available-plans')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .getElementById('available-plans')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   // ----- Cancel -----
@@ -152,5 +227,20 @@ export class SubscriptionOverviewView implements OnInit {
 
   protected closePayment(): void {
     this.paymentModalOpen.set(false);
+  }
+
+  private specialistPlanName(plan: Plan): string {
+    return this.specialistPlanNameFromParts(plan.code, plan.name, plan.interval);
+  }
+
+  private specialistPlanNameFromParts(code = '', name = '', interval = 'MONTHLY'): string {
+    return this.isProPlan(code, name) || interval === 'ANNUAL'
+      ? 'Specialist Pro'
+      : 'Specialist Plus';
+  }
+
+  private isProPlan(code?: string, name?: string): boolean {
+    const value = `${code ?? ''} ${name ?? ''}`.toLowerCase();
+    return value.includes('pro');
   }
 }

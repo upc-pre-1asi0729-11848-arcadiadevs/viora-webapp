@@ -10,6 +10,11 @@
   padding: 8px 4px 40px;
 }
 
+.subscription-page.is-specialist {
+  --subscription-accent: #c15a2e;
+  --subscription-accent-soft: rgba(193, 90, 46, 0.14);
+}
+
 .subscription-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
@@ -206,6 +211,56 @@
   gap: 12px;
 }
 
+.specialist-plan-status {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 26px 0 24px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 76px;
+  padding: 14px 16px;
+  border: 1px solid #ece6db;
+  border-radius: 12px;
+  background: #fbfaf7;
+}
+
+.status-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(193, 90, 46, 0.12);
+  color: #c15a2e;
+}
+
+.status-icon mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.status-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8c877f;
+}
+
+.status-row strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2523;
+}
+
 /* ---------- Available plans ---------- */
 .plan-grid {
   display: grid;
@@ -337,6 +392,42 @@
   cursor: default;
 }
 
+.subscription-page.is-specialist .hero-icon,
+.subscription-page.is-specialist .money,
+.subscription-page.is-specialist .plan-features mat-icon {
+  color: var(--subscription-accent);
+}
+
+.subscription-page.is-specialist .usage-fill,
+.subscription-page.is-specialist .primary-button,
+.subscription-page.is-specialist .plan-btn--switch,
+.subscription-page.is-specialist .method-icon {
+  background: var(--subscription-accent);
+}
+
+.subscription-page.is-specialist .primary-button.mat-mdc-unelevated-button,
+.subscription-page.is-specialist .plan-btn--switch.mat-mdc-unelevated-button {
+  background-color: var(--subscription-accent);
+}
+
+.subscription-page.is-specialist .plan-card {
+  border-color: var(--subscription-accent);
+}
+
+.subscription-page.is-specialist .plan-card.is-current {
+  background: rgba(193, 90, 46, 0.08);
+}
+
+.subscription-page.is-specialist .plan-tag {
+  background: var(--subscription-accent);
+}
+
+.subscription-page.is-specialist .plan-btn--current,
+.subscription-page.is-specialist .plan-btn--current.mat-mdc-unelevated-button {
+  background-color: var(--subscription-accent-soft);
+  color: var(--subscription-accent);
+}
+
 /* ---------- Payment method ---------- */
 .method-row {
   display: flex;
@@ -435,7 +526,10 @@
 .history-header,
 .history-row {
   display: grid;
-  grid-template-columns: minmax(84px, 1fr) minmax(120px, 1.4fr) minmax(64px, 0.8fr) minmax(64px, 0.9fr) 40px;
+  grid-template-columns: minmax(84px, 1fr) minmax(120px, 1.4fr) minmax(64px, 0.8fr) minmax(
+      64px,
+      0.9fr
+    ) 40px;
   align-items: center;
   gap: 10px;
 }
@@ -679,7 +773,8 @@
 }
 
 @media (max-width: 620px) {
-  .plan-grid {
+  .plan-grid,
+  .specialist-plan-status {
     grid-template-columns: 1fr;
   }
   .history-header {
