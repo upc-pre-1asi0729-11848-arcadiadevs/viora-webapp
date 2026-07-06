@@ -4,6 +4,7 @@
       <img class="brand-mark" src="/assets/brand/viora-icon-svg.svg" alt="" /> Viora
     </a>
     <div class="top-actions">
+      <app-auth-language-toggle theme="light" />
       @if (isSignedIn()) {
         <span class="have">{{ 'plansPage.signedInAs' | translate }}</span>
         <button type="button" class="login-link" (click)="logout()">{{ 'plansPage.switchAccount' | translate }}</button>
@@ -59,35 +60,46 @@
           </div>
         } @else {
           @for (plan of segmentPlans(); track plan.code) {
-            <article class="plan-card" [class.featured]="plan.isAnnual">
-              @if (plan.isAnnual) {
-                <span class="ribbon"><mat-icon>star</mat-icon> {{ 'plansPage.featured' | translate }}</span>
-              }
-              <header class="plan-head">
-                <h2>{{ plan.name }}</h2>
-                <p class="tagline">{{ plan.tagline }}</p>
-              </header>
+            <div class="plan-slot" [class.featured]="plan.isAnnual">
+              <!-- Card-behind-the-card badge that peeks above on hover/focus. -->
+              <span class="plan-badge">
+                <mat-icon aria-hidden="true">{{ plan.isAnnual ? 'auto_awesome' : 'star' }}</mat-icon>
+                {{ (plan.isAnnual ? 'plansPage.badge.pro' : 'plansPage.badge.plus') | translate }}
+              </span>
 
-              <div class="price">
-                <span class="amount">{{ plan.priceLabel }}</span>
-                <span class="suffix">{{ plan.intervalSuffix }}</span>
-              </div>
+              <article class="plan-card">
+                <!-- Floating header card: copy on the left, illustration on the right. -->
+                <header class="plan-head">
+                  <div class="head-main">
+                    <h2>{{ plan.name }}</h2>
+                    <div class="price">
+                      <span class="amount">{{ plan.priceLabel }}</span>
+                      <span class="suffix">{{ plan.intervalSuffix }}</span>
+                    </div>
+                    <p class="tagline">{{ plan.tagline }}</p>
+                  </div>
+                  <img class="plan-thumb" [src]="planImage(plan)" alt="" loading="lazy" />
+                </header>
 
-              <button type="button" class="cta" [disabled]="redirecting()" (click)="choose(plan)">
-                @if (redirecting()) {
-                  {{ 'plansPage.redirecting' | translate }}
-                } @else {
-                  {{ 'plansPage.choose' | translate: { plan: plan.name } }}
-                  <mat-icon>arrow_forward</mat-icon>
-                }
-              </button>
+                <button type="button" class="cta" [disabled]="redirecting()" (click)="choose(plan)">
+                  @if (redirecting()) {
+                    {{ 'plansPage.redirecting' | translate }}
+                  } @else {
+                    {{ 'plansPage.choose' | translate: { plan: plan.name } }}
+                    <mat-icon>arrow_forward</mat-icon>
+                  }
+                </button>
 
-              <ul class="features">
-                @for (feature of plan.features; track feature) {
-                  <li><mat-icon>check</mat-icon> <span>{{ feature }}</span></li>
-                }
-              </ul>
-            </article>
+                <ul class="features">
+                  @for (feature of plan.features; track feature) {
+                    <li>
+                      <mat-icon aria-hidden="true">{{ featureIcon(feature) }}</mat-icon>
+                      <span>{{ feature }}</span>
+                    </li>
+                  }
+                </ul>
+              </article>
+            </div>
           }
         }
       </div>

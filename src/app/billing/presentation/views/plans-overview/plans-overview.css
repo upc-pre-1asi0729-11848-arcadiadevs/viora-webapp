@@ -8,6 +8,8 @@
   --muted: #6b716d;
   --surface: #f8f4ed;
   --hairline: #e7e2d8;
+  /* Colour of the settled "current" outline on the featured (Pro) card. */
+  --flow: #57eba1;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -15,6 +17,14 @@
   --accent: #c15a2e;
   --accent-strong: #a54a22;
   --accent-soft: #fbefe8;
+  --flow: #ffd39a;
+}
+
+/* Rotating angle that drives the featured card's animated outline. */
+@property --pc-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: true;
 }
 
 .plans-page {
@@ -71,7 +81,7 @@
 .content {
   flex: 1;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: clamp(16px, 4vw, 40px) clamp(20px, 5vw, 64px) 48px;
 }
@@ -130,10 +140,13 @@
 /* ---- Showcase (character + cards) ---- */
 .showcase {
   display: grid;
-  grid-template-columns: 0.72fr 1.28fr;
-  gap: clamp(20px, 4vw, 48px);
+  grid-template-columns: 0.5fr 1.5fr;
+  gap: clamp(18px, 2.4vw, 34px);
   align-items: center;
 }
+
+/* The badge peeks above the card, so the cards row needs headroom. */
+.cards { padding-top: 24px; }
 
 .character { position: relative; text-align: center; }
 .character img {
@@ -163,49 +176,165 @@
   font-size: 14px;
 }
 
-/* ---- Plan card ---- */
+/* ---- Plan card (slot = card + the card-behind-the-card badge) ---- */
+.plan-slot { position: relative; }
+
 .plan-card {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  padding: 26px 24px;
-  border-radius: 20px;
+  padding: 22px 20px;
+  border-radius: 22px;
   background: #fff;
   border: 1px solid var(--hairline);
   box-shadow: 0 12px 30px rgba(31, 37, 35, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.plan-card:hover { transform: translateY(-4px); box-shadow: 0 20px 44px rgba(31, 37, 35, 0.1); }
+.plan-slot:hover .plan-card,
+.plan-slot:focus-within .plan-card { transform: translateY(-4px); }
 
-/* The annual "Pro" card is the featured, accent-filled option. */
-.plan-card.featured {
+/* Plus (white) card: a clean primary outline + glow on hover/focus. */
+.plan-slot:not(.featured):hover .plan-card,
+.plan-slot:not(.featured):focus-within .plan-card {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 22px 46px rgba(31, 37, 35, 0.12);
+}
+
+/* The annual "Pro" card is the featured, accent-filled option; its accents are
+   white for maximum contrast against the dark fill. */
+.plan-slot.featured .plan-card {
+  --flow: #ffffff;
   background: linear-gradient(160deg, var(--accent), var(--accent-strong));
   border-color: transparent;
   color: #fff;
+  box-shadow: 0 18px 44px rgba(20, 40, 28, 0.28);
 }
 
-.ribbon {
+/* Animated "current" outline on the featured card: a rainbow sweep for the first
+   ~2s of hover, cross-fading into a steady flowing white comet. */
+.plan-slot.featured .plan-card::before,
+.plan-slot.featured .plan-card::after {
+  content: '';
   position: absolute;
-  top: 18px;
-  right: 18px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 3;
 }
-.ribbon mat-icon { font-size: 13px; width: 13px; height: 13px; }
+.plan-slot.featured .plan-card::before {
+  background: conic-gradient(
+    from var(--pc-angle),
+    #ff5c5c, #ffb44c, #ffe14c, #57eba1, #4cc9ff, #7e8cf7, #d16bff, #ff5c5c
+  );
+}
+.plan-slot.featured .plan-card::after {
+  background: conic-gradient(
+    from var(--pc-angle),
+    transparent 0deg,
+    var(--flow) 70deg,
+    #ffffff 120deg,
+    var(--flow) 170deg,
+    transparent 260deg,
+    transparent 360deg
+  );
+}
+.plan-slot.featured:hover .plan-card,
+.plan-slot.featured:focus-within .plan-card {
+  animation: pc-spin 2.4s linear infinite;
+}
+.plan-slot.featured:hover .plan-card::before,
+.plan-slot.featured:focus-within .plan-card::before {
+  animation: pc-rainbow 2.2s ease forwards;
+}
+.plan-slot.featured:hover .plan-card::after,
+.plan-slot.featured:focus-within .plan-card::after {
+  animation: pc-green 2.2s ease forwards;
+}
+@keyframes pc-spin {
+  to { --pc-angle: 360deg; }
+}
+@keyframes pc-rainbow {
+  0%, 68% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes pc-green {
+  0%, 62% { opacity: 0; }
+  100% { opacity: 1; }
+}
 
-.plan-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
-.plan-head .tagline { margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--muted); }
+/* The badge is a top extension of the card itself: same width + radius, hidden
+   behind the card at rest, sliding up to reveal a titled band on hover/focus. */
+.plan-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  /* Text pinned near the top; the deep bottom padding stays tucked behind card. */
+  padding: 13px 16px 44px;
+  border-radius: 22px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 10px 22px rgba(31, 37, 35, 0.14);
+  transform: translateY(0);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.plan-badge mat-icon { font-size: 15px; width: 15px; height: 15px; }
+.plan-slot:hover .plan-badge,
+.plan-slot:focus-within .plan-badge {
+  transform: translateY(-44px);
+}
+/* Pro badge is white to match its white accents. */
+.plan-slot.featured .plan-badge {
+  background: #fff;
+  color: #14281c;
+}
+
+/* ---- Floating header card: copy left, illustration right, with depth ---- */
+.plan-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(31, 37, 35, 0.1);
+}
+.plan-slot.featured .plan-head {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+.head-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.plan-head h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.plan-head .tagline { margin: 2px 0 0; font-size: 13px; line-height: 1.45; color: var(--muted); }
 .featured .plan-head .tagline { color: rgba(255, 255, 255, 0.82); }
 
-.price { display: flex; align-items: baseline; gap: 8px; margin: 22px 0 20px; }
-.price .amount { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
+/* Illustration sits free on the right — no frame or backdrop, may bleed slightly. */
+.plan-thumb {
+  flex-shrink: 0;
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+  margin: -6px -8px -6px 0;
+}
+
+.price { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.price .amount { font-size: 29px; font-weight: 700; letter-spacing: -0.02em; }
 .price .suffix { font-size: 14px; color: var(--muted); }
 .featured .price .suffix { color: rgba(255, 255, 255, 0.75); }
 
@@ -215,6 +344,7 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
+  margin-top: 18px;
   padding: 13px 18px;
   border: none;
   border-radius: 12px;
@@ -231,14 +361,14 @@
 .featured .cta { background: #fff; color: var(--accent-strong); }
 .featured .cta:hover { background: rgba(255, 255, 255, 0.9); }
 
-.features { list-style: none; margin: 22px 0 0; padding: 22px 0 0; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: 12px; }
+.features { list-style: none; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: 12px; }
 .featured .features { border-top-color: rgba(255, 255, 255, 0.22); }
-.features li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.4; }
+.features li { display: flex; align-items: flex-start; gap: 11px; font-size: 13.5px; line-height: 1.4; }
 .features li mat-icon {
   flex-shrink: 0;
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+  font-size: 19px;
+  width: 19px;
+  height: 19px;
   color: var(--accent);
   margin-top: 1px;
 }
@@ -283,5 +413,5 @@
 @media (max-width: 620px) {
   .cards { grid-template-columns: 1fr; }
   .top-actions .have { display: none; }
-  .plan-card.featured { order: -1; }
+  .plan-slot.featured { order: -1; }
 }

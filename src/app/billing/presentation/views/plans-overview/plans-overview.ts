@@ -9,6 +9,7 @@ import { SubscriptionStore } from '../../../application/subscription.store';
 import { Plan } from '../../../domain/model/plan.entity';
 import { ActiveSessionService } from '../../../../shared/infrastructure/active-session.service';
 import { AuthStore } from '../../../../iam/application/auth.store';
+import { AuthLanguageToggle } from '../../../../shared/presentation/components/auth-language-toggle/auth-language-toggle';
 
 type PlanSegment = 'grower' | 'specialist';
 
@@ -21,7 +22,7 @@ type PlanSegment = 'grower' | 'specialist';
 @Component({
   selector: 'app-plans-overview',
   standalone: true,
-  imports: [MatIconModule, RouterLink, TranslatePipe],
+  imports: [MatIconModule, RouterLink, TranslatePipe, AuthLanguageToggle],
   templateUrl: './plans-overview.html',
   styleUrl: './plans-overview.css',
 })
@@ -81,6 +82,29 @@ export class PlansOverviewView implements OnInit {
 
   protected selectSegment(segment: PlanSegment): void {
     this.segment.set(segment);
+  }
+
+  /** The plan's illustration — filenames mirror the plan code (e.g. grower-pro.png). */
+  protected planImage(plan: Plan): string {
+    return `/assets/images/general/${plan.code}.png`;
+  }
+
+  /** Picks a benefit-specific icon from the (free-text) feature line's keywords. */
+  protected featureIcon(feature: string): string {
+    const f = feature.toLowerCase();
+    if (f.includes('plot') || f.includes('finca') || f.includes('parcel')) return 'map';
+    if (f.includes('iot') || f.includes('device') || f.includes('sensor')) return 'sensors';
+    if (f.includes('ndvi') || f.includes('satellite')) return 'satellite_alt';
+    if (f.includes('chill') || f.includes('weather') || f.includes('climate')) return 'ac_unit';
+    if (f.includes('pest') || f.includes('surveillance') || f.includes('alert')) return 'pest_control';
+    if (f.includes('nutrition') || f.includes('fertil')) return 'science';
+    if (f.includes('specialist') || f.includes('expert') || f.includes('protection')) return 'support_agent';
+    if (f.includes('report') || f.includes('analytic') || f.includes('insight')) return 'insights';
+    if (f.includes('proposal') || f.includes('request') || f.includes('case')) return 'assignment';
+    if (f.includes('support') || f.includes('chat')) return 'forum';
+    if (f.includes('region') || f.includes('map')) return 'public';
+    if (f.includes('priorit') || f.includes('premium')) return 'workspace_premium';
+    return 'check_circle';
   }
 
   /**

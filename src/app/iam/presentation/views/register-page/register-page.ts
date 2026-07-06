@@ -1,8 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+
+import { AuthLanguageToggle } from '../../../../shared/presentation/components/auth-language-toggle/auth-language-toggle';
 
 import { AuthStore } from '../../../application/auth.store';
 import { SubscriptionStore } from '../../../../billing/application/subscription.store';
@@ -13,15 +15,59 @@ type AccountRole = 'ROLE_GROWER' | 'ROLE_SPECIALIST';
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [MatIconModule, RouterLink, TranslatePipe],
+  imports: [MatIconModule, RouterLink, TranslatePipe, AuthLanguageToggle],
   templateUrl: './register-page.html',
   styleUrls: ['../auth-pages.css'],
 })
-export class RegisterPage {
+export class RegisterPage implements OnDestroy {
   protected readonly auth = inject(AuthStore);
   protected readonly subscription = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  // Artistic backdrop carousel (shared visual language with the login screen).
+  protected readonly activeSlide = signal(0);
+  /** The motivational caption typed at the foot of the crisp window. */
+  protected readonly typedTitle = signal('');
+  protected readonly carouselSlides = [
+    { src: '/assets/images/onboarding/carrusel_1.png' },
+    { src: '/assets/images/onboarding/carrusel_2.png' },
+    { src: '/assets/images/onboarding/carrusel_3.png' },
+  ];
+  private readonly slideHoldMs = 6500;
+  private readonly typeSpeedMs = 55;
+  private readonly deleteSpeedMs = 28;
+  private cycleTimer: ReturnType<typeof setTimeout> | undefined;
+  private typeTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** Role-oriented value props shown in the left context panel. */
+  private readonly roleBenefitKeys: Record<AccountRole, string[]> = {
+    ROLE_GROWER: [
+      'auth.register.benefits.producerB1',
+      'auth.register.benefits.producerB2',
+      'auth.register.benefits.producerB3',
+    ],
+    ROLE_SPECIALIST: [
+      'auth.register.benefits.specialistB1',
+      'auth.register.benefits.specialistB2',
+      'auth.register.benefits.specialistB3',
+    ],
+  };
+
+  /** Motivational captions, one per slide, tailored to the chosen segment. */
+  private readonly rolePhraseKeys: Record<AccountRole, string[]> = {
+    ROLE_GROWER: [
+      'auth.register.motiv.producerP1',
+      'auth.register.motiv.producerP2',
+      'auth.register.motiv.producerP3',
+    ],
+    ROLE_SPECIALIST: [
+      'auth.register.motiv.specialistP1',
+      'auth.register.motiv.specialistP2',
+      'auth.register.motiv.specialistP3',
+    ],
+  };
 
   protected readonly fullName = signal('');
   protected readonly email = signal('');
@@ -60,6 +106,11 @@ export class RegisterPage {
     if (plan) {
       this.selectedPlan.set(plan);
       this.selectedInterval = params.get('interval') === 'ANNUAL' ? 'ANNUAL' : 'MONTHLY';
+      // Only animate once we know we're staying on this screen. Wait for the
+      // translation bundle so the first caption is never its raw i18n key.
+      this.translate.get(this.rolePhraseKeys[this.role()][0]).subscribe(() => {
+        this.typeIn(this.phraseAt(0), () => this.scheduleNextSlide());
+      });
     } else {
       // Payment-first: you can't register without first choosing a plan. Send the
       // visitor to the plan-selection screen (carry any referral code along).
@@ -70,20 +121,103 @@ export class RegisterPage {
     }
   }
 
-  /** The role is locked when the user arrived from the plan-selection screen. */
-  protected get roleLocked(): boolean {
-    return this.selectedPlan() !== null;
+  ngOnDestroy(): void {
+    this.clearTimers();
   }
 
-  protected selectRole(role: AccountRole): void {
-    if (this.roleLocked) {
+  // ----- Backdrop carousel + typewriter caption -----
+
+  protected selectSlide(index: number): void {
+    if (index === this.activeSlide()) {
       return;
     }
-    this.role.set(role);
+    this.clearTimers();
+    this.transitionTo(index);
+  }
+
+  /** Resolves the caption for a slide to the current segment's phrase. */
+  private phraseAt(index: number): string {
+    return this.translate.instant(this.rolePhraseKeys[this.role()][index]);
+  }
+
+  private scheduleNextSlide(): void {
+    this.cycleTimer = setTimeout(() => {
+      const next = (this.activeSlide() + 1) % this.carouselSlides.length;
+      this.transitionTo(next);
+    }, this.slideHoldMs);
+  }
+
+  /** Deletes the current caption, swaps the slide, then types the new caption. */
+  private transitionTo(index: number): void {
+    this.deleteAll(() => {
+      this.activeSlide.set(index);
+      this.typeIn(this.phraseAt(index), () => this.scheduleNextSlide());
+    });
+  }
+
+  private deleteAll(done: () => void): void {
+    const step = () => {
+      const current = this.typedTitle();
+      if (current.length === 0) {
+        done();
+        return;
+      }
+      this.typedTitle.set(current.slice(0, -1));
+      this.typeTimer = setTimeout(step, this.deleteSpeedMs);
+    };
+    step();
+  }
+
+  private typeIn(target: string, done?: () => void): void {
+    this.typedTitle.set('');
+    let count = 0;
+    const step = () => {
+      count += 1;
+      this.typedTitle.set(target.slice(0, count));
+      if (count >= target.length) {
+        done?.();
+        return;
+      }
+      this.typeTimer = setTimeout(step, this.typeSpeedMs);
+    };
+    step();
+  }
+
+  private clearTimers(): void {
+    if (this.cycleTimer !== undefined) {
+      clearTimeout(this.cycleTimer);
+      this.cycleTimer = undefined;
+    }
+    if (this.typeTimer !== undefined) {
+      clearTimeout(this.typeTimer);
+      this.typeTimer = undefined;
+    }
   }
 
   protected get isSpecialist(): boolean {
     return this.role() === 'ROLE_SPECIALIST';
+  }
+
+  // ----- Left context panel (the role + plan carried from /plans) -----
+
+  protected get roleNameKey(): string {
+    return this.isSpecialist ? 'auth.roles.specialist' : 'auth.roles.producer';
+  }
+
+  protected get roleDescriptionKey(): string {
+    return this.isSpecialist
+      ? 'auth.register.specialistDescription'
+      : 'auth.register.producerDescription';
+  }
+
+  protected get roleImage(): string {
+    return this.isSpecialist
+      ? '/assets/images/general/phytosanitary-specialist-character-2.png'
+      : '/assets/images/general/olive-producer-character-2.png';
+  }
+
+  protected get roleBenefits(): string[] {
+    return this.roleBenefitKeys[this.role()];
   }
 
   /** A specialist's phone is their producer-facing contact, so it's mandatory. */
