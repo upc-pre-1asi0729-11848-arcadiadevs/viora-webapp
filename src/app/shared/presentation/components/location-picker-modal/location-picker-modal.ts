@@ -84,7 +84,7 @@ export class LocationPickerModal implements AfterViewInit, OnDestroy {
     mapboxgl.accessToken = environment.mapbox.accessToken;
     const map = new mapboxgl.Map({
       container,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/mapbox/satellite-streets-v12',
       center,
       zoom: hasInitial ? 11 : 4,
       attributionControl: false,
