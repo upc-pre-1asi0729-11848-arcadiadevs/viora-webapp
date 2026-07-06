@@ -47,6 +47,10 @@
       "specialistDescription": "Assist producers with field expertise",
       "creating": "Creating account...",
       "createAccount": "Create account",
+      "continueToPayment": "Continue to payment",
+      "redirecting": "Redirecting to secure checkout...",
+      "planSelected": "Selected plan:",
+      "changePlan": "Change",
       "foot": "Already have an account?",
       "signIn": "Sign in",
       "success": {
@@ -1872,5 +1876,27 @@
       "done": "Done",
       "skip": "Skip dashboard tour"
     }
+  },
+  "plansPage": {
+    "eyebrow": "Membership",
+    "title": "Plans that grow with you",
+    "subtitle": "Choose a plan to get started. Pay securely, then jump straight into Viora.",
+    "haveAccount": "Already have an account?",
+    "login": "Sign in",
+    "segment": {
+      "aria": "Choose your account type",
+      "grower": "Grower",
+      "specialist": "Specialist"
+    },
+    "caption": {
+      "grower": "Protect your olive groves with daily field intelligence.",
+      "specialist": "Get discovered by growers the moment risk rises."
+    },
+    "featured": "Best value",
+    "choose": "Choose {{plan}}",
+    "loading": "Loading plans...",
+    "unavailable": "Plans are not available right now. Please try again shortly.",
+    "secured": "Secure payments by MercadoPago",
+    "cancelAnytime": "Cancel anytime"
   }
 }

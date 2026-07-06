@@ -1,0 +1,93 @@
+<div class="plans-page" [class.is-specialist]="isSpecialist()">
+  <header class="top">
+    <a class="brand" [href]="landingUrl">
+      <span class="brand-mark">V</span> Viora
+    </a>
+    <div class="top-actions">
+      <span class="have">{{ 'plansPage.haveAccount' | translate }}</span>
+      <a class="login-link" routerLink="/login">{{ 'plansPage.login' | translate }}</a>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="intro">
+      <span class="eyebrow">{{ 'plansPage.eyebrow' | translate }}</span>
+      <h1>{{ 'plansPage.title' | translate }}</h1>
+      <p class="lede">{{ 'plansPage.subtitle' | translate }}</p>
+
+      <div class="segment-switch" role="tablist" [attr.aria-label]="'plansPage.segment.aria' | translate">
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="!isSpecialist()"
+          [class.active]="!isSpecialist()"
+          (click)="selectSegment('grower')">
+          <mat-icon>agriculture</mat-icon> {{ 'plansPage.segment.grower' | translate }}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="isSpecialist()"
+          [class.active]="isSpecialist()"
+          (click)="selectSegment('specialist')">
+          <mat-icon>biotech</mat-icon> {{ 'plansPage.segment.specialist' | translate }}
+        </button>
+      </div>
+    </section>
+
+    <section class="showcase">
+      <aside class="character" aria-hidden="true">
+        <img [src]="characterSrc()" alt="" />
+        <p class="character-caption">
+          {{ (isSpecialist() ? 'plansPage.caption.specialist' : 'plansPage.caption.grower') | translate }}
+        </p>
+      </aside>
+
+      <div class="cards">
+        @if (loading()) {
+          <div class="loading">
+            <mat-icon>hourglass_empty</mat-icon> {{ 'plansPage.loading' | translate }}
+          </div>
+        } @else if (segmentPlans().length === 0) {
+          <div class="loading">
+            <mat-icon>error_outline</mat-icon> {{ 'plansPage.unavailable' | translate }}
+          </div>
+        } @else {
+          @for (plan of segmentPlans(); track plan.code) {
+            <article class="plan-card" [class.featured]="plan.isAnnual">
+              @if (plan.isAnnual) {
+                <span class="ribbon"><mat-icon>star</mat-icon> {{ 'plansPage.featured' | translate }}</span>
+              }
+              <header class="plan-head">
+                <h2>{{ plan.name }}</h2>
+                <p class="tagline">{{ plan.tagline }}</p>
+              </header>
+
+              <div class="price">
+                <span class="amount">{{ plan.priceLabel }}</span>
+                <span class="suffix">{{ plan.intervalSuffix }}</span>
+              </div>
+
+              <button type="button" class="cta" (click)="choose(plan)">
+                {{ 'plansPage.choose' | translate: { plan: plan.name } }}
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+
+              <ul class="features">
+                @for (feature of plan.features; track feature) {
+                  <li><mat-icon>check</mat-icon> <span>{{ feature }}</span></li>
+                }
+              </ul>
+            </article>
+          }
+        }
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span><mat-icon>lock</mat-icon> {{ 'plansPage.secured' | translate }}</span>
+      <span class="dot">·</span>
+      <span>{{ 'plansPage.cancelAnytime' | translate }}</span>
+    </footer>
+  </main>
+</div>
