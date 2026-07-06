@@ -1,34 +1,44 @@
-<section class="subscription-page">
+<section class="subscription-page" [class.is-specialist]="isSpecialist()">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs"
-    [subtitle]="'subscriptionPage.headerSubtitle' | translate"
+    [subtitle]="
+      (isSpecialist()
+        ? 'subscriptionPage.specialist.headerSubtitle'
+        : 'subscriptionPage.headerSubtitle'
+      ) | translate
+    "
     [updatedLabel]="'subscriptionPage.justNow' | translate"
-    (refresh)="refresh()" />
+    (refresh)="refresh()"
+  />
 
   @if (paymentResult() === 'approved') {
     <div class="banner banner--success">
       <mat-icon>check_circle</mat-icon>
       {{ 'subscriptionPage.banner.approved' | translate }}
-      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
   } @else if (paymentResult() === 'pending') {
     <div class="banner banner--info">
       <mat-icon>schedule</mat-icon>
       {{ 'subscriptionPage.banner.pending' | translate }}
-      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
   } @else if (paymentResult() === 'failure') {
     <div class="banner banner--error">
       <mat-icon>error_outline</mat-icon>
       {{ 'subscriptionPage.banner.failure' | translate }}
-      <button type="button" class="banner-close" (click)="dismissPaymentResult()"><mat-icon>close</mat-icon></button>
+      <button type="button" class="banner-close" (click)="dismissPaymentResult()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
   }
 
   @if (store.error()) {
-    <div class="banner banner--error">
-      <mat-icon>error_outline</mat-icon> {{ store.error() }}
-    </div>
+    <div class="banner banner--error"><mat-icon>error_outline</mat-icon> {{ store.error() }}</div>
   }
 
   <div class="subscription-grid">
@@ -37,41 +47,105 @@
       <!-- Current plan -->
       <mat-card class="section-card">
         <div class="plan-hero-head">
-          <mat-icon class="hero-icon">diamond</mat-icon>
+          <mat-icon class="hero-icon">{{
+            isSpecialist() ? 'workspace_premium' : 'diamond'
+          }}</mat-icon>
           <div>
-            <h2 class="card-title">{{ store.subscription()?.planName || store.currentPlan()?.name || ('subscriptionPage.currentPlan.fallbackName' | translate) }}</h2>
-            <p class="hero-sub">{{ store.subscription()?.renewalCaption || ('subscriptionPage.currentPlan.fallbackCaption' | translate) }}</p>
+            <h2 class="card-title">
+              {{ currentPlanName() || ('subscriptionPage.currentPlan.fallbackName' | translate) }}
+            </h2>
+            <p class="hero-sub">
+              {{
+                store.subscription()?.renewalCaption ||
+                  ('subscriptionPage.currentPlan.fallbackCaption' | translate)
+              }}
+            </p>
           </div>
         </div>
 
         <div class="hero-divider"></div>
 
         <div class="hero-price">
-          <span class="money">{{ store.currentPlan()?.priceLabel || store.subscription()?.priceLabel || '—' }}</span>
-          <span class="money-interval">{{ store.currentPlan()?.intervalSuffix || store.subscription()?.intervalSuffix }}</span>
+          <span class="money">{{
+            store.currentPlan()?.priceLabel || store.subscription()?.priceLabel || '—'
+          }}</span>
+          <span class="money-interval">{{
+            store.currentPlan()?.intervalSuffix || store.subscription()?.intervalSuffix
+          }}</span>
         </div>
 
-        <div class="usage-list">
-          <div class="usage">
-            <div class="usage-head">
-              <span class="usage-label">{{ 'subscriptionPage.currentPlan.plotsMonitored' | translate }}</span>
-              <span class="usage-count">{{ 'subscriptionPage.currentPlan.usedOf' | translate: { used: plotsUsed(), limit: store.currentPlan()?.plotLimit ?? '—' } }}</span>
+        @if (!isSpecialist()) {
+          <div class="usage-list">
+            <div class="usage">
+              <div class="usage-head">
+                <span class="usage-label">{{
+                  'subscriptionPage.currentPlan.plotsMonitored' | translate
+                }}</span>
+                <span class="usage-count">{{
+                  'subscriptionPage.currentPlan.usedOf'
+                    | translate: { used: plotsUsed(), limit: store.currentPlan()?.plotLimit ?? '—' }
+                }}</span>
+              </div>
+              <div class="usage-bar">
+                <span class="usage-fill" [style.width.%]="plotUsagePct()"></span>
+              </div>
             </div>
-            <div class="usage-bar"><span class="usage-fill" [style.width.%]="plotUsagePct()"></span></div>
-          </div>
-          <div class="usage">
-            <div class="usage-head">
-              <span class="usage-label">{{ 'subscriptionPage.currentPlan.iotConnected' | translate }}</span>
-              <span class="usage-count">{{ 'subscriptionPage.currentPlan.usedOf' | translate: { used: iotUsed(), limit: store.currentPlan()?.iotLimit ?? '—' } }}</span>
+            <div class="usage">
+              <div class="usage-head">
+                <span class="usage-label">{{
+                  'subscriptionPage.currentPlan.iotConnected' | translate
+                }}</span>
+                <span class="usage-count">{{
+                  'subscriptionPage.currentPlan.usedOf'
+                    | translate: { used: iotUsed(), limit: store.currentPlan()?.iotLimit ?? '—' }
+                }}</span>
+              </div>
+              <div class="usage-bar">
+                <span class="usage-fill" [style.width.%]="iotUsagePct()"></span>
+              </div>
             </div>
-            <div class="usage-bar"><span class="usage-fill" [style.width.%]="iotUsagePct()"></span></div>
           </div>
-        </div>
+        } @else {
+          <div class="specialist-plan-status">
+            <div class="status-row">
+              <span class="status-icon"><mat-icon>travel_explore</mat-icon></span>
+              <div>
+                <span class="status-label">{{
+                  'subscriptionPage.specialist.marketplaceAccess' | translate
+                }}</span>
+                <strong>{{ 'subscriptionPage.specialist.noDataYet' | translate }}</strong>
+              </div>
+            </div>
+            <div class="status-row">
+              <span class="status-icon status-icon--pro"><mat-icon>verified</mat-icon></span>
+              <div>
+                <span class="status-label">{{
+                  'subscriptionPage.specialist.proBadge' | translate
+                }}</span>
+                <strong>{{ proBadgeStatus() | translate }}</strong>
+              </div>
+            </div>
+          </div>
+        }
 
         <div class="hero-actions">
-          <button mat-flat-button type="button" class="primary-button" (click)="scrollToPlans()">{{ 'subscriptionPage.currentPlan.changePlan' | translate }}</button>
+          <button mat-flat-button type="button" class="primary-button" (click)="scrollToPlans()">
+            {{ 'subscriptionPage.currentPlan.changePlan' | translate }}
+          </button>
           @if (annualPlan() && !store.subscription()?.isAnnual) {
-            <button mat-stroked-button type="button" class="ghost-button" (click)="switchToAnnual()">{{ 'subscriptionPage.currentPlan.switchToAnnual' | translate }}</button>
+            <button
+              mat-stroked-button
+              type="button"
+              class="ghost-button"
+              (click)="switchToAnnual()"
+            >
+              {{
+                (isSpecialist()
+                  ? 'subscriptionPage.specialist.switchToPro'
+                  : 'subscriptionPage.currentPlan.switchToAnnual'
+                ) | translate
+              }}
+            </button>
           }
         </div>
       </mat-card>
@@ -80,8 +154,18 @@
       <mat-card class="section-card" id="available-plans">
         <div class="section-head">
           <div>
-            <h2 class="card-title"><mat-icon class="title-icon">star</mat-icon> {{ 'subscriptionPage.plans.title' | translate }}</h2>
-            <p class="card-sub">{{ 'subscriptionPage.plans.subtitle' | translate }}</p>
+            <h2 class="card-title">
+              <mat-icon class="title-icon">star</mat-icon>
+              {{ 'subscriptionPage.plans.title' | translate }}
+            </h2>
+            <p class="card-sub">
+              {{
+                (isSpecialist()
+                  ? 'subscriptionPage.specialist.plansSubtitle'
+                  : 'subscriptionPage.plans.subtitle'
+                ) | translate
+              }}
+            </p>
           </div>
         </div>
 
@@ -91,29 +175,45 @@
               @if (isCurrentPlan(plan)) {
                 <span class="plan-tag">{{ 'subscriptionPage.plans.currentTag' | translate }}</span>
               }
-              <h3 class="plan-name">{{ plan.name }}</h3>
+              <h3 class="plan-name">{{ displayPlanName(plan) }}</h3>
               <div class="plan-price">
                 <span class="plan-amount">{{ plan.priceLabel }}</span>
                 <span class="plan-interval">{{ plan.intervalSuffix }}</span>
               </div>
-              <p class="plan-tagline">{{ plan.tagline }}</p>
+              <p class="plan-tagline">
+                {{ isSpecialist() ? (displayPlanTagline(plan) | translate) : plan.tagline }}
+              </p>
 
               <ul class="plan-features">
-                @for (feature of plan.features; track feature) {
-                  <li><mat-icon>check</mat-icon> {{ feature }}</li>
+                @if (isSpecialist()) {
+                  @for (featureKey of planFeatureKeys(plan); track featureKey) {
+                    <li><mat-icon>check</mat-icon> {{ featureKey | translate }}</li>
+                  }
+                } @else {
+                  @for (feature of plan.features; track feature) {
+                    <li><mat-icon>check</mat-icon> {{ feature }}</li>
+                  }
                 }
               </ul>
 
               @if (isCurrentPlan(plan)) {
-                <button mat-flat-button type="button" class="plan-btn plan-btn--current" disabled>{{ 'subscriptionPage.plans.currentButton' | translate }}</button>
+                <button mat-flat-button type="button" class="plan-btn plan-btn--current" disabled>
+                  {{ 'subscriptionPage.plans.currentButton' | translate }}
+                </button>
               } @else {
                 <button
                   mat-flat-button
                   type="button"
                   class="plan-btn plan-btn--switch"
                   [disabled]="store.checkoutPending() === plan.code"
-                  (click)="openSwitch(plan)">
-                  {{ (store.checkoutPending() === plan.code ? 'subscriptionPage.plans.opening' : 'subscriptionPage.plans.switchPlan') | translate }}
+                  (click)="openSwitch(plan)"
+                >
+                  {{
+                    (store.checkoutPending() === plan.code
+                      ? 'subscriptionPage.plans.opening'
+                      : 'subscriptionPage.plans.switchPlan'
+                    ) | translate
+                  }}
                 </button>
               }
             </div>
@@ -129,7 +229,10 @@
       <!-- Payment method -->
       <mat-card class="section-card">
         <div class="section-head">
-          <h2 class="card-title"><mat-icon class="title-icon">credit_card</mat-icon> {{ 'subscriptionPage.payment.title' | translate }}</h2>
+          <h2 class="card-title">
+            <mat-icon class="title-icon">credit_card</mat-icon>
+            {{ 'subscriptionPage.payment.title' | translate }}
+          </h2>
         </div>
 
         @if (store.defaultPaymentMethod(); as method) {
@@ -140,7 +243,9 @@
               <span class="method-exp">{{ method.expiresLabel }}</span>
             </div>
             @if (method.isDefault) {
-              <span class="method-default">{{ 'subscriptionPage.payment.default' | translate }}</span>
+              <span class="method-default">{{
+                'subscriptionPage.payment.default' | translate
+              }}</span>
             }
           </div>
         } @else {
@@ -175,13 +280,23 @@
         </div>
         @if (store.subscription()?.isCanceled) {
           <p class="cancel-note">
-            {{ 'subscriptionPage.cancel.canceledNote' | translate: { date: store.subscription()?.periodEndLabel } }}
+            {{
+              'subscriptionPage.cancel.canceledNote'
+                | translate: { date: store.subscription()?.periodEndLabel }
+            }}
           </p>
         } @else {
           <p class="cancel-note">
-            {{ 'subscriptionPage.cancel.activeNote' | translate }}
+            {{
+              (isSpecialist()
+                ? 'subscriptionPage.specialist.cancelNote'
+                : 'subscriptionPage.cancel.activeNote'
+              ) | translate
+            }}
           </p>
-          <button mat-stroked-button type="button" class="ghost-button" (click)="openCancel()">{{ 'subscriptionPage.cancel.button' | translate }}</button>
+          <button mat-stroked-button type="button" class="ghost-button" (click)="openCancel()">
+            {{ 'subscriptionPage.cancel.button' | translate }}
+          </button>
         }
       </mat-card>
 
@@ -189,7 +304,10 @@
       <mat-card class="section-card">
         <div class="section-head">
           <div>
-            <h2 class="card-title"><mat-icon class="title-icon">description</mat-icon> {{ 'subscriptionPage.history.title' | translate }}</h2>
+            <h2 class="card-title">
+              <mat-icon class="title-icon">description</mat-icon>
+              {{ 'subscriptionPage.history.title' | translate }}
+            </h2>
             <p class="card-sub">{{ 'subscriptionPage.history.subtitle' | translate }}</p>
           </div>
         </div>
@@ -207,9 +325,18 @@
               <span>{{ invoice.dateLabel }}</span>
               <span>{{ invoice.description }}</span>
               <span>{{ invoice.amountLabel }}</span>
-              <span><span class="pill" [class.pill--paid]="invoice.isPaid">{{ invoice.statusLabel }}</span></span>
+              <span
+                ><span class="pill" [class.pill--paid]="invoice.isPaid">{{
+                  invoice.statusLabel
+                }}</span></span
+              >
               <span>
-                <button mat-icon-button type="button" class="download-btn" aria-label="Download invoice">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="download-btn"
+                  aria-label="Download invoice"
+                >
                   <mat-icon>download</mat-icon>
                 </button>
               </span>
@@ -229,15 +356,25 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <div>
-          <h2>{{ 'subscriptionPage.switchModal.title' | translate: { name: plan.name } }}</h2>
+          <h2>
+            {{ 'subscriptionPage.switchModal.title' | translate: { name: displayPlanName(plan) } }}
+          </h2>
           <p class="modal-subtitle">{{ 'subscriptionPage.switchModal.subtitle' | translate }}</p>
         </div>
-        <button mat-icon-button type="button" (click)="closeSwitch()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button type="button" (click)="closeSwitch()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
 
       <div class="switch-summary">
-        <div class="summary-row"><span>{{ 'subscriptionPage.switchModal.plan' | translate }}</span><strong>{{ plan.name }}</strong></div>
-        <div class="summary-row"><span>{{ 'subscriptionPage.switchModal.price' | translate }}</span><strong>{{ plan.priceLabel }} {{ plan.intervalSuffix }}</strong></div>
+        <div class="summary-row">
+          <span>{{ 'subscriptionPage.switchModal.plan' | translate }}</span
+          ><strong>{{ displayPlanName(plan) }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>{{ 'subscriptionPage.switchModal.price' | translate }}</span
+          ><strong>{{ plan.priceLabel }} {{ plan.intervalSuffix }}</strong>
+        </div>
       </div>
 
       <p class="modal-note">
@@ -249,14 +386,22 @@
       }
 
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeSwitch()">{{ 'subscriptionPage.switchModal.cancel' | translate }}</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeSwitch()">
+          {{ 'subscriptionPage.switchModal.cancel' | translate }}
+        </button>
         <button
           mat-flat-button
           type="button"
           class="primary-button"
           [disabled]="store.checkoutPending() === plan.code"
-          (click)="confirmSwitch()">
-          {{ (store.checkoutPending() === plan.code ? 'subscriptionPage.switchModal.redirecting' : 'subscriptionPage.switchModal.continue') | translate }}
+          (click)="confirmSwitch()"
+        >
+          {{
+            (store.checkoutPending() === plan.code
+              ? 'subscriptionPage.switchModal.redirecting'
+              : 'subscriptionPage.switchModal.continue'
+            ) | translate
+          }}
         </button>
       </div>
     </div>
@@ -272,23 +417,41 @@
           <h2>{{ 'subscriptionPage.cancelModal.title' | translate }}</h2>
           <p class="modal-subtitle">{{ 'subscriptionPage.cancelModal.subtitle' | translate }}</p>
         </div>
-        <button mat-icon-button type="button" (click)="closeCancel()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button type="button" (click)="closeCancel()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
       <p class="modal-body-text">
         {{ 'subscriptionPage.cancelModal.bodyPrefix' | translate }}
-        {{ store.subscription()?.planName || ('subscriptionPage.currentPlan.fallbackName' | translate) }}
+        {{ currentPlanName() || ('subscriptionPage.currentPlan.fallbackName' | translate) }}
         {{ 'subscriptionPage.cancelModal.bodyMiddle' | translate }}
-        {{ store.subscription()?.periodEndLabel || ('subscriptionPage.nextInvoice.billingDate' | translate) }}{{ 'subscriptionPage.cancelModal.bodySuffix' | translate }}
+        {{
+          store.subscription()?.periodEndLabel ||
+            ('subscriptionPage.nextInvoice.billingDate' | translate)
+        }}{{
+          (isSpecialist()
+            ? 'subscriptionPage.specialist.cancelModalSuffix'
+            : 'subscriptionPage.cancelModal.bodySuffix'
+          ) | translate
+        }}
       </p>
       <div class="modal-actions">
-        <button mat-stroked-button type="button" class="ghost-button" (click)="closeCancel()">{{ 'subscriptionPage.cancelModal.keepPlan' | translate }}</button>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="closeCancel()">
+          {{ 'subscriptionPage.cancelModal.keepPlan' | translate }}
+        </button>
         <button
           mat-flat-button
           type="button"
           class="danger-button"
           [disabled]="store.canceling()"
-          (click)="confirmCancel()">
-          {{ (store.canceling() ? 'subscriptionPage.cancelModal.canceling' : 'subscriptionPage.cancelModal.confirm') | translate }}
+          (click)="confirmCancel()"
+        >
+          {{
+            (store.canceling()
+              ? 'subscriptionPage.cancelModal.canceling'
+              : 'subscriptionPage.cancelModal.confirm'
+            ) | translate
+          }}
         </button>
       </div>
     </div>
@@ -304,13 +467,17 @@
           <h2>{{ 'subscriptionPage.paymentModal.title' | translate }}</h2>
           <p class="modal-subtitle">{{ 'subscriptionPage.paymentModal.subtitle' | translate }}</p>
         </div>
-        <button mat-icon-button type="button" (click)="closePayment()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button type="button" (click)="closePayment()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
       <p class="modal-body-text">
         {{ 'subscriptionPage.paymentModal.body' | translate }}
       </p>
       <div class="modal-actions">
-        <button mat-flat-button type="button" class="primary-button" (click)="closePayment()">{{ 'subscriptionPage.paymentModal.gotIt' | translate }}</button>
+        <button mat-flat-button type="button" class="primary-button" (click)="closePayment()">
+          {{ 'subscriptionPage.paymentModal.gotIt' | translate }}
+        </button>
       </div>
     </div>
   </div>
