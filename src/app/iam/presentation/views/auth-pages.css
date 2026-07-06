@@ -1833,6 +1833,36 @@
   color: #b4402a;
 }
 
+/* Live password-policy checklist under the password field. */
+.reg2-pwd-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin: -4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.reg2-pwd-rules li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8a827a;
+  transition: color 0.15s ease;
+}
+.reg2-pwd-rules li.is-met {
+  color: #2e7d55;
+}
+.reg2-pwd-rules mat-icon {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: #c2bbb0;
+}
+.reg2-pwd-rules li.is-met mat-icon {
+  color: #2e7d55;
+}
+
 @media (max-width: 900px) {
   .login2-card.is-register {
     grid-template-columns: 1fr;
