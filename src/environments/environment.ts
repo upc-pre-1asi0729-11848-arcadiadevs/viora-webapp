@@ -36,6 +36,14 @@ export const environment = {
     // specialist's KPIs, incoming producer requests, and performance series.
     specialistDashboard: '/specialist-dashboard',
 
+    // Specialist Intervention Marketplace read model: the signed-in specialist's
+    // inbox of incoming producer cases (PENDING), enriched across contexts.
+    interventionMarketplace: '/intervention-marketplace',
+
+    // Specialist cases read model (My Requests + Field Inspection): the signed-in
+    // specialist's pipeline across statuses with their field-inspection stage.
+    specialistCases: '/specialist-cases',
+
     // Interventions (technical-service lifecycle): composed overview + the
     // prescription/execution/outcome action endpoints.
     interventions: '/interventions',

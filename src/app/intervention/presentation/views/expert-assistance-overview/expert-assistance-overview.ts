@@ -150,6 +150,9 @@ export class ExpertAssistanceOverviewView implements OnInit {
     const alert = this.activeAlert();
     if (alert?.id != null) {
       this.store.loadSpecialists(alert.id);
+    } else {
+      // No active alert on this plot: no case to match specialists against.
+      this.store.clearSpecialists();
     }
   }
 

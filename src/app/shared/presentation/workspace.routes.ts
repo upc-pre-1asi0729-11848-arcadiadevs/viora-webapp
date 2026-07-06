@@ -12,6 +12,14 @@ const weatherPage = () =>
   import('./views/weather-page/weather-page').then((m) => m.WeatherPage);
 const comingSoonPage = () =>
   import('./views/coming-soon-page/coming-soon-page').then((m) => m.ComingSoonPage);
+const specialistMarketplace = () =>
+  import('./views/specialist-marketplace/specialist-marketplace').then((m) => m.SpecialistMarketplace);
+const specialistRequests = () =>
+  import('./views/specialist-requests/specialist-requests').then((m) => m.SpecialistRequests);
+const specialistFieldInspection = () =>
+  import('./views/specialist-field-inspection/specialist-field-inspection').then(
+    (m) => m.SpecialistFieldInspection,
+  );
 
 const workspacePlaceholderRoutes: Routes = [
   {
@@ -57,32 +65,17 @@ const workspacePlaceholderRoutes: Routes = [
   {
     path: 'specialist/marketplace',
     title: 'Intervention Marketplace',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Intervention Marketplace',
-      sectionLabel: 'Intervention Marketplace',
-      subtitle: 'Browse open producer cases and publish your service proposals — coming soon.',
-    },
+    loadComponent: specialistMarketplace,
   },
   {
     path: 'specialist/requests',
     title: 'My Requests',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'My Requests',
-      sectionLabel: 'My Requests',
-      subtitle: 'Track the producer requests assigned to you and their status — coming soon.',
-    },
+    loadComponent: specialistRequests,
   },
   {
     path: 'specialist/field-inspection',
     title: 'Field Inspection',
-    loadComponent: comingSoonPage,
-    data: {
-      pageTitle: 'Field Inspection',
-      sectionLabel: 'Field Inspection',
-      subtitle: 'Log on-site inspection findings for your active interventions — coming soon.',
-    },
+    loadComponent: specialistFieldInspection,
   },
 ];
 

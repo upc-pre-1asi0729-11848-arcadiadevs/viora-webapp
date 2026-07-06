@@ -9,7 +9,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import {
   DashboardBreadcrumbItem,
   DashboardHeader,
-} from '../../../../shared/presentation/components/dashboard-header/dashboard-header';
+} from '../../components/dashboard-header/dashboard-header';
+import { ActiveSessionService } from '../../../infrastructure/active-session.service';
 
 import {
   FAQ_ARTICLES,
@@ -35,9 +36,13 @@ interface CategoryOption {
 })
 export class SupportOverviewView {
   private readonly router = inject(Router);
+  private readonly session = inject(ActiveSessionService);
 
-  protected readonly articles = FAQ_ARTICLES;
   protected readonly legalDocuments = LEGAL_DOCUMENTS;
+  protected readonly isSpecialist = this.session.isSpecialist;
+  protected readonly articles = computed<FaqArticle[]>(() =>
+    this.isSpecialist() ? this.specialistArticles() : FAQ_ARTICLES,
+  );
 
   protected readonly activeTab = signal<SupportTab>('faq');
 
@@ -51,23 +56,33 @@ export class SupportOverviewView {
 
   protected readonly breadcrumbs = computed<DashboardBreadcrumbItem[]>(() => [
     { label: 'Support', labelKey: 'supportPage.breadcrumb.support', disabled: true },
-    { label: this.activeTab() === 'legal' ? 'Legal' : 'FAQ', labelKey: this.activeTab() === 'legal' ? 'supportPage.tabs.legal' : 'supportPage.tabs.faq', disabled: true },
+    {
+      label: this.activeTab() === 'legal' ? 'Legal' : 'FAQ',
+      labelKey: this.activeTab() === 'legal' ? 'supportPage.tabs.legal' : 'supportPage.tabs.faq',
+      disabled: true,
+    },
   ]);
 
   /** Category chips with live counts ("All articles" first). */
   protected readonly categories = computed<CategoryOption[]>(() => {
-    const counts = FAQ_CATEGORIES.map((category) => ({
+    const articleList = this.articles();
+    const sourceCategories = this.isSpecialist()
+      ? FAQ_CATEGORIES.map((category) =>
+          category === 'Expert Assistance' ? 'Intervention Marketplace' : category,
+        )
+      : FAQ_CATEGORIES;
+    const counts = sourceCategories.map((category) => ({
       label: category,
-      count: this.articles.filter((a) => a.category === category).length,
+      count: articleList.filter((a) => a.category === category).length,
     }));
-    return [{ label: 'All articles', count: this.articles.length }, ...counts];
+    return [{ label: 'All articles', count: articleList.length }, ...counts];
   });
 
   /** Articles filtered by selected category and search query. */
   protected readonly filteredArticles = computed<FaqArticle[]>(() => {
     const category = this.selectedCategory();
     const query = this.search().trim().toLowerCase();
-    return this.articles.filter((article) => {
+    return this.articles().filter((article) => {
       const matchesCategory = category === 'all' || article.category === category;
       const matchesQuery =
         query.length === 0 ||
@@ -93,8 +108,10 @@ export class SupportOverviewView {
   }
 
   protected isCategoryActive(label: string): boolean {
-    return (label === 'All articles' && this.selectedCategory() === 'all') ||
-      label === this.selectedCategory();
+    return (
+      (label === 'All articles' && this.selectedCategory() === 'all') ||
+      label === this.selectedCategory()
+    );
   }
 
   protected toggleArticle(id: string): void {
@@ -114,10 +131,34 @@ export class SupportOverviewView {
   // ----- Top cards -----
 
   protected goToExperts(): void {
-    this.router.navigate(['/expert-assistance']);
+    this.router.navigate([this.isSpecialist() ? '/specialist/marketplace' : '/expert-assistance']);
   }
 
   protected viewLegal(): void {
     this.activeTab.set('legal');
+  }
+
+  private specialistArticles(): FaqArticle[] {
+    return FAQ_ARTICLES.map((article) => {
+      if (article.category !== 'Expert Assistance') {
+        return article;
+      }
+      if (article.id === 'assistance-response') {
+        return {
+          ...article,
+          category: 'Intervention Marketplace',
+          question: 'How do incoming Intervention Marketplace cases reach me?',
+          answer:
+            'Producer requests are routed to your Intervention Marketplace when the matching workflow assigns the case to your specialist account. You can review the producer context, decline if unavailable, or submit a service proposal from the marketplace card.',
+        };
+      }
+      return {
+        ...article,
+        category: 'Intervention Marketplace',
+        question: 'Can producers request me again after a previous intervention?',
+        answer:
+          'Yes. Once the producer-specialist loop is connected to real accounts, producers can return to specialists they have worked with before when you are available and relevant for the plot, alert, and service need.',
+      };
+    });
   }
 }

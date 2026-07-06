@@ -15,7 +15,7 @@ const profileRoutes = () =>
 const billingRoutes = () =>
   import('./billing/presentation/billing.routes').then((m) => m.billingRoutes);
 const supportRoutes = () =>
-  import('./support/presentation/support.routes').then((m) => m.supportRoutes);
+  import('./shared/presentation/support.routes').then((m) => m.supportRoutes);
 const layout = () => import('./shared/presentation/components/layout/layout').then((m) => m.Layout);
 const loginPage = () =>
   import('./iam/presentation/views/login-page/login-page').then((m) => m.LoginPage);

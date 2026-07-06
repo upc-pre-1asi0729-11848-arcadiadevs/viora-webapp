@@ -1,28 +1,64 @@
-<section class="support-page">
+<section class="support-page" [class.is-specialist]="isSpecialist()">
   <app-dashboard-header
     [breadcrumbs]="breadcrumbs()"
-    [subtitle]="'supportPage.headerSubtitle' | translate"
-    [updatedLabel]="'subscriptionPage.justNow' | translate" />
+    [subtitle]="
+      (isSpecialist() ? 'supportPage.specialist.headerSubtitle' : 'supportPage.headerSubtitle')
+        | translate
+    "
+    [updatedLabel]="'subscriptionPage.justNow' | translate"
+  />
 
   <!-- Search -->
   <div class="search-bar">
     <mat-icon>search</mat-icon>
     <input
       type="text"
-      [placeholder]="'supportPage.searchPlaceholder' | translate"
+      [placeholder]="
+        (isSpecialist()
+          ? 'supportPage.specialist.searchPlaceholder'
+          : 'supportPage.searchPlaceholder'
+        ) | translate
+      "
       [value]="search()"
-      (input)="search.set($any($event.target).value); selectTab('faq')" />
+      (input)="search.set($any($event.target).value); selectTab('faq')"
+    />
   </div>
 
   <!-- Top cards -->
   <div class="top-cards">
     <mat-card class="top-card">
-      <span class="top-icon"><mat-icon>groups</mat-icon></span>
-      <h2 class="top-title">{{ 'supportPage.expert.title' | translate }}</h2>
-      <p class="top-sub">{{ 'supportPage.expert.subtitle' | translate }}</p>
+      <span class="top-icon"
+        ><mat-icon>{{ isSpecialist() ? 'storefront' : 'groups' }}</mat-icon></span
+      >
+      <h2 class="top-title">
+        {{
+          (isSpecialist() ? 'supportPage.specialist.marketplace.title' : 'supportPage.expert.title')
+            | translate
+        }}
+      </h2>
+      <p class="top-sub">
+        {{
+          (isSpecialist()
+            ? 'supportPage.specialist.marketplace.subtitle'
+            : 'supportPage.expert.subtitle'
+          ) | translate
+        }}
+      </p>
       <div class="top-foot">
-        <span class="tag tag--green">{{ 'supportPage.expert.priority' | translate }}</span>
-        <button mat-stroked-button type="button" class="ghost-button" (click)="goToExperts()">{{ 'supportPage.expert.button' | translate }}</button>
+        <span class="tag tag--green">{{
+          (isSpecialist()
+            ? 'supportPage.specialist.marketplace.tag'
+            : 'supportPage.expert.priority'
+          ) | translate
+        }}</span>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="goToExperts()">
+          {{
+            (isSpecialist()
+              ? 'supportPage.specialist.marketplace.button'
+              : 'supportPage.expert.button'
+            ) | translate
+          }}
+        </button>
       </div>
     </mat-card>
 
@@ -31,8 +67,12 @@
       <h2 class="top-title">{{ 'supportPage.legal.title' | translate }}</h2>
       <p class="top-sub">{{ 'supportPage.legal.subtitle' | translate }}</p>
       <div class="top-foot">
-        <span class="tag tag--muted">{{ 'supportPage.legal.count' | translate: { count: legalDocuments.length } }}</span>
-        <button mat-stroked-button type="button" class="ghost-button" (click)="viewLegal()">{{ 'supportPage.legal.view' | translate }}</button>
+        <span class="tag tag--muted">{{
+          'supportPage.legal.count' | translate: { count: legalDocuments.length }
+        }}</span>
+        <button mat-stroked-button type="button" class="ghost-button" (click)="viewLegal()">
+          {{ 'supportPage.legal.view' | translate }}
+        </button>
       </div>
     </mat-card>
   </div>
@@ -44,7 +84,8 @@
       role="tab"
       class="support-tab"
       [class.is-active]="activeTab() === 'faq'"
-      (click)="selectTab('faq')">
+      (click)="selectTab('faq')"
+    >
       {{ 'supportPage.tabs.faq' | translate }}
     </button>
     <button
@@ -52,7 +93,8 @@
       role="tab"
       class="support-tab"
       [class.is-active]="activeTab() === 'legal'"
-      (click)="selectTab('legal')">
+      (click)="selectTab('legal')"
+    >
       {{ 'supportPage.tabs.legal' | translate }}
     </button>
   </nav>
@@ -70,7 +112,8 @@
                 type="button"
                 class="category-item"
                 [class.is-active]="isCategoryActive(category.label)"
-                (click)="selectCategory(category.label)">
+                (click)="selectCategory(category.label)"
+              >
                 <span class="category-label">{{ category.label }}</span>
                 <span class="category-count">{{ category.count }}</span>
               </button>
@@ -83,7 +126,9 @@
       <mat-card class="section-card articles-card">
         <div class="articles-head">
           <h2 class="section-title">{{ currentCategoryLabel() }}</h2>
-          <p class="section-subtitle">{{ 'supportPage.articlesCount' | translate: { count: filteredArticles().length } }}</p>
+          <p class="section-subtitle">
+            {{ 'supportPage.articlesCount' | translate: { count: filteredArticles().length } }}
+          </p>
         </div>
 
         <div class="article-list">
@@ -91,7 +136,9 @@
             <div class="article" [class.is-open]="expandedId() === article.id">
               <button type="button" class="article-head" (click)="toggleArticle(article.id)">
                 <span class="article-q">{{ article.question }}</span>
-                <mat-icon>{{ expandedId() === article.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+                <mat-icon>{{
+                  expandedId() === article.id ? 'expand_less' : 'expand_more'
+                }}</mat-icon>
               </button>
               @if (expandedId() === article.id) {
                 <p class="article-answer">{{ article.answer }}</p>
@@ -111,17 +158,26 @@
       @for (doc of legalDocuments; track doc.id) {
         <mat-card class="section-card legal-card">
           <div class="legal-head">
-            <span class="legal-icon"><mat-icon>{{ doc.icon }}</mat-icon></span>
+            <span class="legal-icon"
+              ><mat-icon>{{ doc.icon }}</mat-icon></span
+            >
             <div>
               <h2 class="legal-title">{{ doc.title }}</h2>
               <p class="legal-summary">{{ doc.summary }}</p>
             </div>
           </div>
           <div class="legal-foot">
-            <button mat-stroked-button type="button" class="ghost-button" (click)="readFullDocument(doc)">
+            <button
+              mat-stroked-button
+              type="button"
+              class="ghost-button"
+              (click)="readFullDocument(doc)"
+            >
               {{ 'supportPage.readFull' | translate }}
             </button>
-            <span class="legal-updated">{{ 'supportPage.lastUpdated' | translate: { date: doc.lastUpdated } }}</span>
+            <span class="legal-updated">{{
+              'supportPage.lastUpdated' | translate: { date: doc.lastUpdated }
+            }}</span>
           </div>
         </mat-card>
       }
@@ -136,9 +192,13 @@
       <div class="modal-head">
         <div>
           <h2>{{ doc.title }}</h2>
-          <p class="modal-subtitle">{{ 'supportPage.lastUpdated' | translate: { date: doc.lastUpdated } }}</p>
+          <p class="modal-subtitle">
+            {{ 'supportPage.lastUpdated' | translate: { date: doc.lastUpdated } }}
+          </p>
         </div>
-        <button mat-icon-button type="button" (click)="closeDocument()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button type="button" (click)="closeDocument()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
 
       <div class="doc-body">
@@ -153,7 +213,9 @@
       </div>
 
       <div class="modal-actions">
-        <button mat-flat-button type="button" class="primary-button" (click)="closeDocument()">{{ 'supportPage.close' | translate }}</button>
+        <button mat-flat-button type="button" class="primary-button" (click)="closeDocument()">
+          {{ 'supportPage.close' | translate }}
+        </button>
       </div>
     </div>
   </div>

@@ -78,6 +78,7 @@
     "profile": {
       "personalTitle": "Información personal",
       "personalSubtitle": "Tu nombre y datos de contacto tal como los ven los especialistas.",
+      "specialistPersonalSubtitle": "Tu nombre y datos de contacto tal como los ven los productores.",
       "yourName": "Tu nombre",
       "jobTitleFallback": "Cargo",
       "uploading": "Subiendo…",
@@ -91,15 +92,71 @@
       "saveChanges": "Guardar cambios",
       "marketplaceTitle": "Visibilidad en el marketplace",
       "marketplaceSubtitle": "Se muestra en tu tarjeta de perfil cuando los especialistas reciben tus solicitudes de asistencia.",
+      "specialistMarketplaceSubtitle": "Se muestra en tu tarjeta de especialista cuando los productores solicitan asistencia experta.",
       "groveFocus": "Enfoque del cultivo",
       "groveFocusPlaceholder": "ej. Producción de aceite de oliva",
+      "specialtyArea": "Área de especialidad",
+      "specialtyAreaPlaceholder": "ej. Especialista fitosanitario",
       "location": "Ubicación",
       "locationPlaceholder": "ej. Valle de Ica, Perú",
+      "serviceArea": "Área de servicio",
+      "serviceAreaPlaceholder": "ej. Valle de Ica, Perú",
+      "serviceTags": "Tags de servicio",
+      "serviceTagsPlaceholder": "p. ej. Monitoreo de Xylella, Síntomas foliares, Inspección de campo",
+      "serviceTagsHint": "Elige las especialidades que te describen. Te posicionan frente a las alertas de los productores.",
+      "tags": {
+        "xylella": "Monitoreo de Xylella",
+        "phytosanitary": "Inspección fitosanitaria",
+        "biological": "Control biológico",
+        "pest": "Plagas y síntomas foliares",
+        "treatment": "Tratamiento de plagas",
+        "inspection": "Inspección de campo",
+        "ndvi": "Diagnóstico de bajo vigor / NDVI",
+        "water": "Estrés hídrico y riego",
+        "climate": "Riesgo climático y fenológico",
+        "chill": "Déficit de frío",
+        "nutritional": "Deficiencia nutricional"
+      },
+      "baseLocation": "Ubicación base",
+      "baseLocationHint": "Fija el punto desde el que trabajas. Determina hasta dónde te ven los productores en el marketplace.",
+      "setOnMap": "Fijar en el mapa",
+      "locationSet": "Ubicación fijada",
+      "locationUnset": "Aún sin ubicación",
+      "availability": "Disponibilidad",
+      "availabilitySelect": "Selecciona disponibilidad",
+      "availabilityToday": "Disponible hoy",
+      "availabilityTomorrow": "Disponible mañana",
+      "availabilityWeek": "Disponible esta semana",
+      "availabilityUnavailable": "No disponible",
+      "latitude": "Latitud base",
+      "latitudePlaceholder": "p. ej. -18.0146",
+      "longitude": "Longitud base",
+      "longitudePlaceholder": "p. ej. -70.2536",
+      "serviceRadius": "Radio de servicio (km)",
+      "serviceRadiusPlaceholder": "p. ej. 150",
+      "serviceRadiusHint": "Hasta dónde te desplazas. Los productores dentro de este radio te ven primero; más allá igual apareces, con menor prioridad.",
+      "successRate": "Tasa de éxito",
+      "cases": "Casos",
+      "distance": "Distancia",
+      "request": "Solicitar",
+      "noDataYet": "No data yet",
+      "proBadgeTitle": "Badge Pro del marketplace",
+      "proBadgeSubtitle": "Controla el tag verificado Pro que se muestra en tu tarjeta de especialista.",
+      "proBadgeNoData": "La información de suscripción aún no está disponible, así que no se puede confirmar la elegibilidad del badge.",
+      "activateBadge": "Activar badge",
+      "proBadgeToggle": "Mostrar el badge Pro en mi tarjeta",
+      "proBadgeReady": "Tu plan Pro te permite mostrar el badge verificado Pro a los productores.",
+      "proBadgeLockedTitle": "Sube a Specialist Pro",
+      "proBadgeLockedBody": "Las cuentas Pro pueden mostrar el badge verificado Pro para ganar visibilidad en las recomendaciones de productores.",
+      "viewProPlan": "Ver plan Pro",
+      "upgradeToPro": "Suscríbete a Pro",
       "totalArea": "Área total cultivada",
       "totalAreaHint": "Sumada automáticamente desde tus parcelas en Mis Parcelas.",
       "previewCaption": "Cómo ven los especialistas tu solicitud",
+      "specialistPreviewCaption": "Cómo ven los productores tu tarjeta de especialista",
       "respond": "Responder",
-      "previewNote": "Esta vista previa se actualiza en vivo mientras editas. Es exactamente lo que ve un especialista cuando envías una solicitud de asistencia desde Asistencia Experta."
+      "previewNote": "Esta vista previa se actualiza en vivo mientras editas. Es exactamente lo que ve un especialista cuando envías una solicitud de asistencia desde Asistencia Experta.",
+      "specialistPreviewNote": "Esta vista previa usa solo campos reales del perfil. Las métricas, tags, disponibilidad y distancia del marketplace permanecen vacías hasta que el backend las entregue."
     },
     "referrals": {
       "title": "Referidos",
@@ -245,6 +302,28 @@
       "subtitle": "Tu tarjeta se maneja de forma segura con MercadoPago.",
       "body": "Viora nunca almacena los datos completos de tu tarjeta. Tu método de pago se actualiza automáticamente la próxima vez que completes un pago a través del checkout seguro de MercadoPago.",
       "gotIt": "Entendido"
+    },
+    "specialist": {
+      "headerSubtitle": "Administra tu suscripción de especialista, visibilidad e historial de facturación.",
+      "plansSubtitle": "Compara niveles para visibilidad en marketplace y flujos de intervención.",
+      "plusTagline": "Empieza a recibir oportunidades de productores mejor calificadas.",
+      "proTagline": "Mayor visibilidad en marketplace con badge verificado Pro.",
+      "marketplaceAccess": "Oportunidades del marketplace",
+      "proBadge": "Badge verificado Pro",
+      "proBadgeReady": "Disponible con Pro",
+      "proBadgeLocked": "Requiere Specialist Pro",
+      "noDataYet": "No data yet",
+      "switchToPro": "Cambiar a Pro",
+      "cancelNote": "Perderás acceso a visibilidad en marketplace, prescripciones digitales y herramientas de conexión con productores al final del período de facturación.",
+      "cancelModalSuffix": ", luego perderás visibilidad en marketplace, herramientas de prescripción y beneficios de conexión con productores.",
+      "features": {
+        "opportunityFeed": "Feed de oportunidades para necesidades activas de productores",
+        "prescriptions": "Prescripciones digitales y herramientas de evaluación en campo",
+        "visibility": "Visibilidad dentro del ecosistema Viora",
+        "fieldContext": "Acceso a contexto de campo e indicadores de riesgo satelitales",
+        "fasterConnection": "Conexión más rápida con productores que necesitan intervención",
+        "proBadge": "Badge verificado Pro para mayor visibilidad en marketplace"
+      }
     }
   },
   "assistance": {
@@ -276,7 +355,10 @@
       "yourPlot": "tu parcela",
       "candidates": "{{count}} candidatos",
       "bestMatch": "Mejor coincidencia",
-      "request": "Solicitar"
+      "request": "Solicitar",
+      "loading": "Buscando especialistas cerca de esta parcela…",
+      "empty": "Aún no hay especialistas disponibles cerca de esta parcela. Vuelve a intentarlo más tarde a medida que se sumen especialistas.",
+      "noAlert": "Selecciona una parcela con una alerta activa para ver especialistas recomendados."
     },
     "requests": {
       "title": "Mis solicitudes de asistencia",
@@ -705,7 +787,17 @@
     "readFull": "Leer documento completo",
     "lastUpdated": "Última actualización {{date}}",
     "footnote": "Este resumen se proporciona por conveniencia dentro de la app Viora.",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "specialist": {
+      "headerSubtitle": "Encuentra respuestas sobre tu flujo de marketplace o revisa los acuerdos legales de tu cuenta.",
+      "searchPlaceholder": "Busca artículos de ayuda, ej. \"casos de productores\" o \"propuestas de servicio\"",
+      "marketplace": {
+        "title": "Intervention Marketplace",
+        "subtitle": "Revisa casos entrantes de productores, envía propuestas y gestiona oportunidades de intervención en campo.",
+        "tag": "Casos",
+        "button": "Abrir marketplace"
+      }
+    }
   },
   "quickActions": {
     "title": "Acciones rápidas",
@@ -1210,6 +1302,270 @@
       "legend": "Casos aceptados",
       "empty": "Aún no hay casos aceptados para graficar."
     }
+  },
+  "specialistMarketplace": {
+    "subtitle": "Casos entrantes enrutados a ti — revisa el contexto de la alerta y responde antes de que expiren.",
+    "noDataYet": "Sin datos aún",
+    "empty": "No hay casos entrantes por ahora. Las nuevas solicitudes de productores enrutadas a ti aparecerán aquí.",
+    "emptyError": "No pudimos acceder al marketplace. Tus casos entrantes aparecerán aquí cuando el servicio esté disponible.",
+    "breadcrumb": {
+      "marketplace": "Marketplace de intervención",
+      "overview": "Resumen"
+    },
+    "kpis": {
+      "newCases": "Casos nuevos",
+      "new": "nuevos",
+      "newCasesFoot": "Enrutados a ti y en espera de respuesta.",
+      "contact": "Contacto",
+      "public": "Público",
+      "contactFoot": "Así te ven los productores en el marketplace.",
+      "viewProfile": "Ver perfil de contacto",
+      "acceptance": "Tasa de aceptación",
+      "active": "Casos activos",
+      "activeFoot": "Intervenciones actualmente en curso."
+    },
+    "producers": {
+      "title": "Productores encontrados",
+      "subtitle": "Casos entrantes que esperan tu respuesta.",
+      "count": "{{count}} casos"
+    },
+    "severity": {
+      "CRITICAL": "Crítica",
+      "HIGH": "Alta",
+      "MEDIUM": "Media",
+      "LOW": "Baja"
+    },
+    "card": {
+      "new": "Nuevo",
+      "producer": "Productor",
+      "producerFallback": "Productor",
+      "production": "producción",
+      "ha": "ha",
+      "plots": "{{count}} parcelas",
+      "ndvi": "NDVI",
+      "decline": "Rechazar",
+      "review": "Revisar caso"
+    },
+    "log": {
+      "title": "Registro de casos entrantes",
+      "subtitle": "Un índice rápido de los casos enrutados a ti.",
+      "viewPipeline": "Ir a mis solicitudes",
+      "colRequest": "Solicitud",
+      "colProducer": "Productor",
+      "colProblem": "Problema",
+      "colReceived": "Recibido",
+      "colAction": "Acción",
+      "review": "Revisar",
+      "empty": "Aún no hay casos para listar."
+    },
+    "modal": {
+      "title": "Envía tu propuesta",
+      "subtitle": "Responde a este caso con una propuesta de servicio. El productor decide si la acepta.",
+      "serviceTitle": "Título del servicio",
+      "duration": "Duración estimada",
+      "scope": "Alcance del trabajo",
+      "scopeHint": "Una tarea por línea.",
+      "amount": "Monto",
+      "currency": "Moneda",
+      "details": "Detalles de la propuesta",
+      "cancel": "Cancelar",
+      "send": "Enviar propuesta",
+      "sending": "Enviando…"
+    }
+  },
+  "specialistRequests": {
+    "subtitle": "Tu flujo de casos — desde las propuestas que enviaste hasta las intervenciones que cerraste.",
+    "noDataYet": "Sin datos aún",
+    "empty": "Aún no tienes casos. Cuando respondas una solicitud del marketplace, aparecerá aquí.",
+    "emptyError": "No pudimos acceder a tus solicitudes. Aparecerán aquí cuando el servicio esté disponible.",
+    "sentAgo": "Enviada",
+    "acceptedAgo": "Aceptada",
+    "viewProposal": "Ver propuesta",
+    "viewSummary": "Ver resumen",
+    "followUp": "Continuar",
+    "goToFieldInspection": "Ir a inspección de campo",
+    "breadcrumb": {
+      "requests": "Mis Solicitudes",
+      "overview": "Resumen"
+    },
+    "kpis": {
+      "sent": "Propuestas enviadas",
+      "sentFoot": "A la espera de la respuesta del productor.",
+      "inProgress": "En progreso",
+      "inProgressFoot": "Casos aceptados en los que trabajas.",
+      "closed": "Cerradas este mes",
+      "closedFoot": "Intervenciones finalizadas.",
+      "acceptance": "Tasa de aceptación"
+    },
+    "awaiting": {
+      "title": "Esperando respuesta",
+      "count": "{{count}} pendientes",
+      "hint": "Propuestas que enviaste y el productor aún no ha respondido."
+    },
+    "inProgress": {
+      "title": "En progreso",
+      "count": "{{count}} activas",
+      "hint": "Casos aceptados — contínualos desde Inspección de campo."
+    },
+    "closed": {
+      "title": "Cerradas y rechazadas",
+      "count": "{{count}} casos",
+      "hint": "Intervenciones completadas y propuestas que el productor rechazó."
+    },
+    "status": {
+      "PROPOSAL_RECEIVED": "Propuesta enviada",
+      "AWAITING_RESPONSE": "Esperando respuesta",
+      "ACCEPTED": "En progreso",
+      "CLOSED": "Cerrada",
+      "DECLINED": "Rechazada"
+    },
+    "stage": {
+      "NEEDS_VISIT": "Requiere visita",
+      "FINDINGS_LOGGED": "Hallazgos registrados",
+      "PRESCRIBED": "Prescrita",
+      "CLOSED": "Cerrada"
+    },
+    "severity": {
+      "CRITICAL": "Crítica",
+      "HIGH": "Alta",
+      "MEDIUM": "Media",
+      "LOW": "Baja"
+    },
+    "detail": {
+      "status": "Estado",
+      "severity": "Severidad",
+      "problem": "Problema",
+      "location": "Ubicación",
+      "cost": "Costo propuesto",
+      "proposedDate": "Fecha propuesta"
+    }
+  },
+  "specialistFieldInspection": {
+    "subtitle": "Tu trabajo en campo — inspecciona la parcela, registra hallazgos y emite la prescripción del tratamiento.",
+    "empty": "No hay casos activos para inspeccionar. Las intervenciones aceptadas aparecerán aquí.",
+    "emptyError": "No pudimos acceder a tus casos de campo. Aparecerán aquí cuando el servicio esté disponible.",
+    "acceptedAgo": "Aceptada",
+    "awaitingProducer": "A la espera de que el productor aplique el tratamiento e informe.",
+    "startInspection": "Iniciar inspección",
+    "writePrescription": "Escribir prescripción",
+    "viewRecord": "Ver registro",
+    "cancel": "Cancelar",
+    "saving": "Guardando…",
+    "breadcrumb": {
+      "field": "Inspección de Campo",
+      "active": "Casos activos"
+    },
+    "kpis": {
+      "needsVisit": "Requiere visita",
+      "needsVisitFoot": "Casos aceptados a la espera de tu inspección.",
+      "pending": "Prescripción pendiente",
+      "pendingFoot": "Hallazgos registrados, listos para prescribir.",
+      "prescribed": "Prescritas",
+      "prescribedFoot": "A la espera de la aplicación del productor.",
+      "closed": "Cerradas",
+      "closedFoot": "Intervenciones finalizadas."
+    },
+    "needsVisit": {
+      "title": "Requiere visita de campo",
+      "count": "{{count}} por inspeccionar",
+      "hint": "Casos aceptados — registra lo que encuentres en sitio."
+    },
+    "pending": {
+      "title": "Prescripción pendiente",
+      "count": "{{count}} por prescribir",
+      "hint": "Los hallazgos están registrados — emite el plan de tratamiento."
+    },
+    "prescribed": {
+      "title": "Prescritas · esperando productor",
+      "count": "{{count}} activas",
+      "hint": "El productor aplica el tratamiento e informa el resultado."
+    },
+    "closed": {
+      "title": "Cerradas",
+      "count": "{{count}} casos",
+      "hint": "Intervenciones que completaron todo su ciclo."
+    },
+    "stage": {
+      "NEEDS_VISIT": "Requiere visita",
+      "FINDINGS_LOGGED": "Hallazgos registrados",
+      "PRESCRIBED": "Prescrita",
+      "CLOSED": "Cerrada"
+    },
+    "severity": {
+      "CRITICAL": "Crítica",
+      "HIGH": "Alta",
+      "MEDIUM": "Media",
+      "LOW": "Baja"
+    },
+    "findingType": {
+      "PHYTOSANITARY": "Fitosanitario",
+      "NUTRITIONAL": "Nutricional",
+      "WATER_STRESS": "Estrés hídrico",
+      "OTHER": "Otro"
+    },
+    "incidence": {
+      "LOW": "Baja",
+      "MEDIUM": "Media",
+      "CRITICAL": "Crítica"
+    },
+    "applicationMethod": {
+      "HYDRAULIC_SPRAYING": "Aspersión hidráulica",
+      "DRIP_IRRIGATION": "Riego por goteo",
+      "FOLIAR": "Foliar",
+      "SOIL_DRENCH": "Drench al suelo",
+      "OTHER": "Otro"
+    },
+    "ppe": {
+      "MASK": "Mascarilla",
+      "GLOVES": "Guantes",
+      "GOGGLES": "Gafas",
+      "COVERALLS": "Overol"
+    },
+    "findingsModal": {
+      "title": "Registrar hallazgos de inspección",
+      "findingType": "Tipo de hallazgo",
+      "incidence": "Nivel de incidencia",
+      "description": "Descripción técnica",
+      "descriptionPlaceholder": "Describe lo que observaste en sitio — síntomas, área afectada, distribución…",
+      "submit": "Guardar hallazgos"
+    },
+    "prescriptionModal": {
+      "title": "Escribir prescripción del tratamiento",
+      "method": "Método de aplicación",
+      "phi": "Intervalo pre-cosecha (días)",
+      "phiPlaceholder": "p. ej. 14",
+      "sprayVolume": "Volumen de aspersión",
+      "sprayUnit": "Unidad de volumen",
+      "ppe": "Equipo de protección requerido",
+      "products": "Productos",
+      "addProduct": "Agregar producto",
+      "productName": "Nombre del producto",
+      "dose": "Dosis",
+      "unit": "Unidad",
+      "sessions": "Sesiones",
+      "recommendations": "Recomendaciones del agrónomo",
+      "recommendationsPlaceholder": "Momento de aplicación, notas de seguridad, seguimiento…",
+      "submit": "Emitir prescripción"
+    },
+    "detail": {
+      "stage": "Etapa",
+      "severity": "Severidad",
+      "problem": "Problema",
+      "location": "Ubicación",
+      "updated": "Última actualización",
+      "note": "Este caso ya fue prescrito. El productor aplica el tratamiento e informa el resultado — la intervención se cierra cuando se confirma el impacto."
+    }
+  },
+  "locationPicker": {
+    "title": "Fija tu ubicación",
+    "subtitle": "Busca o haz clic en el mapa para ubicar tu base. La usaremos para emparejarte con productores cercanos.",
+    "searchPlaceholder": "Busca una ciudad, valle o región…",
+    "search": "Buscar",
+    "resolving": "Resolviendo ubicación…",
+    "pickHint": "Haz clic en el mapa o arrastra el marcador para elegir tu base.",
+    "unavailable": "El mapa no está disponible por ahora. Inténtalo de nuevo más tarde.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar ubicación"
   },
   "sidebar": {
     "brand": "Viora Dashboard",
