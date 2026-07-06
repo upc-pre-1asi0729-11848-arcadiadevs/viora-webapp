@@ -99,17 +99,6 @@
                 <mat-icon>close</mat-icon> {{ 'caseDetail.proposal.decline' | translate }}
               </button>
             </div>
-
-            <!-- Demo aid: there is no specialist-facing app yet, so let the producer
-                 trigger the specialist's proposal to exercise the full case flow. -->
-            <button
-              mat-flat-button
-              type="button"
-              class="primary-button block"
-              [disabled]="store.loading().case"
-              (click)="simulateResponse()">
-              <mat-icon>bolt</mat-icon> {{ 'caseDetail.proposal.simulate' | translate }}
-            </button>
           } @else if (phase() === 'declined') {
             <div class="pending-block">
               <span class="pending-icon pending-icon--muted"><mat-icon>search</mat-icon></span>

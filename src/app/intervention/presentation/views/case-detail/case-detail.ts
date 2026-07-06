@@ -323,17 +323,6 @@ export class CaseDetailView implements OnInit {
       .subscribe({ error: () => undefined });
   }
 
-  /**
-   * Simulates the specialist submitting a proposal (no specialist app exists yet),
-   * moving the case from "awaiting" to "proposal received" in-place.
-   */
-  protected simulateResponse(): void {
-    const code = this.caseCode();
-    if (code) {
-      this.store.simulateSpecialistResponse(code);
-    }
-  }
-
   // ----- Decline modal -----
 
   protected openDecline(): void {

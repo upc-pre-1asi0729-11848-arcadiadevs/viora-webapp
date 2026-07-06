@@ -309,42 +309,6 @@ export class InterventionStore {
   }
 
   /**
-   * Simulates the specialist responding to a pending request (submits a proposal
-   * on their behalf), moving it to PROPOSAL_RECEIVED. Refreshes the plot history
-   * and reloads the case artifacts so the new proposal shows in-place.
-   * @param {string} code the request reference code
-   * @param {(ok: boolean) => void} [onDone] callback with the outcome
-   */
-  simulateSpecialistResponse(code: string, onDone?: (ok: boolean) => void): void {
-    const request = this.findRequestByCode(code);
-    if (!request || request.id == null) {
-      onDone?.(false);
-      return;
-    }
-
-    this.setLoading('case', true);
-    this.interventionApi
-      .simulateSpecialistResponse(request.id)
-      .pipe(
-        take(1),
-        finalize(() => this.setLoading('case', false)),
-      )
-      .subscribe({
-        next: (updated) => {
-          if (request.plotId != null) {
-            this.loadRequests(request.plotId);
-          }
-          this.loadCaseArtifacts(updated);
-          onDone?.(true);
-        },
-        error: (error) => {
-          this.registerError(error);
-          onDone?.(false);
-        },
-      });
-  }
-
-  /**
    * Sends an intervention request to a specialist. On success the plot history is
    * refreshed and the created request is passed to the callback (for the success
    * modal).

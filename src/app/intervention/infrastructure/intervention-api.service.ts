@@ -184,22 +184,6 @@ export class InterventionApiService extends BaseApi {
       .pipe(map((resource) => SpecialistContactAssembler.toEntityFromResource(resource)));
   }
 
-  /**
-   * Simulates the specialist responding to a request by submitting a proposal on
-   * their behalf (there is no specialist-facing app yet). Moves the request to
-   * PROPOSAL_RECEIVED so the full case flow can be demoed end-to-end.
-   * @param {number|string} requestId - Request to generate a proposal for.
-   * @returns {Observable<InterventionRequest>}
-   */
-  simulateSpecialistResponse(requestId: number | string): Observable<InterventionRequest> {
-    return this.http
-      .post<InterventionRequestResource>(
-        `${this.requestsEndpoint.resourceUrl(requestId)}/simulate-specialist-response`,
-        {},
-      )
-      .pipe(map((resource) => InterventionRequestAssembler.toEntityFromResource(resource)));
-  }
-
   // ----- Interventions (technical-service lifecycle) -----
 
   /**
