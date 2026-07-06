@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -229,11 +229,39 @@ export class RegisterPage implements OnDestroy {
     return this.confirmPassword().length > 0 && this.password() !== this.confirmPassword();
   }
 
+  /** Conventional password policy, evaluated live for the requirements hint. */
+  protected readonly passwordRules = computed(() => {
+    const value = this.password();
+    return {
+      length: value.length >= 8,
+      upper: /[A-Z]/.test(value),
+      lower: /[a-z]/.test(value),
+      number: /[0-9]/.test(value),
+      special: /[^A-Za-z0-9]/.test(value),
+    };
+  });
+
+  /** The requirements list rendered under the password field. */
+  protected readonly passwordChecklist = computed(() => {
+    const rules = this.passwordRules();
+    return [
+      { met: rules.length, labelKey: 'auth.fields.pwdRules.length' },
+      { met: rules.upper, labelKey: 'auth.fields.pwdRules.upper' },
+      { met: rules.lower, labelKey: 'auth.fields.pwdRules.lower' },
+      { met: rules.number, labelKey: 'auth.fields.pwdRules.number' },
+      { met: rules.special, labelKey: 'auth.fields.pwdRules.special' },
+    ];
+  });
+
+  protected readonly passwordValid = computed<boolean>(() =>
+    Object.values(this.passwordRules()).every(Boolean),
+  );
+
   protected get canSubmit(): boolean {
     return (
       this.fullName().trim().length > 1 &&
       this.email().trim().length > 3 &&
-      this.password().length >= 8 &&
+      this.passwordValid() &&
       this.password() === this.confirmPassword() &&
       (!this.phoneRequired || this.phone().trim().length > 0) &&
       !this.auth.busy()

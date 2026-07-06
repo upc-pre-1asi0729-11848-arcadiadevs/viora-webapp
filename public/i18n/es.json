@@ -20,6 +20,13 @@
       "confirmPassword": "Confirmar contraseña",
       "confirmPasswordPlaceholder": "Repite tu contraseña",
       "passwordsMismatch": "Las contraseñas no coinciden.",
+      "pwdRules": {
+        "length": "Al menos 8 caracteres",
+        "upper": "Una letra mayúscula",
+        "lower": "Una letra minúscula",
+        "number": "Un número",
+        "special": "Un carácter especial"
+      },
       "referralCode": "Código de referido (opcional)",
       "referralCodePlaceholder": "ej. VIORA-4JYFFQ",
       "referralHint": "¿Te invitó un socio? Su código lo recompensa cuando te unes."
