@@ -15,6 +15,7 @@ export interface SpecialistCandidateResource {
   tags: string[] | null;
   availability: string | null;
   available: boolean | null;
+  photoUrl: string | null;
 }
 
 /** Maps the backend availability enum to the local presentation availability. */
@@ -47,6 +48,7 @@ export class SpecialistCandidateAssembler {
       distanceKm: resource.distanceKm ?? 0,
       tags: resource.tags ?? [],
       availability: toAvailability(resource),
+      photoUrl: resource.photoUrl ?? '',
       bestMatch,
     });
   }

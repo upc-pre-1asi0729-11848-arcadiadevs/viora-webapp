@@ -239,6 +239,42 @@ export class InterventionApiService extends BaseApi {
       );
   }
 
+  /**
+   * Fetches a specialist's full public profile as a card entity (name, role,
+   * avatar, stats, availability) so the case detail can show the specialist
+   * reliably even when the recommendation list isn't loaded.
+   */
+  getSpecialistProfileCard(id: number | string): Observable<SpecialistCandidate> {
+    return this.http
+      .get<{
+        id: number | null;
+        fullName: string | null;
+        role: string | null;
+        successRate: number | null;
+        caseCount: number | null;
+        distanceKm: number | null;
+        tags: string[] | null;
+        availability: string | null;
+        photoUrl: string | null;
+      }>(this.specialistsEndpoint.resourceUrl(id))
+      .pipe(
+        map((resource) =>
+          SpecialistCandidateAssembler.toEntityFromResource({
+            id: resource.id ?? null,
+            name: resource.fullName ?? '',
+            role: resource.role ?? null,
+            successRate: resource.successRate ?? null,
+            caseCount: resource.caseCount ?? null,
+            distanceKm: resource.distanceKm ?? null,
+            tags: resource.tags ?? null,
+            availability: resource.availability ?? null,
+            available: null,
+            photoUrl: resource.photoUrl ?? null,
+          }),
+        ),
+      );
+  }
+
   /** Certifies the field application of a prescription (producer). */
   certifyApplication(request: CertifyApplicationRequest): Observable<unknown> {
     return this.http.post(this.executionsEndpoint.collectionUrl, request);

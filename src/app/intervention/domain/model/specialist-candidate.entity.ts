@@ -15,6 +15,8 @@ export interface SpecialistCandidateProps {
   distanceKm?: number;
   tags?: string[];
   availability?: SpecialistAvailability;
+  /** Avatar URL; empty falls back to the initials monogram. */
+  photoUrl?: string;
   /** Highlights the single best-ranked candidate for the alert. */
   bestMatch?: boolean;
 }
@@ -35,6 +37,7 @@ export class SpecialistCandidate {
   readonly distanceKm: number;
   readonly tags: string[];
   readonly availability: SpecialistAvailability;
+  readonly photoUrl: string;
   readonly bestMatch: boolean;
 
   constructor({
@@ -46,6 +49,7 @@ export class SpecialistCandidate {
     distanceKm = 0,
     tags = [],
     availability = 'week',
+    photoUrl = '',
     bestMatch = false,
   }: SpecialistCandidateProps = {}) {
     this.id = id;
@@ -56,6 +60,7 @@ export class SpecialistCandidate {
     this.distanceKm = distanceKm;
     this.tags = tags;
     this.availability = availability;
+    this.photoUrl = photoUrl;
     this.bestMatch = bestMatch;
   }
 

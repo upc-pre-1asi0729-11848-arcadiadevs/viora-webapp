@@ -30,15 +30,21 @@
         <div class="kpi-head">
           <h2>{{ 'caseDetail.kpi.specialistTitle' | translate }}</h2>
         </div>
-        @if (specialist()) {
+        @if (specialist(); as sp) {
           <div class="mini-specialist">
-            <span class="avatar avatar--sm">{{ specialist()!.initials }}</span>
+            @if (sp.photoUrl) {
+              <img class="avatar avatar--sm" [src]="sp.photoUrl" alt="" />
+            } @else {
+              <span class="avatar avatar--sm">{{ sp.initials }}</span>
+            }
             <div class="identity-text">
-              <span class="specialist-name">{{ specialist()!.name }}</span>
-              <span class="specialist-role">{{ specialist()!.role }}</span>
+              <span class="specialist-name">{{ sp.name }}</span>
+              <span class="specialist-role">{{ sp.role }}</span>
             </div>
           </div>
-          <p class="kpi-foot">{{ specialist()!.distanceLabel }} · {{ specialist()!.availabilityLabel }}</p>
+          <p class="kpi-foot">{{ sp.distanceLabel }} · {{ sp.availabilityLabel }}</p>
+        } @else {
+          <p class="kpi-foot">{{ 'caseDetail.kpi.specialistPending' | translate }}</p>
         }
       </mat-card>
 
@@ -169,12 +175,16 @@
             <button mat-stroked-button type="button" class="ghost-button ghost-button--sm">{{ 'caseDetail.specialistProfile.viewFull' | translate }}</button>
           </div>
 
-          @if (specialist()) {
+          @if (specialist(); as sp) {
             <div class="profile-head">
-              <span class="avatar">{{ specialist()!.initials }}</span>
+              @if (sp.photoUrl) {
+                <img class="avatar" [src]="sp.photoUrl" alt="" />
+              } @else {
+                <span class="avatar">{{ sp.initials }}</span>
+              }
               <div class="identity-text">
-                <span class="specialist-name">{{ specialist()!.name }}</span>
-                <span class="specialist-role">{{ specialist()!.role }}</span>
+                <span class="specialist-name">{{ sp.name }}</span>
+                <span class="specialist-role">{{ sp.role }}</span>
               </div>
               <span class="foot-availability avail-today"><i class="dot"></i> {{ 'caseDetail.specialistProfile.available' | translate }}</span>
             </div>
@@ -182,15 +192,15 @@
             <div class="profile-stats">
               <div class="profile-stat">
                 <span><mat-icon>verified</mat-icon> {{ 'caseDetail.specialistProfile.successRate' | translate }}</span>
-                <strong>{{ specialist()!.successRate }}%</strong>
+                <strong>{{ sp.successRate }}%</strong>
               </div>
               <div class="profile-stat">
                 <span><mat-icon>work_history</mat-icon> {{ 'caseDetail.specialistProfile.casesHandled' | translate }}</span>
-                <strong>{{ specialist()!.caseCount }}</strong>
+                <strong>{{ sp.caseCount }}</strong>
               </div>
               <div class="profile-stat">
                 <span><mat-icon>location_on</mat-icon> {{ 'caseDetail.specialistProfile.distance' | translate }}</span>
-                <strong>{{ specialist()!.distanceLabel }}</strong>
+                <strong>{{ sp.distanceLabel }}</strong>
               </div>
             </div>
           }
@@ -208,7 +218,11 @@
             </div>
 
             <div class="contact-specialist">
-              <span class="avatar">{{ specialist()?.initials }}</span>
+              @if (specialist()?.photoUrl) {
+                <img class="avatar" [src]="specialist()!.photoUrl" alt="" />
+              } @else {
+                <span class="avatar">{{ specialist()?.initials }}</span>
+              }
               <div class="identity-text">
                 <span class="specialist-name">{{ specialist()?.name }}</span>
                 <span class="specialist-role">{{ 'caseDetail.contact.visitScheduled' | translate: { date: contact().visitScheduled } }}</span>

@@ -46,6 +46,12 @@ export class InterventionStore {
   readonly activeProposal = signal<ServiceProposal | null>(null);
   /** The specialist contact for the open case (only once its proposal is accepted). */
   readonly activeContact = signal<SpecialistContact | null>(null);
+  /**
+   * The case's specialist as a full profile card, loaded by id so the case detail
+   * shows them even when the recommendation list isn't loaded (e.g. on a direct
+   * visit or reload). Independent of the accepted-only contact.
+   */
+  readonly activeSpecialist = signal<SpecialistCandidate | null>(null);
 
   readonly loading = signal<InterventionLoadingState>({
     specialists: false,
@@ -190,9 +196,16 @@ export class InterventionStore {
   loadCaseArtifacts(request: InterventionRequest): void {
     this.activeProposal.set(null);
     this.activeContact.set(null);
+    this.activeSpecialist.set(null);
 
     if (request.id == null) {
       return;
+    }
+
+    // Resolve the case's specialist by id so the identity cards populate even
+    // when recommendations weren't loaded (direct visit / reload).
+    if (request.specialistId != null) {
+      this.loadSpecialistProfileCard(request.specialistId);
     }
 
     this.setLoading('case', true);
@@ -232,6 +245,17 @@ export class InterventionStore {
       .subscribe({
         next: (contact) => this.activeContact.set(contact),
         error: () => this.activeContact.set(null),
+      });
+  }
+
+  /** Loads the case's specialist as a profile card for the identity/summary cards. */
+  loadSpecialistProfileCard(specialistId: number | string): void {
+    this.interventionApi
+      .getSpecialistProfileCard(specialistId)
+      .pipe(take(1))
+      .subscribe({
+        next: (specialist) => this.activeSpecialist.set(specialist),
+        error: () => this.activeSpecialist.set(null),
       });
   }
 

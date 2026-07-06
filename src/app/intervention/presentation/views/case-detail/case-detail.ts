@@ -99,14 +99,19 @@ export class CaseDetailView implements OnInit {
     { label: this.caseCode() || '—', disabled: true },
   ]);
 
-  /** The specialist assigned to the case. */
+  /**
+   * The specialist assigned to the case. Prefers the recommendation list (carries
+   * the per-alert distance), then the profile loaded by id — so the identity cards
+   * populate even on a direct visit/reload when recommendations aren't loaded.
+   */
   protected readonly specialist = computed<SpecialistCandidate | null>(() => {
     const specialistId = this.request()?.specialistId ?? null;
     if (specialistId == null) {
-      return null;
+      return this.store.activeSpecialist();
     }
     return (
       this.store.specialists().find((s) => String(s.id) === String(specialistId)) ??
+      this.store.activeSpecialist() ??
       this.store.specialists()[0] ??
       null
     );
