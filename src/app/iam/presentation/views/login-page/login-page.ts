@@ -1,10 +1,17 @@
-import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuthStore } from '../../../application/auth.store';
+
+/** A background/story slide: its image, CTA headline, and the segment it evokes. */
+interface LoginSlide {
+  src: string;
+  titleKey: string;
+  segment: 'producer' | 'specialist';
+}
 
 @Component({
   selector: 'app-login-page',
@@ -16,26 +23,28 @@ import { AuthStore } from '../../../application/auth.store';
 export class LoginPage implements OnDestroy {
   protected readonly auth = inject(AuthStore);
 
-  private readonly carouselDelayMs = 5000;
+  /** The marketing site the "Back" link returns to. */
+  protected readonly landingUrl = 'https://viora-website.vercel.app/';
+
+  private readonly carouselDelayMs = 8000;
   private carouselTimer: ReturnType<typeof window.setInterval> | undefined;
 
   protected readonly email = signal('');
   protected readonly password = signal('');
   protected readonly activeSlide = signal(0);
-  protected readonly carouselSlides = [
-    {
-      src: '/assets/images/onboarding/carrusel_1.png',
-      label: 'Satellite monitoring landscape',
-    },
-    {
-      src: '/assets/images/onboarding/carrusel_2.png',
-      label: 'Field observation detail',
-    },
-    {
-      src: '/assets/images/onboarding/carrusel_3.png',
-      label: 'Farm intervention planning',
-    },
+
+  // login-1 evokes the specialist segment; login-2 / login-3 the producer one.
+  // The CTA headline changes with each slide to match the backdrop.
+  protected readonly carouselSlides: LoginSlide[] = [
+    { src: '/assets/images/onboarding/login-1.png', titleKey: 'auth.login.slides.specialist', segment: 'specialist' },
+    { src: '/assets/images/onboarding/login-2.png', titleKey: 'auth.login.slides.producerThrive', segment: 'producer' },
+    { src: '/assets/images/onboarding/login-3.png', titleKey: 'auth.login.slides.producerGrow', segment: 'producer' },
   ];
+
+  /** The CTA headline key for the active slide. */
+  protected readonly activeTitleKey = computed<string>(
+    () => this.carouselSlides[this.activeSlide()].titleKey,
+  );
 
   constructor() {
     this.auth.clearMessages();

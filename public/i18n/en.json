@@ -35,7 +35,15 @@
       "signingIn": "Signing in...",
       "signIn": "Sign in",
       "foot": "New to Viora?",
-      "createAccount": "Create an account"
+      "createAccount": "Create an account",
+      "back": "Back",
+      "loginTo": "Log in to",
+      "arcadiaTagline": "Built by ArcadiaDevs — smart tools for a thriving field.",
+      "slides": {
+        "specialist": "Where Expertise Meets the Field",
+        "producerThrive": "Where Every Grove Thrives",
+        "producerGrow": "Intelligence That Grows With You"
+      }
     },
     "register": {
       "storyEyebrow": "Choose your workspace",

@@ -35,7 +35,15 @@
       "signingIn": "Iniciando sesión...",
       "signIn": "Iniciar sesión",
       "foot": "¿Nuevo en Viora?",
-      "createAccount": "Crear una cuenta"
+      "createAccount": "Crear una cuenta",
+      "back": "Volver",
+      "loginTo": "Inicia sesión en",
+      "arcadiaTagline": "Creado por ArcadiaDevs — tecnología para un campo próspero.",
+      "slides": {
+        "specialist": "Donde la Experiencia Encuentra el Campo",
+        "producerThrive": "Donde Cada Olivar Prospera",
+        "producerGrow": "Inteligencia Que Crece Contigo"
+      }
     },
     "register": {
       "storyEyebrow": "Elige tu espacio de trabajo",
