@@ -14,6 +14,7 @@ import {
   ActiveSessionService,
   SessionData,
 } from '../../shared/infrastructure/active-session.service';
+import { SubscriptionAccessService } from '../../billing/application/subscription-access.service';
 import { AuthApiService } from '../infrastructure/auth-api.service';
 import { AuthenticatedUserResource, SignUpRequest } from '../infrastructure/auth-response';
 
@@ -21,6 +22,7 @@ import { AuthenticatedUserResource, SignUpRequest } from '../infrastructure/auth
 export class AuthStore {
   private readonly api = inject(AuthApiService);
   private readonly session = inject(ActiveSessionService);
+  private readonly access = inject(SubscriptionAccessService);
   private readonly router = inject(Router);
 
   private readonly busySignal = signal<boolean>(false);
@@ -43,19 +45,46 @@ export class AuthStore {
       .subscribe({
         next: (auth) => this.enterSession(auth),
         error: (err) => {
-          const message: string = err?.error?.message ?? '';
-          if (err?.status === 422 || message.toLowerCase().includes('verify')) {
-            this.needsVerificationSignal.set(true);
-            this.errorSignal.set('Your email is not verified yet. Check your inbox or resend the email.');
-          } else if (err?.status === 404) {
-            this.errorSignal.set('No account found with that email.');
-          } else if (err?.status === 403) {
-            this.errorSignal.set('This account has been deactivated.');
-          } else {
-            this.errorSignal.set('Invalid email or password.');
-          }
+          this.reportSignInError(err);
         },
       });
+  }
+
+  /**
+   * Signs in and establishes the session WITHOUT navigating, then calls onDone —
+   * used by the payment-first flow, which continues to checkout instead of the
+   * workspace. Returns the userId so the caller can start the plan checkout.
+   */
+  signInForCheckout(email: string, password: string, onDone: (ok: boolean) => void): void {
+    this.beginRequest();
+    this.api
+      .signIn({ email: email.trim().toLowerCase(), password })
+      .pipe(finalize(() => this.busySignal.set(false)))
+      .subscribe({
+        next: (auth) => {
+          const ok = this.enterSession(auth, false);
+          onDone(ok);
+        },
+        error: (err) => {
+          this.reportSignInError(err);
+          onDone(false);
+        },
+      });
+  }
+
+  /** Maps a sign-in HTTP error to a user-facing message. */
+  private reportSignInError(err: { status?: number; error?: { message?: string } }): void {
+    const message: string = err?.error?.message ?? '';
+    if (err?.status === 422 || message.toLowerCase().includes('verify')) {
+      this.needsVerificationSignal.set(true);
+      this.errorSignal.set('Your email is not verified yet. Check your inbox or resend the email.');
+    } else if (err?.status === 404) {
+      this.errorSignal.set('No account found with that email.');
+    } else if (err?.status === 403) {
+      this.errorSignal.set('This account has been deactivated.');
+    } else {
+      this.errorSignal.set('Invalid email or password.');
+    }
   }
 
   /** Registers a new account; onDone(true) moves the page to its success state. */
@@ -116,6 +145,7 @@ export class AuthStore {
   /** Ends the session and returns to the login screen. */
   logout(): void {
     this.session.clear();
+    this.access.reset();
     this.router.navigate(['/login']);
   }
 
@@ -130,11 +160,16 @@ export class AuthStore {
     this.clearMessages();
   }
 
-  /** Persists the session and routes to the home screen for the user's role. */
-  private enterSession(auth: AuthenticatedUserResource): void {
+  /**
+   * Persists the session and (by default) routes to the home screen for the
+   * user's role. Pass navigate=false to establish the session without leaving the
+   * current page (the payment-first flow continues to checkout). Returns whether
+   * the session was established.
+   */
+  private enterSession(auth: AuthenticatedUserResource, navigate = true): boolean {
     if (!auth?.token || auth.id == null) {
       this.errorSignal.set('Unexpected response from the server.');
-      return;
+      return false;
     }
     const session: SessionData = {
       token: auth.token,
@@ -144,6 +179,9 @@ export class AuthStore {
       role: auth.role ?? 'ROLE_GROWER',
     };
     this.session.start(session);
-    this.router.navigate([session.role === 'ROLE_SPECIALIST' ? '/specialist' : '/dashboard']);
+    if (navigate) {
+      this.router.navigate([session.role === 'ROLE_SPECIALIST' ? '/specialist' : '/dashboard']);
+    }
+    return true;
   }
 }

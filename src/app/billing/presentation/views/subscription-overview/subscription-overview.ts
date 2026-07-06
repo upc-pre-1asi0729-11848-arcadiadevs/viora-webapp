@@ -48,6 +48,16 @@ export class SubscriptionOverviewView implements OnInit {
   protected readonly paymentModalOpen = signal(false);
   protected readonly isSpecialist = this.session.isSpecialist;
 
+  /**
+   * The plans for the signed-in user's segment only — a specialist sees the
+   * `specialist-*` plans (S/79 / S/790), a grower the `grower-*` plans. Without
+   * this filter the catalog leaked the other segment's plans into the list.
+   */
+  protected readonly visiblePlans = computed<Plan[]>(() => {
+    const prefix = this.isSpecialist() ? 'specialist-' : 'grower-';
+    return this.store.plans().filter((plan) => plan.code.startsWith(prefix));
+  });
+
   protected readonly plotUsagePct = computed<number>(() => {
     const limit = this.store.currentPlan()?.plotLimit ?? 0;
     return limit > 0 ? Math.min(100, Math.round((this.plotsUsed() / limit) * 100)) : 0;
@@ -58,9 +68,9 @@ export class SubscriptionOverviewView implements OnInit {
     return limit > 0 ? Math.min(100, Math.round((this.iotUsed() / limit) * 100)) : 0;
   });
 
-  /** The annual plan offered for the "Switch to annual" shortcut. */
+  /** The annual plan offered for the "Switch to annual" shortcut (own segment). */
   protected readonly annualPlan = computed<Plan | null>(
-    () => this.store.plans().find((p) => p.interval === 'ANNUAL') ?? null,
+    () => this.visiblePlans().find((p) => p.interval === 'ANNUAL') ?? null,
   );
 
   protected readonly currentPlanName = computed<string>(() => {

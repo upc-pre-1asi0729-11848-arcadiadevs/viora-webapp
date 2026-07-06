@@ -41,15 +41,27 @@
           <p class="auth-subtitle">{{ 'auth.register.subtitle' | translate }}</p>
         </div>
 
+        @if (selectedPlan()) {
+          <div class="plan-banner">
+            <mat-icon>verified</mat-icon>
+            <span>{{ 'auth.register.planSelected' | translate }} <strong>{{ selectedPlan() }}</strong></span>
+            <a routerLink="/plans">{{ 'auth.register.changePlan' | translate }}</a>
+          </div>
+        }
+
         @if (auth.error()) {
           <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ auth.error() }}</p>
         }
+        @if (subscription.error()) {
+          <p class="auth-error"><mat-icon>error_outline</mat-icon> {{ subscription.error() }}</p>
+        }
 
-        <div class="role-grid register-role-grid" aria-label="Account type">
+        <div class="role-grid register-role-grid" [class.is-locked]="roleLocked" aria-label="Account type">
           <button
             type="button"
             class="role-card register-role-card is-producer"
             [class.is-active]="role() === 'ROLE_GROWER'"
+            [disabled]="roleLocked"
             (click)="selectRole('ROLE_GROWER')">
             <span class="role-visual">
               <img src="/assets/images/general/olive-producer-character-2.png" alt="" />
@@ -63,6 +75,7 @@
             type="button"
             class="role-card register-role-card is-specialist"
             [class.is-active]="role() === 'ROLE_SPECIALIST'"
+            [disabled]="roleLocked"
             (click)="selectRole('ROLE_SPECIALIST')">
             <span class="role-visual">
               <img src="/assets/images/general/phytosanitary-specialist-character-2.png" alt="" />
@@ -147,8 +160,12 @@
           <span class="field-hint">{{ 'auth.fields.referralHint' | translate }}</span>
         </label>
 
-        <button type="submit" class="auth-submit" [disabled]="!canSubmit">
-          {{ (auth.busy() ? 'auth.register.creating' : 'auth.register.createAccount') | translate }}
+        <button type="submit" class="auth-submit" [disabled]="!canSubmit || redirecting()">
+          @if (redirecting()) {
+            {{ 'auth.register.redirecting' | translate }}
+          } @else {
+            {{ (auth.busy() ? 'auth.register.creating' : (selectedPlan() ? 'auth.register.continueToPayment' : 'auth.register.createAccount')) | translate }}
+          }
         </button>
 
         <p class="auth-foot">{{ 'auth.register.foot' | translate }} <a routerLink="/login">{{ 'auth.register.signIn' | translate }}</a></p>
